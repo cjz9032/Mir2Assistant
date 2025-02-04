@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
-
+namespace Mir2Assistant.Common.Utils;
 /// <summary>
 ///  窗口工具类
 /// </summary>
@@ -181,7 +178,7 @@ public class WindowUtils
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct MyRect
+    public struct MyRect
     {
         public int Left;        // x position of upper-left corner
         public int Top;         // y position of upper-left corner
@@ -191,14 +188,14 @@ public class WindowUtils
 
     #region User32.dll
 
-    private const int GCL_HICON = -14;
-    private const int GCL_HICONSM = -34;
-    private const int GWL_STYLE = -16;
-    private const int ICON_BIG = 1;
-    private const int ICON_SMALL = 0;
-    private const int ICON_SMALL2 = 2;
-    private const int WM_GETICON = 0x7F;
-    private const int WM_GETTEXT = 13;
+    public const int GCL_HICON = -14;
+    public const int GCL_HICONSM = -34;
+    public const int GWL_STYLE = -16;
+    public const int ICON_BIG = 1;
+    public const int ICON_SMALL = 0;
+    public const int ICON_SMALL2 = 2;
+    public const int WM_GETICON = 0x7F;
+    public const int WM_GETTEXT = 13;
 
     [Flags]
     public enum WindowStyles : uint
@@ -233,38 +230,38 @@ public class WindowUtils
     public static extern bool IsWindowVisible(IntPtr win);
 
     [DllImport("user32.dll")]
-    private static extern bool ClientToScreen(IntPtr win, ref POINT point);
+    public static extern bool ClientToScreen(IntPtr win, ref POINT point);
 
     [DllImport("user32.dll", EntryPoint = "GetClassLong")]
-    private static extern uint GetClassLongPtr32(IntPtr hWnd, int nIndex);
+    public static extern uint GetClassLongPtr32(IntPtr hWnd, int nIndex);
 
     [DllImport("user32.dll", EntryPoint = "GetClassLongPtr")]
-    private static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
+    public static extern IntPtr GetClassLongPtr64(IntPtr hWnd, int nIndex);
 
     [DllImport("user32.dll")]
-    private static extern bool GetClientRect(IntPtr hWnd, out MyRect lpRect);
+    public static extern bool GetClientRect(IntPtr hWnd, out MyRect lpRect);
 
     [DllImport("user32.dll", EntryPoint = "GetWindowLong")]
-    private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
+    public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
     [DllImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
-    private static extern bool GetWindowRect(IntPtr win, out MyRect rect);
+    public static extern bool GetWindowRect(IntPtr win, out MyRect rect);
 
     [DllImport("user32.dll")]
-    private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
+    public static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
 
     [DllImport("user32.dll")]
-    private static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, ref int processId);
+    public static extern IntPtr GetWindowThreadProcessId(IntPtr hWnd, ref int processId);
 
     [DllImport("user32.dll")]
-    private static extern uint RealGetWindowClass(IntPtr win, StringBuilder pszType, uint cchType);
+    public static extern uint RealGetWindowClass(IntPtr win, StringBuilder pszType, uint cchType);
 
     [DllImport("user32.dll")]
-    private static extern bool ScreenToClient(IntPtr win, ref POINT point);
+    public static extern bool ScreenToClient(IntPtr win, ref POINT point);
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, StringBuilder lParam);
+    public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, StringBuilder lParam);
 
     /// <summary>
     ///  该函数将创建指定窗口的线程设置到前台，并且激活该窗口。键盘输入转向该窗口，并为用户改各种可视的记号。
@@ -273,7 +270,29 @@ public class WindowUtils
     /// <param name="hWnd">将被激活并被调入前台的窗口句柄</param>
     /// <returns>如果窗口设入了前台，返回值为非零；如果窗口未被设入前台，返回值为零</returns>
     [DllImport("User32.dll")]
-    private static extern bool SetForegroundWindow(IntPtr hWnd);
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
 
     #endregion User32.dll
+
+
+
+
+    [DllImport("kernel32.dll")]
+    public static extern Int32 WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [In, Out] byte[] buffer, int size, IntPtr lpNumberOfBytesWritten);
+    [DllImport("kernel32.dll")]
+    public static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, Int32 nSize, out IntPtr lpNumberOfBytesWritten);
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    public static extern IntPtr OpenProcess(uint processAccess, bool bInheritHandle, int processId);
+
+    [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+    public static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, uint flAllocationType, uint flProtect);
+
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliseconds);
+    [DllImport("kernel32.dll", EntryPoint = "CloseHandle")]
+    public static extern IntPtr CloseHandle(IntPtr hObject);
+    [DllImport("Kernel32.dll")]
+    public static extern System.Int32 VirtualFreeEx(IntPtr hProcess, IntPtr lpAddress, int dwSize, int flAllocationType);
 }

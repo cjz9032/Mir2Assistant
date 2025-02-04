@@ -1,6 +1,6 @@
-﻿namespace Mir2Assistant
+﻿namespace Mir2Assistant.TabForms.Demo
 {
-    partial class AssiastantForm
+    partial class CharacterStatusForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,33 +28,41 @@
         /// </summary>
         private void InitializeComponent()
         {
-            tabControl = new TabControl();
+            components = new System.ComponentModel.Container();
+            label1 = new Label();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
-            // tabControl
+            // label1
             // 
-            tabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tabControl.Location = new Point(0, 0);
-            tabControl.Name = "tabControl";
-            tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(260, 265);
-            tabControl.TabIndex = 0;
+            label1.AutoSize = true;
+            label1.Location = new Point(8, 8);
+            label1.Name = "label1";
+            label1.Size = new Size(43, 17);
+            label1.TabIndex = 0;
+            label1.Text = "label1";
             // 
-            // AssiastantForm
+            // timer1
+            // 
+            timer1.Enabled = true;
+            timer1.Tick += timer1_Tick;
+            // 
+            // CharacterStatusForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(260, 265);
-            Controls.Add(tabControl);
-            Name = "AssiastantForm";
-            Text = "辅助窗口";
-            TopMost = true;
-            Load += AssiastantForm_Load;
+            ClientSize = new Size(325, 222);
+            Controls.Add(label1);
+            Name = "CharacterStatusForm";
+            Text = "CharacterStatusForm";
+            Load += CharacterStatusForm_Load;
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
-        private TabControl tabControl;
+        private Label label1;
+        private System.Windows.Forms.Timer timer1;
     }
 }

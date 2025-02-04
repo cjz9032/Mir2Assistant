@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+namespace Mir2Assistant.Common.Utils;
+
 public class HotKeyUtils
 {
     [System.Runtime.InteropServices.DllImport("user32.dll")] //导入WinAPI 
@@ -22,4 +24,3 @@ public class HotKeyUtils
         int id // 键标识 
     );
 }
-

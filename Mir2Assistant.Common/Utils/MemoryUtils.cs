@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Mir2Assistant.Common.Models;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-
-public class MemoryUtils 
+namespace Mir2Assistant.Common.Utils;
+public class MemoryUtils
 {
     #region API
 
@@ -35,12 +35,13 @@ public class MemoryUtils
     // string	(字符串)
     // byte[]	(字节数组)
 
-    private IntPtr _handle = IntPtr.Zero;
-    private int _pid = 0;
-    public MemoryUtils(int pid)
+    private readonly MirGameInstanceModel _gameInstance;
+    private nint _handle;
+
+    public MemoryUtils(MirGameInstanceModel gameInstance)
     {
-        _pid = pid;
-        _handle = OpenProcess(0x1F0FFF, false, pid);
+        _gameInstance = gameInstance;
+        _handle = OpenProcess(0x1F0FFF, false, gameInstance.MirPid);
     }
 
     ~MemoryUtils()
@@ -57,7 +58,6 @@ public class MemoryUtils
         string asciiString = Encoding.GetEncoding("gb2312").GetString(buffer).Split('\0')[0].TrimEnd(); // 获取ASCII字符串并去除结尾的空字符
         return asciiString;
     }
-
 
     public byte[] ReadToBytes(IntPtr address, int size)
     {
@@ -214,7 +214,7 @@ public class MemoryUtils
     /// </summary>  
     public IntPtr GetModuleBaseAddress(string moduleName)
     {
-        var process = Process.GetProcessById(_pid);
+        var process = Process.GetProcessById(_gameInstance.MirPid);
         IntPtr baseAddress = default;
 
         for (int i = 0; i < process.Modules.Count; i++)
@@ -234,7 +234,7 @@ public class MemoryUtils
     /// <summary>
     /// 计算地址偏移
     /// </summary>   
-    public IntPtr GetMemoryAddress(string moduleName, params int[] offsetArray)
+    public IntPtr GetMemoryAddress(string moduleName, params nint[] offsetArray)
     {
         if ((offsetArray?.Length ?? 0) == 0)
         {
@@ -249,12 +249,17 @@ public class MemoryUtils
         // 计算剩下的多级偏移
         for (int i = 0; i < offsetArray.Length; i++)
         {
-            addr =  IntPtr.Add( addrVal , (int)offsetArray[i]);
+            addr = IntPtr.Add(addrVal, (int)offsetArray[i]);
             addrVal = (IntPtr)ReadToInt(addr);
         }
 
         // 最终的地址 (只是一个地址, 需要手动去读里面的值)
         return addr;
+    }
+
+    public IntPtr GetMemoryAddress(params nint[] offsetArray)
+    {
+        return GetMemoryAddress("mir1", offsetArray);
     }
 
     /// <summary>

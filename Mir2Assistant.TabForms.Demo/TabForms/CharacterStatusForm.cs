@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mir2Assistant.Common.Models;
+using Mir2Assistant.Common.TabForms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,13 +10,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Mir2Assistant.TabForms
+namespace Mir2Assistant.TabForms.Demo
 {
     public partial class CharacterStatusForm : Form, ITabForm
     {
         public string Title => "角色状态";
-
-        public AssiastantForm? AssiastantForm { get; set; }
+        public MirGameInstanceModel? GameInstance { get; set; }
 
         public CharacterStatusForm()
         {
@@ -28,7 +29,7 @@ namespace Mir2Assistant.TabForms
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var info = AssiastantForm!.CharacerStatus;
+            var info = GameInstance!.CharacterStatus;
             label1.Text=$"{info.Name}\n{info.MapName}：{info.X} {info.Y}\n血：{info.CurrentHP}/{info.MaxHP}\n蓝：{info.CurrentHP}/{info.MaxMP}\n转生等级：{info.GradeZS}";
         }
     }
