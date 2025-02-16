@@ -15,9 +15,7 @@
     <Compile Update="TabForms\CharacterStatusForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="TabForms\GoRun.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Update="TabForms\GoRunForm.cs" />
   </ItemGroup>
 
 </Project>

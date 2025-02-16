@@ -2,7 +2,7 @@
 #include "goRun.h"
 #include <string>
 
-extern "C" __declspec(dllexport) void run(int x, int y, int dir, int typePara, int para, int addr);
+//extern "C" __declspec(dllexport) void run(int x, int y, int dir, int typePara, int para, int addr);
 
 //×ßÂ·ÅÜÂ·
 void run(int x, int y, int dir, int typePara, int para, int addr)

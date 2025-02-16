@@ -10,6 +10,9 @@
 
 ## 目前开发进度
 1. 读角色信息
+2. 走路、跑路、寻路
+3. 读怪、打怪、技能
+
 
 ## 讨论
 [论坛 https://www.cqtieba.com/thread-36625-1-1.html](https://www.cqtieba.com/thread-36625-1-1.html)

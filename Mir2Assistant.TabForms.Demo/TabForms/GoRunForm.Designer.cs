@@ -1,6 +1,6 @@
 ﻿namespace Mir2Assistant.TabForms.Demo
 {
-    partial class GoRun
+    partial class GoRunForm
     {
         /// <summary>
         /// Required designer variable.

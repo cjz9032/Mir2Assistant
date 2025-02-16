@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <string>
 #include "goRun.h"
+#include "skill.h"
 
 extern "C" __declspec(dllexport) LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
@@ -19,6 +20,9 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
 			if (code == 9999) {//执行任意汇编码
 				void (*func)() = reinterpret_cast<void(*)()>(pCDS->lpData);
 				func();
+			}
+			else if (code >= 2000) {//技能
+				skill::process(code, data);
 			}
 			else if (code >= 1000) {//走路跑路寻路
 				goRun::process(code, data);

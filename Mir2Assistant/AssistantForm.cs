@@ -92,6 +92,20 @@ namespace Mir2Assistant
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
                         Thread.Sleep(100);
+                        if(gameInstance.CharacterStatus!.MaxMP>0 && gameInstance.CharacterStatus.MaxHP>0)
+                        {
+                            if (gameInstance.Skills.Count == 0)
+                            {
+                                SkillFunction.ReadSkills(gameInstance);
+                            }
+                            MonsterFunction.ReadMonster(gameInstance);
+                        }
+                        else //已小退
+                        {
+                            gameInstance.Skills.Clear();
+                            gameInstance.Monsters.Clear();
+
+                        }
                     }
                 }
                 catch (Exception ex)

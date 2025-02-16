@@ -8,10 +8,13 @@ using RadioButton = System.Windows.Forms.RadioButton;
 
 namespace Mir2Assistant.TabForms.Demo
 {
+    /// <summary>
+    /// 走路、跑路、寻路
+    /// </summary>
     [Order(2)]
-    public partial class GoRun : Form, ITabForm
+    public partial class GoRunForm : Form, ITabForm
     {
-        public GoRun()
+        public GoRunForm()
         {
             InitializeComponent();
         }

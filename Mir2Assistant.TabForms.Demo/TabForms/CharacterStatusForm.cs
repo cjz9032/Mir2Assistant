@@ -12,6 +12,9 @@ using System.Windows.Forms;
 
 namespace Mir2Assistant.TabForms.Demo
 {
+    /// <summary>
+    /// 角色状态
+    /// </summary>
     public partial class CharacterStatusForm : Form, ITabForm
     {
         public string Title => "角色状态";

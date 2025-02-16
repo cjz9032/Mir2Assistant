@@ -37,14 +37,14 @@
             tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(363, 362);
+            tabControl.Size = new Size(483, 371);
             tabControl.TabIndex = 0;
             // 
             // AssistantForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(363, 362);
+            ClientSize = new Size(484, 371);
             Controls.Add(tabControl);
             Name = "AssistantForm";
             Text = "辅助窗口";
