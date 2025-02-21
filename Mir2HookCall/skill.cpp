@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "skill.h"
 
-//走路跑路
+//技能CALL
 void skillCall(int skillAddr, int skillCallAddr)
 {
 	__asm {

@@ -44,7 +44,8 @@ public static class MonsterFunction
                 MonsterModel.Type = memoryUtils.ReadToShort(monsterAddr + 0x20);
                 MonsterModel.X = memoryUtils.ReadToShort(monsterAddr + 8);
                 MonsterModel.Y = memoryUtils.ReadToShort(monsterAddr + 10);
-                MonsterModel.Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
+                MonsterModel.Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0));
+                MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
                 MonsterModel.Flag = flag;
 
                 if (MonsterModel.Name == gameInstance.CharacterStatus!.Name)

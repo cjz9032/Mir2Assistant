@@ -16,6 +16,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Update="TabForms\GoRunForm.cs" />
+    <Compile Update="TabForms\NPC.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

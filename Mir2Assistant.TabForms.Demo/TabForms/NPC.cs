@@ -17,38 +17,38 @@ using System.Windows.Forms;
 namespace Mir2Assistant.TabForms.Demo.TabForms
 {
     /// <summary>
-    /// 读怪，打怪
+    /// NPC
     /// </summary>
     [Order(3)]
-    public partial class MonsterForm : Form, ITabForm
+    public partial class NPCForm : Form, ITabForm
     {
-        public MonsterForm()
+        public NPCForm()
         {
             InitializeComponent();
         }
 
-        public string Title => "读怪、打怪";
+        public string Title => "NPC";
 
         public MirGameInstanceModel? GameInstance { get; set; }
 
-        private ObservableCollection<MonsterModel> monsters = new ObservableCollection<MonsterModel>();
+        private ObservableCollection<MonsterModel> npcs = new ObservableCollection<MonsterModel>();
         private ObservableCollection<SkillModel> skills = new ObservableCollection<SkillModel>();
 
         private void button1_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedItems.Count > 0)
             {
-                var monster = listBox1.SelectedItems?[0] as MonsterModel;
-                if (monster != null)
+                var npc = listBox1.SelectedItems?[0] as MonsterModel;
+                if (npc != null)
                 {
-                    MonsterFunction.SlayingMonster(GameInstance!, monster.Addr);
+                    NpcFunction.ClickNPC(GameInstance!, npc);
                 }
             }
         }
 
-        private void MonsterForm_Load(object sender, EventArgs e)
+        private void NPCForm_Load(object sender, EventArgs e)
         {
-            bindingSource1.DataSource = monsters;
+            bindingSource1.DataSource = npcs;
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
@@ -82,22 +82,14 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private void timer1_Tick(object sender, EventArgs e)
         {
             var scrollOffset = listBox1.TopIndex;
-            monsters.Clear();
-            foreach (var item in GameInstance!.Monsters)
+            npcs.Clear();
+            foreach (var item in GameInstance!.Monsters.Where(o => o.TypeStr == "NPC"))
             {
-                monsters.Add(item);
+                npcs.Add(item);
             }
             bindingSource1.ResetBindings(false);
             listBox1.TopIndex = scrollOffset;
-            if (skills.Count != GameInstance.Skills.Count)
-            {
-                skills.Clear();
-                foreach (var item in GameInstance!.Skills)
-                {
-                    skills.Add(item);
-                }
-                bindingSource2.ResetBindings(false);
-            }
+
 
         }
     }

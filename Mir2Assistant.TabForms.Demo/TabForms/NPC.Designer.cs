@@ -1,6 +1,6 @@
 ﻿namespace Mir2Assistant.TabForms.Demo.TabForms
 {
-    partial class MonsterForm
+    partial class NPCForm
     {
         /// <summary>
         /// Required designer variable.
@@ -32,7 +32,6 @@
             button1 = new Button();
             listBox1 = new ListBox();
             bindingSource1 = new BindingSource(components);
-            button2 = new Button();
             listBox2 = new ListBox();
             bindingSource2 = new BindingSource(components);
             timer1 = new System.Windows.Forms.Timer(components);
@@ -47,9 +46,9 @@
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 0;
-            button1.Text = "砍怪";
+            button1.Text = "点NPC";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += this.button1_Click;
+            button1.Click += button1_Click;
             // 
             // listBox1
             // 
@@ -58,48 +57,36 @@
             listBox1.ItemHeight = 17;
             listBox1.Location = new Point(1, 3);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(318, 412);
+            listBox1.Size = new Size(249, 412);
             listBox1.TabIndex = 1;
-            // 
-            // button2
-            // 
-            button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            button2.Location = new Point(385, 421);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 2;
-            button2.Text = "放技能";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += this.button2_Click;
             // 
             // listBox2
             // 
             listBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             listBox2.FormattingEnabled = true;
             listBox2.ItemHeight = 17;
-            listBox2.Location = new Point(325, 3);
+            listBox2.Location = new Point(256, 3);
             listBox2.Name = "listBox2";
-            listBox2.Size = new Size(156, 412);
+            listBox2.Size = new Size(225, 412);
             listBox2.TabIndex = 4;
             // 
             // timer1
             // 
             timer1.Enabled = true;
             timer1.Interval = 1000;
-            timer1.Tick += this.timer1_Tick;
+            timer1.Tick += timer1_Tick;
             // 
-            // MonsterForm
+            // NPCForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(482, 450);
             Controls.Add(listBox2);
-            Controls.Add(button2);
             Controls.Add(listBox1);
             Controls.Add(button1);
-            Name = "MonsterForm";
-            Text = "MonsterForm";
-            Load += this.MonsterForm_Load;
+            Name = "NPCForm";
+            Text = "NPCForm";
+            Load += NPCForm_Load;
             ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
             ((System.ComponentModel.ISupportInitialize)bindingSource2).EndInit();
             ResumeLayout(false);

@@ -3,6 +3,7 @@
 #include <string>
 #include "goRun.h"
 #include "skill.h"
+#include "npc.h"
 
 extern "C" __declspec(dllexport) LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam);
 
@@ -20,6 +21,9 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
 			if (code == 9999) {//执行任意汇编码
 				void (*func)() = reinterpret_cast<void(*)()>(pCDS->lpData);
 				func();
+			}
+			else if (code >= 3000) {//npc
+				npc::process(code, data);
 			}
 			else if (code >= 2000) {//技能
 				skill::process(code, data);

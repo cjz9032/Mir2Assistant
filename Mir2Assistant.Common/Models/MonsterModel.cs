@@ -39,8 +39,12 @@ namespace Mir2Assistant.Common.Models
         public int? X { get; set; }
         public int? Y { get; set; }
         public string? Name { get; set; }
+        /// <summary>
+        /// 行会
+        /// </summary>
+        public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}".PadRight(8)}{TypeStr}{(Flag == 0 ? "死" : "")}\t{Name}\t{Addr.ToString("x2")}";
+        public string Display => $"{$"{X},{Y}".PadRight(8)}{TypeStr}{(Flag == 0 ? "死" : "")}\t{Name}\t{Guild}\t{Addr.ToString("x2")}";
 
         public event PropertyChangedEventHandler? PropertyChanged;
     }

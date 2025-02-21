@@ -33,7 +33,7 @@ namespace Mir2Assistant.TabForms.Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             var info = GameInstance!.CharacterStatus;
-            label1.Text=$"{info.Name}\n{info.MapName}：{info.X} {info.Y}\n血：{info.CurrentHP}/{info.MaxHP}\n蓝：{info.CurrentHP}/{info.MaxMP}\n转生等级：{info.GradeZS}";
+            label1.Text=$"{info.Name}\n{info.MapName}：{info.X} {info.Y}\n血：{info.CurrentHP}/{info.MaxHP}\n蓝：{info.CurrentMP}/{info.MaxMP}\n转生等级：{info.GradeZS}";
         }
     }
 }

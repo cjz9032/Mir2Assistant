@@ -16,16 +16,7 @@
 	  <ProjectReference Include="..\Mir2Assistant.TabForms.Demo\Mir2Assistant.TabForms.Demo.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<None Update="config\2.1.0.1078.ini">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="config\2.1.0.1182.ini">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="config\2.1.0.1190.ini">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="config\2.1.0.1210.ini">
+		<None Update="config\2.1.0.1226.ini">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
