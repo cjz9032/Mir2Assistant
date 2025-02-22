@@ -50,37 +50,42 @@ namespace Mir2Assistant
             string currentDirectory = Directory.GetCurrentDirectory();
             string[] dllFiles = Directory.GetFiles(currentDirectory, "*.dll");
 
+            var tabForms = new List<Form>();
             foreach (string dllPath in dllFiles)
             {
+               
                 try
                 {
                     var assembly = Assembly.LoadFrom(dllPath);
                     var forms = assembly.GetTypes().Where(o => o.IsClass && o.IsAssignableTo(typeof(ITabForm))).OrderBy(o => o.GetCustomAttribute<OrderAttribute>()?.Order);
                     foreach (var form in forms)
                     {
-                        var tp = new TabPage();
                         var fm = (Form)assembly.CreateInstance(form.FullName!)!;
-                        tp.Text = ((ITabForm)fm).Title;
                         ((ITabForm)fm).GameInstance = gameInstance;
                         fm.FormBorderStyle = FormBorderStyle.None;
                         fm.TopLevel = false;
-                        fm.Parent = tp;
                         fm.ControlBox = false;
                         fm.Dock = DockStyle.Fill;
                         fm.Show();
-                        tabControl.TabPages.Add(tp);
+                        tabForms.Add(fm);
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Failed to load " + dllPath + ": " + ex.Message);
                 }
-
+            }
+            foreach (var fm in tabForms.OrderBy(o => (o.GetType()?.GetCustomAttribute<OrderAttribute>()?.Order ?? 9999)).ToList())
+            {
+                var tp = new TabPage();
+                tp.Text = ((ITabForm)fm).Title;
+                fm.Parent = tp;
+                tabControl.TabPages.Add(tp);
             }
             //读状态
             Task.Run(() =>
             {
-                Thread.Sleep(100);
+                Thread.Sleep(500);
                 try
                 {
                     while (gameInstance.LibIpdl > 0)
@@ -92,7 +97,7 @@ namespace Mir2Assistant
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
                         Thread.Sleep(100);
-                        if(gameInstance.CharacterStatus!.MaxMP>0 && gameInstance.CharacterStatus.MaxHP>0)
+                        if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
                         {
                             if (gameInstance.Skills.Count == 0)
                             {

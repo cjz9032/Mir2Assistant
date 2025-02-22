@@ -64,10 +64,10 @@ public static class MonsterFunction
     /// <summary>
     /// 锁定怪物，相当物游戏中鼠标指向某个怪
     /// </summary>
-    public static void LockMonster(MirGameInstanceModel gameInstance, int skillAddr)
+    public static void LockMonster(MirGameInstanceModel gameInstance, int monsterAddr)
     {
         var memoryUtils = gameInstance!.MemoryUtils!;
-        memoryUtils.WriteInt(gameInstance.MirConfig["存怪参数"], skillAddr);
+        memoryUtils.WriteInt(gameInstance.MirConfig["存怪参数"], monsterAddr);
     }
 
 

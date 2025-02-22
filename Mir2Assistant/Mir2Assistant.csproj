@@ -10,10 +10,14 @@
 		<PlatformTarget>x86</PlatformTarget>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<BaseOutputPath></BaseOutputPath>
+		<ApplicationIcon>icon.ico</ApplicationIcon>
 	</PropertyGroup>
 	<ItemGroup>
+	  <Content Include="icon.ico" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Mir2Assistant.Common\Mir2Assistant.Common.csproj" />
-	  <ProjectReference Include="..\Mir2Assistant.TabForms.Demo\Mir2Assistant.TabForms.Demo.csproj" />
+	  <ProjectReference Include="..\Mir2Assistant.TabForms.DailyTask\Mir2Assistant.TabForms.DailyTask.csproj" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="config\2.1.0.1226.ini">
