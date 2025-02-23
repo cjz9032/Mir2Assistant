@@ -49,7 +49,7 @@
             button1.TabIndex = 0;
             button1.Text = "砍怪";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += this.button1_Click;
+            button1.Click += button1_Click;
             // 
             // listBox1
             // 
@@ -58,7 +58,7 @@
             listBox1.ItemHeight = 17;
             listBox1.Location = new Point(1, 3);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(318, 412);
+            listBox1.Size = new Size(273, 412);
             listBox1.TabIndex = 1;
             // 
             // button2
@@ -70,23 +70,23 @@
             button2.TabIndex = 2;
             button2.Text = "放技能";
             button2.UseVisualStyleBackColor = true;
-            button2.Click += this.button2_Click;
+            button2.Click += button2_Click;
             // 
             // listBox2
             // 
             listBox2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             listBox2.FormattingEnabled = true;
             listBox2.ItemHeight = 17;
-            listBox2.Location = new Point(325, 3);
+            listBox2.Location = new Point(280, 3);
             listBox2.Name = "listBox2";
-            listBox2.Size = new Size(156, 412);
+            listBox2.Size = new Size(201, 412);
             listBox2.TabIndex = 4;
             // 
             // timer1
             // 
             timer1.Enabled = true;
             timer1.Interval = 1000;
-            timer1.Tick += this.timer1_Tick;
+            timer1.Tick += timer1_Tick;
             // 
             // MonsterForm
             // 
@@ -99,7 +99,7 @@
             Controls.Add(button1);
             Name = "MonsterForm";
             Text = "MonsterForm";
-            Load += this.MonsterForm_Load;
+            Load += MonsterForm_Load;
             ((System.ComponentModel.ISupportInitialize)bindingSource1).EndInit();
             ((System.ComponentModel.ISupportInitialize)bindingSource2).EndInit();
             ResumeLayout(false);

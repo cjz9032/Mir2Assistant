@@ -11,6 +11,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<BaseOutputPath></BaseOutputPath>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
+		<AssemblyName>热血传奇辅助</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="icon.ico" />
@@ -18,10 +19,22 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Mir2Assistant.Common\Mir2Assistant.Common.csproj" />
 	  <ProjectReference Include="..\Mir2Assistant.TabForms.DailyTask\Mir2Assistant.TabForms.DailyTask.csproj" />
+	  <ProjectReference Include="..\Mir2Assistant.TabForms.Demo\Mir2Assistant.TabForms.Demo.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Update="Properties\Settings.Designer.cs">
+	    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Settings.settings</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
 		<None Update="config\2.1.0.1226.ini">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Properties\Settings.settings">
+		  <Generator>SettingsSingleFileGenerator</Generator>
+		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
 		</None>
 	</ItemGroup>
 </Project>

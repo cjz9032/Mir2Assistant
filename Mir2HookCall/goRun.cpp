@@ -43,6 +43,23 @@ void findPath(int x, int y, int para, int addr)
 	}
 }
 
+//·É²ÔÔÂ
+void flyCY(int para, int addr)
+{
+	__asm {
+		push 0
+		push 0
+		push 0
+		push 0
+		mov eax, para
+		mov eax, [eax]
+		mov eax, [eax]
+		mov edx, 0x11b2
+		mov ebx, addr
+		call ebx
+	}
+}
+
 
 void goRun::process(int code, int* data)
 {
@@ -54,7 +71,9 @@ void goRun::process(int code, int* data)
 	case 1002:
 		findPath(data[0], data[1], data[2], data[3]);
 		break;
-
+	case 1010:
+		flyCY(data[0], data[1]);
+		break;
 	default:
 		break;
 

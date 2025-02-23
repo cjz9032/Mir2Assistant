@@ -83,7 +83,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         {
             var scrollOffset = listBox1.TopIndex;
             monsters.Clear();
-            foreach (var item in GameInstance!.Monsters)
+            foreach (var item in GameInstance!.Monsters.OrderBy(o => o.X).ThenBy(o => o.Y))
             {
                 monsters.Add(item);
             }

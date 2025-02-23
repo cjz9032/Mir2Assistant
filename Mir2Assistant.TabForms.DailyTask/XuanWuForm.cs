@@ -98,8 +98,8 @@ namespace Mir2Assistant.TabForms.DailyTask
                     dt.FindPath.Enqueue(new Point(149, 138));
                     dt.FindPath.Enqueue(new Point(375, 465));
                     break;
-                case "浪客帮香主":
-                    dt.AddTaskMonster("浪客帮香主", 3);
+                case "浪客帮香女":
+                    dt.AddTaskMonster("浪客帮香女", 3);
                     dt.FindPath.Enqueue(new Point(142, 68));
                     dt.FindPath.Enqueue(new Point(110, 96));
                     dt.FindPath.Enqueue(new Point(149, 138));
@@ -168,20 +168,7 @@ namespace Mir2Assistant.TabForms.DailyTask
 
         private void button3_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9999,
-                AsmUtils.Init(GameInstance!.MirPid)
-             .Push6A(0)
-             .Push6A(0)
-             .Push6A(0)
-             .Push6A(0)
-             .Mov_EAX((int)GameInstance.MirConfig["通用参数"])
-             .Mov_EAX_DWORD_Ptr_EAX()
-             .Mov_EAX_DWORD_Ptr_EAX()
-             .Mov_ECX(0)
-             .Mov_EDX(0x11B2)
-             .Mov_EBX((int)GameInstance!.MirConfig["对话CALL地址"])
-             .Call_EBX()
-             .GetAsmCode());
+            GoRunFunction.FlyCY(GameInstance!);
         }
 
         private void button4_Click(object sender, EventArgs e)

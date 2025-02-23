@@ -7,7 +7,7 @@ namespace Mir2Assistant
     public partial class MainForm : Form
     {
         private Dictionary<int, MirGameInstanceModel> GameInstances = new Dictionary<int, MirGameInstanceModel>();
-
+        private string currentProcessName = Process.GetCurrentProcess().ProcessName;
         public MainForm()
         {
             InitializeComponent();
@@ -21,6 +21,7 @@ namespace Mir2Assistant
         }
         protected override void WndProc(ref Message m)//监视Windows消息
         {
+
             const int WM_HOTKEY = 0x0312; //如果m.Msg的值为0x0312那么表示用户按下了热键 
             switch (m.Msg)
             {
@@ -68,7 +69,7 @@ namespace Mir2Assistant
 
                         }
                     }
-                    else if (process.ProcessName == "Mir2Assistant")
+                    else if (process.ProcessName == currentProcessName)
                     {
                         GameInstances.Values.FirstOrDefault(o => o.AssistantForm?.Handle == hwnd)?.AssistantForm!.Hide();
                     }

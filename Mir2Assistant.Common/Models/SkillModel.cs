@@ -16,6 +16,6 @@ namespace Mir2Assistant.Common.Models
         /// 开心法
         /// </summary>
         public bool IsXF { get; set; }
-        public string Display => $"{Addr?.ToString("x2")}\t{Name}{(IsXF?"(心法)":"")}";
+        public string Display => $"{Addr?.ToString("x2").PadRight(10)}{Name}{(IsXF?"(心法)":"")}";
     }
 }

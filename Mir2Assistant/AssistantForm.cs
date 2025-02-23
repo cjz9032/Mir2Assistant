@@ -85,7 +85,7 @@ namespace Mir2Assistant
             //读状态
             Task.Run(() =>
             {
-                Thread.Sleep(500);
+                Thread.Sleep(200);
                 try
                 {
                     while (gameInstance.LibIpdl > 0)
@@ -96,7 +96,6 @@ namespace Mir2Assistant
                             break;
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
-                        Thread.Sleep(100);
                         if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
                         {
                             if (gameInstance.Skills.Count == 0)

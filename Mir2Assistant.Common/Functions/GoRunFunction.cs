@@ -110,4 +110,9 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1002, new nint[] { x, y, gameInstance!.MirConfig["寻路参数"], gameInstance!.MirConfig["寻路CALL地址"] });
     }
 
+
+    public static void FlyCY(MirGameInstanceModel gameInstance)
+    {
+        SendMirCall.Send(gameInstance, 1010, new nint[] { gameInstance!.MirConfig["通用参数"], gameInstance!.MirConfig["对话CALL地址"] });
+    }
 }
