@@ -110,7 +110,12 @@ namespace Mir2Assistant.TabForms.DailyTask
                         }
                         else
                         {
-                            lockedMonster.Flag = gameInstance.Monsters.FirstOrDefault(o => o.Addr == lockedMonster.Addr)?.Flag ?? 0;
+                            var m = gameInstance.Monsters.FirstOrDefault(o => o.Addr == lockedMonster.Addr);
+                            if (m == null)
+                            {
+                                continue;
+                            }
+                            lockedMonster = m;
                         }
                         if (lockedMonster != null)
                         {
