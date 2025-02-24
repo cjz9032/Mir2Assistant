@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -34,14 +35,19 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private ObservableCollection<MonsterModel> npcs = new ObservableCollection<MonsterModel>();
         private ObservableCollection<SkillModel> skills = new ObservableCollection<SkillModel>();
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             if (listBox1.SelectedItems.Count > 0)
             {
                 var npc = listBox1.SelectedItems?[0] as MonsterModel;
                 if (npc != null)
                 {
-                    NpcFunction.ClickNPC(GameInstance!, npc);
+                    listBox2.Items.Clear();
+                    textBox1.Text= await NpcFunction.ClickNPC(GameInstance!, npc);
+                    NpcFunction.GetTaskCmds(textBox1.Text).ForEach(cmd =>
+                    {
+                        listBox2.Items.Add(cmd);
+                    });
                 }
             }
         }
@@ -52,35 +58,15 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
-            listBox2.DataSource = bindingSource2;
-            listBox2.DisplayMember = "Display";
 
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            var memoryUtils = GameInstance!.MemoryUtils!;
-            if (listBox1.SelectedItems.Count > 0)
-            {
-                var monster = listBox1.SelectedItems?[0] as MonsterModel;
-                if (monster != null)
-                {
-                    MonsterFunction.LockMonster(GameInstance!, monster.Addr);
-                }
-            }
-            if (listBox2.SelectedItems.Count > 0)
-            {
-                var skill = listBox2.SelectedItems[0] as SkillModel;
-                if (skill != null)
-                {
-                    SkillFunction.SkillCall(GameInstance, skill.Addr!.Value);
-
-                }
-            }
-        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            var memoryUtils = GameInstance!.MemoryUtils!;
+            textBox2.Text = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(0x6996e0, -0x501e));
+
             var scrollOffset = listBox1.TopIndex;
             npcs.Clear();
             foreach (var item in GameInstance!.Monsters.Where(o => o.TypeStr == "NPC"))
@@ -91,6 +77,20 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             listBox1.TopIndex = scrollOffset;
 
 
+        }
+
+        private async void button3_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(listBox2.SelectedItem?.ToString()))
+            {
+                textBox1.Text = await NpcFunction.Talk2(GameInstance!, listBox2.SelectedItem.ToString()!.Split('/')[1]);
+                listBox2.Items.Clear();
+                NpcFunction.GetTaskCmds(textBox1.Text).ForEach(cmd =>
+                {
+                    listBox2.Items.Add(cmd);
+                });
+            }
+            
         }
     }
 }

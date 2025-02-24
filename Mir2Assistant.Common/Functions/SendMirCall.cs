@@ -72,5 +72,15 @@ namespace Mir2Assistant.Common.Functions
                 }
             }
         }
+
+        public static nint[] String2NIntArray(string p)
+        {
+            var l0 = p.Length % 4 + 4;
+            var bytes = Encoding.GetEncoding("gb2312").GetBytes(p + new string('\0', l0));
+            return Enumerable.Range(0, bytes.Length / 4)
+                           .Select(i => (nint)BitConverter.ToInt32(bytes, i * 4))
+                           .ToArray();
+        }
+
     }
 }
