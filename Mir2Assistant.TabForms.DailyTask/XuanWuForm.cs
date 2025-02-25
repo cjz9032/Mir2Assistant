@@ -9,8 +9,10 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace Mir2Assistant.TabForms.DailyTask
 {
@@ -43,9 +45,72 @@ namespace Mir2Assistant.TabForms.DailyTask
                 return;
             }
             button1.Enabled = false;
-            dt!.NPCPoint = new Point(210, 250);
-            dt.FindPath.Clear();
-            switch (listBox1.SelectedItem?.ToString())
+            doTask(listBox1.SelectedItem.ToString());
+        }
+
+        CancellationTokenSource cts = new CancellationTokenSource();
+        private void button2_Click(object sender, EventArgs e)
+        {
+            cts.Cancel();
+            dt!.Complete = true;
+            button1.Enabled = true;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            dt!.Pause = checkBox1.Checked;
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            GoRunFunction.FlyCY(GameInstance!);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            GoRunFunction.GoXuanWu(GameInstance!);
+        }
+
+        private string? getTaskMonster(string? str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return null;
+            }
+            var regex = new Regex("只(.*?)，|。");
+            Match match = regex.Match(str);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 领奖领任务
+        /// </summary>
+        /// <returns></returns>
+        private async Task<string?> getTask()
+        {
+            await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
+            await NpcFunction.Talk2Text(GameInstance!, "日常任务");
+            await NpcFunction.Talk2Text(GameInstance!, "玄武岛除妖任务");
+            await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
+            await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
+            await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
+            await NpcFunction.Talk2Text(GameInstance!, "日常任务");
+            await NpcFunction.Talk2Text(GameInstance!, "玄武岛除妖任务");
+            string str = await NpcFunction.Talk2Text(GameInstance!, "领取任务");
+            return getTaskMonster(str);
+        }
+
+        private async Task doTask(string taskMonster)
+        {
+            dt!.FindPath.Clear();
+            switch (taskMonster)
             {
                 case "噬魂毒牙":
                     dt.AddTaskMonster("噬魂毒牙", 3);
@@ -152,31 +217,103 @@ namespace Mir2Assistant.TabForms.DailyTask
                     dt.FindPath.Enqueue(new Point(72, 441));
                     break;
             }
-            dt.RunTask();
+            await dt.RunTask();
+            await GoRunFunction.GoXuanWu(GameInstance!);
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        /// <summary>
+        /// 兑主号钻石凭证
+        /// </summary>
+        /// <returns></returns>
+        private async Task HumanExp()
         {
-            dt!.Complete = true;
-            button1.Enabled = true;
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            dt!.Pause = checkBox1.Checked;
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            GoRunFunction.FlyCY(GameInstance!);
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (GameInstance!.CharacterStatus!.MapName == "玄武岛")
+            await NpcFunction.ClickNPC(GameInstance!, "修为兑换大使");
+            await NpcFunction.Talk2Text(GameInstance!, "兑换主号修为");
+            while (await NpcFunction.Talk2Text(GameInstance!, "使用10张白金修为凭证兑换10000点主号修为") != "请查看背包中兑换材料是否足够。\\")
             {
-                GoRunFunction.FindPath(GameInstance, 210, 249);
+                Task.Delay(100).Wait();
+            }
+            await NpcFunction.ClickNPC(GameInstance!, "修为兑换大使");
+            await NpcFunction.Talk2Text(GameInstance!, "兑换主号修为");
+            while (await NpcFunction.Talk2Text(GameInstance!, "使用1张白金修为凭证兑换1000点主号修为") != "请查看背包中兑换材料是否足够。\\")
+            {
+                Task.Delay(100).Wait();
+            }
+            await NpcFunction.ClickNPC(GameInstance!, "修为兑换大使");
+            await NpcFunction.Talk2Text(GameInstance!, "兑换主号修为");
+            await NpcFunction.Talk2Text(GameInstance!, "下一页");
+            while (await NpcFunction.Talk2Text(GameInstance!, "使用10张钻石修为凭证兑换100000点主号修为") != "请查看背包中兑换材料是否足够。\\")
+            {
+                Task.Delay(100).Wait();
+            }
+            await NpcFunction.ClickNPC(GameInstance!, "修为兑换大使");
+            await NpcFunction.Talk2Text(GameInstance!, "兑换主号修为");
+            await NpcFunction.Talk2Text(GameInstance!, "下一页");
+            while (await NpcFunction.Talk2Text(GameInstance!, "使用1张钻石修为凭证兑换10000点主号修为") != "请查看背包中兑换材料是否足够。\\")
+            {
+                Task.Delay(100).Wait();
             }
         }
+
+        /// <summary>
+        /// 秘境天罡正气
+        /// </summary>
+        /// <returns></returns>
+        private async Task tgzq()
+        {
+            await NpcFunction.ClickNPC(GameInstance!, "玄武老兵");
+            await NpcFunction.Talk2Text(GameInstance!, "我要去玄武洞天");
+            await NpcFunction.WaitNPC(GameInstance!, "狐人族长老");
+            await NpcFunction.ClickNPC(GameInstance!, "狐人族长老");
+            await NpcFunction.Talk2Text(GameInstance!, "关于转生神技");
+            await NpcFunction.Talk2Text(GameInstance!, "传送至玄武石窟");
+            await NpcFunction.WaitNPC(GameInstance!, "修行接引人");
+            await NpcFunction.ClickNPC(GameInstance!, "修行接引人");
+            await NpcFunction.Talk2Text(GameInstance!, "挑战石窟秘境");
+            await NpcFunction.WaitNPC(GameInstance!, "修行教头");
+            await NpcFunction.ClickNPC(GameInstance!, "修行教头");
+            if (GameInstance!.TalkCmds.Any(o => o.StartsWith("免费接受挑战")))
+            {
+                await NpcFunction.Talk2Text(GameInstance!, "免费接受挑战");
+                dt!.FindPath.Clear();
+                dt.AddTaskMonster("秘境幽冥毒牙", 1);
+                dt.FindPath.Enqueue(new Point(22, 30));
+                dt.FindPath.Enqueue(new Point(33, 37));
+                await dt.RunTask();
+            }
+        }
+
+        private async void button5_Click(object sender, EventArgs e)
+        {
+            cts.Dispose();
+            cts = new CancellationTokenSource();
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    await GoRunFunction.GoXuanWu(GameInstance!);
+                    cts.Token.ThrowIfCancellationRequested();
+                    var taskMonster = await getTask();
+                    while (!string.IsNullOrEmpty(taskMonster))
+                    {
+                        cts.Token.ThrowIfCancellationRequested();
+                        this.Invoke(() => listBox1.Text = taskMonster);
+                        await doTask(taskMonster);
+                        taskMonster = await getTask();
+                    }
+                    await HumanExp();
+                    cts.Token.ThrowIfCancellationRequested();
+                    await tgzq();
+                    cts.Token.ThrowIfCancellationRequested();
+                    await GoRunFunction.BackTu(GameInstance!);
+                }, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                Console.WriteLine("任务被取消");
+            }
+        }
+
     }
 }
+

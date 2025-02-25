@@ -29,7 +29,7 @@ public class WindowUtils
         return SetForegroundWindow(hWnd);
     }
 
-    public static Icon GetAppIcon(IntPtr hwnd)
+    public static Icon? GetAppIcon(IntPtr hwnd)
     {
         IntPtr iconHandle = SendMessage(hwnd, WM_GETICON, ICON_SMALL2, null);
         if (iconHandle == IntPtr.Zero)
@@ -261,7 +261,7 @@ public class WindowUtils
     public static extern bool ScreenToClient(IntPtr win, ref POINT point);
 
     [DllImport("user32.dll", CharSet = CharSet.Auto)]
-    public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, StringBuilder lParam);
+    public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, int wParam, StringBuilder? lParam);
 
     /// <summary>
     ///  该函数将创建指定窗口的线程设置到前台，并且激活该窗口。键盘输入转向该窗口，并为用户改各种可视的记号。

@@ -18,18 +18,19 @@ namespace Mir2Assistant.Common.Functions
         /// </summary>
         /// <param name="dialog"></param>
         /// <returns></returns>
-        public static List<string> GetTaskCmds(string dialog)
+        public static List<string> GetTalkCmds(string dialog)
         {
             var ret = new List<string>();
             if (string.IsNullOrEmpty(dialog))
             {
                 return ret;
             }
-            Regex regex = new Regex(@"\<(.*?)\/(.*?)\>");
+            var regex = new Regex(@"\<(.*?)\/(.*?)\>");
             Match match = regex.Match(dialog);
             while (match.Success)
             {
-                if (match.Value.Contains("/@")){
+                if (match.Value.Contains("/@"))
+                {
                     ret.Add(match.Value.TrimStart('<').TrimEnd('>'));
                 }
                 match = match.NextMatch();
@@ -41,27 +42,21 @@ namespace Mir2Assistant.Common.Functions
         {
             var memoryUtil = gameInstance!.MemoryUtils!;
             var addr1 = memoryUtil.GetMemoryAddress(gameInstance.MirConfig["对话框基址"], 0);
-            var addr = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
+            var addr2 = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
             act();
-            int i = 0;
-            await Task.Run(() =>
+            nint addr = 0;
+            if (!await TaskWrapper.Wait(() =>
             {
-                var addr2 = addr;
-                while (addr2 == addr && i < 10)
-                {
-                    addr2 = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
-                    Thread.Sleep(100);
-                    i++;
-                }
-                addr = addr2;
-            });
-            if (i >= 10)
+                addr = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
+                return addr2 != addr;
+            }))
             {
                 return "";
             }
             var length = memoryUtil.ReadToInt(memoryUtil.GetMemoryAddress(addr1, 0x20)) * 3;
-            var bytes = memoryUtil.ReadToBytes(addr, length);
-            return Encoding.GetEncoding("gb2312").GetString(bytes);
+            var str = memoryUtil.ReadToString(addr, length);
+            gameInstance.TalkCmds = GetTalkCmds(str);
+            return str;
         }
 
 
@@ -76,10 +71,23 @@ namespace Mir2Assistant.Common.Functions
             return await Talk(gameInstance, () =>
             {
                 var npcId = gameInstance.MemoryUtils!.ReadToInt(NPC.Addr + 4);
-                SendMirCall.Send(gameInstance, 3001, new nint[] { npcId, gameInstance!.MirConfig["寻路参数"], gameInstance!.MirConfig["点NPCCALL地址"] });
+                SendMirCall.Send(gameInstance, 3001, [npcId, gameInstance!.MirConfig["寻路参数"], gameInstance!.MirConfig["点NPCCALL地址"]]);
             });
         }
 
+        public static async Task<string> ClickNPC(MirGameInstanceModel gameInstance, string NpcName)
+        {
+            MonsterModel? npc = null;
+            if (!await TaskWrapper.Wait(() =>
+            {
+                npc = gameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC" && o.Name == NpcName);
+                return npc != null;
+            }))
+            {
+                return "";
+            }
+            return await ClickNPC(gameInstance, npc!);
+        }
 
         /// <summary>
         /// 二级对话
@@ -96,6 +104,29 @@ namespace Mir2Assistant.Common.Functions
             });
         }
 
+        public static async Task<string> Talk2Text(MirGameInstanceModel gameInstance, string text)
+        {
+            string? cmd = null;
+            if (!await TaskWrapper.Wait(() =>
+            {
+                cmd = gameInstance.TalkCmds.FirstOrDefault(o => o.Split("/")[0] == text);
+                return cmd != null;
+            }))
+            {
+                return "";
+            }
+            return await Talk2(gameInstance, cmd!.Split("/")[1]);
+        }
 
+        /// <summary>
+        /// 等NPC出现
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static async Task<bool> WaitNPC(MirGameInstanceModel gameInstance, string npcName, int timeout = 50)
+        {
+            return await TaskWrapper.Wait(() => gameInstance.Monsters.Values.Any(o => o.TypeStr == "NPC" && o.Name == npcName), timeout);
+        }
     }
 }

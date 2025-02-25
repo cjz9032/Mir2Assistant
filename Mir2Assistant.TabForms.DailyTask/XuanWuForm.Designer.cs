@@ -34,6 +34,7 @@
             listBox1 = new ListBox();
             button3 = new Button();
             button4 = new Button();
+            button5 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -42,7 +43,7 @@
             button1.Name = "button1";
             button1.Size = new Size(91, 25);
             button1.TabIndex = 0;
-            button1.Text = "开始玄武任务";
+            button1.Text = "手动玄武任务";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -97,11 +98,22 @@
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
+            // button5
+            // 
+            button5.Location = new Point(119, 100);
+            button5.Name = "button5";
+            button5.Size = new Size(185, 90);
+            button5.TabIndex = 5;
+            button5.Text = "全自动玄武任务";
+            button5.UseVisualStyleBackColor = true;
+            button5.Click += button5_Click;
+            // 
             // XuanWuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(459, 345);
+            Controls.Add(button5);
             Controls.Add(button4);
             Controls.Add(button3);
             Controls.Add(listBox1);
@@ -123,5 +135,6 @@
         private ListBox listBox1;
         private Button button3;
         private Button button4;
+        private Button button5;
     }
 }

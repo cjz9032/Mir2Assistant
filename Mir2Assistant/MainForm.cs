@@ -46,6 +46,7 @@ namespace Mir2Assistant
                             else
                             {
                                 GameInstances[pid].AssistantForm!.Show();
+                                GameInstances[pid].AssistantForm!.WindowState=FormWindowState.Normal;
                             }
                         }
                         else

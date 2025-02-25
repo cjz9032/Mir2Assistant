@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Mir2Assistant.TabForms.DailyTask
@@ -37,18 +38,13 @@ namespace Mir2Assistant.TabForms.DailyTask
                 _complete = value;
                 if (value)
                 {
+                    lockedMonster = null;
                     CompleteEvent?.Invoke();
                 }
             }
 
         }
 
-
-
-        /// <summary>
-        /// 完成任务后，去哪个NPC交任务
-        /// </summary>
-        public Point NPCPoint { get; set; }
         public int pathIndex = 0;
         private MonsterModel? lockedMonster = null;
 
@@ -74,12 +70,34 @@ namespace Mir2Assistant.TabForms.DailyTask
             }
         }
 
-        public void RunTask()
+        public async Task RunTask()
         {
             Complete = false;
+            stopRun = false;
+            lockedMonster = null;
             pathIndex = 0;
             bool oldPause = false;
-            Task.Run(() =>
+            gameInstance.NewSysMsg += (str) =>
+            {
+                if (string.IsNullOrEmpty(str))
+                {
+                    return;
+                }
+                if (str.EndsWith("天罡正气经验！"))
+                {
+                    Complete = true;
+                }
+                var regex = new Regex(@"你现在已经击败(.*?)：(\d+)/(\d+)");
+                Match match = regex.Match(str);
+                if (match.Success)
+                {
+                    if (match.Groups[2].Value == match.Groups[3].Value)
+                    {
+                        TaskMonster.TryRemove(match.Groups[1].Value, out int v);
+                    }
+                }
+            };
+            await Task.Run(() =>
             {
                 while (!Complete)
                 {
@@ -106,42 +124,44 @@ namespace Mir2Assistant.TabForms.DailyTask
 
                         if (lockedMonster == null)
                         {
-                            lockedMonster = gameInstance.Monsters.LastOrDefault(o => o.Flag != 0 && TaskMonster.Keys.Contains(o.Name!));
+                            lockedMonster = gameInstance.Monsters.Values?.FirstOrDefault(o => o.Flag != 0 && TaskMonster.Keys.Contains(o.Name!));
                         }
                         else
                         {
-                            var m = gameInstance.Monsters.FirstOrDefault(o => o.Addr == lockedMonster.Addr);
-                            if (m == null)
-                            {
-                                continue;
-                            }
-                            lockedMonster = m;
+                            lockedMonster = gameInstance.Monsters.Values?.FirstOrDefault(o => o.Addr == lockedMonster.Addr);
                         }
                         if (lockedMonster != null)
                         {
                             if (!stopRun)
                             {
-                                stopRun = true;
-                                GoRunFunction.FindPath(gameInstance, lockedMonster.X!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First(), lockedMonster.Y!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First());
+                                if (Math.Abs(lockedMonster.X!.Value - gameInstance!.CharacterStatus!.X!.Value) <= 5 && Math.Abs(lockedMonster.Y!.Value - gameInstance.CharacterStatus.Y!.Value) <= 5)
+                                {
+                                    GoRunFunction.FindPath(gameInstance, gameInstance!.CharacterStatus!.X!.Value, gameInstance!.CharacterStatus!.Y!.Value);
+                                    stopRun = true;
+                                }else
+                                {
+                                    GoRunFunction.FindPath(gameInstance, lockedMonster.X!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First(), lockedMonster.Y!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First());
+                                }
                             }
                             if (lockedMonster.Flag == 0)
                             {
-                                TaskMonster[lockedMonster.Name!] -= 1;
-                                if (TaskMonster[lockedMonster.Name!] <= 0)
-                                {
-                                    TaskMonster.Remove(lockedMonster.Name!, out int v);
-                                    Thread.Sleep(200);
-                                }
+                                //TaskMonster[lockedMonster.Name!] -= 1;
+                                //if (TaskMonster[lockedMonster.Name!] <= 0)
+                                //{
+                                //    TaskMonster.Remove(lockedMonster.Name!, out int v);
+                                //    Thread.Sleep(200);
+                                //}
                                 lockedMonster = null;
                             }
                             else
                             {
-                                MonsterFunction.SlayingMonster(gameInstance, lockedMonster.Addr);
+                                var lmAddr = lockedMonster.Addr;
+                                MonsterFunction.SlayingMonster(gameInstance, lmAddr);
                                 Thread.Sleep(200);
                                 var skill = gameInstance.Skills.Where(o => availableSkills.Contains(o.Name)).OrderBy(o => rand.Next()).FirstOrDefault();
                                 if (skill != null)
                                 {
-                                    MonsterFunction.LockMonster(gameInstance, lockedMonster.Addr);
+                                    MonsterFunction.LockMonster(gameInstance, lmAddr);
                                     SkillFunction.SkillCall(gameInstance, skill.Addr!.Value);
                                 }
                             }
@@ -166,7 +186,6 @@ namespace Mir2Assistant.TabForms.DailyTask
                         if (TaskMonster.Count == 0)
                         {
                             Complete = true;
-                            GoRunFunction.FindPath(gameInstance, NPCPoint.X, NPCPoint.Y);
                         }
                     }
                     catch (Exception ex)

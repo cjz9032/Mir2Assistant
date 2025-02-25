@@ -95,7 +95,7 @@ public static class GoRunFunction
         //   .Mov_EBX((int)gameInstance!.MirConfig["走路CALL地址"])
         //   .Call_EBX()
         //   .Run();
-        
+
     }
 
     /// <summary>
@@ -110,9 +110,92 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1002, new nint[] { x, y, gameInstance!.MirConfig["寻路参数"], gameInstance!.MirConfig["寻路CALL地址"] });
     }
 
-
-    public static void FlyCY(MirGameInstanceModel gameInstance)
+    public static async Task<bool> WaitFindPath(MirGameInstanceModel gameInstance, string map, int x, int y)
     {
-        SendMirCall.Send(gameInstance, 1010, new nint[] { gameInstance!.MirConfig["通用参数"], gameInstance!.MirConfig["对话CALL地址"] });
+        var success = true;
+        await Task.Run(() =>
+        {
+            while (Math.Abs(x - gameInstance.CharacterStatus!.X.GetValueOrDefault()) > 2 && Math.Abs(y - gameInstance.CharacterStatus!.Y.GetValueOrDefault()) > 2)
+            {
+                if (map != gameInstance.CharacterStatus!.MapName)
+                {
+                    success = false;
+                    return;
+                }
+                FindPath(gameInstance, x, y);
+                Task.Delay(5000).Wait();
+            }
+        });
+        return success;
     }
+
+    public static async Task<bool> FlyCY(MirGameInstanceModel gameInstance)
+    {
+
+        SendMirCall.Send(gameInstance, 1010, new nint[] { gameInstance!.MirConfig["通用参数"], gameInstance!.MirConfig["对话CALL地址"] });
+        return await NpcFunction.WaitNPC(gameInstance, "天虹法师");
+    }
+
+    /// <summary>
+    /// 等转到地图
+    /// </summary>
+    /// <param name="gameInstance"></param>
+    /// <param name="text"></param>
+    /// <returns></returns>
+    public static async Task<bool> WaitMap(MirGameInstanceModel gameInstance, string mapName, int timeout = 50)
+    {
+        return await TaskWrapper.Wait(() => gameInstance.CharacterStatus!.MapName == mapName, timeout);
+    }
+
+    /// <summary>
+    /// 回土城
+    /// </summary>
+    /// <param name="gameInstance"></param>
+    /// <returns></returns>
+    public static async Task<bool> BackTu(MirGameInstanceModel gameInstance)
+    {
+        await GoRunFunction.FlyCY(gameInstance!);
+        await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
+        await NpcFunction.Talk2Text(gameInstance!, "哦！好的！让我试试！");
+        await NpcFunction.Talk2Text(gameInstance!, "去魔龙城");
+        await NpcFunction.ClickNPC(gameInstance!, "魔龙城老兵");
+        await NpcFunction.Talk2Text(gameInstance!, "去魔龙城");
+        await NpcFunction.Talk2Text(gameInstance!, "想去盟重");
+        return await NpcFunction.WaitNPC(gameInstance!, "盟重老兵");
+    }
+
+    /// <summary>
+    /// 去玄武
+    /// </summary>
+    /// <param name="gameInstance"></param>
+    /// <returns></returns>
+    public static async Task<bool> GoXuanWu(MirGameInstanceModel gameInstance)
+    {
+
+        if ((gameInstance.CharacterStatus?.GradeZS ?? 0) >= 50)
+        {
+            await GoRunFunction.FlyCY(gameInstance!);
+            await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
+            await NpcFunction.Talk2Text(gameInstance, "听说您有事找我？");
+            await NpcFunction.Talk2Text(gameInstance, "请您带我去见狐人族长老");
+            await NpcFunction.WaitNPC(gameInstance!, "狐人族长老");
+            await NpcFunction.ClickNPC(gameInstance!, "狐人族长老");
+            await NpcFunction.Talk2Text(gameInstance, "返回玄武岛");
+            return await NpcFunction.WaitNPC(gameInstance!, "玄武老兵");
+        }
+        else
+        {
+            if (gameInstance!.CharacterStatus!.MapName != "玄武岛")
+            {
+                await GoRunFunction.FlyCY(gameInstance!);
+                await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
+                await NpcFunction.Talk2Text(gameInstance, "我要去玄武岛");
+            }
+            await WaitFindPath(gameInstance, "玄武岛", 210, 249);
+
+        }
+        return true;
+
+    }
+
 }

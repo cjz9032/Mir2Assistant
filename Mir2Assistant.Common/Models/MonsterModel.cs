@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Mir2Assistant.Common.Models
 {
-    public class MonsterModel : INotifyPropertyChanged
+    public class MonsterModel 
     {
+        public int UpdateId;
+
         public int Addr { get; set; }
-        public short Type { get; set; }
+        public short? Type { get; set; }
         /// <summary>
         /// 0尸体，1自己，2正常
         /// </summary>
@@ -20,19 +22,14 @@ namespace Mir2Assistant.Common.Models
         {
             get
             {
-                switch (Type)
+                return Type switch
                 {
-                    case 0x32:
-                        return "NPC";
-                    case 0x00:
-                        return "玩家";
-                    case 0x2d:
-                        return "守卫";
-                    case 0x0c:
-                        return "卫士";
-                    default:
-                        return "未知(怪)";
-                }
+                    0x32 => "NPC",
+                    0x00 => "玩家",
+                    0x2d => "守卫",
+                    0x0c => "卫士",
+                    _ => "未知(怪)",
+                };
             }
         }
 
@@ -44,8 +41,7 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}".PadRight(8)}{TypeStr}{(Flag == 0 ? "死" : "")}\t{Name}\t{Guild}\t{Addr.ToString("x2")}";
+        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(Flag == 0 ? "死" : "")}\t{Name}\t{Addr:x2}";
 
-        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

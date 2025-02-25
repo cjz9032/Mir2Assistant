@@ -35,28 +35,39 @@ public static class MonsterFunction
             var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
             var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
             byte flag = 0;
+            ++gameInstance.MonstersUpdateId;
             for (int i = 0; i < monsterCount; i++)
             {
-                var MonsterModel = new MonsterModel();
-
                 var monsterAddr = memoryUtils.ReadToInt(monsterArrayAddr + i * 0x4);
-                MonsterModel.Addr = monsterAddr;
-                MonsterModel.Type = memoryUtils.ReadToShort(monsterAddr + 0x20);
-                MonsterModel.X = memoryUtils.ReadToShort(monsterAddr + 8);
-                MonsterModel.Y = memoryUtils.ReadToShort(monsterAddr + 10);
-                MonsterModel.Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0));
-                MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
-                MonsterModel.Flag = flag;
-
-                if (MonsterModel.Name == gameInstance.CharacterStatus!.Name)
+                var name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0), 24);
+                gameInstance.Monsters.TryGetValue(name, out MonsterModel? monster);
+                if (monster == null)
                 {
-                    MonsterModel.Flag = 1;
+                    monster = new MonsterModel();
+                    gameInstance.Monsters.TryAdd(name, monster);
+                }
+                monster.UpdateId = gameInstance.MonstersUpdateId;
+                monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x20);
+                monster.Addr = monsterAddr;
+                monster.Name = name;
+                if (monster.TypeStr != "NPC" || monster.X == null)
+                {
+                    monster.X = memoryUtils.ReadToShort(monsterAddr + 8);
+                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 10);
+                }
+                //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
+                monster.Flag = flag;
+
+                if (monster.Name == gameInstance.CharacterStatus!.Name)
+                {
+                    monster.Flag = 1;
                     flag = 2;
                 }
-                Monsters.Add(MonsterModel);
             }
-            gameInstance.Monsters.Clear();
-            Monsters.ForEach(x => gameInstance.Monsters.Add(x));
+            foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))
+            {
+                gameInstance.Monsters.TryRemove(item.Name!, out MonsterModel? m);
+            }
             gameInstance.IsReadingMonsters = false;
         });
     }

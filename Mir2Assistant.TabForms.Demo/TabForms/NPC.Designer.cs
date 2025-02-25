@@ -131,7 +131,6 @@
         private Button button1;
         private ListBox listBox1;
         private BindingSource bindingSource1;
-        private Button button2;
         private ListBox listBox2;
         private BindingSource bindingSource2;
         private System.Windows.Forms.Timer timer1;

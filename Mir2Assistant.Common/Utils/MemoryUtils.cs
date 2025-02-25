@@ -51,19 +51,15 @@ public class MemoryUtils
 
     #region Read
 
-    public string ReadToString(IntPtr address)
-    {
-
-        byte[] buffer = ReadToBytes(address, 256);
-        string asciiString = Encoding.GetEncoding("gb2312").GetString(buffer).Split('\0')[0].TrimEnd(); // 获取ASCII字符串并去除结尾的空字符
-        return asciiString;
-    }
 
     public byte[] ReadToBytes(IntPtr address, int size)
     {
-        byte[] buffer = new byte[size];
-        ReadProcessMemory(_handle, address, buffer, size, IntPtr.Zero);
-        return buffer;
+        lock (_gameInstance)
+        {
+            byte[] buffer = new byte[size];
+            ReadProcessMemory(_handle, address, buffer, size, IntPtr.Zero);
+            return buffer;
+        }
     }
     public T ReadObject<T>(IntPtr address) where T : struct
     {
@@ -73,7 +69,7 @@ public class MemoryUtils
 
         Marshal.Copy(buffer, 0, bufferAddress, buffer.Length);
 
-        var structure = (T)Marshal.PtrToStructure(bufferAddress, typeof(T));
+        var structure = (T)Marshal.PtrToStructure(bufferAddress, typeof(T))!;
 
         Marshal.FreeHGlobal(bufferAddress);
 
@@ -116,10 +112,11 @@ public class MemoryUtils
         return BitConverter.ToDouble(buffer, 0);
     }
 
-    public string ReadToString(IntPtr address, int stringSize)
+    public string ReadToString(IntPtr address, int stringSize = 20)
     {
         byte[] buffer = ReadToBytes(address, stringSize);
-        return BitConverter.ToString(buffer);
+        string asciiString = Encoding.GetEncoding("gb2312").GetString(buffer).Split('\0')[0].TrimEnd(); // 获取ASCII字符串并去除结尾的空字符
+        return asciiString;
     }
 
     #endregion
@@ -181,7 +178,7 @@ public class MemoryUtils
     /// <summary>
     /// 通过 进程名(不加exe后缀) 获取 进程对象
     /// </summary>      
-    public static Process GetProcessByProcessName(string processName)
+    public static Process? GetProcessByProcessName(string processName)
     {
         var processArr = Process.GetProcessesByName(processName);
         if (processArr.Length > 0)
@@ -247,7 +244,7 @@ public class MemoryUtils
         var addrVal = GetModuleBaseAddress(moduleName);
 
         // 计算剩下的多级偏移
-        for (int i = 0; i < offsetArray.Length; i++)
+        for (int i = 0; i < offsetArray!.Length; i++)
         {
             addr = IntPtr.Add(addrVal, (int)offsetArray[i]);
             addrVal = (IntPtr)ReadToInt(addr);

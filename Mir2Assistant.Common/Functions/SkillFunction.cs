@@ -28,7 +28,6 @@ public static class SkillFunction
             while (memoryUtils.ReadToInt(addr) != 0)
             {
                 var length = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 0));
-                var name = memoryUtils.ReadToBytes(memoryUtils.GetMemoryAddress(addr, 1), length);
                 if (length <= 0 || length > 12)
                 {
                     break;
@@ -37,7 +36,7 @@ public static class SkillFunction
                 {
                     Addr = memoryUtils.ReadToInt(addr),
                     Length = length,
-                    Name = Encoding.GetEncoding("gb2312").GetString(name),
+                    Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 1), length),
                     Type = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 15)),
                 };
                 if(!isXF && skill.Type == 4)
@@ -59,7 +58,7 @@ public static class SkillFunction
     /// </summary>
     public static void SkillCall(MirGameInstanceModel gameInstance, int skillAddr)
     {
-        SendMirCall.Send(gameInstance, 2001, new nint[] { skillAddr, gameInstance!.MirConfig["技能CALL地址"] });
+        SendMirCall.Send(gameInstance, 2001, [skillAddr, gameInstance!.MirConfig["技能CALL地址"]]);
     }
 
 }

@@ -43,8 +43,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 if (npc != null)
                 {
                     listBox2.Items.Clear();
-                    textBox1.Text= await NpcFunction.ClickNPC(GameInstance!, npc);
-                    NpcFunction.GetTaskCmds(textBox1.Text).ForEach(cmd =>
+                    textBox1.Text = await NpcFunction.ClickNPC(GameInstance!, npc);
+                    NpcFunction.GetTalkCmds(textBox1.Text).ForEach(cmd =>
                     {
                         listBox2.Items.Add(cmd);
                     });
@@ -58,6 +58,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
+            GameInstance!.NewSysMsg += (str) => this.Invoke(() => textBox2.Text = str);
 
         }
 
@@ -65,11 +66,11 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private void timer1_Tick(object sender, EventArgs e)
         {
             var memoryUtils = GameInstance!.MemoryUtils!;
-            textBox2.Text = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(0x6996e0, -0x501e));
+
 
             var scrollOffset = listBox1.TopIndex;
             npcs.Clear();
-            foreach (var item in GameInstance!.Monsters.Where(o => o.TypeStr == "NPC"))
+            foreach (var item in GameInstance!.Monsters.Values.Where(o => o.TypeStr == "NPC"))
             {
                 npcs.Add(item);
             }
@@ -85,12 +86,12 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             {
                 textBox1.Text = await NpcFunction.Talk2(GameInstance!, listBox2.SelectedItem.ToString()!.Split('/')[1]);
                 listBox2.Items.Clear();
-                NpcFunction.GetTaskCmds(textBox1.Text).ForEach(cmd =>
+                NpcFunction.GetTalkCmds(textBox1.Text).ForEach(cmd =>
                 {
                     listBox2.Items.Add(cmd);
                 });
             }
-            
+
         }
     }
 }

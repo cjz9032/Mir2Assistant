@@ -3,6 +3,7 @@ using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.TabForms;
 using Mir2Assistant.Common.Utils;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Mir2Assistant
@@ -85,11 +86,11 @@ namespace Mir2Assistant
             //读状态
             Task.Run(() =>
             {
-                Thread.Sleep(200);
                 try
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
+                        Task.Delay(200).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
