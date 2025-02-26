@@ -23,7 +23,23 @@ public static class CharacterStatusFunction
         status.MaxMP = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0, 0x84));
         status.GradeZS = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0, gameInstance.MirConfig["转生偏移"]));
 
-        gameInstance.SysMsg = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(0x6996e0, -0x501e), 128);
+        if (gameInstance.SysMsgAddr == null)
+        {
+            var addr = memoryUtils.GetMemoryAddress(gameInstance.MirConfig["系统消息基址"], -0x501e) - 0x50;
+            for (int i = 0; i < 10; i++)
+            {
+                if ((uint)memoryUtils.ReadToInt(addr + i * 0x14) == 0xc92f0047)
+                {
+                    gameInstance.SysMsgAddr = addr + i * 0x14 + 0x14;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            gameInstance.SysMsg = memoryUtils.ReadToString(gameInstance.SysMsgAddr!.Value, 128);
+        }
+
     }
 }
 

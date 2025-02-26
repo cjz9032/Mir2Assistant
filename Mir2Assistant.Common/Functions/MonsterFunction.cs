@@ -29,27 +29,30 @@ public static class MonsterFunction
                 return;
             }
             gameInstance.IsReadingMonsters = true;
-            var Monsters = new List<MonsterModel>();
+            //var Monsters = new List<MonsterModel>();
             var memoryUtils = gameInstance!.MemoryUtils!;
             var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], -0x4, 0x3528));
             var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
             var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
             byte flag = 0;
             ++gameInstance.MonstersUpdateId;
+
             for (int i = 0; i < monsterCount; i++)
             {
+                bool isNew = false;
                 var monsterAddr = memoryUtils.ReadToInt(monsterArrayAddr + i * 0x4);
-                var name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0), 24);
-                gameInstance.Monsters.TryGetValue(name, out MonsterModel? monster);
+                var id = memoryUtils.ReadToInt(monsterAddr + 0x4);
+                gameInstance.Monsters.TryGetValue(id, out MonsterModel? monster);
                 if (monster == null)
                 {
                     monster = new MonsterModel();
-                    gameInstance.Monsters.TryAdd(name, monster);
+                    isNew = true;
                 }
                 monster.UpdateId = gameInstance.MonstersUpdateId;
+                monster.Id = id;
                 monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x20);
                 monster.Addr = monsterAddr;
-                monster.Name = name;
+                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0), 24);
                 if (monster.TypeStr != "NPC" || monster.X == null)
                 {
                     monster.X = memoryUtils.ReadToShort(monsterAddr + 8);
@@ -63,10 +66,14 @@ public static class MonsterFunction
                     monster.Flag = 1;
                     flag = 2;
                 }
+                if (isNew)
+                {
+                    gameInstance.Monsters.TryAdd(id, monster);
+                }
             }
             foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))
             {
-                gameInstance.Monsters.TryRemove(item.Name!, out MonsterModel? m);
+                gameInstance.Monsters.TryRemove(item.Id, out MonsterModel? m);
             }
             gameInstance.IsReadingMonsters = false;
         });

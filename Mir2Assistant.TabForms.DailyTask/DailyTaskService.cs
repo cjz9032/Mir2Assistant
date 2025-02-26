@@ -56,6 +56,26 @@ namespace Mir2Assistant.TabForms.DailyTask
         public DailyTaskService(MirGameInstanceModel _gameInstance)
         {
             gameInstance = _gameInstance;
+            gameInstance.NewSysMsg += (str) =>
+            {
+                if (string.IsNullOrEmpty(str))
+                {
+                    return;
+                }
+                if (str.EndsWith("天罡正气经验！"))
+                {
+                    Complete = true;
+                }
+                var regex = new Regex(@"你现在已经击败(.*?)：(\d+)/(\d+)");
+                Match match = regex.Match(str);
+                if (match.Success)
+                {
+                    if (match.Groups[2].Value == match.Groups[3].Value)
+                    {
+                        TaskMonster.TryRemove(match.Groups[1].Value, out int v);
+                    }
+                }
+            };
 
         }
         public void AddTaskMonster(string name, int qty)
@@ -77,26 +97,7 @@ namespace Mir2Assistant.TabForms.DailyTask
             lockedMonster = null;
             pathIndex = 0;
             bool oldPause = false;
-            gameInstance.NewSysMsg += (str) =>
-            {
-                if (string.IsNullOrEmpty(str))
-                {
-                    return;
-                }
-                if (str.EndsWith("天罡正气经验！"))
-                {
-                    Complete = true;
-                }
-                var regex = new Regex(@"你现在已经击败(.*?)：(\d+)/(\d+)");
-                Match match = regex.Match(str);
-                if (match.Success)
-                {
-                    if (match.Groups[2].Value == match.Groups[3].Value)
-                    {
-                        TaskMonster.TryRemove(match.Groups[1].Value, out int v);
-                    }
-                }
-            };
+           
             await Task.Run(() =>
             {
                 while (!Complete)
@@ -134,7 +135,7 @@ namespace Mir2Assistant.TabForms.DailyTask
                         {
                             if (!stopRun)
                             {
-                                if (Math.Abs(lockedMonster.X!.Value - gameInstance!.CharacterStatus!.X!.Value) <= 5 && Math.Abs(lockedMonster.Y!.Value - gameInstance.CharacterStatus.Y!.Value) <= 5)
+                                if (Math.Abs(lockedMonster.X!.Value - gameInstance!.CharacterStatus!.X!.Value) < 5 && Math.Abs(lockedMonster.Y!.Value - gameInstance.CharacterStatus.Y!.Value) < 5)
                                 {
                                     GoRunFunction.FindPath(gameInstance, gameInstance!.CharacterStatus!.X!.Value, gameInstance!.CharacterStatus!.Y!.Value);
                                     stopRun = true;

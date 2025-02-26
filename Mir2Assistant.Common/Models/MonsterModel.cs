@@ -11,7 +11,7 @@ namespace Mir2Assistant.Common.Models
     public class MonsterModel 
     {
         public int UpdateId;
-
+        public int Id;
         public int Addr { get; set; }
         public short? Type { get; set; }
         /// <summary>

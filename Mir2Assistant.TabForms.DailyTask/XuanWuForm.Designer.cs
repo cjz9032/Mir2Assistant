@@ -35,6 +35,8 @@
             button3 = new Button();
             button4 = new Button();
             button5 = new Button();
+            button6 = new Button();
+            button7 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -80,9 +82,9 @@
             // 
             // button3
             // 
-            button3.Location = new Point(221, 227);
+            button3.Location = new Point(182, 227);
             button3.Name = "button3";
-            button3.Size = new Size(83, 35);
+            button3.Size = new Size(59, 35);
             button3.TabIndex = 4;
             button3.Text = "飞苍月";
             button3.UseVisualStyleBackColor = true;
@@ -90,30 +92,52 @@
             // 
             // button4
             // 
-            button4.Location = new Point(119, 227);
+            button4.Location = new Point(109, 227);
             button4.Name = "button4";
-            button4.Size = new Size(83, 35);
+            button4.Size = new Size(67, 35);
             button4.TabIndex = 4;
-            button4.Text = "回安全区";
+            button4.Text = "去玄武";
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
             // button5
             // 
-            button5.Location = new Point(119, 100);
+            button5.Location = new Point(119, 135);
             button5.Name = "button5";
-            button5.Size = new Size(185, 90);
+            button5.Size = new Size(185, 55);
             button5.TabIndex = 5;
             button5.Text = "全自动玄武任务";
             button5.UseVisualStyleBackColor = true;
             button5.Click += button5_Click;
+            // 
+            // button6
+            // 
+            button6.Location = new Point(247, 227);
+            button6.Name = "button6";
+            button6.Size = new Size(67, 35);
+            button6.TabIndex = 4;
+            button6.Text = "回土城";
+            button6.UseVisualStyleBackColor = true;
+            button6.Click += button6_Click;
+            // 
+            // button7
+            // 
+            button7.Location = new Point(119, 30);
+            button7.Name = "button7";
+            button7.Size = new Size(185, 55);
+            button7.TabIndex = 5;
+            button7.Text = "点1888";
+            button7.UseVisualStyleBackColor = true;
+            button7.Click += button7_Click;
             // 
             // XuanWuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(459, 345);
+            Controls.Add(button7);
             Controls.Add(button5);
+            Controls.Add(button6);
             Controls.Add(button4);
             Controls.Add(button3);
             Controls.Add(listBox1);
@@ -136,5 +160,7 @@
         private Button button3;
         private Button button4;
         private Button button5;
+        private Button button6;
+        private Button button7;
     }
 }

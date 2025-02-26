@@ -23,7 +23,7 @@ public class MirGameInstanceModel
     /// <summary>
     /// 怪物
     /// </summary>
-    public ConcurrentDictionary<string, MonsterModel> Monsters { get; set; } = new ConcurrentDictionary<string, MonsterModel>();
+    public ConcurrentDictionary<int, MonsterModel> Monsters { get; set; } = new ConcurrentDictionary<int, MonsterModel>();
 
     public bool IsReadingMonsters = false;
 
@@ -32,8 +32,12 @@ public class MirGameInstanceModel
     /// </summary>
     public ConcurrentBag<SkillModel> Skills { get; set; } = new ConcurrentBag<SkillModel>();
 
-    public List<string> TalkCmds { get; set; }=new List<string>();
+    /// <summary>
+    /// 二级对话列表
+    /// </summary>
+    public List<string> TalkCmds { get; set; } = new List<string>();
 
+    public nint? SysMsgAddr;
     public event Action<string?>? NewSysMsg;
     private string? _SysMsg;
     public string? SysMsg

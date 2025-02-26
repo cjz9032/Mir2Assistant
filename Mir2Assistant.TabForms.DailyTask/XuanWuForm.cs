@@ -71,6 +71,10 @@ namespace Mir2Assistant.TabForms.DailyTask
             GoRunFunction.GoXuanWu(GameInstance!);
         }
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            GoRunFunction.BackTu(GameInstance!);
+        }
         private string? getTaskMonster(string? str)
         {
             if (string.IsNullOrEmpty(str))
@@ -179,7 +183,7 @@ namespace Mir2Assistant.TabForms.DailyTask
                     break;
                 case "黑狐滚刀手":
                     dt.AddTaskMonster("黑狐滚刀手", 1);
-                    dt.FindPath.Enqueue(new Point(233, 179));
+                    dt.FindPath.Enqueue(new Point(255, 140));
                     dt.FindPath.Enqueue(new Point(272, 304));
                     dt.FindPath.Enqueue(new Point(238, 419));
                     dt.FindPath.Enqueue(new Point(385, 335));
@@ -314,6 +318,18 @@ namespace Mir2Assistant.TabForms.DailyTask
             }
         }
 
+        private async void button7_Click(object sender, EventArgs e)
+        {
+            button7.Enabled = false;
+            await Task.Run(async () =>
+            {
+                await NpcFunction.WaitNPC(GameInstance!, "玛法神秘商人", int.MaxValue);
+                await NpcFunction.ClickNPC(GameInstance!, "玛法神秘商人");
+                await NpcFunction.Talk2Text(GameInstance!, "先到先得限时收购");
+                await NpcFunction.Talk2Text(GameInstance!, "参与先到先得限量收购");
+            });
+            button7.Enabled = true;
+        }
     }
 }
 
