@@ -81,8 +81,14 @@ namespace Mir2Assistant.TabForms.DailyTask
             {
                 return null;
             }
-            var regex = new Regex("只(.*?)，|。");
+            var regex = new Regex(@"只\<(.*?)\/c");
             Match match = regex.Match(str);
+            if(match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            regex = new Regex("只(.*?)，|。");
+            match = regex.Match(str);
             if (match.Success)
             {
                 return match.Groups[1].Value;
