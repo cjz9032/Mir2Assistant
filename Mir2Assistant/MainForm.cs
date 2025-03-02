@@ -1,3 +1,4 @@
+using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.Utils;
 using System.Diagnostics;
@@ -46,7 +47,7 @@ namespace Mir2Assistant
                             else
                             {
                                 GameInstances[pid].AssistantForm!.Show();
-                                GameInstances[pid].AssistantForm!.WindowState=FormWindowState.Normal;
+                                GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Normal;
                             }
                         }
                         else
@@ -66,7 +67,7 @@ namespace Mir2Assistant
                             gameInstance.AssistantForm.Disposed += (sender, args) =>
                             {
                                 GameInstances.Remove(gameInstance.MirPid);
-                            };
+                            };                        
 
                         }
                     }

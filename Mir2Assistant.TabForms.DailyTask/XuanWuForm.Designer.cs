@@ -37,6 +37,8 @@
             button5 = new Button();
             button6 = new Button();
             button7 = new Button();
+            button8 = new Button();
+            button9 = new Button();
             SuspendLayout();
             // 
             // button1
@@ -102,7 +104,7 @@
             // 
             // button5
             // 
-            button5.Location = new Point(119, 135);
+            button5.Location = new Point(119, 155);
             button5.Name = "button5";
             button5.Size = new Size(185, 55);
             button5.TabIndex = 5;
@@ -122,7 +124,7 @@
             // 
             // button7
             // 
-            button7.Location = new Point(119, 30);
+            button7.Location = new Point(119, 77);
             button7.Name = "button7";
             button7.Size = new Size(185, 55);
             button7.TabIndex = 5;
@@ -130,11 +132,33 @@
             button7.UseVisualStyleBackColor = true;
             button7.Click += button7_Click;
             // 
+            // button8
+            // 
+            button8.Location = new Point(119, 12);
+            button8.Name = "button8";
+            button8.Size = new Size(87, 44);
+            button8.TabIndex = 6;
+            button8.Text = "兑马牌";
+            button8.UseVisualStyleBackColor = true;
+            button8.Click += button8_Click;
+            // 
+            // button9
+            // 
+            button9.Location = new Point(217, 12);
+            button9.Name = "button9";
+            button9.Size = new Size(87, 44);
+            button9.TabIndex = 6;
+            button9.Text = "0点抢马牌";
+            button9.UseVisualStyleBackColor = true;
+            button9.Click += button9_Click;
+            // 
             // XuanWuForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(459, 345);
+            Controls.Add(button9);
+            Controls.Add(button8);
             Controls.Add(button7);
             Controls.Add(button5);
             Controls.Add(button6);
@@ -162,5 +186,7 @@
         private Button button5;
         private Button button6;
         private Button button7;
+        private Button button8;
+        private Button button9;
     }
 }

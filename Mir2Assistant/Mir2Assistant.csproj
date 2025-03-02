@@ -32,6 +32,9 @@
 		<None Update="config\2.1.0.1226.ini">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="config\2.1.0.1233.ini">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Properties\Settings.settings">
 		  <Generator>SettingsSingleFileGenerator</Generator>
 		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>

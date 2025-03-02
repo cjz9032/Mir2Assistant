@@ -100,14 +100,30 @@ namespace Mir2Assistant.TabForms.DailyTask
         private async Task<string?> getTask()
         {
             await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
-            await NpcFunction.Talk2Text(GameInstance!, "日常任务");
-            await NpcFunction.Talk2Text(GameInstance!, "玄武岛除妖任务");
+            await NpcFunction.Talk2Text(GameInstance!, "周常任务");
+            await NpcFunction.Talk2Text(GameInstance!, "异兽悬赏");
             await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
-            await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
+
+            await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
+            await NpcFunction.Talk2Text(GameInstance!, "周常任务");
+            await NpcFunction.Talk2Text(GameInstance!, "异兽悬赏");
+            string? str = await NpcFunction.Talk2Text(GameInstance!, "领取任务");
+            str = getTaskMonster(str);
+            if (!string.IsNullOrEmpty(str))
+            {
+                return str;
+            }
+
             await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
             await NpcFunction.Talk2Text(GameInstance!, "日常任务");
             await NpcFunction.Talk2Text(GameInstance!, "玄武岛除妖任务");
-            string str = await NpcFunction.Talk2Text(GameInstance!, "领取任务");
+            await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
+            await NpcFunction.Talk2Text(GameInstance!, "领取奖励");
+
+            await NpcFunction.ClickNPC(GameInstance!, "玄武任务使者");
+            await NpcFunction.Talk2Text(GameInstance!, "日常任务");
+            await NpcFunction.Talk2Text(GameInstance!, "玄武岛除妖任务");
+            str = await NpcFunction.Talk2Text(GameInstance!, "领取任务");
             return getTaskMonster(str);
         }
 
@@ -281,8 +297,9 @@ namespace Mir2Assistant.TabForms.DailyTask
                 await NpcFunction.Talk2Text(GameInstance!, "免费接受挑战");
                 dt!.FindPath.Clear();
                 dt.AddTaskMonster("秘境幽冥毒牙", 1);
-                dt.FindPath.Enqueue(new Point(22, 30));
-                dt.FindPath.Enqueue(new Point(33, 37));
+                dt.FindPath.Enqueue(new Point(28, 18));
+                dt.FindPath.Enqueue(new Point(16, 38));
+                dt.FindPath.Enqueue(new Point(39, 35));
                 await dt.RunTask();
             }
         }
@@ -329,6 +346,44 @@ namespace Mir2Assistant.TabForms.DailyTask
                 await NpcFunction.Talk2Text(GameInstance!, "参与先到先得限量收购");
             });
             button7.Enabled = true;
+        }
+
+        private async void button8_Click(object sender, EventArgs e)
+        {
+            if (GameInstance!.CharacterStatus!.MapName == "盟重省" && GameInstance.Monsters.Values.Any(o => o.TypeStr == "NPC" && o.Name == "店小二"))
+            {
+                await NpcFunction.ClickNPC(GameInstance!, "店小二");
+                await NpcFunction.Talk2Text(GameInstance!, "返回盟重");
+                await NpcFunction.WaitNPC(GameInstance!, "坐骑商人");
+            }
+            await NpcFunction.ClickNPC(GameInstance!, "坐骑商人");
+            await NpcFunction.Talk2Text(GameInstance!, "兑换马牌");
+            await NpcFunction.Talk2Text(GameInstance!, "使用5个马牌令兑换1个马牌");
+        }
+
+        private async void button9_Click(object sender, EventArgs e)
+        {
+            button9.Enabled = false;
+            if (GameInstance!.CharacterStatus!.MapName == "盟重省" && GameInstance.Monsters.Values.Any(o => o.TypeStr == "NPC" && o.Name == "店小二"))
+            {
+                await NpcFunction.ClickNPC(GameInstance!, "店小二");
+                await NpcFunction.Talk2Text(GameInstance!, "返回盟重");
+                await NpcFunction.WaitNPC(GameInstance!, "坐骑商人");
+            }
+            await Task.Run(async () =>
+            {
+                while (DateTime.Now.Hour > 0 || DateTime.Now.Minute < 1)
+                {
+                    Task.Delay(1000).Wait();
+                }
+                while (DateTime.Now.Minute < 5)
+                {
+                    await NpcFunction.ClickNPC(GameInstance!, "坐骑商人");
+                    await NpcFunction.Talk2Text(GameInstance!, "兑换马牌");
+                    await NpcFunction.Talk2Text(GameInstance!, "使用5个马牌令兑换1个马牌");
+                }
+            });
+            button9.Enabled = true;
         }
     }
 }

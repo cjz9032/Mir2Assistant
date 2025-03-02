@@ -5,6 +5,7 @@ using Mir2Assistant.Common.Utils;
 using System.Data;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Mir2Assistant
 {
@@ -54,7 +55,7 @@ namespace Mir2Assistant
             var tabForms = new List<Form>();
             foreach (string dllPath in dllFiles)
             {
-               
+
                 try
                 {
                     var assembly = Assembly.LoadFrom(dllPath);
@@ -90,7 +91,7 @@ namespace Mir2Assistant
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
-                        Task.Delay(200).Wait();
+                        Task.Delay(500).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
@@ -101,6 +102,8 @@ namespace Mir2Assistant
                         {
                             if (gameInstance.Skills.Count == 0)
                             {
+                                this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [gameInstance.MirConfig["写屏CALL地址"], this.Handle]));
+
                                 SkillFunction.ReadSkills(gameInstance);
                             }
                             MonsterFunction.ReadMonster(gameInstance);
@@ -109,6 +112,7 @@ namespace Mir2Assistant
                         {
                             gameInstance.Skills.Clear();
                             gameInstance.Monsters.Clear();
+                            this.Invoke(() => SendMirCall.Send(gameInstance, 9002, new nint[] { }));
 
                         }
                     }
@@ -135,6 +139,32 @@ namespace Mir2Assistant
         {
             e.Cancel = true;
             this.Hide();
+        }
+
+
+
+        protected override void WndProc(ref Message m)
+        {
+            const int WM_COPYDATA = 0x004A;
+
+            if (m.Msg == WM_COPYDATA)
+            {
+                // Extract the string from the COPYDATASTRUCT
+                COPYDATASTRUCT cds = (COPYDATASTRUCT)m.GetLParam(typeof(COPYDATASTRUCT))!;
+                string? msg = Marshal.PtrToStringAnsi(cds.lpData);
+                var flag = m.WParam;
+                gameInstance!.InvokeSysMsg(flag, msg);
+            }
+
+            base.WndProc(ref m);
+        }
+
+        // Define the COPYDATASTRUCT for C#
+        private struct COPYDATASTRUCT
+        {
+            public IntPtr dwData;
+            public int cbData;
+            public IntPtr lpData;
         }
     }
 }

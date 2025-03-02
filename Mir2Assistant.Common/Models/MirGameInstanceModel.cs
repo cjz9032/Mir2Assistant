@@ -37,23 +37,14 @@ public class MirGameInstanceModel
     /// </summary>
     public List<string> TalkCmds { get; set; } = new List<string>();
 
-    public nint? SysMsgAddr;
-    public event Action<string?>? NewSysMsg;
-    private string? _SysMsg;
-    public string? SysMsg
+    public event Action<nint, string?>? NewSysMsg;
+    public void InvokeSysMsg(nint flag, string? msg)
     {
-        get
+        Task.Run(() =>
         {
-            return _SysMsg;
-        }
-        set
-        {
-            if (_SysMsg != value)
-            {
-                NewSysMsg?.Invoke(value);
-                _SysMsg = value;
-            }
-        }
+            NewSysMsg?.Invoke(flag, msg);
+        });
+      
     }
 
 }

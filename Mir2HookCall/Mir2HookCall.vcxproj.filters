@@ -33,6 +33,9 @@
     <ClInclude Include="npc.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="sys.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -51,6 +54,9 @@
       <Filter>源文件\call</Filter>
     </ClCompile>
     <ClCompile Include="npc.cpp">
+      <Filter>源文件\call</Filter>
+    </ClCompile>
+    <ClCompile Include="sys.cpp">
       <Filter>源文件\call</Filter>
     </ClCompile>
   </ItemGroup>

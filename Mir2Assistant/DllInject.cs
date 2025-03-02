@@ -1,4 +1,5 @@
-﻿using Mir2Assistant.Common.Models;
+﻿using Mir2Assistant.Common.Functions;
+using Mir2Assistant.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -74,6 +75,7 @@ namespace Mir2Assistant
 
         public static void Unhook(MirGameInstanceModel gi)
         {
+            SendMirCall.Send(gi, 9002, new nint[] { });
             if (gi.HookHandle != null && gi.HookHandle != IntPtr.Zero)
             {
                 UnhookWindowsHookEx(gi.HookHandle!.Value);

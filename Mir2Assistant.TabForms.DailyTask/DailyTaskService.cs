@@ -26,7 +26,7 @@ namespace Mir2Assistant.TabForms.DailyTask
 
         public bool Pause = false;
         public event CompleteEvent? CompleteEvent;
-        private bool _complete = false;
+        private bool _complete = true;
         public bool Complete
         {
             get
@@ -51,14 +51,19 @@ namespace Mir2Assistant.TabForms.DailyTask
         public Point NextPoint { get; set; }
         public bool stopRun = false;
 
-        string[] availableSkills = "裂神符,冰霜雪雨,灭天火".Split(',');
+        string[] availableSkills = "裂神符,灭天火".Split(',');
         Random rand = new Random();
         public DailyTaskService(MirGameInstanceModel _gameInstance)
         {
+
             gameInstance = _gameInstance;
-            gameInstance.NewSysMsg += (str) =>
+            gameInstance.NewSysMsg += (flag, str) =>
             {
-                if (string.IsNullOrEmpty(str))
+                if (Complete)
+                {
+                    return;
+                }
+                if (string.IsNullOrEmpty(str) || flag != 0x00ffffff)
                 {
                     return;
                 }
@@ -97,7 +102,7 @@ namespace Mir2Assistant.TabForms.DailyTask
             lockedMonster = null;
             pathIndex = 0;
             bool oldPause = false;
-           
+
             await Task.Run(() =>
             {
                 while (!Complete)
@@ -139,7 +144,8 @@ namespace Mir2Assistant.TabForms.DailyTask
                                 {
                                     GoRunFunction.FindPath(gameInstance, gameInstance!.CharacterStatus!.X!.Value, gameInstance!.CharacterStatus!.Y!.Value);
                                     stopRun = true;
-                                }else
+                                }
+                                else
                                 {
                                     GoRunFunction.FindPath(gameInstance, lockedMonster.X!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First(), lockedMonster.Y!.Value + new int[] { 1, -1 }.OrderBy(o => rand.Next()).First());
                                 }
@@ -150,7 +156,6 @@ namespace Mir2Assistant.TabForms.DailyTask
                                 //if (TaskMonster[lockedMonster.Name!] <= 0)
                                 //{
                                 //    TaskMonster.Remove(lockedMonster.Name!, out int v);
-                                //    Thread.Sleep(200);
                                 //}
                                 lockedMonster = null;
                             }

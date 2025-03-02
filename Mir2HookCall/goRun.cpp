@@ -28,7 +28,7 @@ void run(int x, int y, int dir, int typePara, int para, int addr)
 }
 
 //Ñ°Â·
-void findPath(int x, int y, int para, int addr)
+void find_path(int x, int y, int para, int addr)
 {
 	__asm {
 		push 1
@@ -44,7 +44,7 @@ void findPath(int x, int y, int para, int addr)
 }
 
 //·É²ÔÔÂ
-void flyCY(int para, int addr)
+void fly_CY(int para, int addr)
 {
 	__asm {
 		push 0
@@ -61,7 +61,7 @@ void flyCY(int para, int addr)
 }
 
 
-void goRun::process(int code, int* data)
+void GoRun::process(int code, int* data)
 {
 	switch (code)
 	{
@@ -69,10 +69,10 @@ void goRun::process(int code, int* data)
 		run(data[0], data[1], data[2], data[3], data[4], data[5]);
 		break;
 	case 1002:
-		findPath(data[0], data[1], data[2], data[3]);
+		find_path(data[0], data[1], data[2], data[3]);
 		break;
 	case 1010:
-		flyCY(data[0], data[1]);
+		fly_CY(data[0], data[1]);
 		break;
 	default:
 		break;

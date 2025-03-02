@@ -48,7 +48,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private void MonsterForm_Load(object sender, EventArgs e)
         {
-            bindingSource1.DataSource = monsters;
+            //bindingSource1.DataSource = monsters;
+           
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
@@ -82,12 +83,18 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private void timer1_Tick(object sender, EventArgs e)
         {
             var scrollOffset = listBox1.TopIndex;
-            monsters.Clear();
-            foreach (var item in GameInstance!.Monsters.Values.Where(o => o.TypeStr != "NPC").OrderBy(o => o.X).ThenBy(o => o.Y))
-            {
-                monsters.Add(item);
-            }
-            bindingSource1.ResetBindings(false);
+            listBox1.BeginUpdate();
+            bindingSource1.DataSource = GameInstance!.Monsters.Values.Where(o => o.TypeStr != "NPC").OrderBy(o => o.X).ThenBy(o => o.Y);
+            listBox1.EndUpdate();
+            //monsters.Clear();
+            //foreach (var item in GameInstance!.Monsters.Values.Where(o => o.TypeStr != "NPC").OrderBy(o => o.X).ThenBy(o => o.Y))
+            //{
+            //    monsters.Add(item);
+            //}
+
+
+            //bindingSource1.ResetBindings(false);
+
             listBox1.TopIndex = scrollOffset;
             if (skills.Count != GameInstance.Skills.Count)
             {
@@ -99,6 +106,21 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 bindingSource2.ResetBindings(false);
             }
 
+        }
+
+        private void listBox1_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            var name = (listBox1.Items[e.Index] as MonsterModel)?.Name;
+            var text = (listBox1.Items[e.Index] as MonsterModel)?.Display;
+            if (name == "沙漠霸主")
+            {
+                e.Graphics.DrawString(text, e.Font, Brushes.Red, e.Bounds);
+            }
+            else
+            {
+                e.Graphics.DrawString(text, e.Font, Brushes.Black, e.Bounds);
+            }
         }
     }
 }

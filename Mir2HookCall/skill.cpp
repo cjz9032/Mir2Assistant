@@ -15,7 +15,7 @@ void skillCall(int skillAddr, int skillCallAddr)
 	}
 }
 
-void skill::process(int code, int* data)
+void Skill::process(int code, int* data)
 {
 	switch (code)
 	{

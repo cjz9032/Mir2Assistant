@@ -58,7 +58,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
-            GameInstance!.NewSysMsg += (str) => this.Invoke(() => textBox2.Text = str);
+            GameInstance!.NewSysMsg += (flag, str) => this.Invoke(() => textBox2.Text = str);
 
         }
 

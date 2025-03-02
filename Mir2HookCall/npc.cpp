@@ -32,7 +32,7 @@ void talk2(int para1, int para2, int talk2Addr, char* cmd)
 }
 
 
-void npc::process(int code, int* data)
+void Npc::process(int code, int* data)
 {
 	switch (code)
 	{

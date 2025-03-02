@@ -1,5 +1,5 @@
 #pragma once
-class Skill
+class Sys
 {
 public:
 	static void process(int code, int* data);

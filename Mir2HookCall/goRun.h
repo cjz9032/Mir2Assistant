@@ -1,5 +1,5 @@
 #pragma once
-class goRun
+class GoRun
 {
 public:
 	static void process(int code, int* data);

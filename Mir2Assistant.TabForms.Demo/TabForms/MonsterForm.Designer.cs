@@ -54,12 +54,14 @@
             // listBox1
             // 
             listBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            listBox1.DrawMode = DrawMode.OwnerDrawFixed;
             listBox1.FormattingEnabled = true;
             listBox1.ItemHeight = 17;
             listBox1.Location = new Point(1, 3);
             listBox1.Name = "listBox1";
             listBox1.Size = new Size(273, 412);
             listBox1.TabIndex = 1;
+            listBox1.DrawItem += listBox1_DrawItem;
             // 
             // button2
             // 
