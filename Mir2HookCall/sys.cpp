@@ -46,7 +46,7 @@ void __declspec(naked) override_write_screen_call()
 		push ebx
 		push esi
 		mov ebx, orgNext
-		call ebx
+		jmp ebx
 	}
 	//((func_t)trampoline)();
 }
