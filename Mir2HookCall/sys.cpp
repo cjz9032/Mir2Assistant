@@ -48,7 +48,7 @@ void __declspec(naked) override_write_screen_call()
 		mov ebx, orgNext
 		call ebx
 	}
-	((func_t)trampoline)();
+	//((func_t)trampoline)();
 }
 
 bool hook_address(void* target_address, void* hook_function) {
