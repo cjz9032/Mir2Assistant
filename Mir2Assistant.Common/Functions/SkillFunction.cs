@@ -21,7 +21,6 @@ public static class SkillFunction
     {
         Task.Run(() =>
         {
-            bool isXF = false;
             gameInstance.Skills.Clear();
             var memoryUtils = gameInstance!.MemoryUtils!;
             var addr = memoryUtils.GetMemoryAddress(gameInstance.MirConfig["技能基址"], 0x4, 0);
@@ -39,11 +38,10 @@ public static class SkillFunction
                     Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 1), length),
                     Type = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 15)),
                 };
-                if(!isXF && skill.Type == 4)
-                {
-                    skill.IsXF = true;
-                    isXF = true;
-                }
+                // if(skill.Type == 4)
+                // {
+         
+                // }
                 gameInstance.Skills.Add(skill);
                 addr += 4;
             }

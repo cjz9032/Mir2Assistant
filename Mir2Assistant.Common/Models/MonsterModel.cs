@@ -18,6 +18,7 @@ namespace Mir2Assistant.Common.Models
         /// 0尸体，1自己，2正常
         /// </summary>
         public byte Flag { get; set; }
+        public short isDead { get; set; }
         public string TypeStr
         {
             get
@@ -28,7 +29,7 @@ namespace Mir2Assistant.Common.Models
                     0x00 => "玩家",
                     0x2d => "守卫",
                     0x0c => "卫士",
-                    _ => "未知(怪)",
+                    _ => "(怪)",
                 };
             }
         }
@@ -41,7 +42,7 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(Flag == 0 ? "死" : "")}\t{Name}\t{Addr:x2}";
+        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")}\t{Name}\t{Addr:x2}";
 
     }
 }

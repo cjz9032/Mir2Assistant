@@ -31,7 +31,7 @@ public static class MonsterFunction
             gameInstance.IsReadingMonsters = true;
             //var Monsters = new List<MonsterModel>();
             var memoryUtils = gameInstance!.MemoryUtils!;
-            var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], -0x4, 0x3528));
+            var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["怪物数组"], 0xAC));
             var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
             var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
             byte flag = 0;
@@ -50,13 +50,13 @@ public static class MonsterFunction
                 }
                 monster.UpdateId = gameInstance.MonstersUpdateId;
                 monster.Id = id;
-                monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x20);
+                monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x3E); // todo confirm
                 monster.Addr = monsterAddr;
-                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x48, 0), 24);
+                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x1D4, 0), 24);
                 if (monster.TypeStr != "NPC" || monster.X == null)
                 {
-                    monster.X = memoryUtils.ReadToShort(monsterAddr + 8);
-                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 10);
+                    monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
+                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0C);
                 }
                 //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
                 monster.Flag = flag;
@@ -70,6 +70,8 @@ public static class MonsterFunction
                 {
                     gameInstance.Monsters.TryAdd(id, monster);
                 }
+                monster.isDead = memoryUtils.ReadToShort(monsterAddr + 0x1C9);
+
             }
             foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))
             {
@@ -97,7 +99,7 @@ public static class MonsterFunction
     public static void SlayingMonster(MirGameInstanceModel gameInstance, int monsterAddr)
     {
         var memoryUtils = gameInstance!.MemoryUtils!;
-        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["打怪基址"], -0xc), monsterAddr);
+        memoryUtils.WriteInt(gameInstance.MirConfig["打怪基址"], monsterAddr);
     }
 
 }

@@ -37,7 +37,7 @@
             tabControl.Location = new Point(0, 0);
             tabControl.Name = "tabControl";
             tabControl.SelectedIndex = 0;
-            tabControl.Size = new Size(483, 371);
+            tabControl.Size = new Size(485, 370);
             tabControl.TabIndex = 0;
             // 
             // AssistantForm

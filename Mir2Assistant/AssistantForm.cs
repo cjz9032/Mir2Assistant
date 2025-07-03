@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using static Mir2Assistant.Common.Utils.WindowUtils;
 
 namespace Mir2Assistant
 {
@@ -32,14 +33,12 @@ namespace Mir2Assistant
 
         private void AssistantForm_Load(object sender, EventArgs e)
         {
+            //SendMirCall.Send(gameInstance!, 1999, new nint[] { });
+
             gameInstance!.MemoryUtils = new MemoryUtils(gameInstance);
-            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config", $"{gameInstance.mirVer}.ini");
-            if (!File.Exists(configPath))
-            {
-                MessageBox.Show($"当前版本{gameInstance.mirVer},暂无该版本的配置文件");
-                return;
-            }
+            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config", "2.1.0.1226.ini");
             var cfgStr = File.ReadAllText(configPath, System.Text.Encoding.GetEncoding("gb2312"));
+
             foreach (var cfg in cfgStr.Split('\n'))
             {
                 if (cfg?.Contains("=") ?? false)
@@ -47,6 +46,7 @@ namespace Mir2Assistant
                     gameInstance.MirConfig.Add(cfg.Split('=')[0].Trim(), Convert.ToInt32(cfg.Split('=')[1].Trim(), 16));
                 }
             }
+
 
             //加载tab页
             string currentDirectory = Directory.GetCurrentDirectory();

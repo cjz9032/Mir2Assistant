@@ -12,10 +12,6 @@ namespace Mir2Assistant.Common.Models
         public byte? Length { get; set; }
         public string? Name { get; set; }
         public byte? Type { get; set; }
-        /// <summary>
-        /// 开心法
-        /// </summary>
-        public bool IsXF { get; set; }
-        public string Display => $"{Addr?.ToString("x2").PadRight(10)}{Name}{(IsXF?"(心法)":"")}";
+        public string Display => $"{Addr?.ToString("x2").PadRight(10)}{Name}";
     }
 }

@@ -72,7 +72,7 @@ public static class GoRunFunction
                 typePara = 0xbc5;
                 break;
             case 3:
-                typePara = 0x19100c;
+                typePara = 0x0BC1;
                 break;
             default:
                 typePara = 0xbc3;
@@ -172,8 +172,7 @@ public static class GoRunFunction
     public static async Task<bool> GoXuanWu(MirGameInstanceModel gameInstance)
     {
 
-        if ((gameInstance.CharacterStatus?.GradeZS ?? 0) >= 50)
-        {
+        // {
             await GoRunFunction.FlyCY(gameInstance!);
             await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
             await NpcFunction.Talk2Text(gameInstance, "听说您有事找我？");
@@ -182,18 +181,18 @@ public static class GoRunFunction
             await NpcFunction.ClickNPC(gameInstance!, "狐人族长老");
             await NpcFunction.Talk2Text(gameInstance, "返回玄武岛");
             return await NpcFunction.WaitNPC(gameInstance!, "玄武老兵");
-        }
-        else
-        {
-            if (gameInstance!.CharacterStatus!.MapName != "玄武岛")
-            {
-                await GoRunFunction.FlyCY(gameInstance!);
-                await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
-                await NpcFunction.Talk2Text(gameInstance, "我要去玄武岛");
-            }
-            await WaitFindPath(gameInstance, "玄武岛", 210, 249);
+        // }
+        // else
+        // {
+        //     if (gameInstance!.CharacterStatus!.MapName != "玄武岛")
+        //     {
+        //         await GoRunFunction.FlyCY(gameInstance!);
+        //         await NpcFunction.ClickNPC(gameInstance!, "天虹法师");
+        //         await NpcFunction.Talk2Text(gameInstance, "我要去玄武岛");
+        //     }
+        //     await WaitFindPath(gameInstance, "玄武岛", 210, 249);
 
-        }
+        // }
         return true;
 
     }

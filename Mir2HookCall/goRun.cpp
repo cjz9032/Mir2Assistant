@@ -10,9 +10,8 @@ void run(int x, int y, int dir, int typePara, int para, int addr)
 	__asm {
 		mov eax, y
 		push eax
-		mov eax, dir
-		push eax
-		push 0
+		mov edi, dir
+		push edi
 		push 0
 		push 0
 		push 0
@@ -21,7 +20,7 @@ void run(int x, int y, int dir, int typePara, int para, int addr)
 		mov eax, [eax]
 		mov eax, [eax]
 		mov ecx, x
-		mov edx, typePara
+		mov dx, word ptr[typePara]
 		mov ebx, addr
 		call ebx
 	}
