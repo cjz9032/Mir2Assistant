@@ -22,7 +22,7 @@ public static class GoRunFunction
     /// <param name="x">当前y</param>
     /// <param name="direct">方向，小键盘数字</param>
     /// <param name="走路参数">搜索 8B00 8B4C24 20获取</param>
-    /// <param name="走路CALL地址"></param>
+    /// <param name="UpdateMsg"></param>
     public static void GoRun(MirGameInstanceModel gameInstance, int x, int y, byte direct, byte type)
     {
         int dir = 0;
@@ -78,7 +78,7 @@ public static class GoRunFunction
                 typePara = 0xbc3;
                 break;
         }
-        SendMirCall.Send(gameInstance, 1001, new nint[] { x, y, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["走路CALL地址"] });
+        SendMirCall.Send(gameInstance, 1001, new nint[] { x, y, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
         //AsmUtils.Init(gameInstance.MirPid)
         //   .Push68(y)
         //   .Push6A(dir)
@@ -92,7 +92,7 @@ public static class GoRunFunction
         //   .Mov_EAX_DWORD_Ptr_EAX()
         //   .Mov_ECX(x)
         //   .Mov_EDX(typePara)
-        //   .Mov_EBX((int)gameInstance!.MirConfig["走路CALL地址"])
+        //   .Mov_EBX((int)gameInstance!.MirConfig["UpdateMsg"])
         //   .Call_EBX()
         //   .Run();
 

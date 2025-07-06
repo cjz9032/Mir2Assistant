@@ -35,7 +35,7 @@ namespace Mir2Assistant
                     var pid = WindowUtils.GetProcessId(hwnd);
                     var process = Process.GetProcessById(pid);
 
-                    if (process.ProcessName == "fj")
+                    if (process.ProcessName == "ZC.H")
                     {
 
                         if (GameInstances.ContainsKey(pid))

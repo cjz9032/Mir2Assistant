@@ -1,0 +1,221 @@
+g_MySelf.UpdateMsg(CM_WALK, mx, my, adir, '', 0, '', 0);
+
+
+
+g_MySelf.UpdateMsg(0BC3, 0x276, 0x261, 0, '', 0, '', 0);
+
+fj.exe+1D8EC2 - 8B 45 F4              - mov eax,$my ; 获取my
+fj.exe+1D8EC5 - 50                    - push eax ; push my
+fj.exe+1D8EC6 - 57                    - push edi ; push adir 0-7
+fj.exe+1D8EC7 - 6A 00                 - push 00 { 0 }       ; 压入nState参数(0)
+fj.exe+1D8EC9 - 6A 00                 - push 00 { 0 }       ; 压入nFeature参数(空字符串)
+fj.exe+1D8ECB - 6A 00                 - push 00 { 0 }       ; 压入ndir参数(方向值0)
+fj.exe+1D8ECD - 6A 00                 - push 00 { 0 }       ; 压入nY参数(Y坐标0)
+fj.exe+1D8ECF - A1 FC977200           - mov eax,[008B3BF4] ; 获取g_MySelf全局变量地址 , 赋值给
+fj.exe+1D8ED4 - 8B 00                 - mov eax,[eax]       ; 获取g_MySelf对象实例 给下面CALL调用
+fj.exe+1D8ED6 - 8B 4D F8              - mov ecx,$mx    ; mx
+fj.exe+1D8ED9 - 66 BA C30B            - mov dx,0BC3 ; { 3011 } ; 将wIdent参数(CM_WALK=3011)加载到dx
+fj.exe+1D8EDD - E8 0AC20C00           - call 006A50EC
+
+
+
+; 调用g_MySelf.UpdateMsg(0BC3, 0x276, 0x261, 0, '', 0, '', 0)的汇编代码
+; 适用于CE远程注入
+
+push 0x261      ; nY参数 = 0x261 (609)
+push 0          ; nSound参数 = 0
+push 0          ; sStr参数 = 空字符串
+push 0          ; nState参数 = 0
+push 0          ; nFeature参数 = 空字符串
+push 0          ; ndir参数 = 0
+
+mov eax, [008B3BF4]  ; 获取g_MySelf全局变量地址
+mov eax, [eax]       ; 获取g_MySelf对象实例到eax
+mov ecx, 0x276       ; 设置nX参数 = 0x276 (630)到ecx
+mov dx, 0x0BC3       ; 设置wIdent参数 = 0BC3 (3011)到dx
+
+call 006A50EC        ; 调用TActor.UpdateMsg方法
+
+; 可选：清理堆栈(如果需要)
+add esp, 24          ; 6个参数 * 4字节 = 24字节
+
+
+alloc(mem, 1024)
+
+mem:
+push 0x261      ; nY参数 = 0x261 (609)
+push 0          ; nSound参数 = 0
+push 0          ; sStr参数 = 空字符串
+push 0          ; nState参数 = 0
+push 0          ; nFeature参数 = 空字符串
+push 0          ; ndir参数 = 0
+
+mov eax, [008B3BF4]  ; 获取g_MySelf全局变量地址
+mov eax, [eax]       ; 获取g_MySelf对象实例到eax
+mov ecx, 0x276       ; 设置nX参数 = 0x276 (630)到ecx
+mov dx, 0x0BC3       ; 设置wIdent参数 = 0BC3 (3011)到dx
+
+call 006A50EC        ; 调用TActor.UpdateMsg方法
+
+add esp, 24          ; 6个参数 * 4字节 = 24字节
+
+ret                  ; 返回到调用处
+
+createRemoteThread(alloc)
+
+
+alloc(mem, 1024)
+
+mem:
+
+push 0x25F
+push 0          
+push 0          
+push 0          
+push 0          
+push 0          
+
+mov eax, [0x7297FC]
+mov eax, [eax]       
+mov ecx, 0x276       
+mov dx, 0x0BC1      
+
+call 0x6A50EC        
+
+add esp, 0x18          
+createThread(mem)
+
+
+ret        
+
+
+
+push 0x25F
+push 0          
+push 0          
+push 0          
+push 0          
+push 0          
+
+mov eax, [0x7297FC]
+mov eax, [eax]       
+mov ecx, 0x276       
+mov dx, 0x0BC1      
+
+call 0x6A50EC        
+
+
+createThread(mem)
+
+
+
+fj.exe+1D8ECF - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8ED4 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8ED6 - 8B 4D F8              - mov ecx,[ebp-08]
+fj.exe+1D8ED9 - 66 BA C30B            - mov dx,0BC3 { 3011 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fj.exe+1EA153 - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1EA156 - E8 F1B2E1FF           - call fj.exe+544C
+fj.exe+1EA15B - 33 C0                 - xor eax,eax
+fj.exe+1EA15D - 55                    - push ebp
+fj.exe+1EA15E - 68 2FA25E00           - push fj.exe+1EA22F { (233) }
+fj.exe+1EA163 - 64 FF 30              - push fs:[eax]
+fj.exe+1EA166 - 64 89 20              - mov fs:[eax],esp
+fj.exe+1EA169 - A1 809A7200           - mov eax,[fj.exe+329A80] { (008B3B3C) }
+fj.exe+1EA16E - 83 38 00              - cmp dword ptr [eax],00 { 0 }
+
+fj.exe+1EA171 - 74 2E                 - je fj.exe+1EA1A1
+
+    fj.exe+1EA173 - A1 809A7200           - mov eax,[fj.exe+329A80] { (008B3B3C) }
+    fj.exe+1EA178 - 8B 00                 - mov eax,[eax]
+    fj.exe+1EA17A - 8B 40 04              - mov eax,[eax+04]
+    fj.exe+1EA17D - E8 7AE3E1FF           - call fj.exe+84FC
+    fj.exe+1EA182 - 50                    - push eax
+    fj.exe+1EA183 - 6A 00                 - push 00 { 0 }
+    fj.exe+1EA185 - 8D 45 E8              - lea eax,[ebp-18]
+    fj.exe+1EA188 - 50                    - push eax
+    fj.exe+1EA189 - A1 809A7200           - mov eax,[fj.exe+329A80] { (008B3B3C) }
+    fj.exe+1EA18E - 8B 00                 - mov eax,[eax]
+    fj.exe+1EA190 - 66 8B 48 04           - mov cx,[eax+04]
+    fj.exe+1EA194 - 8B D6                 - mov edx,esi
+    fj.exe+1EA196 - 66 B8 EE03            - mov ax,03EE { 1006 }
+    fj.exe+1EA19A - E8 0D3DECFF           - call fj.exe+ADEAC
+    fj.exe+1EA19F - EB 3E                 - jmp fj.exe+1EA1DF
+
+-- addtion on 1006
+fj.exe+1EA1A1 - 8D 45 F8              - lea eax,[ebp-08]
+fj.exe+1EA1A4 - 50                    - push eax
+fj.exe+1EA1A5 - 8D 45 F4              - lea eax,[ebp-0C]
+fj.exe+1EA1A8 - 50                    - push eax
+fj.exe+1EA1A9 - 8B 0D FCA07200        - mov ecx,[fj.exe+32A0FC] { (008B3B18) }
+fj.exe+1EA1AF - 8B 09                 - mov ecx,[ecx]
+fj.exe+1EA1B1 - 8B 15 3CA37200        - mov edx,[fj.exe+32A33C] { (008B3B14) }
+fj.exe+1EA1B7 - 8B 12                 - mov edx,[edx]
+fj.exe+1EA1B9 - A1 38947200           - mov eax,[fj.exe+329438] { (00833614) }
+fj.exe+1EA1BE - 8B 00                 - mov eax,[eax]
+fj.exe+1EA1C0 - E8 43FC0600           - call fj.exe+259E08
+fj.exe+1EA1C5 - 66 8B 45 F4           - mov ax,[ebp-0C]
+fj.exe+1EA1C9 - 50                    - push eax
+fj.exe+1EA1CA - 6A 01                 - push 01 { 1 }
+fj.exe+1EA1CC - 8D 45 E8              - lea eax,[ebp-18]
+fj.exe+1EA1CF - 50                    - push eax
+fj.exe+1EA1D0 - 66 8B 4D F8           - mov cx,[ebp-08]
+fj.exe+1EA1D4 - 8B D6                 - mov edx,esi
+-- addtion on 1006
+
+fj.exe+1EA1D6 - 66 B8 EE03            - mov ax,03EE { 1006 }
+fj.exe+1EA1DA - E8 CD3CECFF           - call fj.exe+ADEAC
+
+fj.exe+1EA1DF - 8D 55 E4              - lea edx,[ebp-1C]
+fj.exe+1EA1E2 - 8D 45 E8              - lea eax,[ebp-18]
+fj.exe+1EA1E5 - E8 EA3CECFF           - call fj.exe+ADED4
+fj.exe+1EA1EA - 8D 45 E4              - lea eax,[ebp-1C]
+fj.exe+1EA1ED - 50                    - push eax
+fj.exe+1EA1EE - 8D 55 E0              - lea edx,[ebp-20]
+fj.exe+1EA1F1 - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1EA1F4 - E8 573DECFF           - call fj.exe+ADF50
+fj.exe+1EA1F9 - 8B 55 E0              - mov edx,[ebp-20]
+fj.exe+1EA1FC - 58                    - pop eax
+fj.exe+1EA1FD - E8 62B0E1FF           - call fj.exe+5264
+fj.exe+1EA202 - 8B 55 E4              - mov edx,[ebp-1C]
+fj.exe+1EA205 - 8B C3                 - mov eax,ebx
+fj.exe+1EA207 - E8 D8D1FFFF           - call fj.exe+1E73E4
+
+特征码 除了call地址 66B8EE03E8
+fj.exe+1EA1D4 - 8B D6                 - mov edx,esi
+fj.exe+1EA1D6 - 66 B8 EE03            - mov ax,03EE { 1006 }
+fj.exe+1EA1DA - E8 CD3CECFF           - call fj.exe+ADEAC
+
+
+MakeDefaultMsg
+    call fj.exe+ADEAC 
+1006, EDXID , 287 eax 01 276 --- 11B 0019F294 01 268
+
+
+
+EAT IDX 31 就是背包数量 6 + 40 46?
+fj.exe+1DC538 - 83 EA 31              - sub edx,31 { 49 }
+fj.exe+1DC53B - 8B C3                 - mov eax,ebx
+fj.exe+1DC53D - E8 46200000           - call fj.exe+1DE588

@@ -31,7 +31,7 @@ public static class MonsterFunction
             gameInstance.IsReadingMonsters = true;
             //var Monsters = new List<MonsterModel>();
             var memoryUtils = gameInstance!.MemoryUtils!;
-            var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["怪物数组"], 0xAC));
+            var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["怪物数组"], 0x34C8));
             var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
             var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
             byte flag = 0;
@@ -52,11 +52,11 @@ public static class MonsterFunction
                 monster.Id = id;
                 monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x3E); // todo confirm
                 monster.Addr = monsterAddr;
-                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x1D4, 0), 24);
+                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0), 24);
                 if (monster.TypeStr != "NPC" || monster.X == null)
                 {
                     monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
-                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0C);
+                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
                 }
                 //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
                 monster.Flag = flag;

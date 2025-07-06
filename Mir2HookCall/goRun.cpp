@@ -8,6 +8,9 @@
 void run(int x, int y, int dir, int typePara, int para, int addr)
 {
 	__asm {
+		pushad                  // 保存所有通用寄存器
+		pushfd                  // 保存标志寄存器
+
 		mov eax, y
 		push eax
 		mov edi, dir
@@ -18,11 +21,14 @@ void run(int x, int y, int dir, int typePara, int para, int addr)
 		push 0
 		mov eax, para
 		mov eax, [eax]
-		mov eax, [eax]
 		mov ecx, x
 		mov dx, word ptr[typePara]
 		mov ebx, addr
 		call ebx
+
+				// 恢复所有寄存器
+		popfd                   // 恢复标志寄存器
+		popad                   // 恢复所有通用寄存器
 	}
 }
 

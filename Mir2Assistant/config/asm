@@ -1,0 +1,144 @@
+fj.exe+1D8ECF - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8ED4 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8ED6 - 8B 4D F8              - mov ecx,[ebp-08]
+fj.exe+1D8ED9 - 66 BA C30B            - mov dx,0BC3 { 3011 }
+fj.exe+1D8EDD - E8 0AC20C00           - call fj.exe+2A50EC
+fj.exe+1D8EE2 - E8 CDEBE2FF           - call fj.exe+7AB4
+fj.exe+1D8EE7 - 8B 15 20927200        - mov edx,[fj.exe+329220] { (008B3ACC) }
+fj.exe+1D8EED - 89 02                 - mov [edx],eax
+fj.exe+1D8EEF - E9 8C030000           - jmp fj.exe+1D9280
+fj.exe+1D8EF4 - A1 20AB7200           - mov eax,[fj.exe+32AB20] { (006FD67C) }
+fj.exe+1D8EF9 - 80 B8 6B010000 00     - cmp byte ptr [eax+0000016B],00 { 0 }
+fj.exe+1D8F00 - 75 0E                 - jne fj.exe+1D8F10
+fj.exe+1D8F02 - A1 A8A97200           - mov eax,[fj.exe+32A9A8] { (008FAF00) }
+fj.exe+1D8F07 - 83 38 01              - cmp dword ptr [eax],01 { 1 }
+fj.exe+1D8F0A - 0F8C B1010000         - jl fj.exe+1D90C1
+fj.exe+1D8F10 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8F15 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8F17 - E8 C0E80C00           - call fj.exe+2A77DC
+fj.exe+1D8F1C - 8B F0                 - mov esi,eax
+fj.exe+1D8F1E - 85 F6                 - test esi,esi
+fj.exe+1D8F20 - 0F8E 27FCFFFF         - jng fj.exe+1D8B4D
+fj.exe+1D8F26 - 8B F3                 - mov esi,ebx
+fj.exe+1D8F28 - 81 E6 FF000000        - and esi,000000FF { 255 }
+fj.exe+1D8F2E - 8B CE                 - mov ecx,esi
+fj.exe+1D8F30 - BA C50B0000           - mov edx,00000BC5 { 3013 }
+fj.exe+1D8F35 - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1D8F38 - E8 335C0100           - call fj.exe+1EEB70
+fj.exe+1D8F3D - 84 C0                 - test al,al
+fj.exe+1D8F3F - 0F84 3B030000         - je fj.exe+1D9280
+fj.exe+1D8F45 - 8D 4D F4              - lea ecx,[ebp-0C]
+fj.exe+1D8F48 - 8D 55 F8              - lea edx,[ebp-08]
+fj.exe+1D8F4B - 8B C3                 - mov eax,ebx
+fj.exe+1D8F4D - E8 FAC41100           - call fj.exe+2F544C
+fj.exe+1D8F52 - C6 45 E8 00           - mov byte ptr [ebp-18],00 { 0 }
+fj.exe+1D8F56 - 8B 45 F8              - mov eax,[ebp-08]
+fj.exe+1D8F59 - 50                    - push eax
+fj.exe+1D8F5A - 8B 45 F4              - mov eax,[ebp-0C]
+fj.exe+1D8F5D - 50                    - push eax
+fj.exe+1D8F5E - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8F63 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8F65 - 8B 48 0C              - mov ecx,[eax+0C]
+fj.exe+1D8F68 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8F6D - 8B 00                 - mov eax,[eax]
+fj.exe+1D8F6F - 8B 50 08              - mov edx,[eax+08]
+fj.exe+1D8F72 - A1 38947200           - mov eax,[fj.exe+329438] { (00833614) }
+fj.exe+1D8F77 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8F79 - E8 EE190800           - call fj.exe+25A96C
+fj.exe+1D8F7E - 84 C0                 - test al,al
+fj.exe+1D8F80 - 0F85 E2000000         - jne fj.exe+1D9068
+fj.exe+1D8F86 - C6 45 E9 00           - mov byte ptr [ebp-17],00 { 0 }
+fj.exe+1D8F8A - 80 7D E9 00           - cmp byte ptr [ebp-17],00 { 0 }
+fj.exe+1D8F8E - 75 3D                 - jne fj.exe+1D8FCD
+fj.exe+1D8F90 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8F95 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8F97 - 8B 40 08              - mov eax,[eax+08]
+fj.exe+1D8F9A - 89 45 F8              - mov [ebp-08],eax
+fj.exe+1D8F9D - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8FA2 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8FA4 - 8B 40 0C              - mov eax,[eax+0C]
+fj.exe+1D8FA7 - 89 45 F4              - mov [ebp-0C],eax
+fj.exe+1D8FAA - 8D 4D F4              - lea ecx,[ebp-0C]
+fj.exe+1D8FAD - 8D 55 F8              - lea edx,[ebp-08]
+fj.exe+1D8FB0 - 8B C3                 - mov eax,ebx
+fj.exe+1D8FB2 - E8 95C41100           - call fj.exe+2F544C
+fj.exe+1D8FB7 - 8B 4D F4              - mov ecx,[ebp-0C]
+fj.exe+1D8FBA - 8B 55 F8              - mov edx,[ebp-08]
+fj.exe+1D8FBD - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1D8FC0 - E8 D3A40000           - call fj.exe+1E3498
+fj.exe+1D8FC5 - 84 C0                 - test al,al
+fj.exe+1D8FC7 - 74 04                 - je fj.exe+1D8FCD
+fj.exe+1D8FC9 - C6 45 E8 01           - mov byte ptr [ebp-18],01 { 1 }
+fj.exe+1D8FCD - 80 7D E8 00           - cmp byte ptr [ebp-18],00 { 0 }
+fj.exe+1D8FD1 - 75 24                 - jne fj.exe+1D8FF7
+fj.exe+1D8FD3 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8FD8 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8FDA - 8B 40 08              - mov eax,[eax+08]
+fj.exe+1D8FDD - 89 45 F8              - mov [ebp-08],eax
+fj.exe+1D8FE0 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8FE5 - 8B 00                 - mov eax,[eax]
+fj.exe+1D8FE7 - 8B 40 0C              - mov eax,[eax+0C]
+fj.exe+1D8FEA - 89 45 F4              - mov [ebp-0C],eax
+fj.exe+1D8FED - E9 5BFBFFFF           - jmp fj.exe+1D8B4D
+fj.exe+1D8FF2 - E8 95B9E2FF           - call fj.exe+498C
+fj.exe+1D8FF7 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D8FFC - 8B 00                 - mov eax,[eax]
+fj.exe+1D8FFE - 8B 40 08              - mov eax,[eax+08]
+fj.exe+1D9001 - 89 45 F8              - mov [ebp-08],eax
+fj.exe+1D9004 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D9009 - 8B 00                 - mov eax,[eax]
+fj.exe+1D900B - 8B 40 0C              - mov eax,[eax+0C]
+fj.exe+1D900E - 89 45 F4              - mov [ebp-0C],eax
+fj.exe+1D9011 - 8D 4D F4              - lea ecx,[ebp-0C]
+fj.exe+1D9014 - 8D 55 F8              - lea edx,[ebp-08]
+fj.exe+1D9017 - 8B C3                 - mov eax,ebx
+fj.exe+1D9019 - E8 2EC41100           - call fj.exe+2F544C
+fj.exe+1D901E - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1D9021 - E8 22590100           - call fj.exe+1EE948
+fj.exe+1D9026 - 84 C0                 - test al,al
+fj.exe+1D9028 - 0F84 52020000         - je fj.exe+1D9280
+fj.exe+1D902E - 8B 45 F4              - mov eax,[ebp-0C]
+fj.exe+1D9031 - 50                    - push eax
+fj.exe+1D9032 - 56                    - push esi
+fj.exe+1D9033 - 6A 00                 - push 00 { 0 }
+fj.exe+1D9035 - 6A 00                 - push 00 { 0 }
+fj.exe+1D9037 - 6A 00                 - push 00 { 0 }
+fj.exe+1D9039 - 6A 00                 - push 00 { 0 }
+fj.exe+1D903B - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D9040 - 8B 00                 - mov eax,[eax]
+fj.exe+1D9042 - 8B 4D F8              - mov ecx,[ebp-08]
+fj.exe+1D9045 - 66 BA C50B            - mov dx,0BC5 { 3013 }
+fj.exe+1D9049 - E8 9EC00C00           - call fj.exe+2A50EC
+fj.exe+1D904E - 84 C0                 - test al,al
+fj.exe+1D9050 - 0F84 2A020000         - je fj.exe+1D9280
+fj.exe+1D9056 - E8 59EAE2FF           - call fj.exe+7AB4
+fj.exe+1D905B - 8B 15 20927200        - mov edx,[fj.exe+329220] { (008B3ACC) }
+fj.exe+1D9061 - 89 02                 - mov [edx],eax
+fj.exe+1D9063 - E9 18020000           - jmp fj.exe+1D9280
+fj.exe+1D9068 - 8B 45 FC              - mov eax,[ebp-04]
+fj.exe+1D906B - E8 D8580100           - call fj.exe+1EE948
+fj.exe+1D9070 - 84 C0                 - test al,al
+fj.exe+1D9072 - 0F84 08020000         - je fj.exe+1D9280
+fj.exe+1D9078 - 8B 45 F4              - mov eax,[ebp-0C]
+fj.exe+1D907B - 50                    - push eax
+fj.exe+1D907C - 56                    - push esi
+fj.exe+1D907D - 6A 00                 - push 00 { 0 }
+fj.exe+1D907F - 6A 00                 - push 00 { 0 }
+fj.exe+1D9081 - 6A 00                 - push 00 { 0 }
+fj.exe+1D9083 - 6A 00                 - push 00 { 0 }
+fj.exe+1D9085 - A1 FC977200           - mov eax,[fj.exe+3297FC] { (008B3BF4) }
+fj.exe+1D908A - 8B 00                 - mov eax,[eax]
+fj.exe+1D908C - 8B 4D F8              - mov ecx,[ebp-08]
+fj.exe+1D908F - 66 BA C50B            - mov dx,0BC5 { 3013 }
+fj.exe+1D9093 - E8 54C00C00           - call fj.exe+2A50EC
+fj.exe+1D9098 - 84 C0                 - test al,al
+fj.exe+1D909A - 0F84 E0010000         - je fj.exe+1D9280
+fj.exe+1D90A0 - E8 0FEAE2FF           - call fj.exe+7AB4
+fj.exe+1D90A5 - 8B 15 20927200        - mov edx,[fj.exe+329220] { (008B3ACC) }
+fj.exe+1D90AB - 89 02                 - mov [edx],eax
+fj.exe+1D90AD - E9 CE010000           - jmp fj.exe+1D9280
+fj.exe+1D90B2 - E9 96FAFFFF           - jmp fj.exe+1D8B4D
+fj.exe+1D90B7 - E8 D0B8E2FF           - call fj.exe+498C
+fj.exe+1D90BC - E9 BF010000           - jmp fj.exe+1D9280
+fj.exe+1D90C1 - A1 A8A97200           - mov eax,[fj.exe+32A9A8] { (008FAF00) }
+fj.exe+1D90C6 - FF 00                 - inc [eax]
