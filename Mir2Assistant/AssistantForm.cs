@@ -92,14 +92,15 @@ namespace Mir2Assistant
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
-                        Task.Delay(200).Wait();
+                        Task.Delay(1000).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
                             break;
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
-                    
+                        MonsterFunction.ReadMonster(gameInstance);
+
                         //CharacterStatusFunction.GetInfo(gameInstance);
                         //if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
                         //{
@@ -109,7 +110,7 @@ namespace Mir2Assistant
 
                         //        SkillFunction.ReadSkills(gameInstance);
                         //    }
-                        //    MonsterFunction.ReadMonster(gameInstance);
+
                         //}
                         //else //已小退
                         //{

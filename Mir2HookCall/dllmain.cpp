@@ -29,17 +29,17 @@ __declspec(naked) void HookFunction()
 __declspec(naked) void HookFunction2()
 {
     __asm {
-        pushad
-        pushfd
+        // pushad
+        // pushfd
 
-        cmp eax, 0x1F
-        jne call_original2
+        // mov eax, [eax + esi * 4]
+        // mov byte ptr [eax + 0x158], 1
 
-        xor eax, eax
+        // popfd
+        // popad
 
-    call_original2:
-        popfd
-        popad
+        // call originalFunc2
+        // ret
         jmp originalFunc2
     }
 }
