@@ -12,6 +12,9 @@ public class CharacterStatusModel
     public int? MaxHP { get; set; }
     public int? CurrentMP { get; set; }
     public int? MaxMP { get; set; }
+    public short? ZD { get; set; }
+
+    
     /// <summary>
     /// 转生等级
     /// </summary>

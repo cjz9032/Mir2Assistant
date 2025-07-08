@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using static Mir2Assistant.Common.Utils.WindowUtils;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Mir2Assistant
 {
@@ -91,30 +92,32 @@ namespace Mir2Assistant
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
-                        Task.Delay(500).Wait();
+                        Task.Delay(200).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
                             break;
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
-                        if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
-                        {
-                            if (gameInstance.Skills.Count == 0)
-                            {
-                                this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [gameInstance.MirConfig["写屏CALL地址"], this.Handle]));
+                    
+                        //CharacterStatusFunction.GetInfo(gameInstance);
+                        //if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
+                        //{
+                        //    if (gameInstance.Skills.Count == 0)
+                        //    {
+                        //        this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [gameInstance.MirConfig["写屏CALL地址"], this.Handle]));
 
-                                SkillFunction.ReadSkills(gameInstance);
-                            }
-                            MonsterFunction.ReadMonster(gameInstance);
-                        }
-                        else //已小退
-                        {
-                            gameInstance.Skills.Clear();
-                            gameInstance.Monsters.Clear();
-                            this.Invoke(() => SendMirCall.Send(gameInstance, 9002, new nint[] { }));
+                        //        SkillFunction.ReadSkills(gameInstance);
+                        //    }
+                        //    MonsterFunction.ReadMonster(gameInstance);
+                        //}
+                        //else //已小退
+                        //{
+                        //    gameInstance.Skills.Clear();
+                        //    gameInstance.Monsters.Clear();
+                        //    this.Invoke(() => SendMirCall.Send(gameInstance, 9002, new nint[] { }));
 
-                        }
+                        //}
                     }
                 }
                 catch (Exception ex)

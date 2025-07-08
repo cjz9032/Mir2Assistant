@@ -11,7 +11,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<BaseOutputPath></BaseOutputPath>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
-		<AssemblyName>热血传奇辅助</AssemblyName>
+		<AssemblyName>cqfz</AssemblyName>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="icon.ico" />

@@ -1,0 +1,38 @@
+喊话call
+ZC.H+1670B3 - 3B 45 EC              - cmp eax,[ebp-14]
+ZC.H+1670B6 - 0F8F FE000000         - jg ZC.H+1671BA
+ZC.H+1670BC - 8B 45 F8              - mov eax,[ebp-08]
+ZC.H+1670BF - 8B 55 F0              - mov edx,[ebp-10]
+ZC.H+1670C2 - 80 7C 10 FF 80        - cmp byte ptr [eax+edx-01],-80 { 128 }
+ZC.H+1670C7 - 72 55                 - jb ZC.H+16711E
+ZC.H+1670C9 - 8D 45 D4              - lea eax,[ebp-2C]
+ZC.H+1670CC - 8B 55 F8              - mov edx,[ebp-08]
+ZC.H+1670CF - 8B 4D F0              - mov ecx,[ebp-10]
+
+
+
+
+
+
+退出origin
+ZC.H+23AC9D - 80 78 28 00           - cmp byte ptr [eax+28],00 { 0 }
+ZC.H+23ACA1 - 74 1C                 - je ZC.H+23ACBF
+ZC.H+23ACA3 - 6A 00                 - push 00 { 0 }
+ZC.H+23ACA5 - 6A 00                 - push 00 { 0 }
+ZC.H+23ACA7 - 6A 00                 - push 00 { 0 }
+ZC.H+23ACA9 - 33 C9                 - xor ecx,ecx
+ZC.H+23ACAB - BA 4D040000           - mov edx,0000044D { 1101 }
+替换
+ZC.H+23ACA1 - 75 1C                 - jne ZC.H+23ACBF
+
+显血
+ZC.H+3B1E3 - 8B 03                 - mov eax,[ebx]
+ZC.H+3B1E5 - E8 FAFEFFFF           - call ZC.H+3B0E4
+ZC.H+3B1EA - 8B 43 04              - mov eax,[ebx+04]
+ZC.H+3B1ED - 8B 04 B0              - mov eax,[eax+esi*4]
+ZC.H+3B1F0 - 5E                    - pop esi
+ZC.H+3B1F1 - 5B                    - pop ebx
+ZC.H+3B1F2 - C3                    - ret 
+做跳板
+
+Actor.m_boOpenHealth := True;

@@ -86,7 +86,18 @@ namespace Mir2Assistant
         public static void loadDll(MirGameInstanceModel gi)
         {
             IntPtr addr = (IntPtr)0;
-            var ipdl = LoadLibrary(Path.Combine(Application.StartupPath, "Mir2HookCall.dll"));
+            string dllPath = Path.Combine(Application.StartupPath, "Mir2HookCall.dll");
+            
+            if (!File.Exists(dllPath))
+            {
+                string publishPath = Path.Combine(Application.StartupPath, "publish", "Mir2HookCall.dll");
+                if (File.Exists(publishPath))
+                {
+                    dllPath = publishPath;
+                }
+            }
+            
+            var ipdl = LoadLibrary(dllPath);
 
             if (ipdl == IntPtr.Zero)
             {

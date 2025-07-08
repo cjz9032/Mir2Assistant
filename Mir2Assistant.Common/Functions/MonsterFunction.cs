@@ -53,6 +53,8 @@ public static class MonsterFunction
                 monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x3E); // todo confirm
                 monster.Addr = monsterAddr;
                 monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0), 24);
+
+
                 if (monster.TypeStr != "NPC" || monster.X == null)
                 {
                     monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);

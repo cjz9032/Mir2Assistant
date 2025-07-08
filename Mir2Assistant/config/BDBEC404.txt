@@ -67,7 +67,12 @@ pop eax
 ---成品
 多开 -- todo P2 直接CALL
 
+躲开隐藏
+004EA441  |.  50            push eax                                 ; |hWnd = 000709F0 ('成都传奇',class='TSplashForm_Login_77M2')
+004EA442  |.  E8 E935F2FF   call <jmp.&user32.ShowWindow>            ; \ShowWindow
+50E8E935F2FF
 
+躲开判断
 cd.exe+3A91C5 - 3B C2                 - cmp eax,edx
 cd.exe+3A91C7 - 7C 4D                 - jl cd.exe+3A9216
 cd.exe+3A91C9 - 6A 10                 - push 10 { 16 }
@@ -98,14 +103,71 @@ cd.exe+3A91C7 - EB 4D                 - jmp cd.exe+3A9216
 	...
 
 	83 C4 F4 89 45 FC 8B 45 FC B8 05 00 00 00 90 89 45 F4 8B 45 F4 8B 55 FC 3B 82 90010000
+免攻击
+
+状态
+[00752764]+178
+
+
+ZC.H+1DF2CE - 8B 45 C8              - mov eax,[ebp-38]
+ZC.H+1DF2D1 - 05 43F4FFFF           - add eax,FFFFF443 { -3005 }
+ZC.H+1DF2D6 - 83 F8 1F              - cmp eax,1F { 31 }
+ZC.H+1DF2D9 - 0F87 2E010000         - ja ZC.H+1DF40D
+ZC.H+1DF2DF - 8A 80 ECF25D00        - mov al,[eax+ZC.H+1DF2EC]
+ZC.H+1DF2E5 - FF 24 85 0CF35D00     - jmp dword ptr [eax*4+ZC.H+1DF30C]
+ZC.H+1DF2EC - 02 00                 - add al,[eax]
+
+
+ZC.H+1E67DC - 8B 55 FC              - mov edx,[ebp-04]
+ZC.H+1E67DF - 89 82 58020000        - mov [edx+00000258],eax
+ZC.H+1E67E5 - EB 6C                 - jmp ZC.H+1E6853
+ZC.H+1E67E7 - E8 AC5DE2FF           - call ZC.H+C598 { ->->KERNEL32.GetTickCount }
+ZC.H+1E67EC - 8B 55 FC              - mov edx,[ebp-04]
+ZC.H+1E67EF - 2B 82 68020000        - sub eax,[edx+00000268]
+
+
+ZC.H+1E1E52 - 8B 55 FC              - mov edx,[ebp-04]
+ZC.H+1E1E55 - 89 82 D8010000        - mov [edx+000001D8],eax
+ZC.H+1E1E5B - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+1E1E5E - 83 B8 78010000 1F     - cmp dword ptr [eax+00000178],1F { 31 } -- 比较
+ZC.H+1E1E65 - 0F85 0E010000         - jne ZC.H+1E1F79
+ZC.H+1E1E6B - A1 C8996700           - mov eax,[ZC.H+2799C8] { (007524C8) }
+ZC.H+1E1E70 - 8B 00                 - mov eax,[eax]
+ZC.H+1E1E72 - 8B 55 FC              - mov edx,[ebp-04]
+
+ZC.H+1E1E55 - 89 82 D8010000        - mov [edx+000001D8],eax
+ZC.H+1E1E5B - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+1E1E5E - 83 B8 78010000 FF     - cmp dword ptr [eax+00000178],-01 { 255 }
+ZC.H+1E1E65 - 0F85 0E010000         - jne ZC.H+1E1F79
+ZC.H+1E1E6B - A1 C8996700           - mov eax,[ZC.H+2799C8] { (007524C8) }
+ZC.H+1E1E70 - 8B 00                 - mov eax,[eax]
+ZC.H+1E1E72 - 8B 55 FC              - mov edx,[ebp-04]
+ZC.H+1E1E75 - 8B 92 EC000000        - mov edx,[edx+000000EC]
+
+
+005E1CA0
+005E1E5E
+005E787F
+005E791E
+
+mov [edx+000001A0],eax
+
+受伤消息handler
+ZC.H+1DFA0D - E8 12F7FFFF           - call ZC.H+1DF124
+
+计时器
+ZC.H+1DF4A6 - 89 82 A0010000        - mov [edx+000001A0],eax
+nop ZC.H+1DF4AC - C6 45 EF 00           - mov byte ptr [ebp-11],00 { 0 }
+
 
 怪物数组 [[[7524C8]+000034C8]+4]+4*i
+长度+8
 打怪 756370
 光标锁定 756374
 
 人物信息
 [00752764]
-X 8 W
+X 8 W 067FB298 170
 Y A W
 朝向 C BYTE
 HP 48 W
@@ -113,11 +175,31 @@ mp 4A W
 maxHP 4C W
 maxMP 4E W
 NAME 34
+显血 158 TODO 后面隐藏就要干掉
+
+
 助跑
+步数
 ZC.H+23A5CE - 0F8CE6000000         - jl ZC.H+23A6BA
 ZC.H+23A5CE - 0F8DE6000000         - jnl ZC.H+23A6BA
 
-jl -> jnl 0063A6BA 
+血量
+ZC.H+1DFE3D - C7 45 F8 01000000     - mov [ebp-08],00000001 { 1 }  -- 特征
+ZC.H+1DFE44 - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+1DFE47 - 66 83 78 48 0A        - cmp word ptr [eax+48],0A { 10 }  -- 特征
+ZC.H+1DFE4C - 73 09                 - jae ZC.H+1DFE57
+ZC.H+1DFE4E - C7 45 F8 FFFFFFFF     - mov [ebp-08],FFFFFFFF { -1 } -- 特征
+ZC.H+1DFE55 - EB 1E                 - jmp ZC.H+1DFE75
+ZC.H+1DFE57 - E8 3CC7E2FF           - call ZC.H+C598 { ->->KERNEL32.GetTickCount }
+ZC.H+1DFE5C - 8B 15 389B6700        - mov edx,[ZC.H+279B38] { (00756300) }
+ZC.H+1DFE62 - 2B 02                 - sub eax,[edx]
+
+ZC.H+1DFE47 - 66 83 78 48 0A        - cmp word ptr [eax+48],0A { 10 }  -- 特征
+
+    m_boAttackSlow: Boolean; //腕力不够时慢动作攻击.
+    m_boMoveSlow: Boolean; //负重不够时慢动作跑
+
+jl -> jnl 0063A6BA ???
 
 -- 跑步 特征码
 ZC.H+23A677 - 66BAC50B            - mov dx,0BC5 { 3013 } C3 C4 C5 3011 3012 3013
