@@ -35,4 +35,25 @@ ZC.H+3B1F1 - 5B                    - pop ebx
 ZC.H+3B1F2 - C3                    - ret 
 做跳板
 
+// 遇怪 
+ZC.H+24C617 - 8B 8D 38FEFFFF        - mov ecx,[ebp-000001C8]
+ZC.H+24C61D - BA 0A000000           - mov edx,0000000A { 10 }
+ZC.H+24C622 - A1 C8247500           - mov eax,[ZC.H+3524C8] { (0748ACD0) }
+ZC.H+24C627 - E8 10DEF3FF           - call ZC.H+18A43C
+ZC.H+24C62C - 83 7D E4 00           - cmp dword ptr [ebp-1C],00 { 0 }
+ZC.H+24C630 - 0F84 D16A0000         - je ZC.H+253107
+ZC.H+24C636 - 8B 95 38FEFFFF        - mov edx,[ebp-000001C8]
+ZC.H+24C63C - A1 C8247500           - mov eax,[ZC.H+3524C8] { (0748ACD0) }
+ZC.H+24C641 - E8 E6CDF3FF           - call ZC.H+18942C
+
+    //去血 补丁
+ /*   ZC.H + 1DF22D - 83 7D F4 00 - cmp dword ptr[ebp - 0C], 00 { 0 }
+    ZC.H + 1DF231 - 75 0A - jne ZC.H + 1DF23D
+    ZC.H + 1DF233 - 8B 45 FC - mov eax, [ebp - 04]
+    ZC.H + 1DF236 - C6 80 58010000 00 - mov byte ptr[eax + 00000158], 00 { 0 } -- 屏蔽这句
+    ZC.H + 1DF23D - 8B 45 C8 - mov eax, [ebp - 38]
+    ZC.H + 1DF240 - 83 C0 AF - add eax, -51 { 175 }
+    ZC.H + 1DF243 - 83 E8 03 - sub eax, 03 { 3 }
+    ZC.H + 1DF246 - 72 08 - jb ZC.H + 1DF250*/
+
 Actor.m_boOpenHealth := True;

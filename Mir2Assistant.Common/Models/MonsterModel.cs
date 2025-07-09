@@ -19,6 +19,7 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public byte Flag { get; set; }
         public short isDead { get; set; }
+        public short Appr { get; set; }
         public string TypeStr
         {
             get
@@ -42,7 +43,7 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")}\t{Name}\t{Addr:x2}";
+        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")}\t{Name}\t {Appr} \t {Addr:x2}";
 
     }
 }

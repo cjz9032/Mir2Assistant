@@ -86,6 +86,11 @@ public class MemoryUtils
         byte[] buffer = ReadToBytes(address, sizeof(short));
         return BitConverter.ToInt16(buffer, 0);
     }
+    public byte ReadToInt8(IntPtr address)
+    {
+        byte[] buffer = ReadToBytes(address, sizeof(byte));
+        return buffer[0]; // 直接返回第一个字节
+    }
 
     public int ReadToInt(IntPtr address)
     {
@@ -117,6 +122,13 @@ public class MemoryUtils
         byte[] buffer = ReadToBytes(address, stringSize);
         string asciiString = Encoding.GetEncoding("gb2312").GetString(buffer).Split('\0')[0].TrimEnd(); // 获取ASCII字符串并去除结尾的空字符
         return asciiString;
+    }
+
+    public string ReadToUnicode(IntPtr address, int stringSize = 20)
+    {
+        // data likes 71 00 77 00 65 00 61 00 31 00 33 00 
+        byte[] buffer = ReadToBytes(address, stringSize);
+        return Encoding.Unicode.GetString(buffer);
     }
 
     #endregion

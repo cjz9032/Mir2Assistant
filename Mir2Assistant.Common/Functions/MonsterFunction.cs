@@ -50,9 +50,27 @@ public static class MonsterFunction
                 }
                 monster.UpdateId = gameInstance.MonstersUpdateId;
                 monster.Id = id;
-                monster.Type = monster.Type ?? memoryUtils.ReadToShort(monsterAddr + 0x3E); // todo confirm
+                monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr + 0x18); // todo confirm
                 monster.Addr = monsterAddr;
-                monster.Name = monster.Name ?? memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0), 24);
+                if (string.IsNullOrEmpty(monster.Name)) {
+                    var baseAd = memoryUtils.GetMemoryAddress(monsterAddr + 0x34 - 1);
+                    var len = memoryUtils.ReadToInt8(baseAd);
+                    if (len > 0) {
+                        var refName = memoryUtils.GetMemoryAddress(baseAd+1,0);
+
+                        monster.Name = memoryUtils.ReadToUnicode(refName, len);
+                    }
+                    else
+                    {
+
+                        var nestedRef = memoryUtils.GetMemoryAddress(baseAd+1, 0);
+
+                        var len2 = memoryUtils.ReadToInt(nestedRef - 4) * 2;
+
+                        monster.Name = memoryUtils.ReadToUnicode(nestedRef, len2);
+                    }
+                }
+                    
 
                 // todo side effect
                 memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
@@ -74,8 +92,8 @@ public static class MonsterFunction
                 {
                     gameInstance.Monsters.TryAdd(id, monster);
                 }
-                monster.isDead = memoryUtils.ReadToShort(monsterAddr + 0x1C9);
-
+                monster.isDead = memoryUtils.ReadToShort(monsterAddr + 0x28);
+                monster.Appr = memoryUtils.ReadToInt8(monsterAddr + 0x16);
             }
             foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))
             {

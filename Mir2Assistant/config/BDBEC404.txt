@@ -84,7 +84,41 @@ cd.exe+3A91C7 - EB 4D                 - jmp cd.exe+3A9216
 3B C2 EB 4D 6A 10
 
 
-免蜡 [752764]+18C
+免蜡
+死亡一直找到 [00679CC8]
+if (g_MySelf.m_boDeath) then
+begin
+	g_boLastViewFog := g_boViewFog;
+	g_boViewFog := False;
+end;
+
+再索引引用的地方 补丁
+ZC.H+186442 - A1 C89C6700           - mov eax,[ZC.H+279CC8] { (00755F40) }
+ZC.H+186447 - 80 38 00              - cmp byte ptr [eax],00 { 0 }
+ZC.H+18644A - 74 5D                 - je ZC.H+1864A9  --- ZC.H+18644A - EB 5D                 - jmp ZC.H+1864A9
+ZC.H+18644C - A1 8C9B6700           - mov eax,[ZC.H+279B8C] { (00752764) }
+ZC.H+186451 - 8B 00                 - mov eax,[eax]
+ZC.H+186453 - 80 78 28 00           - cmp byte ptr [eax+28],00 { 0 }
+ZC.H+186457 - 75 50                 - jne ZC.H+1864A9
+ZC.H+186459 - A1 C49B6700           - mov eax,[ZC.H+279BC4] { (00672E40) }
+ZC.H+18645E - 8B F0                 - mov esi,eax
+ZC.H+186460 - 8D BD 80FAFFFF        - lea edi,[ebp-00000580]
+ZC.H+186466 - A5                    - movsd 
+ZC.H+186467 - A5                    - movsd 
+ZC.H+186468 - A5                    - movsd 
+ZC.H+186469 - A5                    - movsd 
+ZC.H+18646A - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+18646D - 83 78 10 00           - cmp dword ptr [eax+10],00 { 0 }
+ZC.H+186471 - 74 36                 - je ZC.H+1864A9
+ZC.H+186473 - 8D 95 50FAFFFF        - lea edx,[ebp-000005B0]
+ZC.H+186479 - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+18647C - 8B 40 10              - mov eax,[eax+10]
+ZC.H+18647F - E8 A09CF8FF           - call ZC.H+110124
+
+
+
+亮度
+ [752764]+18C
 	ZC.H+1E6897 - 83 C4 F4              - add esp,-0C { 244 }
 	ZC.H+1E689A - 89 45 FC              - mov [ebp-04],eax
 	ZC.H+1E689D - 8B 45 FC              - mov eax,[ebp-04]
@@ -167,14 +201,19 @@ nop ZC.H+1DF4AC - C6 45 EF 00           - mov byte ptr [ebp-11],00 { 0 }
 
 人物信息
 [00752764]
+ID 4 DW
 X 8 W 067FB298 170
 Y A W
 朝向 C BYTE
 HP 48 W
 mp 4A W
+
 maxHP 4C W
 maxMP 4E W
-NAME 34
+NAME 34 分UNI和ASI 还有多层 注意
+appr 16 B
+died 28 B
+
 显血 158 TODO 后面隐藏就要干掉
 
 

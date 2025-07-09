@@ -1,17 +1,16 @@
-﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
-#include "pch.h"
+﻿#include "pch.h"
 #include <stdio.h>
 #include "MinHook.h"
 
 typedef void (*OriginalFuncType)(void);
 OriginalFuncType originalFunc1 = NULL;
+DWORD g_BaseAddr = 0;
 
 OriginalFuncType originalFunc2 = NULL;
 
 __declspec(naked) void HookFunction()
 {
     __asm {
-        pushad
         pushfd
 
         cmp eax, 0x1F
@@ -21,31 +20,139 @@ __declspec(naked) void HookFunction()
 
     call_original:
         popfd
-        popad
         jmp originalFunc1
     }
 }
 
-__declspec(naked) void HookFunction2()
-{
-    __asm {
-        // pushad
-        // pushfd
+// bool SafeWriteByte(void* ptr, size_t offset, BYTE value)
+// {
+//     __try
+//     {
+//         BYTE* p = (BYTE*)ptr;
+//         p[offset] = value;
+//         return true;
+//     }
+//     __except (EXCEPTION_EXECUTE_HANDLER)
+//     {
+//         return false;
+//     }
+// }
 
-        // mov eax, [eax + esi * 4]
-        // mov byte ptr [eax + 0x158], 1
+// void HookFunction2_C(int ecx)
+// {
+//     DWORD base = *(DWORD*)((DWORD)GetModuleHandle(L"ZC.H") + 0x3524C8);
+//     //[[[ZC.H + 3524C8]+ 000034C8] + 4] + 4
+//     base += 0x34C8;
+//     DWORD* pArray = *(DWORD**)base;
+//     DWORD* pItem = *(DWORD**)((BYTE*)pArray + 4);
+//     pItem = (DWORD*)((BYTE*)pItem + ecx * 4);
 
-        // popfd
-        // popad
+//     SafeWriteByte(pItem, 0x158, 1);
+// }
 
-        // call originalFunc2
-        // ret
-        jmp originalFunc2
-    }
+
+
+
+// __declspec(naked) void HookFunction222()
+// {
+//     __asm {
+//         pushad
+//         pushfd
+
+//         mov eax, g_BaseAddr
+//         add eax, 0x3524C8
+//         mov eax, dword ptr [eax]
+//         add eax, 0x34C8
+//         mov eax, dword ptr [eax]
+//         mov edx, dword ptr [eax + 8]
+
+//         xor ecx, ecx                     
+
+//         loop_start:
+//         cmp ecx, edx
+//             jge loop_end
+
+//             push ecx
+//             call HookFunction2_C
+//             add esp, 4
+
+//             inc ecx
+//             jmp loop_start
+
+//         loop_end:
+//             popfd
+//             popad
+//             jmp originalFunc2
+//     }
+// }
+
+
+// __declspec(naked) void HookFunction2()
+// {
+//     __asm {
+//         pushad
+//         pushfd
+
+//         mov eax, g_BaseAddr
+//         add eax, 0x3524C8
+//         mov eax, dword ptr [eax]
+//         add eax, 0x34C8
+//         mov eax, dword ptr [eax]
+//         mov edx, dword ptr [eax + 8]
+
+//         xor ecx, ecx
+
+//     loop_start:
+//         cmp ecx, edx
+//         jge loop_end
+
+//         // [[[ZC.H+3524C8]+000034C8]+4]+4
+//         mov eax, g_BaseAddr
+//         add eax, 0x3524C8
+//         mov eax, dword ptr [eax]
+//         add eax, 0x34C8
+//         mov eax, dword ptr [eax]
+//         add eax, 4
+//         mov eax, dword ptr[eax]
+//         mov eax, dword ptr [eax + ecx*4]
+        
+//         // 安全检查
+//         test eax, eax
+//         jz skip_write
+        
+//         mov byte ptr [eax + 0x158], 1
+
+//     skip_write:
+//         inc ecx
+//         jmp loop_start
+
+//     loop_end:
+//         popfd
+//         popad
+//         jmp originalFunc2
+//     }
+// }
+//__declspec(naked) void HookFunction2()
+//{
+//    __asm {
+//        push eax
+//        mov eax, g_BaseAddr
+//        add eax, 0x352764
+//        mov eax, dword ptr [eax]
+//        mov byte ptr [eax + 0x158], 1
+//        pop eax
+//        jmp originalFunc2
+//    }
+//}
+
+void InitBaseAddr() {
+    g_BaseAddr = (DWORD)GetModuleHandle(L"ZC.H");
 }
 
 bool InitHook()
 {
+    InitBaseAddr();
+    
     if (MH_Initialize() != MH_OK)
     {
         printf("MinHook init failed\n");
@@ -67,21 +174,13 @@ bool InitHook()
         printf("hook 1 fail\n");
         return false;
     }
-
-    // 显血
-    // ZC.H + 3B1E3 - 8B 03 - mov eax, [ebx]
-    // ZC.H + 3B1E5 - E8 FAFEFFFF - call ZC.H + 3B0E4
-    // ZC.H + 3B1EA - 8B 43 04 - mov eax, [ebx + 04]
-    // ZC.H + 3B1ED - 8B 04 B0 - mov eax, [eax + esi * 4]
-    // ZC.H + 3B1F0 - 5E - pop esi
-    // ZC.H + 3B1F1 - 5B - pop ebx
-    // ZC.H + 3B1F2 - C3 - ret
-    DWORD targetAddress2 = 0x3B1ED + (DWORD)GetModuleHandle(L"ZC.H");
+    // 显血 自己 目前也不需要了
+    /*DWORD targetAddress2 = 0x24C62C + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress2, HookFunction2, (LPVOID*)&originalFunc2) != MH_OK)
     {
         printf("hook 2 fail\n");
         return false;
-    }
+    }*/
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {
@@ -95,7 +194,6 @@ bool InitHook()
 
 void UninitHook()
 {
-    // 禁用并清理钩子
     MH_DisableHook(MH_ALL_HOOKS);
     MH_Uninitialize();
 }
@@ -114,7 +212,6 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     case DLL_THREAD_ATTACH:
         break;  // 添加 break
     case DLL_THREAD_DETACH:
-        // UninitHook();  // 移到这里
         break;  // 添加 break
     case DLL_PROCESS_DETACH:
         UninitHook();  // 移到这里
