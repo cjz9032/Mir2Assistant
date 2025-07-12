@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "MinHook.h"
 #include <Windows.h>
+#include "login.h"
+
 
 typedef void (*OriginalFuncType)(void);
 OriginalFuncType originalFunc1 = NULL;
@@ -10,6 +12,7 @@ DWORD g_BaseAddr = 0;
 OriginalFuncType originalFunc2 = NULL;
 OriginalFuncType originalFunc3 = NULL;
 OriginalFuncType originalFunc4 = NULL;
+OriginalFuncType originalFunc5 = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -36,7 +39,7 @@ void CreateDelayedThread();
 __declspec(naked) void HookFunction2()
 {
     __asm {
-        // 直连服务器
+        // 选择服务器 
         pushad
         pushfd
 
@@ -64,6 +67,8 @@ __declspec(naked) void HookFunction2()
 
     }
 }
+
+
 // 修改Delphi字符串结构，确保引用计数在正确位置
 static struct {
     DWORD refCount;  // 引用计数，位于数据指针-8的位置
@@ -149,6 +154,26 @@ DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam) {
     return 0;
 }
 
+__declspec(naked) void HookFunction5()
+{
+    __asm {
+        // 重输入账号 
+        pushad
+        pushfd
+
+        call loginFirst
+
+     
+
+        mov esi, 0x0064AAA8
+        jmp esi
+
+        popfd
+        popad
+
+    }
+}
+
 void InitBaseAddr() {
     g_BaseAddr = (DWORD)GetModuleHandle(L"ZC.H");
 }
@@ -191,6 +216,14 @@ bool InitHook()
     if (MH_CreateHook((LPVOID)targetAddress4, HookFunction4, (LPVOID*)&originalFunc4) != MH_OK)
     {
         printf("hook 4 fail\n");
+        return false;
+    }
+
+    // 登录锁定
+    DWORD targetAddress5 = 0x24AAA3 + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    if (MH_CreateHook((LPVOID)targetAddress5, HookFunction5, (LPVOID*)&originalFunc5) != MH_OK)
+    {
+        printf("hook 5 fail\n");
         return false;
     }
 
