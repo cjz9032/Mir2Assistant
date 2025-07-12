@@ -57,3 +57,30 @@ ZC.H+24C641 - E8 E6CDF3FF           - call ZC.H+18942C
     ZC.H + 1DF246 - 72 08 - jb ZC.H + 1DF250*/
 
 Actor.m_boOpenHealth := True;
+
+
+
+
+人名显示
+ZC.H+343518
+补丁
+ZC.H+18592B - A1 CC986700           - mov eax,[ZC.H+2798CC] { (00743518) }
+ZC.H+185930 - 80 38 00              - cmp byte ptr [eax],01 { 0 } -- 01
+ZC.H+185933 - 0F84 C5010000         - je ZC.H+185AFE
+
+持久警告
+ZC.H+34351A
+
+ZC.H+240ECA - 0F85 39020000         - jne ZC.H+241109
+ZC.H+240ED0 - A1 CC986700           - mov eax,[ZC.H+2798CC] { (00743518) }
+ZC.H+240ED5 - 80 78 02 00           - cmp byte ptr [eax+02],00 { 0 } 同上 目测是这 需要验证
+ZC.H+240ED9 - 75 0E                 - jne ZC.H+240EE9
+ZC.H+240EDB - A1 24A76700           - mov eax,[ZC.H+27A724] { (0067723D) }
+
+
+刺杀
+0074355D
+烈火
+743558
+
+道士法师自动盾后面再找

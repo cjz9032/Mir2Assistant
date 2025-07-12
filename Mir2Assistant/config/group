@@ -1,0 +1,28 @@
+
+
+
+被邀请. 自动组先
+ZC.H+24F5E0 - 8B 95 08F9FFFF        - mov edx,[ebp-000006F8]
+ZC.H+24F5E6 - A1 28A76700           - mov eax,[ZC.H+27A728] { (0074350C) }
+ZC.H+24F5EB - 8B 00                 - mov eax,[eax]
+ZC.H+24F5ED - 66 8B 0D 9C456500     - mov cx,[ZC.H+25459C] { (3) }
+
+ZC.H+24F5F4 - E8 63B1F4FF           - call ZC.H+19A75C 
+ZC.H+24F5F9 - 83 F8 06              - cmp eax,06 { 6 }
+ZC.H+24F5FC - 75 1D                 - jne ZC.H+24F61B
+
+ZC.H+24F5F4 - 90 90909090
+ZC.H+24F5F9 - 83 F8 06              - cmp eax,06 { 6 }
+ZC.H+24F5FC - 74 1D                 - je ZC.H+24F61B
+
+
+
+ZC.H+24F5FE - 6A 00                 - push 00 { 0 }
+ZC.H+24F600 - 6A 00                 - push 00 { 0 }
+ZC.H+24F602 - 6A 00                 - push 00 { 0 }
+ZC.H+24F604 - 8B 45 DC              - mov eax,[ebp-24]
+ZC.H+24F607 - 50                    - push eax
+ZC.H+24F608 - 33 C9                 - xor ecx,ecx
+ZC.H+24F60A - BA 3C040000           - mov edx,0000043C { 1084 }
+ZC.H+24F60F - A1 B4247500           - mov eax,[ZC.H+3524B4] { (02E97990) }
+ZC.H+24F614 - E8 9F2FFFFF           - call ZC.H+2425B8

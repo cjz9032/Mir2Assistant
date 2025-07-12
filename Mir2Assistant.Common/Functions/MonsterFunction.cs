@@ -54,21 +54,21 @@ public static class MonsterFunction
                 monster.Addr = monsterAddr;
                 if (string.IsNullOrEmpty(monster.Name)) {
                     var baseAd = memoryUtils.GetMemoryAddress(monsterAddr + 0x34 - 1);
-                    var len = memoryUtils.ReadToInt8(baseAd);
-                    if (len > 0) {
-                        var refName = memoryUtils.GetMemoryAddress(baseAd+1,0);
+                    //var len = memoryUtils.ReadToInt8(baseAd);
+                    //if (len > 0) {
+                    //    var refName = memoryUtils.GetMemoryAddress(baseAd+1,0);
 
-                        monster.Name = memoryUtils.ReadToUnicode(refName, len);
-                    }
-                    else
-                    {
+                    //    monster.Name = memoryUtils.ReadToUnicode(refName, len);
+                    //}
+                    //else
+                    //{
 
                         var nestedRef = memoryUtils.GetMemoryAddress(baseAd+1, 0);
 
                         var len2 = memoryUtils.ReadToInt(nestedRef - 4) * 2;
 
                         monster.Name = memoryUtils.ReadToUnicode(nestedRef, len2);
-                    }
+                    //}
                 }
                     
 

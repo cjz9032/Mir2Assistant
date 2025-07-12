@@ -1,12 +1,15 @@
 ﻿#include "pch.h"
 #include <stdio.h>
 #include "MinHook.h"
+#include <Windows.h>
 
 typedef void (*OriginalFuncType)(void);
 OriginalFuncType originalFunc1 = NULL;
 DWORD g_BaseAddr = 0;
 
 OriginalFuncType originalFunc2 = NULL;
+OriginalFuncType originalFunc3 = NULL;
+OriginalFuncType originalFunc4 = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -24,126 +27,127 @@ __declspec(naked) void HookFunction()
     }
 }
 
-// bool SafeWriteByte(void* ptr, size_t offset, BYTE value)
-// {
-//     __try
-//     {
-//         BYTE* p = (BYTE*)ptr;
-//         p[offset] = value;
-//         return true;
-//     }
-//     __except (EXCEPTION_EXECUTE_HANDLER)
-//     {
-//         return false;
-//     }
-// }
+// 添加线程函数声明
+DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam);
 
-// void HookFunction2_C(int ecx)
-// {
-//     DWORD base = *(DWORD*)((DWORD)GetModuleHandle(L"ZC.H") + 0x3524C8);
-//     //[[[ZC.H + 3524C8]+ 000034C8] + 4] + 4
-//     base += 0x34C8;
-//     DWORD* pArray = *(DWORD**)base;
-//     DWORD* pItem = *(DWORD**)((BYTE*)pArray + 4);
-//     pItem = (DWORD*)((BYTE*)pItem + ecx * 4);
+// 声明函数在汇编代码之前
+void CreateDelayedThread();
 
-//     SafeWriteByte(pItem, 0x158, 1);
-// }
+__declspec(naked) void HookFunction2()
+{
+    __asm {
+        // 直连服务器
+        pushad
+        pushfd
 
-
-
-
-// __declspec(naked) void HookFunction222()
-// {
-//     __asm {
-//         pushad
-//         pushfd
-
-//         mov eax, g_BaseAddr
-//         add eax, 0x3524C8
-//         mov eax, dword ptr [eax]
-//         add eax, 0x34C8
-//         mov eax, dword ptr [eax]
-//         mov edx, dword ptr [eax + 8]
-
-//         xor ecx, ecx                     
-
-//         loop_start:
-//         cmp ecx, edx
-//             jge loop_end
-
-//             push ecx
-//             call HookFunction2_C
-//             add esp, 4
-
-//             inc ecx
-//             jmp loop_start
-
-//         loop_end:
-//             popfd
-//             popad
-//             jmp originalFunc2
-//     }
-// }
-
-
-// __declspec(naked) void HookFunction2()
-// {
-//     __asm {
-//         pushad
-//         pushfd
-
-//         mov eax, g_BaseAddr
-//         add eax, 0x3524C8
-//         mov eax, dword ptr [eax]
-//         add eax, 0x34C8
-//         mov eax, dword ptr [eax]
-//         mov edx, dword ptr [eax + 8]
-
-//         xor ecx, ecx
-
-//     loop_start:
-//         cmp ecx, edx
-//         jge loop_end
-
-//         // [[[ZC.H+3524C8]+000034C8]+4]+4
-//         mov eax, g_BaseAddr
-//         add eax, 0x3524C8
-//         mov eax, dword ptr [eax]
-//         add eax, 0x34C8
-//         mov eax, dword ptr [eax]
-//         add eax, 4
-//         mov eax, dword ptr[eax]
-//         mov eax, dword ptr [eax + ecx*4]
+        mov         ebx, g_BaseAddr
+        add         ebx, 0x279EBC
+        mov         eax, [ebx]
+        mov         eax, [eax]
         
-//         // 安全检查
-//         test eax, eax
-//         jz skip_write
+        mov         ebx, g_BaseAddr
+        add         ebx, 0x3526C0
+        mov         edx, [ebx]
         
-//         mov byte ptr [eax + 0x158], 1
+        mov         ebx, g_BaseAddr
+        add         ebx, 0x00242A48
+        call        ebx
+  
+        popfd
+        popad
+        // 在汇编代码外调用C++函数
+        push        eax             // 保存eax
+        call        CreateDelayedThread
+        pop         eax             // 恢复eax
+    
+        jmp originalFunc2
 
-//     skip_write:
-//         inc ecx
-//         jmp loop_start
+    }
+}
+// 修改Delphi字符串结构，确保引用计数在正确位置
+static struct {
+    DWORD refCount;  // 引用计数，位于数据指针-8的位置
+    DWORD length;    // 字符数量
+    WCHAR data[8];   // 足够存放"adad"的Unicode字符
+} g_ActString = { -1, 4, L"adad" }; // 设置引用计数为-1，表示静态字符串
 
-//     loop_end:
-//         popfd
-//         popad
-//         jmp originalFunc2
-//     }
-// }
-//__declspec(naked) void HookFunction2()
-//{
-//    __asm {
-//        push eax
-//        mov eax, g_BaseAddr
-//        add eax, 0x352764
-//        mov eax, dword ptr [eax]
-//        mov byte ptr [eax + 0x158], 1
-//        pop eax
-//        jmp originalFunc2
-//    }
-//}
+// 同样修改密码字符串结构
+static struct {
+    DWORD refCount;  // 引用计数
+    DWORD length;    // 字符数量
+    WCHAR data[8];   // 足够存放"adad"的Unicode字符
+} g_PasswordString = { -1, 4, L"adad" }; // 设置引用计数为-1，表示静态字符串
+
+__declspec(naked) void HookFunction3()
+{
+    __asm {
+        // pushad
+        // pushfd
+
+        // 原始部分内容
+        // 0056A86B        lea         edx,[ebp-10]
+        // 0056A86E        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+        // 0056A873        mov         eax,dword ptr [eax]
+        // 0056A875        mov         eax,dword ptr [eax+8D4]
+        // 0056A87B        mov         eax,dword ptr [eax+27C]
+        
+        // 插入hook 把eax指向这么数据的一个地址
+        // 长度4: 04 00 00 00
+        // 内容(adad): 61 00 64 00 61 00 64 00
+
+        // 0056A881        call        LowerCase
+  
+      
+        // 直接将eax指向我们的Delphi字符串
+        lea eax, g_ActString.data
+        // popfd
+        // popad
+        // 跳转到原始函数
+        jmp originalFunc3
+    }
+}
+
+__declspec(naked) void HookFunction4()
+{
+    __asm {
+     /*   0056A891        mov         eax, [0067A728]; ^ gvar_0074350C:TFrmDlg
+        0056A896        mov         eax, dword ptr[eax]
+        0056A898        mov         eax, dword ptr[eax + 8D8]
+        0056A89E        mov         edx, dword ptr[eax + 27C]
+        0056A8A4        mov         eax, dword ptr[ebp - 4]
+        0056A8A7        call        005695A0*/
+        // 直接将eax指向我们的Delphi密码字符串
+        lea edx, g_PasswordString.data
+
+        // 跳转到原始函数
+        jmp originalFunc4
+    }
+}
+
+// 创建延迟线程的函数
+void CreateDelayedThread() {
+    // 创建线程执行延迟操作
+    HANDLE hThread = CreateThread(NULL, 0, DelayedExtraActionThread, NULL, 0, NULL);
+    if (hThread) {
+        CloseHandle(hThread);  // 关闭句柄，线程会继续执行
+    }
+}
+
+// 线程函数，执行延迟操作
+DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam) {
+    // 延迟3秒
+    Sleep(6000);
+    
+    // 执行额外操作
+    DWORD extraPtr = *(DWORD*)(g_BaseAddr + 0x27A018);
+    DWORD extraObj = *(DWORD*)(extraPtr);
+    
+    typedef void (*ExtraFunc)(DWORD obj);
+    ExtraFunc extraFunc = (ExtraFunc)(g_BaseAddr + 0x16D10C);
+    extraFunc(extraObj);
+    
+    return 0;
+}
 
 void InitBaseAddr() {
     g_BaseAddr = (DWORD)GetModuleHandle(L"ZC.H");
@@ -159,14 +163,6 @@ bool InitHook()
         return false;
     }
 
-    // 不倒翁
-    // ZC.H+1DF763 - 88 42 0C              - mov [edx+0C],al
-    // ZC.H+1DF766 - 8B 45 C8              - mov eax,[ebp-38]
-    // ZC.H+1DF769 - 8B 55 FC              - mov edx,[ebp-04]
-    // ZC.H+1DF76C - 89 82 78010000        - mov [edx+00000178],eax
-    // ZC.H+1DF772 - 8B 45 FC              - mov eax,[ebp-04]
-    // ZC.H+1DF775 - 66 BE FFFF            - mov si,FFFF { 65535 }
-    // ZC.H+1DF779 - E8 AE60E2FF           - call ZC.H+582C
 
     DWORD targetAddress1 = 0x1DF76C + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress1, HookFunction, (LPVOID*)&originalFunc1) != MH_OK)
@@ -174,13 +170,29 @@ bool InitHook()
         printf("hook 1 fail\n");
         return false;
     }
-    // 显血 自己 目前也不需要了
-    /*DWORD targetAddress2 = 0x24C62C + (DWORD)GetModuleHandle(L"ZC.H");
+    // 自动跳
+    DWORD targetAddress2 = 0x24ADB9 + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress2, HookFunction2, (LPVOID*)&originalFunc2) != MH_OK)
     {
         printf("hook 2 fail\n");
         return false;
-    }*/
+    }
+
+    // 自动填充账号  
+    DWORD targetAddress3 = 0x16A881 + (DWORD)GetModuleHandle(L"ZC.H");
+    if (MH_CreateHook((LPVOID)targetAddress3, HookFunction3, (LPVOID*)&originalFunc3) != MH_OK)
+    {
+        printf("hook 3 fail\n");
+        return false;
+    }
+
+    // 自动填充密码
+    DWORD targetAddress4 = 0x0016A8A4 + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    if (MH_CreateHook((LPVOID)targetAddress4, HookFunction4, (LPVOID*)&originalFunc4) != MH_OK)
+    {
+        printf("hook 4 fail\n");
+        return false;
+    }
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {
