@@ -105,6 +105,8 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(480, 23);
             textBox2.TabIndex = 6;
+            textBox2.Text = "textBox2";
+
             // 
             // NPCForm
             // 

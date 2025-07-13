@@ -1,0 +1,235 @@
+tickcount 轻松找
+能找到内挂外挂几个变量 
+g_boSpeedRate 
+00647278        cmp         byte ptr ds:[75632A],0 ; 检查g_boSpeedRate是否为false
+0064727F>       je          00647295             ; 如果为false，跳转到00647295
+然后直接找旁边的
+
+g_boShowRedHPLable: Boolean = True; //显示血条
+g_boShowHPNumber: Boolean = True; //显示血量数字
+g_boShowJobLevel: Boolean = True; //显示职业等级
+g_boDuraAlert: Boolean = True; //物品持久警告
+g_boMagicLock: Boolean = True; //魔法锁定
+g_boSpeedRate: Boolean = False;
+g_boSpeedRateShow: Boolean = False;
+//g_boAutoPuckUpItem        : Boolean = False;
+C 005E2A05 ^gvar_00752764
+C 005E2A29 ^gvar_0075632B
+C 005E2A31 ^gvar_0075632C
+C 005E2A39 ^gvar_0075632A
+C 005E2A41 ^gvar_00756330
+C 005E2A4A ^gvar_00756334
+C 005E2A53 ^gvar_007564EC
+C 005E2A81 ^gvar_00756330
+C 005E2A89 ^gvar_0075632B
+C 005E2AB3 ^gvar_00756330
+C 005E2ABB ^gvar_0075632B
+C 005E2AD1 ^gvar_0075632A
+C 005E2AE2 ^gvar_00756330
+C 005E2AEA ^gvar_00756334
+
+2. 变速变量 这个要继续找 可以在这些相关的如 CanNextHit里看到
+  g_HitSpeedRate: Integer = 0;
+  g_MagSpeedRate: Integer = 0;
+  g_MoveSpeedRate: Integer = 0;
+
+当前固定值 g_nHitTime
+[0067724C] W 1400 -> 800 已经很快了
+
+
+3. 注意会被覆盖 不清楚是什么
+有一个好像是移速 不确定
+
+ZC.H+1E2A29 - A1 0CA56700           - mov eax,[ZC.H+27A50C] { (0075632B) }
+ZC.H+1E2A2E - C6 00 01              - mov byte ptr [eax],01 { 1 }
+
+ZC.H+1E2A31 - A1 1CA26700           - mov eax,[ZC.H+27A21C] { (0075632C) }
+ZC.H+1E2A36 - C6 00 00              - mov byte ptr [eax],00 { 0 }
+
+ZC.H+1E2A39 - A1 889B6700           - mov eax,[ZC.H+00679B88] { (0075632A) } 
+mov eax,[00679B88] 这是变速
+
+ZC.H+1E2A3E - C6 00 01              - mov byte ptr [eax],01 { 1 }
+ZC.H+1E2A41 - A1 AC9B6700           - mov eax,[ZC.H+279BAC] { (00756330) }
+调试开关 0075633A
+
+
+TfrmMain.CanNextHit
+_Unit101.sub_0064722C
+
+function TfrmMain.CanNextHit(settime: Boolean): Boolean;
+var
+  NextHitTime, LevelFastTime: Integer;
+begin
+  if (g_MySelf <> nil) and g_MySelf.m_StallMgr.OnSale then
+  begin
+    Result := False;
+    Exit;
+  end;
+  LevelFastTime := _MIN(370, (g_MySelf.m_Abil.level * 14)); //0905
+  LevelFastTime := _MIN(800, LevelFastTime + g_MySelf.m_nHitSpeed * g_nItemSpeed {60});
+
+  if g_boSpeedRate then
+  begin
+    if g_MySelf.m_boAttackSlow then
+      NextHitTime := g_nHitTime {1400} - LevelFastTime + 1500 - g_HitSpeedRate * 20 //腕力超过时，减慢攻击速度
+    else
+      NextHitTime := g_nHitTime {1400} - LevelFastTime - g_HitSpeedRate * 20;
+  end
+  else
+  begin
+    if g_MySelf.m_boAttackSlow then
+      NextHitTime := g_nHitTime {1400} - LevelFastTime + 1500
+    else
+      NextHitTime := g_nHitTime {1400} - LevelFastTime;
+  end;
+
+  if NextHitTime < 0 then
+    NextHitTime := 0;
+
+  if GetTickCount - LastHitTick > LongWord(NextHitTime) then
+  begin
+    if settime then
+      LastHitTick := GetTickCount;
+    Result := True;
+  end
+  else
+    Result := False;
+end;
+
+; 函数入口，设置栈帧
+0064722C        push        ebp                  ; 保存旧的栈基址
+0064722D        mov         ebp,esp              ; 设置新的栈基址
+0064722F        add         esp,0FFFFFFF0        ; 分配局部变量空间 (相当于 sub esp, 16)
+00647232        mov         dword ptr [ebp-4],eax ; 保存this指针到局部变量
+
+; 第一个_MIN函数调用: LevelFastTime := _MIN(370, (g_MySelf.m_Abil.level * 14))
+00647235        push        0                    ; 高32位参数(64位值的高位，这里不使用)
+00647237        push        172                  ; 第一个参数: 370 (十六进制172h)
+0064723C        mov         eax,[00752764]       ; 获取g_MySelf指针
+00647241        movzx       eax,byte ptr [eax+3C]; 获取g_MySelf.m_Abil.level
+00647245        imul        eax,eax,0E           ; 乘以14 (0Eh)
+00647248        xor         edx,edx              ; 清零edx (为64位值准备)
+0064724A        push        edx                  ; 高32位参数
+0064724B        push        eax                  ; 第二个参数: level * 14
+0064724C        call        0053556C             ; 调用_MIN函数
+00647251        mov         dword ptr [ebp-10],eax ; 保存结果到LevelFastTime
+
+; 第二个_MIN函数调用: LevelFastTime := _MIN(800, LevelFastTime + g_MySelf.m_nHitSpeed * g_nItemSpeed)
+00647254        push        0                    ; 高32位参数
+00647256        push        320                  ; 第一个参数: 800 (十六进制320h)
+0064725B        mov         eax,[00752764]       ; 获取g_MySelf指针
+00647260        movsx       eax,byte ptr [eax+88]; 获取g_MySelf.m_nHitSpeed
+00647267        imul        eax,eax,3C           ; 乘以60 (3Ch) - g_nItemSpeed
+0064726A        add         eax,dword ptr [ebp-10]; 加上之前的LevelFastTime
+0064726D        cdq                              ; 将eax符号扩展到edx (为64位值准备)
+0064726E        push        edx                  ; 高32位参数
+0064726F        push        eax                  ; 第二个参数: LevelFastTime + m_nHitSpeed * 60
+00647270        call        0053556C             ; 调用_MIN函数
+00647275        mov         dword ptr [ebp-10],eax ; 更新LevelFastTime
+
+; 计算NextHitTime - 根据g_boSpeedRate和m_boAttackSlow决定公式
+00647278        cmp         byte ptr ds:[75632A],0 ; 检查g_boSpeedRate是否为false
+0064727F>       je          00647295             ; 如果为false，跳转到00647295
+
+; g_boSpeedRate为true且m_boAttackSlow为true的情况
+; NextHitTime := g_nHitTime - LevelFastTime + 1500
+00647281        mov         eax,[00679B78]       ; 获取g_nHitTime指针
+00647286        mov         eax,dword ptr [eax]  ; 获取g_nHitTime值
+00647288        sub         eax,dword ptr [ebp-10]; 减去LevelFastTime
+0064728B        add         eax,5DC              ; 加上1500 (5DCh)
+00647290        mov         dword ptr [ebp-0C],eax ; 保存结果到NextHitTime
+00647293>       jmp         006472A2             ; 跳转到NextHitTime < 0的检查
+
+; g_boSpeedRate为false的情况
+; NextHitTime := g_nHitTime - LevelFastTime
+00647295        mov         eax,[00679B78]       ; 获取g_nHitTime指针
+0064729A        mov         eax,dword ptr [eax]  ; 获取g_nHitTime值
+0064729C        sub         eax,dword ptr [ebp-10]; 减去LevelFastTime
+0064729F        mov         dword ptr [ebp-0C],eax ; 保存结果到NextHitTime
+
+; 检查NextHitTime是否小于0，如果是则设为0
+006472A2        cmp         dword ptr [ebp-0C],0 ; 比较NextHitTime和0
+006472A6>       jge         006472AD            ; 如果NextHitTime >= 0，跳过
+006472A8        xor         eax,eax             ; eax = 0
+006472AA        mov         dword ptr [ebp-0C],eax ; NextHitTime = 0
+
+; 检查是否可以攻击: GetTickCount - LastHitTick > NextHitTime
+006472AD        call        kernel32.GetTickCount ; 获取当前时间
+006472B2        mov         edx,dword ptr [ebp-4] ; 获取this指针
+006472B5        sub         eax,dword ptr [edx+3D8] ; 计算GetTickCount - LastHitTick
+006472BB        cmp         eax,dword ptr [ebp-0C] ; 比较结果和NextHitTime
+006472BE>       jbe         006472D4            ; 如果小于等于，跳转到返回false
+
+; 可以攻击，如果settime为true则更新LastHitTick
+006472C0        call        kernel32.GetTickCount ; 再次获取当前时间
+006472C5        mov         edx,dword ptr [ebp-4] ; 获取this指针
+006472C8        mov         dword ptr [edx+3D8],eax ; 更新LastHitTick
+006472CE        mov         byte ptr [ebp-5],1   ; Result = true
+006472D2>       jmp         006472D8            ; 跳转到函数返回
+
+; 不能攻击
+006472D4        mov         byte ptr [ebp-5],0   ; Result = false
+
+; 函数返回
+006472D8        mov         al,byte ptr [ebp-5]  ; 将结果加载到al
+006472DB        mov         esp,ebp              ; 恢复栈指针
+006472DD        pop         ebp                  ; 恢复栈基址
+006472DE        ret                              ; 返回
+
+0064722C        push        ebp
+0064722D        mov         ebp,esp
+0064722F        add         esp,0FFFFFFF0
+00647232        mov         dword ptr [ebp-4],eax
+00647235        push        0
+00647237        push        172
+0064723C        mov         eax,[00752764];gvar_00752764
+00647241        movzx       eax,byte ptr [eax+3C]
+00647245        imul        eax,eax,0E
+00647248        xor         edx,edx
+0064724A        push        edx
+0064724B        push        eax
+0064724C        call        0053556C
+00647251        mov         dword ptr [ebp-10],eax
+00647254        push        0
+00647256        push        320
+0064725B        mov         eax,[00752764];gvar_00752764
+00647260        movsx       eax,byte ptr [eax+88]
+00647267        imul        eax,eax,3C
+0064726A        add         eax,dword ptr [ebp-10]
+0064726D        cdq
+0064726E        push        edx
+0064726F        push        eax
+00647270        call        0053556C
+00647275        mov         dword ptr [ebp-10],eax
+00647278        cmp         byte ptr ds:[75632A],0;gvar_0075632A
+0064727F>       je          00647295
+00647281        mov         eax,[00679B78];^gvar_0067724C
+00647286        mov         eax,dword ptr [eax]
+00647288        sub         eax,dword ptr [ebp-10]
+0064728B        add         eax,5DC
+00647290        mov         dword ptr [ebp-0C],eax
+00647293>       jmp         006472A2
+00647295        mov         eax,[00679B78];^gvar_0067724C
+0064729A        mov         eax,dword ptr [eax]
+0064729C        sub         eax,dword ptr [ebp-10]
+0064729F        mov         dword ptr [ebp-0C],eax
+006472A2        cmp         dword ptr [ebp-0C],0
+006472A6>       jge         006472AD
+006472A8        xor         eax,eax
+006472AA        mov         dword ptr [ebp-0C],eax
+006472AD        call        kernel32.GetTickCount
+006472B2        mov         edx,dword ptr [ebp-4]
+006472B5        sub         eax,dword ptr [edx+3D8]
+006472BB        cmp         eax,dword ptr [ebp-0C]
+006472BE>       jbe         006472D4
+006472C0        call        kernel32.GetTickCount
+006472C5        mov         edx,dword ptr [ebp-4]
+006472C8        mov         dword ptr [edx+3D8],eax;TFrmMain.?f3D8:DWORD
+006472CE        mov         byte ptr [ebp-5],1
+006472D2>       jmp         006472D8
+006472D4        mov         byte ptr [ebp-5],0
+006472D8        mov         al,byte ptr [ebp-5]
+006472DB        mov         esp,ebp
+006472DD        pop         ebp
+006472DE        ret

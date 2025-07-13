@@ -76,13 +76,6 @@ static struct {
     WCHAR data[8];   // 足够存放"adad"的Unicode字符
 } g_ActString = { -1, 4, L"adad" }; // 设置引用计数为-1，表示静态字符串
 
-// 同样修改密码字符串结构
-static struct {
-    DWORD refCount;  // 引用计数
-    DWORD length;    // 字符数量
-    WCHAR data[8];   // 足够存放"adad"的Unicode字符
-} g_PasswordString = { -1, 4, L"adad" }; // 设置引用计数为-1，表示静态字符串
-
 __declspec(naked) void HookFunction3()
 {
     __asm {
@@ -122,7 +115,7 @@ __declspec(naked) void HookFunction4()
         0056A8A4        mov         eax, dword ptr[ebp - 4]
         0056A8A7        call        005695A0*/
         // 直接将eax指向我们的Delphi密码字符串
-        lea edx, g_PasswordString.data
+        lea edx, g_ActString.data
 
         // 跳转到原始函数
         jmp originalFunc4
@@ -141,7 +134,7 @@ void CreateDelayedThread() {
 // 线程函数，执行延迟操作
 DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam) {
     // 延迟3秒
-    Sleep(6000);
+    Sleep(5000);
     
     // 执行额外操作
     DWORD extraPtr = *(DWORD*)(g_BaseAddr + 0x27A018);
