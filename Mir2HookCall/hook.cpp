@@ -16,11 +16,20 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
 		PCWPSTRUCT pMsg = (PCWPSTRUCT)lParam;
 		if (pMsg->message == WM_COPYDATA && pMsg->wParam == 20250129)
 		{
+			wchar_t debugMsg[100];
+			swprintf_s(debugMsg, L"SetAccountInfo");
+			OutputDebugStringW(debugMsg);
+
+
 			PCOPYDATASTRUCT pCDS = (PCOPYDATASTRUCT)pMsg->lParam;
 			int code = pCDS->dwData;
 			int length = pCDS->cbData;
 			int* data = (int*)pCDS->lpData;
 			if (code >= 9000) {
+		/*		char testMsg[100] = { 0 };
+
+				MessageBoxA(NULL, testMsg, "²âÊÔ", MB_OK);*/
+
 				Sys::process(code, data);
 			}
 			else if (code >= 3000) {//npc

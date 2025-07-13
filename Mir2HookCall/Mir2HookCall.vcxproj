@@ -150,6 +150,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="account_info.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="goRun.h" />
     <ClInclude Include="login.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="sys.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="account_info.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="goRun.cpp" />
     <ClCompile Include="hook.cpp" />

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "sys.h"
 #include <string>
-
+#include "account_info.h" // 添加新的头文件引用
 
 // Define a function type (adjust as needed)
 typedef void (*func_t)();
@@ -106,7 +106,33 @@ void Sys::process(int code, int* data)
 	case 9002: //恢复写屏call
 		restore_write_screen_call();
 		break;
+	case 9003: // 接收账号和密码数据
+         if (data && data[0] > 0 && data[1] > 0) {
+             int accountLength = (int)data[0];
+             int passwordLength = (int)data[1];
+            
+             // 防止缓冲区溢出
+             if (accountLength > 31) accountLength = 31;
+             if (passwordLength > 31) passwordLength = 31;
+            
+             wchar_t accountBuffer[32] = {0};
+             wchar_t passwordBuffer[32] = {0};
+            
+             // 提取账号字符
+             for (int i = 0; i < accountLength; i++) {
+                 accountBuffer[i] = (wchar_t)data[2 + i];
+             }
+            
+             // 提取密码字符
+             for (int i = 0; i < passwordLength; i++) {
+                 passwordBuffer[i] = (wchar_t)data[2 + accountLength + i];
+             }
+            
+             // 设置账号和密码
+             SetAccountInfo(accountBuffer, passwordBuffer);
+         }
 
+        break;
 	case 9999: //执行任务ASM代码
 		any_call(data);
 		break;

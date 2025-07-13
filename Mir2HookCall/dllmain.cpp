@@ -1,9 +1,9 @@
 ﻿#include "pch.h"
+#include "account_info.h"
 #include <stdio.h>
 #include "MinHook.h"
 #include <Windows.h>
 #include "login.h"
-
 
 typedef void (*OriginalFuncType)(void);
 OriginalFuncType originalFunc1 = NULL;
@@ -68,39 +68,14 @@ __declspec(naked) void HookFunction2()
     }
 }
 
-
-// 修改Delphi字符串结构，确保引用计数在正确位置
-static struct {
-    DWORD refCount;  // 引用计数，位于数据指针-8的位置
-    DWORD length;    // 字符数量
-    WCHAR data[8];   // 足够存放"adad"的Unicode字符
-} g_ActString = { -1, 4, L"adad" }; // 设置引用计数为-1，表示静态字符串
+// 新增：定义全局变量保存 data 成员地址
+DWORD g_ActStringDataAddr = 0; // 先声明，不初始化
+DWORD g_PwdStringDataAddr = 0; // 为密码字符串添加变量
 
 __declspec(naked) void HookFunction3()
 {
     __asm {
-        // pushad
-        // pushfd
-
-        // 原始部分内容
-        // 0056A86B        lea         edx,[ebp-10]
-        // 0056A86E        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
-        // 0056A873        mov         eax,dword ptr [eax]
-        // 0056A875        mov         eax,dword ptr [eax+8D4]
-        // 0056A87B        mov         eax,dword ptr [eax+27C]
-        
-        // 插入hook 把eax指向这么数据的一个地址
-        // 长度4: 04 00 00 00
-        // 内容(adad): 61 00 64 00 61 00 64 00
-
-        // 0056A881        call        LowerCase
-  
-      
-        // 直接将eax指向我们的Delphi字符串
-        lea eax, g_ActString.data
-        // popfd
-        // popad
-        // 跳转到原始函数
+        mov eax, g_ActStringDataAddr
         jmp originalFunc3
     }
 }
@@ -108,16 +83,8 @@ __declspec(naked) void HookFunction3()
 __declspec(naked) void HookFunction4()
 {
     __asm {
-     /*   0056A891        mov         eax, [0067A728]; ^ gvar_0074350C:TFrmDlg
-        0056A896        mov         eax, dword ptr[eax]
-        0056A898        mov         eax, dword ptr[eax + 8D8]
-        0056A89E        mov         edx, dword ptr[eax + 27C]
-        0056A8A4        mov         eax, dword ptr[ebp - 4]
-        0056A8A7        call        005695A0*/
-        // 直接将eax指向我们的Delphi密码字符串
-        lea edx, g_ActString.data
-
-        // 跳转到原始函数
+        // 使用全局变量而不是直接访问
+        mov edx, g_PwdStringDataAddr
         jmp originalFunc4
     }
 }
@@ -171,9 +138,18 @@ void InitBaseAddr() {
     g_BaseAddr = (DWORD)GetModuleHandle(L"ZC.H");
 }
 
+// 在 InitHook 函数中，使用临时变量避免直接引用 g_ActString
+// 在文件顶部添加函数声明
+extern "C" DWORD GetActStringDataAddr();
+extern "C" DWORD GetPwdStringDataAddr();
+
 bool InitHook()
 {
     InitBaseAddr();
+    
+    // 直接调用函数，不需要再次声明
+    g_ActStringDataAddr = GetActStringDataAddr();
+    g_PwdStringDataAddr = GetPwdStringDataAddr();
     
     if (MH_Initialize() != MH_OK)
     {

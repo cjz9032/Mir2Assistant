@@ -13,6 +13,7 @@ namespace Mir2Assistant
 {
     public class DllInject
     {
+
         public enum HookType : int
         {
             WH_JOURNALRECORD = 0,
@@ -83,6 +84,7 @@ namespace Mir2Assistant
                 gi.LibIpdl = 0;
             }
         }
+
         public static void loadDll(MirGameInstanceModel gi)
         {
             IntPtr addr = (IntPtr)0;
@@ -104,6 +106,7 @@ namespace Mir2Assistant
                 MessageBox.Show("Injection failed: could not load target DLL.");
                 return;
             }
+            
             addr = GetProcAddress(ipdl, "HookProc");
             if (addr == IntPtr.Zero)
             {
@@ -113,8 +116,41 @@ namespace Mir2Assistant
             gi.LibIpdl = ipdl;
             var thread = new Thread(() => SetHook(addr, gi));
             thread.Start();
+            
+            
+            // 等待DLL加载完成
+            //await Task.Delay(5000);
+
+            // 使用SendMirCall发送账号信息
+             if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
+            {
+                // 将账号和密码转换为字符数组
+                char[] accountChars = gi.AccountInfo.Account.ToCharArray();
+                char[] passwordChars = gi.AccountInfo.Password.ToCharArray();
+
+                // 创建一个足够大的数组来存储所有数据
+                // 格式: [账号长度, 密码长度, 账号字符1, 账号字符2, ..., 密码字符1, 密码字符2, ...]
+                nint[] data = new nint[2 + accountChars.Length + passwordChars.Length];
+
+                // 存储长度信息
+                data[0] = accountChars.Length;
+                data[1] = passwordChars.Length;
+
+                // 存储账号字符
+                for (int i = 0; i < accountChars.Length; i++)
+                {
+                    data[2 + i] = accountChars[i];
+                }
+
+                // 存储密码字符
+                for (int i = 0; i < passwordChars.Length; i++)
+                {
+                    data[2 + accountChars.Length + i] = passwordChars[i];
+                }
+
+                // 一次性发送所有数据
+                SendMirCall.Send(gi, 9003, data);
+            }
         }
-
-
     }
 }
