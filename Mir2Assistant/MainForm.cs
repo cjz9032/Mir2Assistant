@@ -3,8 +3,8 @@ using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.Utils;
 using System.Diagnostics;
 using System.Text.Json;
-using Serilog; // ĞÂÔöSerilogÒıÓÃ
-using Serilog.Sinks.Debug; // Ìí¼ÓDebug sinkÒıÓÃ
+using Serilog; // æ–°å¢Serilogå¼•ç”¨
+using Serilog.Sinks.Debug; // æ·»åŠ Debug sinkå¼•ç”¨
 
 namespace Mir2Assistant
 {
@@ -14,8 +14,8 @@ namespace Mir2Assistant
         private string currentProcessName = Process.GetCurrentProcess().ProcessName;
         private List<GameAccountModel> accountList = new List<GameAccountModel>();
         private string configFilePath = Path.Combine(Directory.GetCurrentDirectory(), "accounts.json");
-        private string gamePath = "ZC.H"; // ÓÎÏ·Â·¾¶£¬ĞèÒªÅäÖÃ
-        private string gameDirectory = @"G:\cq\cd"; // ÓÎÏ·ËùÔÚÄ¿Â¼
+        private string gamePath = "ZC.H"; // æ¸¸æˆè·¯å¾„ï¼Œéœ€è¦é…ç½®
+        private string gameDirectory = @"G:\cq\cd"; // æ¸¸æˆæ‰€åœ¨ç›®å½•
         private string encodeArg = @"CqJHmIicTR62d+9dSOk58cTKgI7HznPbN6DJTvZprSAELnz5oDnMgNt5wBjuFk1qAxqanu//vSGjdVAYZn1QVPj5eBNHqu8r4kAsaof5+vscS8Zg1/EMOLMUwqpHS2YUm5UOhb889exVRhd96hTJFIy2GNszQaAk4ncba891PYNsKBxPjF9PeD+eX8L/GJU6ZIHi/GdjTYUxiBMd20cBkivf1tc3SbFSLabzUQjMLFYEX0f3dTqz8T3pAGRR5eGdIC5UiEbcGJowco1ftRbqqTIKMqyHUk3ie7SiX0uDpRK3DjxXN2dVyAqfucJ6HiftllA5LrVZb77XUr4JOt631s2Ku6zEgZhYDYRH9Kip8qxiRMPXSzzNfaP5gCaNQfxPfePxDlcHectMqT+XV2LzEkJWEEEnF79SyHKT6Uiz99UeHtZ11MDST5NVTwie/bOnFyu2CT7xScxoWT+yyuw3d7tNGAkt1fqlTtXTlc2/BT5ps9phS154s8TsyjcWNDoXWhXPgrknoFSJVhtQbl0qxBUvXFVYE2wDh6D+pe5kBMLOF8PRc82m4PcpGy+vimoRVJCkGamn757CLu4Bg2G4sda4RxQmk2dtPSu17irMsc/Cxmebkv3W76xPKdUeNgFYF+oWJDCkwfj7iFvzolHb1KaSuCHRnOb6O+mvW51BGB5tkxKzrXt2XIcNr1DWwQrkZT3HKQsyY1vILGR0U2xfE+Z9wQCVwwCOsERTh9RxZt2Iht6vKWV0DDn2TWfVevPPl5Du3QU+Y7lp3WmIe+GwLZjueViLnJIL46EmpMKXA1/s+zSTW9s1No5eSoVoRmYN6FH7Wds1xvMSn2JovV3OE7zo+DMLC69xLopScUHBKVeQQOLHVkLvqVepYGdQ0fg3tc17vxphP046OdSzdxxJ1OB8xNtK+dgH9nxaYBPZOCWb7Wutz8kWJaO8lziTLMHD6jfR77lkt2HmO0ENJb36REyfeWaCQ5cnlLnlhSy9MK5HH3P95dreEORsNZnNWBYN";
         public MainForm()
         {
@@ -26,16 +26,16 @@ namespace Mir2Assistant
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // ÅäÖÃSerilog
+            // é…ç½®Serilog
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File(Path.Combine(Directory.GetCurrentDirectory(), "logs\\app_.log"), rollingInterval: RollingInterval.Day)
                 .WriteTo.Debug()
                 .CreateLogger();
                 
-            Log.Information("Ó¦ÓÃ³ÌĞòÆô¶¯");
-            HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // ×¢²áÈÈ¼ü
-            Log.Debug("ÒÑ×¢²áÈÈ¼ü: Delete");
+            Log.Information("åº”ç”¨ç¨‹åºå¯åŠ¨");
+            HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // æ³¨å†Œçƒ­é”®
+            Log.Debug("å·²æ³¨å†Œçƒ­é”®: Delete");
             LoadAccountList();
             RefreshDataGrid();
         }
@@ -44,17 +44,17 @@ namespace Mir2Assistant
         {
             try
             {
-                Log.Debug("¿ªÊ¼¼ÓÔØÕËºÅÁĞ±í£¬ÅäÖÃÎÄ¼şÂ·¾¶: {ConfigFilePath}", configFilePath);
+                Log.Debug("å¼€å§‹åŠ è½½è´¦å·åˆ—è¡¨ï¼Œé…ç½®æ–‡ä»¶è·¯å¾„: {ConfigFilePath}", configFilePath);
                 if (File.Exists(configFilePath))
                 {
                     string json = File.ReadAllText(configFilePath);
                     accountList = JsonSerializer.Deserialize<List<GameAccountModel>>(json) ?? new List<GameAccountModel>();
-                    Log.Information("³É¹¦¼ÓÔØÕËºÅÁĞ±í£¬¹² {AccountCount} ¸öÕËºÅ", accountList.Count);
+                    Log.Information("æˆåŠŸåŠ è½½è´¦å·åˆ—è¡¨ï¼Œå…± {AccountCount} ä¸ªè´¦å·", accountList.Count);
                 }
                 else
                 {
-                    // ´´½¨Ê¾ÀıÕËºÅ
-                    Log.Information("ÅäÖÃÎÄ¼ş²»´æÔÚ£¬´´½¨Ê¾ÀıÕËºÅ");
+                    // åˆ›å»ºç¤ºä¾‹è´¦å·
+                    Log.Information("é…ç½®æ–‡ä»¶ä¸å­˜åœ¨ï¼Œåˆ›å»ºç¤ºä¾‹è´¦å·");
                     accountList = new List<GameAccountModel>
                     {
                         new GameAccountModel { Account = "adad", Password = "adad", CharacterName = "sad13", IsMainControl = true },
@@ -65,8 +65,8 @@ namespace Mir2Assistant
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "¼ÓÔØÕËºÅÁĞ±íÊ§°Ü");
-                MessageBox.Show($"¼ÓÔØÕËºÅÁĞ±íÊ§°Ü: {ex.Message}");
+                Log.Error(ex, "åŠ è½½è´¦å·åˆ—è¡¨å¤±è´¥");
+                MessageBox.Show($"åŠ è½½è´¦å·åˆ—è¡¨å¤±è´¥: {ex.Message}");
             }
         }
 
@@ -74,22 +74,22 @@ namespace Mir2Assistant
         {
             try
             {
-                Log.Debug("¿ªÊ¼±£´æÕËºÅÁĞ±í£¬¹² {AccountCount} ¸öÕËºÅ", accountList.Count);
+                Log.Debug("å¼€å§‹ä¿å­˜è´¦å·åˆ—è¡¨ï¼Œå…± {AccountCount} ä¸ªè´¦å·", accountList.Count);
                 string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(configFilePath, json);
-                Log.Information("ÕËºÅÁĞ±í±£´æ³É¹¦£¬Â·¾¶: {ConfigFilePath}", configFilePath);
+                Log.Information("è´¦å·åˆ—è¡¨ä¿å­˜æˆåŠŸï¼Œè·¯å¾„: {ConfigFilePath}", configFilePath);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "±£´æÕËºÅÁĞ±íÊ§°Ü");
-                MessageBox.Show($"±£´æÕËºÅÁĞ±íÊ§°Ü: {ex.Message}");
+                Log.Error(ex, "ä¿å­˜è´¦å·åˆ—è¡¨å¤±è´¥");
+                MessageBox.Show($"ä¿å­˜è´¦å·åˆ—è¡¨å¤±è´¥: {ex.Message}");
             }
         }
 
         private void RefreshDataGrid()
         {
-            Log.Debug("Ë¢ĞÂÊı¾İÍø¸ñ");
-            // ¸üĞÂ½ø³Ì×´Ì¬
+            Log.Debug("åˆ·æ–°æ•°æ®ç½‘æ ¼");
+            // æ›´æ–°è¿›ç¨‹çŠ¶æ€
             foreach (var account in accountList)
             {
                 if (account.ProcessId.HasValue)
@@ -100,13 +100,13 @@ namespace Mir2Assistant
                     }
                     catch
                     {
-                        Log.Information("½ø³Ì {ProcessId} ÒÑ²»´æÔÚ£¬ÖØÖÃÕËºÅ {Account} µÄ½ø³ÌID", account.ProcessId, account.Account);
+                        Log.Information("è¿›ç¨‹ {ProcessId} å·²ä¸å­˜åœ¨ï¼Œé‡ç½®è´¦å· {Account} çš„è¿›ç¨‹ID", account.ProcessId, account.Account);
                         account.ProcessId = null;
                     }
                 }
             }
 
-            // ±£´æµ±Ç°ÁĞË³ĞòºÍÎ»ÖÃ
+            // ä¿å­˜å½“å‰åˆ—é¡ºåºå’Œä½ç½®
             Dictionary<string, int> columnOrder = new Dictionary<string, int>();
             if (dataGridViewAccounts.Columns.Count > 0)
             {
@@ -119,7 +119,7 @@ namespace Mir2Assistant
             dataGridViewAccounts.DataSource = null;
             dataGridViewAccounts.DataSource = new BindingSource { DataSource = accountList };
             
-            // »Ö¸´ÁĞË³ĞòºÍÎ»ÖÃ
+            // æ¢å¤åˆ—é¡ºåºå’Œä½ç½®
             if (columnOrder.Count > 0)
             {
                 foreach (DataGridViewColumn col in dataGridViewAccounts.Columns)
@@ -132,49 +132,51 @@ namespace Mir2Assistant
             }
         }
 
-        // ĞŞ¸ÄStartGameProcess·½·¨£¬Ê¹ÓÃPowerShell½Å±¾Æô¶¯ÓÎÏ·
-        // ĞŞ¸ÄStartGameProcess·½·¨£¬±ÜÃâ¸¸×Ó½ø³Ì¹ØÏµ
+        // ä¿®æ”¹StartGameProcessæ–¹æ³•ï¼Œä½¿ç”¨PowerShellè„šæœ¬å¯åŠ¨æ¸¸æˆ
+        // ä¿®æ”¹StartGameProcessæ–¹æ³•ï¼Œé¿å…çˆ¶å­è¿›ç¨‹å…³ç³»
         private void StartGameProcess(GameAccountModel account)
         {
             try
             {
                 string arguments = $"{encodeArg}";
-                // Ê¹ÓÃ -PassThru »ñÈ¡½ø³Ì¶ÔÏó£¬²¢Êä³öPID
+                // ä½¿ç”¨ -PassThru è·å–è¿›ç¨‹å¯¹è±¡ï¼Œå¹¶è¾“å‡ºPID
                 string psCommand = $"cd '{gameDirectory}'; $p=Start-Process -FilePath './{gamePath}' -ArgumentList '{arguments}' -NoNewWindow -PassThru; $p.Id";
 
                 System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo
                 {
                     FileName = "powershell.exe",
                     Arguments = $"-NoProfile -ExecutionPolicy Bypass -Command \"{psCommand}\"",
-                    UseShellExecute = false, // ±ØĞëÎªfalse²ÅÄÜÖØ¶¨ÏòÊä³ö
+                    UseShellExecute = false, // å¿…é¡»ä¸ºfalseæ‰èƒ½é‡å®šå‘è¾“å‡º
                     RedirectStandardOutput = true,
                     WindowStyle = ProcessWindowStyle.Hidden
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                string output = process.StandardOutput.ReadLine(); // Ö»¶ÁÒ»ĞĞ¼´¿É
-                // ²»ĞèÒª WaitForExit
+                Thread.Sleep(5000);
+
+                string output = process.StandardOutput.ReadLine(); // åªè¯»ä¸€è¡Œå³å¯
+                // ä¸éœ€è¦ WaitForExit
                 if (int.TryParse(output.Trim(), out int pid))
                 {
-                    Log.Information("PowerShellÒÑÖ±½ÓÆô¶¯ÓÎÏ·½ø³Ì£¬ÕËºÅ: {Account}, PID: {Pid}", account.Account, pid);
+                    Log.Information("PowerShellå·²ç›´æ¥å¯åŠ¨æ¸¸æˆè¿›ç¨‹ï¼Œè´¦å·: {Account}, PID: {Pid}", account.Account, pid);
                     account.ProcessId = pid;
-                    // Í¨¹ıPID»ñÈ¡½ø³Ì¶ÔÏó
+                    // é€šè¿‡PIDè·å–è¿›ç¨‹å¯¹è±¡
                     var gameProcess = Process.GetProcessById(pid);
-                    // ºóĞø°ó¶¨DLLµÈÂß¼­
+                    // åç»­ç»‘å®šDLLç­‰é€»è¾‘
                     AttachToGameProcess(gameProcess, account);
                 }
                 else
                 {
-                    Log.Warning("Î´ÄÜ»ñÈ¡µ½ĞÂ½ø³ÌPID£¬ÕËºÅ: {Account}", account.Account);
-                    MessageBox.Show("ÎŞ·¨»ñÈ¡ĞÂ½ø³ÌPID£¬ÇëÊÖ¶¯Æô¶¯ÓÎÏ·¡£");
+                    Log.Warning("æœªèƒ½è·å–åˆ°æ–°è¿›ç¨‹PIDï¼Œè´¦å·: {Account}", account.Account);
+                    MessageBox.Show("æ— æ³•è·å–æ–°è¿›ç¨‹PIDï¼Œè¯·æ‰‹åŠ¨å¯åŠ¨æ¸¸æˆã€‚");
                 }
 
                 RefreshDataGrid();
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Æô¶¯ÓÎÏ·¹ı³ÌÖĞ·¢ÉúÒì³££¬ÕËºÅ: {Account}", account.Account);
-                MessageBox.Show($"Æô¶¯ÓÎÏ·Ê§°Ü: {ex.Message}");
+                Log.Error(ex, "å¯åŠ¨æ¸¸æˆè¿‡ç¨‹ä¸­å‘ç”Ÿå¼‚å¸¸ï¼Œè´¦å·: {Account}", account.Account);
+                MessageBox.Show($"å¯åŠ¨æ¸¸æˆå¤±è´¥: {ex.Message}");
             }
         }
 
@@ -184,13 +186,13 @@ namespace Mir2Assistant
             {
                 try
                 {
-                    Log.Information("×¼±¸¹Ø±ÕÓÎÏ·½ø³Ì£¬ÕËºÅ: {Account}, PID: {ProcessId}", account.Account, account.ProcessId);
+                    Log.Information("å‡†å¤‡å…³é—­æ¸¸æˆè¿›ç¨‹ï¼Œè´¦å·: {Account}, PID: {ProcessId}", account.Account, account.ProcessId);
                     Process process = Process.GetProcessById(account.ProcessId.Value);
                     
-                    // Èç¹ûÓĞ¹ØÁªµÄ¸¨Öú´°¿Ú£¬ÏÈ½â³ı¹Ò¹³²¢¹Ø±Õ
+                    // å¦‚æœæœ‰å…³è”çš„è¾…åŠ©çª—å£ï¼Œå…ˆè§£é™¤æŒ‚é’©å¹¶å…³é—­
                     if (GameInstances.ContainsKey(account.ProcessId.Value))
                     {
-                        Log.Debug("½â³ıDLL¹Ò¹³²¢¹Ø±Õ¸¨Öú´°¿Ú");
+                        Log.Debug("è§£é™¤DLLæŒ‚é’©å¹¶å…³é—­è¾…åŠ©çª—å£");
                         var gameInstance = GameInstances[account.ProcessId.Value];
                         DllInject.Unhook(gameInstance);
                         gameInstance.AssistantForm?.Close();
@@ -199,19 +201,19 @@ namespace Mir2Assistant
                     
                     process.Kill();
                     account.ProcessId = null;
-                    Log.Information("ÓÎÏ·½ø³ÌÒÑ¹Ø±Õ£¬ÕËºÅ: {Account}", account.Account);
+                    Log.Information("æ¸¸æˆè¿›ç¨‹å·²å…³é—­ï¼Œè´¦å·: {Account}", account.Account);
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "¹Ø±ÕÓÎÏ·½ø³ÌÊ§°Ü£¬ÕËºÅ: {Account}", account.Account);
-                    MessageBox.Show($"¹Ø±ÕÓÎÏ·½ø³ÌÊ§°Ü: {ex.Message}");
+                    Log.Error(ex, "å…³é—­æ¸¸æˆè¿›ç¨‹å¤±è´¥ï¼Œè´¦å·: {Account}", account.Account);
+                    MessageBox.Show($"å…³é—­æ¸¸æˆè¿›ç¨‹å¤±è´¥: {ex.Message}");
                 }
             }
         }
 
         private void RestartGameProcess(GameAccountModel account)
         {
-            Log.Information("ÖØÆôÓÎÏ·½ø³Ì£¬ÕËºÅ: {Account}", account.Account);
+            Log.Information("é‡å¯æ¸¸æˆè¿›ç¨‹ï¼Œè´¦å·: {Account}", account.Account);
             KillGameProcess(account);
             StartGameProcess(account);
         }
@@ -225,7 +227,7 @@ namespace Mir2Assistant
                     var pid = process.Id;
                     var hwnd = process.MainWindowHandle;
                     
-                    Log.Information("×¼±¸°ó¶¨ÓÎÏ·½ø³Ì£¬ÕËºÅ: {Account}, PID: {ProcessId}", account.Account, pid);
+                    Log.Information("å‡†å¤‡ç»‘å®šæ¸¸æˆè¿›ç¨‹ï¼Œè´¦å·: {Account}, PID: {ProcessId}", account.Account, pid);
                     
                     if (!GameInstances.ContainsKey(pid))
                     {
@@ -239,24 +241,24 @@ namespace Mir2Assistant
                         gameInstance.mirVer = process.MainModule?.FileVersionInfo?.FileVersion;
                         gameInstance.MirThreadId = (uint)process.Threads[0].Id;
                         
-                        // ÉèÖÃÕËºÅĞÅÏ¢
+                        // è®¾ç½®è´¦å·ä¿¡æ¯
                         gameInstance.AccountInfo = account;
                         
-                        Log.Debug("¼ÓÔØDLLµ½ÓÎÏ·½ø³Ì");
+                        Log.Debug("åŠ è½½DLLåˆ°æ¸¸æˆè¿›ç¨‹");
                         DllInject.loadDll(gameInstance);
                         
-                        // Èç¹ûÊÇÖ÷¿Ø£¬ÏÔÊ¾¸¨Öú´°¿Ú
+                        // å¦‚æœæ˜¯ä¸»æ§ï¼Œæ˜¾ç¤ºè¾…åŠ©çª—å£
                         // if (account.IsMainControl)
                         // {
                        
                         // }
                         gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
-                        Log.Information("¸¨Öú´°¿ÚÒÑÏÔÊ¾£¬ÕËºÅ: {Account}", account.Account);
+                        Log.Information("è¾…åŠ©çª—å£å·²æ˜¾ç¤ºï¼Œè´¦å·: {Account}", account.Account);
                         
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {
-                            Log.Debug("¸¨Öú´°¿ÚÒÑ¹Ø±Õ£¬ÒÆ³ıÓÎÏ·ÊµÀı£¬PID: {ProcessId}", gameInstance.MirPid);
+                            Log.Debug("è¾…åŠ©çª—å£å·²å…³é—­ï¼Œç§»é™¤æ¸¸æˆå®ä¾‹ï¼ŒPID: {ProcessId}", gameInstance.MirPid);
                             GameInstances.Remove(gameInstance.MirPid);
                         };
                     }
@@ -264,21 +266,21 @@ namespace Mir2Assistant
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "°ó¶¨ÓÎÏ·½ø³ÌÊ§°Ü£¬ÕËºÅ: {Account}", account.Account);
-                MessageBox.Show($"°ó¶¨ÓÎÏ·½ø³ÌÊ§°Ü: {ex.Message}");
+                Log.Error(ex, "ç»‘å®šæ¸¸æˆè¿›ç¨‹å¤±è´¥ï¼Œè´¦å·: {Account}", account.Account);
+                MessageBox.Show($"ç»‘å®šæ¸¸æˆè¿›ç¨‹å¤±è´¥: {ex.Message}");
             }
         }
 
-        protected override void WndProc(ref Message m)//¼àÊÓWindowsÏûÏ¢
+        protected override void WndProc(ref Message m)//ç›‘è§†Windowsæ¶ˆæ¯
         {
-            const int WM_HOTKEY = 0x0312; //Èç¹ûm.MsgµÄÖµÎª0x0312ÄÇÃ´±íÊ¾ÓÃ»§°´ÏÂÁËÈÈ¼ü 
+            const int WM_HOTKEY = 0x0312; //å¦‚æœm.Msgçš„å€¼ä¸º0x0312é‚£ä¹ˆè¡¨ç¤ºç”¨æˆ·æŒ‰ä¸‹äº†çƒ­é”® 
             switch (m.Msg)
             {
                 case WM_HOTKEY:
-                    Log.Debug("½ÓÊÕµ½ÈÈ¼üÏûÏ¢");
+                    Log.Debug("æ¥æ”¶åˆ°çƒ­é”®æ¶ˆæ¯");
                     HotKeyUtils.UnregisterHotKey(Handle, 200);
                     SendKeys.Send("{DEL}");
-                    HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // ×¢²áÈÈ¼ü
+                    HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // æ³¨å†Œçƒ­é”®
                     var hwnd = WindowUtils.GetForegroundWindow();
                     var pid = WindowUtils.GetProcessId(hwnd);
                     var process = Process.GetProcessById(pid);
@@ -299,7 +301,7 @@ namespace Mir2Assistant
                         }
                         else
                         {
-                            // ²éÕÒ¶ÔÓ¦µÄÕËºÅ
+                            // æŸ¥æ‰¾å¯¹åº”çš„è´¦å·
                             var account = accountList.FirstOrDefault(a => a.ProcessId == pid);
                            if (account == null)
                             {
@@ -318,12 +320,12 @@ namespace Mir2Assistant
                     }
                     break;
             }
-            base.WndProc(ref m); //½«ÏµÍ³ÏûÏ¢´«µİ×Ô¸¸ÀàµÄWndProc 
+            base.WndProc(ref m); //å°†ç³»ç»Ÿæ¶ˆæ¯ä¼ é€’è‡ªçˆ¶ç±»çš„WndProc 
         }
 
         private void dataGridViewAccounts_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            // ¼ì²éÊÇ·ñµã»÷ÁË"ÖØÆô"°´Å¥
+            // æ£€æŸ¥æ˜¯å¦ç‚¹å‡»äº†"é‡å¯"æŒ‰é’®
             if (e.ColumnIndex == colRestart.Index && e.RowIndex >= 0)
             {
                 var account = accountList[e.RowIndex];
@@ -333,23 +335,23 @@ namespace Mir2Assistant
 
         private void btnRestartAll_Click(object sender, EventArgs e)
         {
-            Log.Information("ÖØÆôËùÓĞÓÎÏ·½ø³Ì£¬ÕËºÅÊıÁ¿: {AccountCount}", accountList.Count);
+            Log.Information("é‡å¯æ‰€æœ‰æ¸¸æˆè¿›ç¨‹ï¼Œè´¦å·æ•°é‡: {AccountCount}", accountList.Count);
             foreach (var account in accountList)
             {
                 RestartGameProcess(account);
-                // Ìí¼ÓÑÓ³Ù£¬±ÜÃâÍ¬Ê±Æô¶¯¶à¸ö½ø³Ì
+                // æ·»åŠ å»¶è¿Ÿï¼Œé¿å…åŒæ—¶å¯åŠ¨å¤šä¸ªè¿›ç¨‹
                 Thread.Sleep(2000);
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Log.Information("Ó¦ÓÃ³ÌĞòÕıÔÚ¹Ø±Õ");
+            Log.Information("åº”ç”¨ç¨‹åºæ­£åœ¨å…³é—­");
             HotKeyUtils.UnregisterHotKey(Handle, 200);
-            Log.Debug("ÒÑ×¢ÏúÈÈ¼ü");
+            Log.Debug("å·²æ³¨é”€çƒ­é”®");
             SaveAccountList();
             
-            Log.Debug("ÕıÔÚ½â³ıËùÓĞDLL¹Ò¹³£¬ÓÎÏ·ÊµÀıÊıÁ¿: {InstanceCount}", GameInstances.Count);
+            Log.Debug("æ­£åœ¨è§£é™¤æ‰€æœ‰DLLæŒ‚é’©ï¼Œæ¸¸æˆå®ä¾‹æ•°é‡: {InstanceCount}", GameInstances.Count);
             Task.Run(() =>
             {
                 foreach (var gameInstance in GameInstances.Values)
@@ -358,7 +360,7 @@ namespace Mir2Assistant
                 }
             });
             Thread.Sleep(200);
-            Log.Information("Ó¦ÓÃ³ÌĞòÒÑ¹Ø±Õ");
+            Log.Information("åº”ç”¨ç¨‹åºå·²å…³é—­");
             Log.CloseAndFlush();
         }
     }
