@@ -51,6 +51,8 @@
             textBox1 = new TextBox();
             groupBox2 = new GroupBox();
             button11 = new Button();
+            buttonGroup = new Button();
+            textBoxMember = new TextBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             SuspendLayout();
@@ -198,8 +200,8 @@
             // 
             // timer1
             // 
-            timer1.Tick += timer1_Tick;
             timer1.Interval = 150;
+            timer1.Tick += timer1_Tick;
             // 
             // label1
             // 
@@ -277,7 +279,25 @@
             button11.UseVisualStyleBackColor = true;
             button11.Click += button11_Click;
             // 
-            // GoRun
+            // buttonGroup
+            // 
+            buttonGroup.Location = new Point(348, 33);
+            buttonGroup.Name = "buttonGroup";
+            buttonGroup.Size = new Size(60, 23);
+            buttonGroup.TabIndex = 13;
+            buttonGroup.Text = "组队";
+            buttonGroup.UseVisualStyleBackColor = true;
+            buttonGroup.Click += buttonGroup_Click;
+            // 
+            // textBoxMember
+            // 
+            textBoxMember.Location = new Point(262, 34);
+            textBoxMember.Name = "textBoxMember";
+            textBoxMember.Size = new Size(80, 23);
+            textBoxMember.TabIndex = 12;
+            textBoxMember.Text = "sad13";
+            // 
+            // GoRunForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -295,7 +315,9 @@
             Controls.Add(button4);
             Controls.Add(button1);
             Controls.Add(groupBox1);
-            Name = "GoRun";
+            Controls.Add(buttonGroup);
+            Controls.Add(textBoxMember);
+            Name = "GoRunForm";
             Text = "GoRun";
             Load += GoRun_Load;
             groupBox1.ResumeLayout(false);
@@ -330,5 +352,7 @@
         private TextBox textBox1;
         private GroupBox groupBox2;
         private Button button11;
+        private Button buttonGroup;   // 新增
+        private TextBox textBoxMember; // 新增
     }
 }

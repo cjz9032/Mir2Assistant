@@ -104,5 +104,25 @@ namespace Mir2Assistant.TabForms.Demo
             //   .Call_EBX()
             //   .GetAsmCode());
         }
+
+        private void buttonGroup_Click(object sender, EventArgs e)
+        {
+            if (GameInstance == null) return;
+            string member = textBoxMember.Text.Trim();
+            if (string.IsNullOrEmpty(member)) return;
+
+            char[] memberChars = member.ToCharArray();
+            nint[] data = new nint[1 + memberChars.Length];
+
+            // 第一个元素存长度
+            data[0] = memberChars.Length;
+            // 后面存字符
+            for (int i = 0; i < memberChars.Length; i++)
+            {
+                data[1 + i] = memberChars[i];
+            }
+
+            SendMirCall.Send(GameInstance, 9004, data);
+        }
     }
 }

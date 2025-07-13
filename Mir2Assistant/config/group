@@ -1,7 +1,11 @@
 
 
+队伍成员地址
+[7563CC]
+len +30
 
-被邀请. 自动组先
+被邀请2处. 自动组先
+111
 ZC.H+24F5E0 - 8B 95 08F9FFFF        - mov edx,[ebp-000006F8]
 ZC.H+24F5E6 - A1 28A76700           - mov eax,[ZC.H+27A728] { (0074350C) }
 ZC.H+24F5EB - 8B 00                 - mov eax,[eax]
@@ -15,8 +19,17 @@ ZC.H+24F5F4 - 90 90909090
 ZC.H+24F5F9 - 83 F8 06              - cmp eax,06 { 6 }
 ZC.H+24F5FC - 74 1D                 - je ZC.H+24F61B
 
+222
+ZC.H+24F712 - 66 8B 0D 9C456500     - mov cx,[ZC.H+25459C] { (3) }
+ZC.H+24F719 - E8 3EB0F4FF           - call ZC.H+19A75C
+ZC.H+24F71E - 83 F8 06              - cmp eax,06 { 6 }
+ZC.H+24F721 - 75 1D                 - jne ZC.H+24F740
+replaced
+90 90909090
+83 F8 06
+74 1D
 
-
+// 不知道什么玩意 紧跟着的 应该是同意
 ZC.H+24F5FE - 6A 00                 - push 00 { 0 }
 ZC.H+24F600 - 6A 00                 - push 00 { 0 }
 ZC.H+24F602 - 6A 00                 - push 00 { 0 }

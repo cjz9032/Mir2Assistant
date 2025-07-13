@@ -26,6 +26,45 @@ void send_msg(char* msg, unsigned flag) {
 char* msg;
 unsigned flag;
 
+//组队
+void groupOne(DelphiString* name)
+{
+    __asm {
+        pushad
+        pushfd
+
+        mov eax, [0x7563CC]
+        mov eax, [eax]
+        add eax, 0x30
+        mov ecx, [eax]           // ecx = *(int*)(0x7563CC + 30)
+        test ecx, ecx
+        jz  group_zero           // 如果为0，跳转到group_zero
+
+        // > 0 分支
+        mov eax, name
+        add eax, 8
+        mov edx, eax
+        mov eax, dword ptr ds:[0x00679EBC]
+        mov eax, dword ptr [eax]
+        mov esi, 0x00646630
+        call esi                 // ZC.H+246630
+        jmp group_end
+
+    group_zero:
+        mov eax, name
+        add eax, 8
+        mov edx, eax
+        mov eax, dword ptr ds:[0x00679EBC]
+        mov eax, dword ptr [eax]
+        mov esi, 0x00645FF4
+        call esi                 // ZC.H+245FF4
+
+    group_end:
+        popfd
+        popad
+    }
+}
+
 void __declspec(naked) override_write_screen_call()
 {
 	_asm {
@@ -135,6 +174,22 @@ void Sys::process(int code, int* data)
          }
 
         break;
+
+	case 9004: //开组
+		// 这里也要接受字符串name
+		if (data && data[0] > 0) {
+			int nameLength = (int)data[0];
+			if (nameLength > 15) nameLength = 15;
+			DelphiString groupName;
+			groupName.refCount = -1;
+			groupName.length = nameLength;
+			for (int i = 0; i < nameLength; i++) {
+				groupName.data[i] = (wchar_t)data[1 + i];
+			}
+			groupName.data[nameLength] = 0;
+			groupOne(&groupName);
+		}
+		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);
 		break;
