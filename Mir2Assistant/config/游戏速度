@@ -42,7 +42,7 @@ mov eax,[ZC.H+279B3C] { (00677244) } 110 -> 80移动速度
 ZC.H+252036 - A1 3C9B6700           - mov eax,[ZC.H+279B3C] { (00677244) } 110 移动速度
 ZC.H+25203B - 8B 95 B0FBFFFF        - mov edx,[ebp-00000450]
 ZC.H+252041 - 89 10                 - mov [eax],edx
-ZC.H+252043 - A1 CCA16700           - mov eax,[ZC.H+27A1CC] { (00677248) } 500 不知
+ZC.H+252043 - A1 CCA16700           - mov eax,[ZC.H+27A1CC] { (00677248) } 500 大概率是魔法攻击
 ZC.H+252048 - 8B 95 B4FBFFFF        - mov edx,[ebp-0000044C]
 ZC.H+25204E - 89 10                 - mov [eax],edx
 ZC.H+252050 - A1 789B6700           - mov eax,[ZC.H+279B78] { (0067724C) } -- 攻速 1400
