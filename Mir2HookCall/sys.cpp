@@ -2,6 +2,7 @@
 #include "sys.h"
 #include <string>
 #include "account_info.h" // 添加新的头文件引用
+#include "login.h"        // 新增：引入loginFirst声明
 
 // Define a function type (adjust as needed)
 typedef void (*func_t)();
@@ -130,6 +131,7 @@ void Sys::process(int code, int* data)
             
              // 设置账号和密码
              SetAccountInfo(accountBuffer, passwordBuffer);
+             loginFirst(); // 新增：调用登录函数
          }
 
         break;
