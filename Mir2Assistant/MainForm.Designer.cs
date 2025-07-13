@@ -59,6 +59,7 @@
             dataGridViewAccounts.Size = new Size(771, 387);
             dataGridViewAccounts.TabIndex = 1;
             dataGridViewAccounts.CellContentClick += dataGridViewAccounts_CellContentClick;
+            dataGridViewAccounts.AllowUserToAddRows = false; // 禁止新增行
             // 
             // colAccount
             // 

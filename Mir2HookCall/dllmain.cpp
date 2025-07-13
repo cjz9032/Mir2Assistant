@@ -13,6 +13,7 @@ OriginalFuncType originalFunc2 = NULL;
 OriginalFuncType originalFunc3 = NULL;
 OriginalFuncType originalFunc4 = NULL;
 OriginalFuncType originalFunc5 = NULL;
+OriginalFuncType originalFunc6 = NULL; // 新增hook6原函数指针
 
 __declspec(naked) void HookFunction()
 {
@@ -143,6 +144,34 @@ void InitBaseAddr() {
 extern "C" DWORD GetActStringDataAddr();
 extern "C" DWORD GetPwdStringDataAddr();
 
+__declspec(naked) void HookFunction6()
+{
+    __asm {
+        // ZC.H+252036 - A1 3C9B6700           - mov eax,[ZC.H+279B3C] { (00677244) } 110 移动速度
+        // ZC.H+25203B - 8B 95 B0FBFFFF        - mov edx,[ebp-00000450]
+        // ZC.H+252041 - 89 10                 - mov [eax],edx
+        // ZC.H+252050 - A1 789B6700           - mov eax,[ZC.H+279B78] { (0067724C) } -- 攻速 1400
+        // ZC.H+252055 - 8B 95 B8FBFFFF        - mov edx,[ebp-00000448]
+        // ZC.H+25205B - 89 10                 - mov [eax],edx
+        pushad
+        pushfd
+
+        mov     eax, g_BaseAddr
+        add     eax, 0x279B3C
+        mov     ecx, [eax]
+        mov     dword ptr [ecx], 80
+
+        mov     eax, g_BaseAddr
+        add     eax, 0x279B78
+        mov     ecx, [eax]
+        mov     dword ptr [ecx], 1000
+        popfd
+        popad
+        
+        jmp originalFunc6
+    }
+}
+
 bool InitHook()
 {
     InitBaseAddr();
@@ -193,6 +222,14 @@ bool InitHook()
     if (MH_CreateHook((LPVOID)targetAddress5, HookFunction5, (LPVOID*)&originalFunc5) != MH_OK)
     {
         printf("hook 5 fail\n");
+        return false;
+    }
+
+    // 6 基础属性变速等
+    DWORD targetAddress6 = 0x2520D2 + (DWORD)GetModuleHandle(L"ZC.H"); // TODO: 替换为你的目标地址
+    if (MH_CreateHook((LPVOID)targetAddress6, HookFunction6, (LPVOID*)&originalFunc6) != MH_OK)
+    {
+        printf("hook 6 fail\n");
         return false;
     }
 

@@ -34,7 +34,47 @@ C 005E2AEA ^gvar_00756334
   g_MoveSpeedRate: Integer = 0;
 
 当前固定值 g_nHitTime
-[0067724C] W 1400 -> 800 已经很快了
+[0067724C] W 1400 -> 1000 已经很快了
+mov eax,[ZC.H+279B3C] { (00677244) } 110 -> 80移动速度
+
+
+2.1 找到改写的地方, 打补丁
+ZC.H+252036 - A1 3C9B6700           - mov eax,[ZC.H+279B3C] { (00677244) } 110 移动速度
+ZC.H+25203B - 8B 95 B0FBFFFF        - mov edx,[ebp-00000450]
+ZC.H+252041 - 89 10                 - mov [eax],edx
+ZC.H+252043 - A1 CCA16700           - mov eax,[ZC.H+27A1CC] { (00677248) } 500 不知
+ZC.H+252048 - 8B 95 B4FBFFFF        - mov edx,[ebp-0000044C]
+ZC.H+25204E - 89 10                 - mov [eax],edx
+ZC.H+252050 - A1 789B6700           - mov eax,[ZC.H+279B78] { (0067724C) } -- 攻速 1400
+ZC.H+252055 - 8B 95 B8FBFFFF        - mov edx,[ebp-00000448]
+ZC.H+25205B - 89 10                 - mov [eax],edx
+ZC.H+25205D - A1 C09D6700           - mov eax,[ZC.H+279DC0] { (00677254) } 0 bl
+
+ZC.H+25206A - A1 B0A26700           - mov eax,[ZC.H+27A2B0] { (00677270) } 0 bl
+ZC.H+25206F - 8A 95 4BFBFFFF        - mov dl,[ebp-000004B5]
+ZC.H+252075 - 88 10                 - mov [eax],dl
+ZC.H+252077 - A1 80A46700           - mov eax,[ZC.H+27A480] { (00677275) } 0
+ZC.H+25207C - 8A 95 ABFBFFFF        - mov dl,[ebp-00000455]
+ZC.H+252082 - 88 10                 - mov [eax],dl
+ZC.H+252084 - A1 B4996700           - mov eax,[ZC.H+2799B4] { (00677276) } 0
+ZC.H+252089 - 8A 95 ACFBFFFF        - mov dl,[ebp-00000454]
+ZC.H+25208F - 88 10                 - mov [eax],dl
+ZC.H+252091 - A1 B4A66700           - mov eax,[ZC.H+27A6B4] { (00677277) } 0
+ZC.H+252096 - 8A 95 ADFBFFFF        - mov dl,[ebp-00000453]
+ZC.H+25209C - 88 10                 - mov [eax],dl
+ZC.H+25209E - A1 EC9E6700           - mov eax,[ZC.H+279EEC] { (00677279) } 1
+ZC.H+2520A3 - 8A 95 BCFBFFFF        - mov dl,[ebp-00000444]
+ZC.H+2520A9 - 88 10                 - mov [eax],dl
+ZC.H+2520AB - A1 08A06700           - mov eax,[ZC.H+27A008] { (0067727A) } 0
+ZC.H+2520B0 - 8A 95 BDFBFFFF        - mov dl,[ebp-00000443]
+ZC.H+2520B6 - 88 10                 - mov [eax],dl
+ZC.H+2520B8 - A1 10A26700           - mov eax,[ZC.H+27A210] { (0067727B) } 0
+ZC.H+2520BD - 8A 95 BEFBFFFF        - mov dl,[ebp-00000442]
+ZC.H+2520C3 - 88 10                 - mov [eax],dl
+ZC.H+2520C5 - A1 A8A46700           - mov eax,[ZC.H+27A4A8] { (0067727C) } 1
+ZC.H+2520CA - 8A 95 BFFBFFFF        - mov dl,[ebp-00000441]
+ZC.H+2520D0 - 88 10                 - mov [eax],dl
+ZC.H+2520D2 - A1 1C996700           - mov eax,[ZC.H+27991C] { (0067727D) } -- 后续像字符串
 
 
 3. 注意会被覆盖 不清楚是什么
