@@ -14,11 +14,10 @@ namespace Mir2Assistant
     public partial class AssistantForm : Form
     {
         public MirGameInstanceModel? gameInstance { get; set; }
-
-
+        private string accountName = string.Empty;
+        private string characterName = string.Empty;
 
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-
 
         public CharacterStatusModel CharacterStatus = new CharacterStatusModel();
         public AssistantForm()
@@ -32,8 +31,23 @@ namespace Mir2Assistant
             InitializeComponent();
         }
 
+        // 添加新的构造函数，接收账号和角色信息
+        public AssistantForm(MirGameInstanceModel instance, string account, string character)
+        {
+            gameInstance = instance;
+            accountName = account;
+            characterName = character;
+            InitializeComponent();
+        }
+
         private void AssistantForm_Load(object sender, EventArgs e)
         {
+            // 设置窗口标题，显示账号和角色信息
+            if (!string.IsNullOrEmpty(accountName) && !string.IsNullOrEmpty(characterName))
+            {
+                this.Text = $"辅助窗口 - 账号: {accountName} - 角色: {characterName}";
+            }
+            
             //SendMirCall.Send(gameInstance!, 1999, new nint[] { });
 
             gameInstance!.MemoryUtils = new MemoryUtils(gameInstance);

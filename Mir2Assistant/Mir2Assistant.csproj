@@ -17,6 +17,12 @@
 	  <Content Include="icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
+	  <PackageReference Include="Serilog" Version="4.3.0" />
+	  <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+	  <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
+	  <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+	</ItemGroup>
+	<ItemGroup>
 	  <ProjectReference Include="..\Mir2Assistant.Common\Mir2Assistant.Common.csproj" />
 	  <ProjectReference Include="..\Mir2Assistant.TabForms.DailyTask\Mir2Assistant.TabForms.DailyTask.csproj" />
 	  <ProjectReference Include="..\Mir2Assistant.TabForms.Demo\Mir2Assistant.TabForms.Demo.csproj" />
@@ -29,6 +35,9 @@
 	  </Compile>
 	</ItemGroup>
 	<ItemGroup>
+		<None Update="config\start.ps1">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="config\2.1.0.1226.ini">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

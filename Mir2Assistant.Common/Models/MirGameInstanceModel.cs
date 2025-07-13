@@ -18,7 +18,8 @@ public class MirGameInstanceModel
     public CharacterStatusModel? CharacterStatus { get; set; } = new CharacterStatusModel();
     public MemoryUtils? MemoryUtils { get; set; }
 
-
+    public GameAccountModel? AccountInfo { get; set; }
+    
     public byte MonstersUpdateId = 0;
     /// <summary>
     /// 怪物
