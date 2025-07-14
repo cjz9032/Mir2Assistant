@@ -1,5 +1,15 @@
 
-捡物
+捡物CALL
+
+
+pushad
+pushfd
+mov         eax,[7524B4]
+call 00643F84
+popfd
+popad
+
+
 
 物品地址
 [7524D0]
