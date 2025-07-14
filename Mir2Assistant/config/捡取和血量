@@ -1,0 +1,86 @@
+
+捡物
+
+物品地址
+[7524D0]
+len +8
+
+-- item
+-- [[[7524D0]+4]+0*i]
+-- ID 0 DW
+-- X 4 W
+-- Y 6 W
+-- name +24
+-- looks +8
+
+-- 54 是否极品 这个确认了
+-- 56 颜色(会被极品覆盖)
+-- 5C ? JP 点数  需要再拿个JP试试
+
+通过按键/捡取时间通过找自动捡取 -- 找旁边
+[679CDC] 显示物品 不用 用另外的
+
+[67A1B4]
+
+[00679EB4] 自动捡物
+[7564C0] 捡取CD的时间 可能
+[67A26C] 人物血量
+[679D48] 怪物血量
+后面很多可能是魔锁
+
+
+显示时间的特征码
+ZC.H+188C84 - 75 04                 - jne ZC.H+188C8A
+ZC.H+188C86 - 83 45 EC 1E           - add dword ptr [ebp-14],1E { 30 }
+ZC.H+188C8A - A1 DC9C6700           - mov eax,[ZC.H+279CDC] { (0067722C) }
+
+先从判断普通的显示
+ZC.H+188C8F - 80 38 00              - cmp byte ptr [eax],00 { 0 }
+ZC.H+188C92 - 0F84 B5030000         - je ZC.H+18904D
+ZC.H+188C98 - 8D 85 6CFFFFFF        - lea eax,[ebp-00000094]
+ZC.H+188C9E - 8B 55 E8              - mov edx,[ebp-18]
+ZC.H+188CA1 - 83 C2 24              - add edx,24 { 36 }
+ZC.H+188CA4 - E8 5FF3E7FF           - call ZC.H+8008
+ZC.H+188CA9 - 8B 85 6CFFFFFF        - mov eax,[ebp-00000094]
+
+极品显示直接往上找add 3000的调用就可以了
+ZC.H+18641E - 74 22                 - je ZC.H+186442
+ZC.H+186420 - E8 7361E8FF           - call ZC.H+C598 { ->->KERNEL32.GetTickCount }
+ZC.H+186425 - 8B 15 90A26700        - mov edx,[ZC.H+27A290] { (007564C0) }
+ZC.H+18642B - 8B 12                 - mov edx,[edx] 
+ZC.H+18642D - 81 C2 B80B0000        - add edx,00000BB8 { 3000 }  -- 这一行特征
+ZC.H+186433 - 3B C2                 - cmp eax,edx
+ZC.H+186435 - 73 0B                 - jae ZC.H+186442 -- 破解直接改这 90 90
+ZC.H+186437 - 8B 55 F8              - mov edx,[ebp-08]
+ZC.H+18643A - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+18643D - E8 82230000           - call ZC.H+1887C4
+
+
+TODO 人物血量旁边有很多变量
+ZC.H+251D6E - A1 489D6700           - mov eax,[ZC.H+279D48] { (00677232) }
+ZC.H+251D73 - 8A 95 46FBFFFF        - mov dl,[ebp-000004BA]
+ZC.H+251D79 - 88 10                 - mov [eax],dl
+ZC.H+251D7B - A1 6CA26700           - mov eax,[ZC.H+27A26C] { (00677233) }
+ZC.H+251D80 - 8A 95 48FBFFFF        - mov dl,[ebp-000004B8]
+
+人物血量补丁
+ZC.H+1854FF - A1 6CA26700           - mov eax,[ZC.H+27A26C] { (00677233) }
+ZC.H+185504 - 80 38 00              - cmp byte ptr [eax],00 { 0 }
+ZC.H+185507 - 0F84 48020000         - je ZC.H+185755 -- noop  0F 84 48 02 00 00 -- 90 90 90 90 90 90 
+
+怪物血量补丁
+ZC.H+1845B2 - A1 489D6700           - mov eax,[ZC.H+279D48] { (00677232) }
+ZC.H+1845B7 - 80 38 00              - cmp byte ptr [eax],00 { 0 }
+ZC.H+1845BA - 0F84 22090000         - je ZC.H+184EE2 -- noop  0F84 22090000 -- 90 90 90 90 90 90 
+
+
+ZC.H+251D86 - 88 10                 - mov [eax],dl
+ZC.H+251D88 - A1 E09D6700           - mov eax,[ZC.H+279DE0] { (00677235) }
+ZC.H+251D8D - 8A 95 49FBFFFF        - mov dl,[ebp-000004B7]
+ZC.H+251D93 - 88 10                 - mov [eax],dl
+ZC.H+251D95 - A1 E09D6700           - mov eax,[ZC.H+279DE0] { (00677235) }
+ZC.H+251D9A - 8A 00                 - mov al,[eax]
+ZC.H+251D9C - 8B 15 28A76700        - mov edx,[ZC.H+27A728] { (0074350C) }
+
+
+
