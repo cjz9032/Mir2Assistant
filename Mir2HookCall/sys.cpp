@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "sys.h"
 #include <string>
-#include "account_info.h" // Ìí¼ÓĞÂµÄÍ·ÎÄ¼şÒıÓÃ
-#include "login.h"        // ĞÂÔö£ºÒıÈëloginFirstÉùÃ÷
+#include "account_info.h" // æ·»åŠ æ–°çš„å¤´æ–‡ä»¶å¼•ç”¨
+#include "login.h"        // æ–°å¢ï¼šå¼•å…¥loginFirstå£°æ˜
 
 // Define a function type (adjust as needed)
 typedef void (*func_t)();
@@ -26,7 +26,7 @@ void send_msg(char* msg, unsigned flag) {
 char* msg;
 unsigned flag;
 
-//×é¶Ó
+//ç»„é˜Ÿ
 void groupOne(DelphiString* name)
 {
     __asm {
@@ -38,9 +38,9 @@ void groupOne(DelphiString* name)
         add eax, 0x30
         mov ecx, [eax]           // ecx = *(int*)(0x7563CC + 30)
         test ecx, ecx
-        jz  group_zero           // Èç¹ûÎª0£¬Ìø×ªµ½group_zero
+        jz  group_zero           // å¦‚æœä¸º0ï¼Œè·³è½¬åˆ°group_zero
 
-        // > 0 ·ÖÖ§
+        // > 0 åˆ†æ”¯
         mov eax, name
         add eax, 8
         mov edx, eax
@@ -75,8 +75,8 @@ void __declspec(naked) override_write_screen_call()
 	//int len = MultiByteToWideChar(CP_ACP, 0, msg, -1, NULL, 0);
 	//wchar_t* utf16Str = new wchar_t[len];
 	//MultiByteToWideChar(CP_ACP, 0, msg, -1, utf16Str, len);
-	//// Ê¹ÓÃMessageBoxWÏÔÊ¾ÏûÏ¢¿ò
-	//MessageBoxW(NULL, utf16Str, L"±êÌâ", MB_OK);
+	//// ä½¿ç”¨MessageBoxWæ˜¾ç¤ºæ¶ˆæ¯æ¡†
+	//MessageBoxW(NULL, utf16Str, L"æ ‡é¢˜", MB_OK);
 	send_msg(msg, flag);
 	_asm {
 		popad
@@ -139,44 +139,44 @@ void Sys::process(int code, int* data)
 {
 	switch (code)
 	{
-	case 9001: //hook Ğ´ÆÁcall
+	case 9001: //hook å†™å±call
 		hwnd = (HWND)data[1];
 		hook_address((void*)data[0], override_write_screen_call);
 		break;
-	case 9002: //»Ö¸´Ğ´ÆÁcall
+	case 9002: //æ¢å¤å†™å±call
 		restore_write_screen_call();
 		break;
-	case 9003: // ½ÓÊÕÕËºÅºÍÃÜÂëÊı¾İ
+	case 9003: // æ¥æ”¶è´¦å·å’Œå¯†ç æ•°æ®
          if (data && data[0] > 0 && data[1] > 0) {
              int accountLength = (int)data[0];
              int passwordLength = (int)data[1];
             
-             // ·ÀÖ¹»º³åÇøÒç³ö
+             // é˜²æ­¢ç¼“å†²åŒºæº¢å‡º
              if (accountLength > 31) accountLength = 31;
              if (passwordLength > 31) passwordLength = 31;
             
              wchar_t accountBuffer[32] = {0};
              wchar_t passwordBuffer[32] = {0};
             
-             // ÌáÈ¡ÕËºÅ×Ö·û
+             // æå–è´¦å·å­—ç¬¦
              for (int i = 0; i < accountLength; i++) {
                  accountBuffer[i] = (wchar_t)data[2 + i];
              }
             
-             // ÌáÈ¡ÃÜÂë×Ö·û
+             // æå–å¯†ç å­—ç¬¦
              for (int i = 0; i < passwordLength; i++) {
                  passwordBuffer[i] = (wchar_t)data[2 + accountLength + i];
              }
             
-             // ÉèÖÃÕËºÅºÍÃÜÂë
+             // è®¾ç½®è´¦å·å’Œå¯†ç 
              SetAccountInfo(accountBuffer, passwordBuffer);
-             loginFirst(); // ĞÂÔö£ºµ÷ÓÃµÇÂ¼º¯Êı
+             loginFirst(); // æ–°å¢ï¼šè°ƒç”¨ç™»å½•å‡½æ•°
          }
 
         break;
 
-	case 9004: //¿ª×é
-		// ÕâÀïÒ²Òª½ÓÊÜ×Ö·û´®name
+	case 9004: //å¼€ç»„
+		// è¿™é‡Œä¹Ÿè¦æ¥å—å­—ç¬¦ä¸²name
 		if (data && data[0] > 0) {
 			int nameLength = (int)data[0];
 			if (nameLength > 15) nameLength = 15;
@@ -190,7 +190,7 @@ void Sys::process(int code, int* data)
 			groupOne(&groupName);
 		}
 		break;
-	case 9999: //Ö´ĞĞÈÎÎñASM´úÂë
+	case 9999: //æ‰§è¡Œä»»åŠ¡ASMä»£ç 
 		any_call(data);
 		break;
 

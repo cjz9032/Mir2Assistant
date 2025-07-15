@@ -119,7 +119,7 @@ namespace Mir2Assistant
             
             
             // 等待DLL加载完成
-            await Task.Delay(2000);
+            await Task.Delay(4000);
 
              if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
             {

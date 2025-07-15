@@ -1,0 +1,173 @@
+带装备 暂无
+---
+多开 -- 暂时没用, 记录在以前
+
+免蜡
+死亡一直找到 [00679CC8]
+if (g_MySelf.m_boDeath) then
+begin
+	g_boLastViewFog := g_boViewFog;
+	g_boViewFog := False;
+end;
+
+再索引引用的地方 补丁 特征码
+
+
+亮度 [752764]+18C 免蜡就没用了, 记录在以前
+
+不倒翁 靠消息
+状态
+[00752764]+178
+
+--没用 受伤计时器
+ZC.H+1DF4A6 - 89 82 A0010000        - mov [edx+000001A0],eax
+nop ZC.H+1DF4AC - C6 45 EF 00           - mov byte ptr [ebp-11],00 { 0 }
+
+
+怪物数组 [[[7524C8]+000034C8]+4]+4*i
+长度+8
+打怪 756370
+光标锁定 756374
+
+人物信息
+[00752764]
+ID 4 DW
+X 8 W 067FB298 170
+Y A W
+朝向 C BYTE
+HP 48 W
+mp 4A W
+
+maxHP 4C W
+maxMP 4E W
+NAME 34 分UNI和ASI 还有多层 注意
+appr 16 B
+died 28 B
+
+显血 158 -- 找到显学总开关就好, 不需要这里
+血量 暂时没用了 特征也在以前
+
+助跑
+步数 是走动再重置0, 重置前为1
+ZC.H+23A5CE - 0F8CE6000000         - jl ZC.H+23A6BA
+ZC.H+23A5CE - 0F8DE6000000         - jnl ZC.H+23A6BA
+
+
+
+
+-- 跑步CALL 特征码
+ZC.H+23A677 - 66BAC50B            - mov dx,0BC5 { 3013 } C3 C4 C5 3011 3012 3013
+
+call 005DEA34
+
+ZC.H+23A662 - 8B 45 F4              - mov eax,[ebp-0C]
+ZC.H+23A665 - 50                    - push eax
+ZC.H+23A666 - 33 C0                 - xor eax,eax
+ZC.H+23A668 - 8A 45 E7              - mov al,[ebp-19]
+ZC.H+23A66B - 50                    - push eax
+ZC.H+23A66C - 6A 00                 - push 00 { 0 }
+ZC.H+23A66E - 6A 00                 - push 00 { 0 }
+ZC.H+23A670 - 6A 00                 - push 00 { 0 }
+ZC.H+23A672 - 6A 00                 - push 00 { 0 }
+ZC.H+23A674 - 8B 4D F8              - mov ecx,[ebp-08]
+ZC.H+23A677 - 66 BA C50B            - mov dx,0BC5 { 3013 }
+ZC.H+23A67B - A1 64277500           - mov eax,[ZC.H+352764] { (0422C3E0) }
+ZC.H+23A680 - E8 AF43FAFF           - call ZC.H+1DEA34  -- UpdateMsg 
+
+mov eax, 0x9
+push eax
+xor eax,eax
+mov al,0
+push eax
+push 00
+push 00
+push 00
+push 00
+mov ecx, 0x7
+mov dx,0BC5
+mov eax,752764
+call 005DEA34
+
+
+
+take on 
+第一件  -- 007531E8 0C8CC2A6 啊是光标?
+push eax
+push edx
+mov eax,0x00753218
+mov edx,007531E8
+call 408008
+mov eax,0x00753218
+pop edx
+pop eax
+
+push eax
+push ecx
+push edx
+mov eax, [00753218]
+push eax
+xor edx, edx
+inc dl
+mov ecx, 0C8CC2A6
+mov eax,[679EBC]
+mov eax,[eax]
+call 64401C
+pop edx
+pop ecx
+pop eax
+
+take off
+ZC.H+1ABE5B - 8D 85 54FFFFFF        - lea eax,[ebp-000000AC]
+ZC.H+1ABE61 - 8B 15 40A26700        - mov edx,[ZC.H+27A240] { (00755F60) }
+ZC.H+1ABE67 - 83 C2 04              - add edx,04 { 4 }
+ZC.H+1ABE6A - E8 99C1E5FF           - call ZC.H+8008
+ZC.H+1ABE6F - 8B 85 54FFFFFF        - mov eax,[ebp-000000AC]
+ZC.H+1ABE75 - 50                    - push eax
+ZC.H+1ABE76 - 8B 15 40A26700        - mov edx,[ZC.H+27A240] { (00755F60) }
+ZC.H+1ABE7C - 8A 12                 - mov dl,[edx]
+ZC.H+1ABE7E - 42                    - inc edx -- 木剑 00755FFF 衣服 00755FFF+1
+ZC.H+1ABE7F - F6 DA                 - neg dl
+ZC.H+1ABE81 - 8B 0D 40A26700        - mov ecx,[ZC.H+27A240] { (00755F60) }
+ZC.H+1ABE87 - 8B 49 78              - mov ecx,[ecx+78]
+ZC.H+1ABE8A - A1 BC9E6700           - mov eax,[679EBC] { (007524B4) }
+ZC.H+1ABE8F - 8B 00                 - mov eax,[eax]
+ZC.H+1ABE91 - E8 5E820900           - call ZC.H+2440F4
+
+take off
+push eax
+push edx
+mov eax,0x00753218
+mov edx,007531E8
+call 408008
+mov eax,0x00753218
+pop edx
+pop eax
+push eax
+push ecx
+push edx
+mov eax, [00753218]
+push eax
+mov dl, 0x01
+mov ecx, 0C8CC2A6
+mov eax,[679EBC]
+mov eax,[eax]
+call 6440F4
+pop edx
+pop ecx
+pop eax
+
+
+
+--
+
+fj.exe+286D0C - 5F                    - pop edi
+穿装备 
+edi 1 武器
+	0 衣服
+	2蜡烛
+	...
+
+fj.exe+286D0D - A1 6CA87200           - mov eax,[72A86C] { (008FA918) }
+fj.exe+286D12 - 89 38                 - mov [eax],edi
+包裹index指向被edi赋值
+

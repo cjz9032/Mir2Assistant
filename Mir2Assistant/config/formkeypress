@@ -665,3 +665,84 @@ _Unit101.TFrmMain.FormKeyPress
 0063BB3E        mov         esp,ebp
 0063BB40        pop         ebp
 0063BB41        ret
+
+
+
+procedure TfrmMain.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+
+  if not IntroScene.m_boOnClick then
+  begin
+    IntroScene.m_boOnClick := True;
+    IntroScene.m_dwStartTime := GetTickCount + 100;
+    Exit;
+  end;
+  if g_DWinMan.KeyPress(Key) then
+    Exit;
+  if DScreen.CurrentScene = g_PlayScene then
+  begin
+    if FrmDlg.DEdChat.Visible and (FrmDlg.DEdChat <> MouseCaptureControl) then
+    begin
+      frmMain.SendSay(FrmDlg.DEdChat.Text);
+      FrmDlg.DEdChat.Text := '';
+      FrmDlg.DEdChat.Visible := False;
+      if not g_ChatStatusLarge then
+        FrmDlg.DBChat.Visible := False;
+      Key := #0;
+      Exit;
+    end;
+    
+    case BYTE(Key) of
+      BYTE('`'):
+        begin
+          if not FrmDlg.DEdChat.Visible then
+            if CanNextAction and ServerAcceptNextAction then
+              SendPickup;
+        end;
+      BYTE('1')..BYTE('6'): EatItem(BYTE(Key) - BYTE('1'));
+      //27: Close;
+      BYTE(' '), 13:
+        begin
+          FrmDlg.DEdChat.Visible := True;
+          FrmDlg.DEdChat.SetFocus;
+          //SetImeMode(FrmDlg.DEdChat.Handle, g_LocalLanguage);
+          if FrmDlg.BoGuildChat then
+          begin
+            FrmDlg.DEdChat.Text := '!~';
+            FrmDlg.DEdChat.ChangeCurPos(Length(FrmDlg.DEdChat.Text), True);
+            FrmDlg.DEdChat.SelLength := 0;
+          end
+          else
+          begin
+            FrmDlg.DEdChat.Text := '';
+          end;
+        end;
+      BYTE('@'), BYTE('!'), BYTE('/'):
+        begin
+          FrmDlg.DEdChat.Visible := True;
+          FrmDlg.DEdChat.SetFocus;
+          //SetImeMode(FrmDlg.DEdChat.Handle, g_LocalLanguage);
+          if Key = '/' then
+          begin
+            if WhisperName = '' then
+              FrmDlg.DEdChat.Text := Key
+            else if Length(WhisperName) > 2 then
+              FrmDlg.DEdChat.Text := '/' + WhisperName + ' '
+            else
+              FrmDlg.DEdChat.Text := Key;
+            FrmDlg.DEdChat.ChangeCurPos(Length(FrmDlg.DEdChat.Text), True);
+            FrmDlg.DEdChat.SelLength := 0;
+          end
+          else
+          begin
+            FrmDlg.DEdChat.Text := Key;
+            //FrmDlg.DEdChat.SelStart := 1;
+            FrmDlg.DEdChat.ChangeCurPos(Length(FrmDlg.DEdChat.Text), True);
+            FrmDlg.DEdChat.SelLength := 0;
+          end;
+        end;
+    end;
+    Key := #0;
+  end;
+end;
+

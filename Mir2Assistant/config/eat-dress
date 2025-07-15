@@ -1,0 +1,594 @@
+吃装备 -- fromkeypress
+
+23D914
+
+1.找引用 0063DDFC <ShortString> '"是否开始修炼?'
+or
+2.特征码
+ZC.H+23B6F9 - 66 8B 12              - mov dx,[edx]
+ZC.H+23B6FC - 81 E2 FF000000        - and edx,000000FF { 255 }
+ZC.H+23B702 - 83 EA 31              - sub edx,31 { 49 }
+0-45
+//this is main ZC.H+3524B4 main
+ZC.H+23B708 - E8 07220000           - call ZC.H+23D914
+
+// call eat pkg第一件, 但是装备还不行
+
+pushad
+pushfd
+mov edx,0
+mov eax, [7524B4]
+call 63D914
+popfd
+popad
+
+
+
+  U_DRESS = 0;
+  U_WEAPON = 1;
+  U_RIGHTHAND = 2;
+  U_NECKLACE = 3;
+  U_HELMET = 4;
+  U_ARMRINGL = 5;
+  U_ARMRINGR = 6;
+  U_RINGL = 7;
+  U_RINGR = 8;
+
+00753258  01 05 00 00 66 06 90 0C                          ..f?@
+007531E8  04 C4 BE BD A3 00 50 00 05 00 67 60 51 00 1B 05  木剑.P..g`Q.
+007531F8  01 07 00 00 00 11 1E 00 A0 0F 00 00 00 00 02 05  ....?....
+00753208  00 00 00 00 00 01 D2 00 32 00 00 00 00 00 00 00  .....?2.......
+00753218  00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00  ...............
+00753228  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00753238  01 00 00 00 00 D2 00 41 00 52 6C 00 55 AA 55 AA  ....?A.Rl.U猆?
+00753248  18 06 00 03 32 35 35 00 67 60 51 00 1B 00 00 00  .255.g`Q....
+00753258  40 77 00 11 68 06 90 0C A0 0F A0 0F 00 00 00 00  @w.h???....
+
+007531E8  04 C4 BE BD A3 00 50 00 05 00 67 60 51 00 1B 05  木剑.P..g`Q.
+007531F8  01 07 00 00 00 11 1E 00 A0 0F 00 00 00 00 02 05  ....?....
+00753208  00 00 00 00 00 01 D2 00 32 00 00 00 64 00 00 00  .....?2...d...
+00753218  00 00 00 00 00 00 00 05 00 00 00 00 00 00 00 00  ...............
+00753228  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+00753238  01 00 00 00 00 D2 00 41 00 52 6C 00 55 AA 55 AA  ....?A.Rl.U猆?
+00753248  18 06 00 03 32 35 35 00 67 60 51 00 1B 00 00 00  .255.g`Q....
+00753258  40 77 00 11 68 06 90 0C A0 0F A0 0F 00 00 00 00  @w.h???....
+
+
+
+procedure TfrmMain.EatItem(idx: Integer);
+var
+  i, where: Integer;
+  takeon, eatable: Boolean;
+label
+  lab1, lab2;
+begin
+  eatable := False;
+  takeon := False;
+  if idx in [0..MAXBAGITEMCL - 1] then
+  begin
+    if (g_EatingItem.S.Name <> '') and (GetTickCount - g_dwEatTime > 5 * 1000) then
+      g_EatingItem.S.Name := '';
+
+    if (g_EatingItem.S.Name = '') and (g_ItemArr[idx].S.Name <> '') and (g_ItemArr[idx].S.NeedIdentify < 4) then
+    begin
+      // 药和捷豹
+      if (g_ItemArr[idx].S.StdMode <= 3) or (g_ItemArr[idx].S.StdMode = 31) then
+      begin
+        if (g_ItemArr[idx].S.Overlap >= 1) and (g_ItemArr[idx].Dura > 1) then
+        begin
+          g_ItemArr[idx].Dura := g_ItemArr[idx].Dura - 1;
+          g_EatingItem := g_ItemArr[idx];
+          g_ItemArr[idx].S.Name := '';
+          eatable := True;
+        end
+        else
+        begin
+          g_EatingItem := g_ItemArr[idx];
+          g_ItemArr[idx].S.Name := '';
+          eatable := True;
+        end;
+      end
+      else
+      begin
+        //if g_WaitingUseItem.Item.S.Name = '' then begin
+        // 可堆叠
+        if (g_ItemArr[idx].S.Overlap >= 1) then
+        begin
+          if (g_ItemArr[idx].Dura > 1) then
+          begin
+            frmMain.SendDismantleItem(g_ItemArr[idx].S.Name, g_ItemArr[idx].MakeIndex, 1, 0);
+            g_SndMgr.ItemUseSound(g_ItemArr[idx].S.StdMode);
+            g_dwEatTime := GetTickCount;
+            Exit;
+          end
+          else
+            goto lab1;
+        end
+        else
+        begin
+          lab1:
+          // 也是特殊的筹码之类的
+          if (g_ItemArr[idx].S.StdMode = 46) and (g_ItemArr[idx].S.Shape in [2..6]) then
+          begin
+            if not g_RareBoxWindow.m_boKeyAvail and (g_OpenBoxItem.Item.S.Name = '') and not FrmDlg.DWBoxBKGnd.Visible then
+            begin
+              g_OpenBoxItem.Index := idx;
+              g_OpenBoxItem.Item := g_ItemArr[idx];
+              g_ItemArr[idx].S.Name := '';
+              FrmDlg.DWBoxBKGnd.Visible := True;
+            end;
+            Exit;
+          end;
+          // 七龙珠?
+          if (g_ItemArr[idx].S.StdMode = 41) and
+            (g_ItemArr[idx].S.Shape in [10..14, 30..34]) and
+            (g_BuildAcusesStep <> 1) and
+            FrmDlg.DWBuildAcus.Visible and
+            (FrmDlg.DWBuildAcus.tag in [1, 2]) then
+          begin
+            for i := 0 to 7 do
+            begin
+              if g_BuildAcuses[i].Item.S.Name = '' then
+              begin
+                if ((g_ItemArr[idx].S.Shape in [30..34]) and (i in [5..7])) or
+                  ((g_ItemArr[idx].S.Shape in [10..14]) and (i in [0..4])) then
+                begin
+                  Break;
+                end;
+              end;
+            end;
+            if i in [0..7] then
+            begin
+              g_boItemMoving := True;
+              g_MovingItem.Index := idx;
+              g_MovingItem.Item := g_ItemArr[idx];
+              g_ItemArr[idx].S.Name := '';
+            end;
+            case i of
+              0: FrmDlg.DBAcus1Click(FrmDlg.DBAcus1, 0, 0);
+              1: FrmDlg.DBAcus1Click(FrmDlg.DBAcus2, 0, 0);
+              2: FrmDlg.DBAcus1Click(FrmDlg.DBAcus3, 0, 0);
+              3: FrmDlg.DBAcus1Click(FrmDlg.DBAcus4, 0, 0);
+              4: FrmDlg.DBAcus1Click(FrmDlg.DBAcus5, 0, 0);
+              5: FrmDlg.DBAcus1Click(FrmDlg.DBCharm1, 0, 0);
+              6: FrmDlg.DBAcus1Click(FrmDlg.DBCharm2, 0, 0);
+              7: FrmDlg.DBAcus1Click(FrmDlg.DBCharm3, 0, 0);
+            end;
+            Exit;
+          end;
+        end;
+        where := GetTakeOnPosition(g_ItemArr[idx].S, g_UseItems, True);
+        if where in [0..U_FASHION] then
+        begin //takeon...
+          takeon := True;
+          g_EatingItem := g_ItemArr[idx];
+          g_ItemArr[idx].S.Name := '';
+        end;
+        //end;
+      end;
+    end;
+  end
+  else if (idx = -1) and g_boItemMoving then
+  begin
+    //if g_WaitingUseItem.Item.S.Name = '' then begin
+    //end;
+
+    if (g_MovingItem.Item.S.StdMode <= 4) or (g_MovingItem.Item.S.StdMode = 31) and (g_MovingItem.Item.S.NeedIdentify < 4) then
+    begin
+      if ((g_MovingItem.Item.S.StdMode <= 3) or (g_MovingItem.Item.S.StdMode = 31)) and (g_MovingItem.Item.S.Overlap >= 1) and (g_MovingItem.Item.Dura > 1) then
+      begin
+        g_MovingItem.Item.Dura := g_MovingItem.Item.Dura - 1;
+        g_boItemMoving := False;
+        g_EatingItem := g_MovingItem.Item;
+        g_MovingItem.Item.S.Name := '';
+      end
+      else
+      begin
+        g_boItemMoving := False;
+        g_EatingItem := g_MovingItem.Item;
+        g_MovingItem.Item.S.Name := '';
+      end;
+      if (g_EatingItem.S.StdMode = 4) and (g_EatingItem.S.Shape < 50) then
+      begin
+        if mrYes <> FrmDlg.DMessageDlg('是否确认开始练习 "' + g_EatingItem.S.Name + '"？', [mbYes, mbNo]) then
+        begin
+          AddItemBag(g_EatingItem);
+          Exit;
+        end;
+      end;
+      idx := frmMain.m_nEatRetIdx;
+      eatable := True;
+
+    end
+    else
+    begin
+      if (g_MovingItem.Item.S.Overlap >= 1) then
+      begin
+        if (g_MovingItem.Item.Dura > 1) then
+        begin
+          frmMain.SendDismantleItem(g_MovingItem.Item.S.Name, g_MovingItem.Item.MakeIndex, 1, 0);
+          g_SndMgr.ItemUseSound(g_MovingItem.Item.S.StdMode);
+          g_dwEatTime := GetTickCount;
+          Exit;
+        end
+        else
+          goto lab2;
+      end
+      else
+      begin
+        lab2:
+        if (g_MovingItem.Item.S.StdMode = 46) and (g_MovingItem.Item.S.Shape in [2..6]) then
+        begin
+          if not g_RareBoxWindow.m_boKeyAvail and (g_OpenBoxItem.Item.S.Name = '') and not FrmDlg.DWBoxBKGnd.Visible then
+          begin
+            g_OpenBoxItem.Index := frmMain.m_nEatRetIdx;
+            g_OpenBoxItem.Item := g_MovingItem.Item;
+            g_boItemMoving := False;
+            g_MovingItem.Item.S.Name := '';
+            FrmDlg.DWBoxBKGnd.Visible := True;
+          end;
+          Exit;
+        end;
+        if (g_MovingItem.Item.S.StdMode = 41) and
+          (g_MovingItem.Item.S.Shape in [10..14, 30..34]) and
+          (g_BuildAcusesStep <> 1) and
+          FrmDlg.DWBuildAcus.Visible and
+          (FrmDlg.DWBuildAcus.tag in [1, 2]) then
+        begin
+
+          for i := 0 to 7 do
+          begin
+            if g_BuildAcuses[i].Item.S.Name = '' then
+            begin
+              if ((g_MovingItem.Item.S.Shape in [30..34]) and (i in [5..7])) or
+                ((g_MovingItem.Item.S.Shape in [10..14]) and (i in [0..4])) then
+              begin
+                Break;
+              end;
+            end;
+          end;
+          case i of
+            0: FrmDlg.DBAcus1Click(FrmDlg.DBAcus1, 0, 0);
+            1: FrmDlg.DBAcus1Click(FrmDlg.DBAcus2, 0, 0);
+            2: FrmDlg.DBAcus1Click(FrmDlg.DBAcus3, 0, 0);
+            3: FrmDlg.DBAcus1Click(FrmDlg.DBAcus4, 0, 0);
+            4: FrmDlg.DBAcus1Click(FrmDlg.DBAcus5, 0, 0);
+            5: FrmDlg.DBAcus1Click(FrmDlg.DBCharm1, 0, 0);
+            6: FrmDlg.DBAcus1Click(FrmDlg.DBCharm2, 0, 0);
+            7: FrmDlg.DBAcus1Click(FrmDlg.DBCharm3, 0, 0);
+          end;
+          Exit;
+        end;
+      end;
+      where := GetTakeOnPosition(g_MovingItem.Item.S, g_UseItems, True);
+      if where in [0..U_FASHION] then
+      begin
+        takeon := True;
+        g_boItemMoving := False;
+        g_EatingItem := g_MovingItem.Item;
+        g_MovingItem.Item.S.Name := '';
+        idx := frmMain.m_nEatRetIdx;
+      end
+      else {if g_WaitingUseItem.Item.S.Name = '' then}
+      begin
+        //
+      end;
+    end;
+  end;
+  if eatable then
+  begin
+    m_nEatRetIdx := idx;
+    m_boSupplyItem := True;
+    g_dwEatTime := GetTickCount;
+    SendEat(g_EatingItem.MakeIndex, g_EatingItem.S.Name, g_EatingItem.S.StdMode);
+    g_SndMgr.ItemUseSound(g_EatingItem.S.StdMode);
+  end
+  else if takeon then
+  begin
+    m_nEatRetIdx := idx;
+    g_dwEatTime := GetTickCount;
+    g_WaitingUseItem.Item := g_EatingItem;
+    g_WaitingUseItem.Index := where;
+    SendTakeOnItem(where, g_EatingItem.MakeIndex, g_EatingItem.S.Name);
+    g_SndMgr.ItemUseSound(g_EatingItem.S.StdMode);
+    g_EatingItem.S.Name := '';
+  end;
+end;
+
+
+
+_Unit101.sub_0063D914
+0063D914        push        ebp
+0063D915        mov         ebp,esp
+0063D917        add         esp,0FFFFFF68
+0063D91D        push        esi
+0063D91E        push        edi
+0063D91F        xor         ecx,ecx
+0063D921        mov         dword ptr [ebp-98],ecx
+0063D927        mov         dword ptr [ebp-94],ecx
+0063D92D        mov         dword ptr [ebp-90],ecx
+0063D933        mov         dword ptr [ebp-5C],ecx
+0063D936        mov         dword ptr [ebp-58],ecx
+0063D939        mov         dword ptr [ebp-54],ecx
+0063D93C        mov         dword ptr [ebp-34],ecx
+0063D93F        mov         dword ptr [ebp-10],ecx
+0063D942        mov         dword ptr [ebp-0C],ecx
+0063D945        mov         dword ptr [ebp-8],edx
+0063D948        mov         dword ptr [ebp-4],eax
+0063D94B        xor         eax,eax
+0063D94D        push        ebp
+0063D94E        push        63DDC1
+0063D953        push        dword ptr fs:[eax]
+0063D956        mov         dword ptr fs:[eax],esp
+0063D959        mov         eax,[00679DC8];^gvar_00677260
+0063D95E        cmp         byte ptr [eax],0
+0063D961>       jne         0063DD81
+0063D967        cmp         byte ptr ds:[755F73],7;gvar_00755F73
+0063D96E        sete        al
+0063D971        and         al,byte ptr ds:[755F5C];gvar_00755F5C
+0063D977>       je          0063D9D3
+0063D979        mov         esi,755F64;gvar_00755F64:PShortString
+0063D97E        mov         edi,756278;gvar_00756278
+0063D983        mov         ecx,20
+0063D988        rep movs    dword ptr [edi],dword ptr [esi]
+0063D98A        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0063D98F        mov         eax,dword ptr [eax]
+0063D991        call        00599734
+0063D996        call        kernel32.GetTickCount
+0063D99B        mov         [007562F8],eax;gvar_007562F8:DWORD
+0063D9A0        lea         eax,[ebp-0C]
+0063D9A3        mov         edx,756278;gvar_00756278
+0063D9A8        call        @UStrFromString
+0063D9AD        mov         eax,dword ptr [ebp-0C]
+0063D9B0        push        eax
+0063D9B1        mov         ecx,dword ptr ds:[7562EC];gvar_007562EC
+0063D9B7        mov         edx,dword ptr [ebp-8]
+0063D9BA        mov         eax,dword ptr [ebp-4]
+0063D9BD        call        006441CC
+0063D9C2        xor         eax,eax
+0063D9C4        mov         al,[00756287];gvar_00756287
+0063D9C9        call        00552BC4
+0063D9CE>       jmp         0063DD81
+0063D9D3        mov         eax,dword ptr [ebp-8]
+0063D9D6        sub         eax,34
+0063D9D9>       jae         0063DBDC
+0063D9DF        cmp         byte ptr ds:[756278],0;gvar_00756278
+0063D9E6>       je          0063DA01
+0063D9E8        call        kernel32.GetTickCount
+0063D9ED        sub         eax,dword ptr ds:[7562F8];gvar_007562F8:DWORD
+0063D9F3        cmp         eax,1388
+0063D9F8>       jbe         0063DA01
+0063D9FA        mov         byte ptr ds:[756278],0;gvar_00756278
+0063DA01        cmp         byte ptr ds:[756278],0;gvar_00756278
+0063DA08>       jne         0063DD81
+0063DA0E        mov         eax,dword ptr [ebp-8]
+0063DA11        shl         eax,4
+0063DA14        cmp         byte ptr [eax*8+752EE8],0;gvar_00752EE8:Pointer
+0063DA1C>       je          0063DD81
+0063DA22        mov         eax,dword ptr [ebp-8]
+0063DA25        shl         eax,4
+0063DA28        mov         al,byte ptr [eax*8+752EF7];gvar_00752EF7
+0063DA2F        sub         al,4
+0063DA31>       jb          0063DA3F
+0063DA33        sub         al,42
+0063DA35>       je          0063DA3F
+0063DA37        sub         al,12
+0063DA39>       jne         0063DD81
+0063DA3F        mov         eax,dword ptr [ebp-8]
+0063DA42        shl         eax,4
+0063DA45        lea         esi,[eax*8+752EE8];gvar_00752EE8:Pointer
+0063DA4C        mov         edi,756278;gvar_00756278
+0063DA51        mov         ecx,20
+0063DA56        rep movs    dword ptr [edi],dword ptr [esi]
+0063DA58        mov         eax,dword ptr [ebp-8]
+0063DA5B        shl         eax,4
+0063DA5E        mov         byte ptr [eax*8+752EE8],0;gvar_00752EE8:Pointer
+0063DA66        mov         eax,dword ptr [ebp-8]
+0063DA69        shl         eax,4
+0063DA6C        cmp         byte ptr [eax*8+752EF7],4;gvar_00752EF7
+0063DA74>       jne         0063DB72
+0063DA7A        mov         eax,dword ptr [ebp-8]
+0063DA7D        shl         eax,4
+0063DA80        cmp         byte ptr [eax*8+752EF8],64;gvar_00752EF8
+0063DA88>       jae         0063DB72
+0063DA8E        mov         eax,dword ptr [ebp-8]
+0063DA91        shl         eax,4
+0063DA94        cmp         byte ptr [eax*8+752EF8],32;gvar_00752EF8
+0063DA9C>       jae         0063DB0A
+0063DA9E        mov         eax,dword ptr [ebp-8]
+0063DAA1        shl         eax,4
+0063DAA4        lea         edx,[eax*8+752EE8];gvar_00752EE8:Pointer
+0063DAAB        lea         eax,[ebp-30]
+0063DAAE        call        @PStrCpy
+0063DAB3        mov         edx,63DDD0;'你要开始学习吗？'
+0063DAB8        lea         eax,[ebp-30]
+0063DABB        mov         cl,1E
+0063DABD        call        @PStrNCat
+0063DAC2        lea         edx,[ebp-30]
+0063DAC5        lea         eax,[ebp-10]
+0063DAC8        call        @UStrFromString
+0063DACD        mov         edx,dword ptr [ebp-10]
+0063DAD0        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0063DAD5        mov         eax,dword ptr [eax]
+0063DAD7        mov         cx,word ptr ds:[63DDE4];0x3 gvar_0063DDE4
+0063DADE        call        0059A75C
+0063DAE3        cmp         eax,6
+0063DAE6>       je          0063DB72
+0063DAEC        mov         eax,dword ptr [ebp-8]
+0063DAEF        shl         eax,4
+0063DAF2        lea         edi,[eax*8+752EE8];gvar_00752EE8:Pointer
+0063DAF9        mov         esi,756278;gvar_00756278
+0063DAFE        mov         ecx,20
+0063DB03        rep movs    dword ptr [edi],dword ptr [esi]
+0063DB05>       jmp         0063DD81
+0063DB0A        mov         eax,dword ptr [ebp-8]
+0063DB0D        shl         eax,4
+0063DB10        lea         edx,[eax*8+752EE8];gvar_00752EE8:Pointer
+0063DB17        lea         eax,[ebp-50]
+0063DB1A        call        @PStrCpy
+0063DB1F        mov         edx,63DDE8;'你要使用吗？'
+0063DB24        lea         eax,[ebp-50]
+0063DB27        mov         cl,1A
+0063DB29        call        @PStrNCat
+0063DB2E        lea         edx,[ebp-50]
+0063DB31        lea         eax,[ebp-34]
+0063DB34        call        @UStrFromString
+0063DB39        mov         edx,dword ptr [ebp-34]
+0063DB3C        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0063DB41        mov         eax,dword ptr [eax]
+0063DB43        mov         cx,word ptr ds:[63DDE4];0x3 gvar_0063DDE4
+0063DB4A        call        0059A75C
+0063DB4F        cmp         eax,6
+0063DB52>       je          0063DB72
+0063DB54        mov         eax,dword ptr [ebp-8]
+0063DB57        shl         eax,4
+0063DB5A        lea         edi,[eax*8+752EE8];gvar_00752EE8:Pointer
+0063DB61        mov         esi,756278;gvar_00756278
+0063DB66        mov         ecx,20
+0063DB6B        rep movs    dword ptr [edi],dword ptr [esi]
+0063DB6D>       jmp         0063DD81
+0063DB72        call        kernel32.GetTickCount
+0063DB77        mov         [007562F8],eax;gvar_007562F8:DWORD
+0063DB7C        lea         eax,[ebp-54]
+0063DB7F        mov         edx,dword ptr [ebp-8]
+0063DB82        shl         edx,4
+0063DB85        lea         edx,[edx*8+752EE8];gvar_00752EE8:Pointer
+0063DB8C        call        @UStrFromString
+0063DB91        mov         eax,dword ptr [ebp-54]
+0063DB94        push        eax
+0063DB95        mov         eax,dword ptr [ebp-8]
+0063DB98        shl         eax,4
+0063DB9B        mov         ecx,dword ptr [eax*8+752F5C];gvar_00752F5C
+0063DBA2        mov         edx,dword ptr [ebp-8]
+0063DBA5        mov         eax,dword ptr [ebp-4]
+0063DBA8        call        006441CC
+0063DBAD        mov         eax,dword ptr [ebp-8]
+0063DBB0        shl         eax,4
+0063DBB3        movzx       eax,byte ptr [eax*8+752EF7];gvar_00752EF7
+0063DBBB        call        00552BC4
+0063DBC0        push        ebp
+0063DBC1        lea         eax,[ebp-58]
+0063DBC4        mov         edx,756278;gvar_00756278
+0063DBC9        call        @UStrFromString
+0063DBCE        mov         eax,dword ptr [ebp-58]
+0063DBD1        call        0063D780
+0063DBD6        pop         ecx
+0063DBD7>       jmp         0063DD81
+0063DBDC        cmp         dword ptr [ebp-8],0FFFFFFFF
+0063DBE0        sete        al
+0063DBE3        and         al,byte ptr ds:[755F5C];gvar_00755F5C
+0063DBE9>       je          0063DD81
+0063DBEF        mov         byte ptr ds:[755F5C],0;gvar_00755F5C
+0063DBF6        mov         esi,755F64;gvar_00755F64:PShortString
+0063DBFB        mov         edi,756278;gvar_00756278
+0063DC00        mov         ecx,20
+0063DC05        rep movs    dword ptr [edi],dword ptr [esi]
+0063DC07        mov         byte ptr ds:[755F64],0;gvar_00755F64:PShortString
+0063DC0E        cmp         byte ptr ds:[756287],4;gvar_00756287
+0063DC15>       jne         0063DD26
+0063DC1B        cmp         byte ptr ds:[756288],64;gvar_00756288
+0063DC22>       jae         0063DD26
+0063DC28        cmp         byte ptr ds:[756288],32;gvar_00756288
+0063DC2F>       jae         0063DCAC
+0063DC31        mov         edx,63DDF8;'"'
+0063DC36        lea         eax,[ebp-6C]
+0063DC39        call        @PStrCpy
+0063DC3E        mov         edx,756278;gvar_00756278
+0063DC43        lea         eax,[ebp-6C]
+0063DC46        mov         cl,0F
+0063DC48        call        @PStrNCat
+0063DC4D        lea         edx,[ebp-6C]
+0063DC50        lea         eax,[ebp-8C]
+0063DC56        call        @PStrCpy
+0063DC5B        mov         edx,63DDFC;'"是否开始修炼?'
+0063DC60        lea         eax,[ebp-8C]
+0063DC66        mov         cl,1D
+0063DC68        call        @PStrNCat
+0063DC6D        lea         edx,[ebp-8C]
+0063DC73        lea         eax,[ebp-5C]
+0063DC76        call        @UStrFromString
+0063DC7B        mov         edx,dword ptr [ebp-5C]
+0063DC7E        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0063DC83        mov         eax,dword ptr [eax]
+0063DC85        mov         cx,word ptr ds:[63DDE4];0x3 gvar_0063DDE4
+0063DC8C        call        0059A75C
+0063DC91        cmp         eax,6
+0063DC94>       je          0063DD26
+0063DC9A        or          edx,0FFFFFFFF
+0063DC9D        mov         eax,756278;gvar_00756278
+0063DCA2        call        005D678C
+0063DCA7>       jmp         0063DD81
+0063DCAC        mov         edx,63DDF8;'"'
+0063DCB1        lea         eax,[ebp-6C]
+0063DCB4        call        @PStrCpy
+0063DCB9        mov         edx,756278;gvar_00756278
+0063DCBE        lea         eax,[ebp-6C]
+0063DCC1        mov         cl,0F
+0063DCC3        call        @PStrNCat
+0063DCC8        lea         edx,[ebp-6C]
+0063DCCB        lea         eax,[ebp-8C]
+0063DCD1        call        @PStrCpy
+0063DCD6        mov         edx,63DDFC;'"是否开始修炼?'
+0063DCDB        lea         eax,[ebp-8C]
+0063DCE1        mov         cl,1D
+0063DCE3        call        @PStrNCat
+0063DCE8        lea         edx,[ebp-8C]
+0063DCEE        lea         eax,[ebp-90]
+0063DCF4        call        @UStrFromString
+0063DCF9        mov         edx,dword ptr [ebp-90]
+0063DCFF        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0063DD04        mov         eax,dword ptr [eax]
+0063DD06        mov         cx,word ptr ds:[63DDE4];0x3 gvar_0063DDE4
+0063DD0D        call        0059A75C
+0063DD12        cmp         eax,6
+0063DD15>       je          0063DD26
+0063DD17        or          edx,0FFFFFFFF
+0063DD1A        mov         eax,756278;gvar_00756278
+0063DD1F        call        005D678C
+0063DD24>       jmp         0063DD81
+0063DD26        call        kernel32.GetTickCount
+0063DD2B        mov         [007562F8],eax;gvar_007562F8:DWORD
+0063DD30        lea         eax,[ebp-94]
+0063DD36        mov         edx,756278;gvar_00756278
+0063DD3B        call        @UStrFromString
+0063DD40        mov         eax,dword ptr [ebp-94]
+0063DD46        push        eax
+0063DD47        mov         ecx,dword ptr ds:[7562EC];gvar_007562EC
+0063DD4D        mov         edx,dword ptr [ebp-8]
+0063DD50        mov         eax,dword ptr [ebp-4]
+0063DD53        call        006441CC
+0063DD58        xor         eax,eax
+0063DD5A        mov         al,[00756287];gvar_00756287
+0063DD5F        call        00552BC4
+0063DD64        push        ebp
+0063DD65        lea         eax,[ebp-98]
+0063DD6B        mov         edx,756278;gvar_00756278
+0063DD70        call        @UStrFromString
+0063DD75        mov         eax,dword ptr [ebp-98]
+0063DD7B        call        0063D780
+0063DD80        pop         ecx
+0063DD81        xor         eax,eax
+0063DD83        pop         edx
+0063DD84        pop         ecx
+0063DD85        pop         ecx
+0063DD86        mov         dword ptr fs:[eax],edx
+0063DD89        push        63DDC8
+0063DD8E        lea         eax,[ebp-98]
+0063DD94        mov         edx,3
+0063DD99        call        @UStrArrayClr
+0063DD9E        lea         eax,[ebp-5C]
+0063DDA1        mov         edx,3
+0063DDA6        call        @UStrArrayClr
+0063DDAB        lea         eax,[ebp-34]
+0063DDAE        call        @UStrClr
+0063DDB3        lea         eax,[ebp-10]
+0063DDB6        mov         edx,2
+0063DDBB        call        @UStrArrayClr
+0063DDC0        ret
+0063DDC1>       jmp         @HandleFinally
+0063DDC6>       jmp         0063DD8E
+0063DDC8        pop         edi
+0063DDC9        pop         esi
+0063DDCA        mov         esp,ebp
+0063DDCC        pop         ebp
+0063DDCD        ret

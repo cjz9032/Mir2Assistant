@@ -9,44 +9,5 @@ cd G:\cq\cd;Start-Process -FilePath "./ZC.H" -ArgumentList "CqJHmIicTR62d+9dSOk5
 超大 TODO
 
 调用客户端 007A951A   .  E8 B536C6FF   call <jmp.&kernel32.CreateProcessW>      ; \CreateProcessW
-
-
-加密CALL 
-007A94C5   .  E8 0E48D7FF   call cd.0051DCD8
-参数
-
-
-push 0019FA9C 0000
-	 
-
-[ebp-0x3C],0x5
-[ebp-0x40],0x10
-[ebp-0x44],0x18
-
-[ebp-0x4C0] p1
-	p1 "G/cq/cd" -- 03128CBC
-		03128CBC  
-		47 00 3A 00 5C 00 63 00 71 00 5C 00 63 00 64 00 5C 00 00 00
-		473A5C63715C63645C
-		
-[ebp-0x4BC],0x11
-
-                      
-[ebp-0x4B8] p2 eax [ebp-0xC]
-	"ZC.H" 03115F6C
-	 5A 00 43 00 2E 00 48 00    
-	 
-[ebp-0x4B4],0x11
-
-ecx [ebp-0x4C4] 0019F5E0 0000
-
-eax [ebp-0x374] 0019F730 
-	 08 B3 C9 B6 BC B4 AB C6 E6  成都传奇
-	 
-mov edx,0x2F8
-	 --------
-	 貌似缺少IP
-	 0019F760      
-	 0E 32 32 32 2E 32 31 31 2E 37 33 2E 32 32 32           22.211.73.222
-
+补丁在以前 -- 暂时没用了, 可以直接call
 
