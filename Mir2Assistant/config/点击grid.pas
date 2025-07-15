@@ -2,6 +2,8 @@
 // 可以点击所有的
 // 后续装备 交易栏等
 
+todo procedure TFrmDlg.DHSWWeaponClick(Sender: TObject; X, Y: Integer);
+
 
 
 
