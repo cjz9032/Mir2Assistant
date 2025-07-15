@@ -1,10 +1,55 @@
-ZC.H+1ABD11 - 8D 79 04              - lea edi,[ecx+04]
-ZC.H+1ABD14 - B9 20000000           - mov ecx,00000020 { 32 }
-ZC.H+1ABD19 - F3 A5                 - repe movsd 
-ZC.H+1ABD1B - 8B 45 F8              - mov eax,[ebp-08]
-ZC.H+1ABD1E - C1 E0 04              - shl eax,04 { 4 }
-ZC.H+1ABD21 - 8B 15 48A56700        - mov edx,[ZC.H+27A548] { (00752EE8) }
+//通过IDX和bool是否选中 可以找到点击事件, 然后直接call, 参数也不复杂
+// 可以点击所有的
+// 后续装备 交易栏等
 
+
+
+
+
+// call test
+
+pushad
+pushfd
+
+push 100 
+
+push 1
+
+push 1
+
+push 0
+
+mov ebx,[7432F4]
+
+mov ecx,100
+
+mov edx, [7432F4]
+
+mov eax,[0074350C]
+
+call 005ABB7C
+
+popfd
+popad
+
+--
+
+push eax // Y轴
+
+--base0
+push col 1
+
+push row 1
+
+push ax 0 
+
+mov ebx [7432F4]
+
+mov ecx // X轴
+
+mov edx  [7432F4] -- same 
+
+mov eax [0074350C] :TFrmDlg
 
 procedure TFrmDlg.DItemGridGridSelect(Sender: TObject; ACol, ARow: Integer; Shift: TShiftState);
 var
@@ -35,24 +80,7 @@ begin
             g_ItemArr[idx].s.NeedIdentify := 0;
             DelStallItem(g_ItemArr[idx]);
           end
-          else if g_ItemArr[idx].s.NeedIdentify = 5 then
-            Exit;
-
-          if (g_ItemArr[idx].s.Overlap > 0) and (g_ItemArr[idx].Dura > 1) and (Shift = [{ssCtrl,} ssShift]) then
-          begin
-
-            MsgResult := DMessageDlg(Format('你想拆分多少 %s ？', [g_ItemArr[idx].s.Name]), [mbOk, mbCancel, mbAbort], IntToStr(g_ItemArr[idx].Dura - 1));
-
-            GetValidStrVal(DlgEditText, valstr, [' ']);
-            Count := Str_ToInt(valstr, 0);
-
-            if Count >= g_ItemArr[idx].Dura then  Count := g_ItemArr[idx].Dura - 1;
-
-            if (MsgResult = mrCancel) or (Count <= 0) then  Exit;
-
-            frmMain.SendDismantleItem(g_ItemArr[idx].s.Name, g_ItemArr[idx].MakeIndex, Count, 0);
-
-          end
+       
           else
           begin
             g_boItemMoving := True;
@@ -250,28 +278,34 @@ end;
 
 
 
+关注index
+<?xml version="1.0" encoding="utf-8"?>
+<CheatTable>
+  <CheatEntries>
+    <CheatEntry>
+      <ID>211</ID>
+      <Description>"move Index 注意后续"</Description>
+      <LastState Value="25" RealAddress="00755F60"/>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>[ZC.H+27A240]</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>216</ID>
+      <Description>"是否move"</Description>
+      <LastState Value="0" RealAddress="00755F5C"/>
+      <VariableType>Byte</VariableType>
+      <Address>ZC.H+355F5C</Address>
+    </CheatEntry>
+  </CheatEntries>
+</CheatTable>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+g_boItemMoving := True;
+g_MovingItem.Index := idx;
+g_MovingItem.item := g_ItemArr[idx];
+g_ItemArr[idx].s.Name := '';
+g_SndMgr.ItemClickSound(g_ItemArr[idx].s);
 
 
 FState.TFrmDlg.DItemGridGridSelect
