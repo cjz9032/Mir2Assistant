@@ -43,7 +43,7 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")}\t{Name}\t {Appr} \t {Addr:x2}";
+        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")} {Name} {Appr} {Addr:x2} {Id:x2}";
 
     }
 }

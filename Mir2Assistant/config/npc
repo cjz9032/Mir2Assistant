@@ -1,0 +1,165 @@
+同样是 SendClientMessage 
+很容易找到
+
+// test call
+pushad
+pushfd
+
+push 00
+push 00
+push 00
+mov ecx , 11fc8da0
+mov edx,000003F2
+mov eax,[7524B4]
+mov ebx,[7524B4]
+call 642524
+
+popfd
+popad
+
+
+
+ZC.H+23FF4F - 6A 00                 - push 00 { 0 }
+ZC.H+23FF51 - 6A 00                 - push 00 { 0 }
+ZC.H+23FF53 - 6A 00                 - push 00 { 0 }
+ZC.H+23FF55 - 8B 45 E0              - mov eax,[ebp-20]
+ZC.H+23FF58 - 8B 48 04              - mov ecx,[eax+04]  -- NPC ID和mons一样
+ZC.H+23FF5B - BA F2030000           - mov edx,000003F2 { 1010 }
+ZC.H+23FF60 - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+23FF63 - E8 BC250000           - call ZC.H+242524
+
+
+--2级对话
+g_nCurMerchant 很容易根据ID找到 7563A4
+    就能找到对应的函数, 和string这些
+关闭 FrmDlg.CloseMDlg; 
+    // 需要重置 否则 重复点NPC不识别
+    mov  eax,[0067A728];^gvar_0074350C:TFrmDlg
+    mov  eax,dword ptr [eax]
+    call        005AE87C
+MDlgStr: string; 
+当前npcname [74350C] TFrmDlg +C38
+    偏移 这个直接搜字符串 多搜几次就好 [74350C] TFrmDlg +C40 // 或者暴力OMG看也行
+    UNICODE 欢迎，我能为你做点什么？
+            <买/@buy>　药品
+            <卖/@sell>　药品
+            <打听/@XUNWENTSYS> 关于特殊药水的消息
+            <退出/@exit>
+
+ 
+2级对话命令 直接找g_nCurMerchant 或是 DMerchantDlgClick_005B18B8 再继续找select的call
+    frmMain.SendMerchantDlgSelect(g_nCurMerchant, p.rstr); -- 006446D0
+
+直接调用会不对, 最好不, 但是一般都可以
+005B19F3        mov         edx,dword ptr ds:[6799E8];^gvar_007563A4
+005B19F9        mov         edx,dword ptr [edx]
+005B19FB        mov         eax,[00679EBC];^gvar_007524B4:TFrmMain
+005B1A00        mov         eax,dword ptr [eax]
+005B1A02        mov         ecx,dword ptr [ebp-18] -- cmd @sell 等的str
+005B1A05        mov         ecx,dword ptr [ecx+10]
+005B1A08        call        006446D0
+
+// test 2级 call
+pushad
+pushfd
+
+mov edx, 0x7563A4
+mov edx, [edx]
+mov eax, 0x00679EBC ;^gvar_007524B4:TFrmMain
+mov eax,[0x00679EBC]
+mov ecx, TODO
+call 006446D0
+
+popfd
+popad
+
+
+procedure TfrmMain.ClientGetMerchantSay(merchant, face: Integer; saying: string);
+var
+  npcname: string;
+begin
+  g_nMDlgX := g_MySelf.m_nCurrX;
+  g_nMDlgY := g_MySelf.m_nCurrY;
+  if g_nCurMerchant <> merchant then
+  begin
+    g_nCurMerchant := merchant;
+    // FrmDlg.ResetMenuDlg;
+    FrmDlg.CloseMDlg;
+  end;
+  saying := GetValidStr3(saying, npcname, ['/']);
+  FrmDlg.ShowMDlg(face, npcname, saying);
+end;
+
+_Unit101.sub_00657FBC
+00657FBC        push        ebp
+00657FBD        mov         ebp,esp
+00657FBF        add         esp,0FFFFFFE8
+00657FC2        push        ebx
+00657FC3        xor         ebx,ebx
+00657FC5        mov         dword ptr [ebp-14],ebx
+00657FC8        mov         dword ptr [ebp-10],ebx
+00657FCB        mov         dword ptr [ebp-0C],ecx
+00657FCE        mov         dword ptr [ebp-8],edx
+00657FD1        mov         dword ptr [ebp-4],eax
+00657FD4        mov         eax,dword ptr [ebp+8]
+00657FD7        call        @UStrAddRef
+00657FDC        xor         eax,eax
+00657FDE        push        ebp
+00657FDF        push        65808E
+00657FE4        push        dword ptr fs:[eax]
+00657FE7        mov         dword ptr fs:[eax],esp
+00657FEA        mov         eax,[00752764];gvar_00752764
+00657FEF        movzx       eax,word ptr [eax+8]
+00657FF3        mov         [007563A8],eax;gvar_007563A8
+00657FF8        mov         eax,[00752764];gvar_00752764
+00657FFD        movzx       eax,word ptr [eax+0A]
+00658001        mov         [007563AC],eax;gvar_007563AC
+00658006        mov         eax,[007563A4];gvar_007563A4
+0065800B        cmp         eax,dword ptr [ebp-8]
+0065800E>       je          00658030
+clear
+00658010        mov         eax,dword ptr [ebp-8]
+00658013        mov         [007563A4],eax;gvar_007563A4
+00658018        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0065801D        mov         eax,dword ptr [eax]
+0065801F        call        005ADDF4
+00658024        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+00658029        mov         eax,dword ptr [eax]
+0065802B        call        005AE87C
+say string
+00658030        push        0
+00658032        lea         eax,[ebp-14]
+00658035        push        eax
+00658036        mov         word ptr [ebp-18],2F
+0065803C        lea         ecx,[ebp-18]
+0065803F        lea         edx,[ebp-10]
+00658042        mov         eax,dword ptr [ebp+8]
+00658045        call        00534E38
+0065804A        mov         edx,dword ptr [ebp-14]
+0065804D        lea         eax,[ebp+8]
+00658050        call        @UStrLAsg
+00658055        mov         eax,dword ptr [ebp+8]
+00658058        push        eax
+00658059        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0065805E        mov         eax,dword ptr [eax]
+00658060        mov         ecx,dword ptr [ebp-10]
+00658063        mov         edx,dword ptr [ebp-0C]
+00658066        call        005ACEDC
+0065806B        xor         eax,eax
+0065806D        pop         edx
+0065806E        pop         ecx
+0065806F        pop         ecx
+00658070        mov         dword ptr fs:[eax],edx
+00658073        push        658095
+00658078        lea         eax,[ebp-14]
+0065807B        mov         edx,2
+00658080        call        @UStrArrayClr
+00658085        lea         eax,[ebp+8]
+00658088        call        @UStrClr
+0065808D        ret
+0065808E>       jmp         @HandleFinally
+00658093>       jmp         00658078
+00658095        pop         ebx
+00658096        mov         esp,ebp
+00658098        pop         ebp
+00658099        ret         4

@@ -4,14 +4,25 @@
 
 
 //µã»÷NPC
-void clickNPC(int npcId, int findPathPara, int clickNPCCallAddr)
+void clickNPC(int npcId)
 {
 	__asm {
-		mov edx, npcId
-		mov eax, findPathPara
-		mov eax, [eax]
-		mov ebx, clickNPCCallAddr
-		call ebx
+		pushad
+		pushfd
+
+		push 00
+		push 00
+		push 00
+		mov ecx, npcId
+		mov edx, 0x000003F2 
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax] // gvar_007524B4:TFrmMain
+		mov ebx, eax 
+		mov esi, 0x642524 // sendclientmessage
+		call esi 
+
+		popfd
+		popad
 	}
 }
 
@@ -37,7 +48,7 @@ void Npc::process(int code, int* data)
 	switch (code)
 	{
 	case 3001:
-		clickNPC(data[0], data[1], data[2]);
+		clickNPC(data[0]);
 		break;
 	case 3002:
 		talk2(data[0], data[1], data[2], (char*)&data[4]);

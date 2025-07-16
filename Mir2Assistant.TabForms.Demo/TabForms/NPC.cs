@@ -48,6 +48,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                     {
                         listBox2.Items.Add(cmd);
                     });
+
                 }
             }
         }
@@ -58,8 +59,20 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
+            
+            // 添加双击事件处理复制功能
+            listBox1.DoubleClick += (s, args) => {
+                if (listBox1.SelectedItem != null)
+                {
+                    var npc = listBox1.SelectedItem as MonsterModel;
+                    if (npc != null)
+                    {
+                        Clipboard.SetText(npc.Display);
+                    }
+                }
+            };
+            
             GameInstance!.NewSysMsg += (flag, str) => this.Invoke(() => textBox2.Text = str);
-
         }
 
 

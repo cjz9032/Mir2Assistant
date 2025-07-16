@@ -206,7 +206,7 @@ namespace Mir2Assistant
                 catch (Exception ex)
                 {
                     Log.Error(ex, "关闭游戏进程失败，账号: {Account}", account.Account);
-                    MessageBox.Show($"关闭游戏进程失败: {ex.Message}");
+                    // MessageBox.Show($"关闭游戏进程失败: {ex.Message}");
                 }
             }
         }

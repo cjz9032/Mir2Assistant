@@ -131,6 +131,12 @@ public class MemoryUtils
         return Encoding.Unicode.GetString(buffer);
     }
 
+    public string ReadToDelphiUnicode(IntPtr address, int rate = 2)
+    {
+        var len = ReadToInt(address - 4) * rate;
+        return ReadToUnicode(address, len);
+    }
+
     #endregion
 
     #region Write

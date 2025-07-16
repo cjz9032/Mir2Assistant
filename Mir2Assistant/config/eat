@@ -24,18 +24,6 @@ popad
 
 
 
-  U_DRESS = 0;
-  U_WEAPON = 1;
-  U_RIGHTHAND = 2;
-  U_NECKLACE = 3;
-  U_HELMET = 4;
-  U_ARMRINGL = 5;
-  U_ARMRINGR = 6;
-  U_RINGL = 7;
-  U_RINGR = 8;
-
-
-
 procedure TfrmMain.EatItem(idx: Integer);
 var
   i, where: Integer;

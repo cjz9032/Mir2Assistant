@@ -59,16 +59,16 @@
             listBox1.ItemHeight = 17;
             listBox1.Location = new Point(1, 3);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(249, 140);
+            listBox1.Size = new Size(328, 140);
             listBox1.TabIndex = 1;
             // 
             // listBox2
             // 
             listBox2.FormattingEnabled = true;
             listBox2.ItemHeight = 17;
-            listBox2.Location = new Point(256, 3);
+            listBox2.Location = new Point(335, 3);
             listBox2.Name = "listBox2";
-            listBox2.Size = new Size(225, 140);
+            listBox2.Size = new Size(146, 140);
             listBox2.TabIndex = 4;
             // 
             // timer1
@@ -106,7 +106,6 @@
             textBox2.Size = new Size(480, 23);
             textBox2.TabIndex = 6;
             textBox2.Text = "textBox2";
-
             // 
             // NPCForm
             // 

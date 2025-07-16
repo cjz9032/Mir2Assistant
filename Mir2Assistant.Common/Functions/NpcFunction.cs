@@ -40,21 +40,24 @@ namespace Mir2Assistant.Common.Functions
 
         private static async Task<string> Talk(MirGameInstanceModel gameInstance, Action act)
         {
-            var memoryUtil = gameInstance!.MemoryUtils!;
-            var addr1 = memoryUtil.GetMemoryAddress(gameInstance.MirConfig["对话框基址"], 0);
-            var addr2 = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
             act();
-            nint addr = 0;
+
+            var memoryUtil = gameInstance!.MemoryUtils!;
+            var base2 = memoryUtil.GetMemoryAddress(gameInstance.MirConfig["对话框基址"], 0);
+            var prevAddr2 = memoryUtil.GetMemoryAddress(base2) + 0xC40;
+            var prevAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
+            nint resAddr = 0;
             if (!await TaskWrapper.Wait(() =>
             {
-                addr = memoryUtil.GetMemoryAddress(addr1, 0x11c, 0);
-                return addr2 != addr;
+                var nowAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
+                resAddr = nowAddr;
+                return prevAddr != nowAddr && nowAddr != 0;
             }))
             {
                 return "";
             }
-            var length = memoryUtil.ReadToInt(memoryUtil.GetMemoryAddress(addr1, 0x20)) * 3;
-            var str = memoryUtil.ReadToString(addr, length);
+           
+            var str = memoryUtil.ReadToDelphiUnicode(resAddr);
             gameInstance.TalkCmds = GetTalkCmds(str);
             return str;
         }
@@ -70,8 +73,7 @@ namespace Mir2Assistant.Common.Functions
         {
             return await Talk(gameInstance, () =>
             {
-                var npcId = gameInstance.MemoryUtils!.ReadToInt(NPC.Addr + 4);
-                SendMirCall.Send(gameInstance, 3001, [npcId, gameInstance!.MirConfig["寻路参数"], gameInstance!.MirConfig["点NPCCALL地址"]]);
+                SendMirCall.Send(gameInstance, 3001, [NPC.Id]);
             });
         }
 
