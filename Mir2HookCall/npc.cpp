@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "npc.h"
+#include "utils.h" // 添加头文件引用
 
 
 
@@ -26,19 +27,22 @@ void clickNPC(int npcId)
 	}
 }
 
-//二级对话 para1买物参数, para2小退参数
-void talk2(int para1, int para2, int talk2Addr, char* cmd)
+//二级对话 
+void talk2(DelphiString* cmd)
 {
+
+	auto cmdData = cmd->data;
+
+	// 在talk2函数中
 	__asm {
-		mov eax, para1
-		mov eax, [eax]
-		mov edx, [eax]
-		mov eax, para2
-		mov eax, [eax]
-		mov eax, [eax]
-		mov ecx, cmd
-		mov ebx, talk2Addr
-		call ebx
+
+	    mov ecx, eax
+		mov edx, dword ptr ds : [0x7563A4]
+		mov eax, dword ptr ds : [0x00679EBC]
+		mov eax, dword ptr[eax]
+		mov ecx, cmdData
+		mov esi, 0x006446D0
+		call esi
 	}
 }
 
@@ -51,10 +55,13 @@ void Npc::process(int code, int* data)
 		clickNPC(data[0]);
 		break;
 	case 3002:
-		talk2(data[0], data[1], data[2], (char*)&data[4]);
+		ProcessWideString(data, [](const wchar_t* str, int length) {
+			DelphiString* cmd = CreateDelphiString(str, length);
+			talk2(cmd);
+			delete cmd; // 释放内存
+		});
 		break;
 	default:
 		break;
-
 	}
 }

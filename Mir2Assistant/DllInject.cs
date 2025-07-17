@@ -1,5 +1,6 @@
 ﻿using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
+using Mir2Assistant.Common.Utils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -89,7 +90,7 @@ namespace Mir2Assistant
         {
             IntPtr addr = (IntPtr)0;
             string dllPath = Path.Combine(Application.StartupPath, "Mir2HookCall.dll");
-            
+
             if (!File.Exists(dllPath))
             {
                 string publishPath = Path.Combine(Application.StartupPath, "publish", "Mir2HookCall.dll");
@@ -98,7 +99,7 @@ namespace Mir2Assistant
                     dllPath = publishPath;
                 }
             }
-            
+
             var ipdl = LoadLibrary(dllPath);
 
             if (ipdl == IntPtr.Zero)
@@ -106,7 +107,7 @@ namespace Mir2Assistant
                 MessageBox.Show("Injection failed: could not load target DLL.");
                 return;
             }
-            
+
             addr = GetProcAddress(ipdl, "HookProc");
             if (addr == IntPtr.Zero)
             {
@@ -116,35 +117,56 @@ namespace Mir2Assistant
             gi.LibIpdl = ipdl;
             var thread = new Thread(() => SetHook(addr, gi));
             thread.Start();
-            
-            
+
+
             // 等待DLL加载完成
             await Task.Delay(4000);
 
-             if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
+            if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
             {
-                char[] accountChars = gi.AccountInfo.Account.ToCharArray();
-                char[] passwordChars = gi.AccountInfo.Password.ToCharArray();
-
-                nint[] data = new nint[2 + accountChars.Length + passwordChars.Length];
-
-                // 存储长度信息
-                data[0] = accountChars.Length;
-                data[1] = passwordChars.Length;
-
-                // 存储账号字符
-                for (int i = 0; i < accountChars.Length; i++)
-                {
-                    data[2 + i] = accountChars[i];
-                }
-
-                for (int i = 0; i < passwordChars.Length; i++)
-                {
-                    data[2 + accountChars.Length + i] = passwordChars[i];
-                }
-
+                nint[] data = MemoryUtils.PackStringsToData(gi.AccountInfo.Account, gi.AccountInfo.Password);
                 SendMirCall.Send(gi, 9003, data);
             }
+        }
+
+        // 将字符串数组打包成nint数组用于传递给DLL
+        public static nint[] PackStringsToData(params string[] strings)
+        {
+            if (strings == null || strings.Length == 0)
+                return new nint[0];
+
+            // 计算所有字符的总数
+            int totalChars = 0;
+            foreach (var str in strings)
+            {
+                totalChars += str?.Length ?? 0;
+            }
+
+            // 创建数据数组：前N个元素存储每个字符串的长度，后面存储所有字符
+            nint[] data = new nint[strings.Length + totalChars];
+
+            // 存储长度信息
+            int dataIndex = 0;
+            for (int i = 0; i < strings.Length; i++)
+            {
+                int length = strings[i]?.Length ?? 0;
+                data[dataIndex++] = length;
+            }
+
+            // 存储字符数据
+            for (int i = 0; i < strings.Length; i++)
+            {
+                if (string.IsNullOrEmpty(strings[i]))
+                    continue;
+
+                char[] chars = strings[i].ToCharArray();
+                for (int j = 0; j < chars.Length; j++)
+                {
+                    data[dataIndex++] = chars[j];
+                }
+            }
+
+            return data;
         }
     }
 }

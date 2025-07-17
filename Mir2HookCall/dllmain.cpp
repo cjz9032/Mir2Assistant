@@ -32,10 +32,10 @@ __declspec(naked) void HookFunction()
 }
 
 // 添加线程函数声明
-DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam);
+DWORD WINAPI DelayedStartGameThread(LPVOID lpParam);
 
 // 声明函数在汇编代码之前
-void CreateDelayedThread();
+void CreateDelayedStartGame();
 
 __declspec(naked) void HookFunction2()
 {
@@ -61,7 +61,7 @@ __declspec(naked) void HookFunction2()
         popad
         // 在汇编代码外调用C++函数
         push        eax             // 保存eax
-        call        CreateDelayedThread
+        call        CreateDelayedStartGame
         pop         eax             // 恢复eax
     
         jmp originalFunc2
@@ -91,18 +91,17 @@ __declspec(naked) void HookFunction4()
 }
 
 // 创建延迟线程的函数
-void CreateDelayedThread() {
+void CreateDelayedStartGame() {
     // 创建线程执行延迟操作
-    HANDLE hThread = CreateThread(NULL, 0, DelayedExtraActionThread, NULL, 0, NULL);
+    HANDLE hThread = CreateThread(NULL, 0, DelayedStartGameThread, NULL, 0, NULL);
     if (hThread) {
         CloseHandle(hThread);  // 关闭句柄，线程会继续执行
     }
 }
 
 // 线程函数，执行延迟操作
-DWORD WINAPI DelayedExtraActionThread(LPVOID lpParam) {
-    // 延迟3秒
-    Sleep(5000);
+DWORD WINAPI DelayedStartGameThread(LPVOID lpParam) {
+    Sleep(7000);
     
     // 执行额外操作
     DWORD extraPtr = *(DWORD*)(g_BaseAddr + 0x27A018);

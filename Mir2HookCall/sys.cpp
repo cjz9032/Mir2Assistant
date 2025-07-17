@@ -3,6 +3,7 @@
 #include <string>
 #include "account_info.h" // 添加新的头文件引用
 #include "login.h"        // 新增：引入loginFirst声明
+#include "utils.h"        // 添加工具函数头文件
 
 // Define a function type (adjust as needed)
 typedef void (*func_t)();
@@ -29,6 +30,8 @@ unsigned flag;
 //组队
 void groupOne(DelphiString* name)
 {
+	auto nameData = name->data;
+
     __asm {
         pushad
         pushfd
@@ -41,8 +44,7 @@ void groupOne(DelphiString* name)
         jz  group_zero           // 如果为0，跳转到group_zero
 
         // > 0 分支
-        mov eax, name
-        add eax, 8
+        mov eax, nameData
         mov edx, eax
         mov eax, dword ptr ds:[0x00679EBC]
         mov eax, dword ptr [eax]
@@ -51,8 +53,7 @@ void groupOne(DelphiString* name)
         jmp group_end
 
     group_zero:
-        mov eax, name
-        add eax, 8
+        mov eax, nameData
         mov edx, eax
         mov eax, dword ptr ds:[0x00679EBC]
         mov eax, dword ptr [eax]
@@ -147,48 +148,18 @@ void Sys::process(int code, int* data)
 		restore_write_screen_call();
 		break;
 	case 9003: // 接收账号和密码数据
-         if (data && data[0] > 0 && data[1] > 0) {
-             int accountLength = (int)data[0];
-             int passwordLength = (int)data[1];
-            
-             // 防止缓冲区溢出
-             if (accountLength > 31) accountLength = 31;
-             if (passwordLength > 31) passwordLength = 31;
-            
-             wchar_t accountBuffer[32] = {0};
-             wchar_t passwordBuffer[32] = {0};
-            
-             // 提取账号字符
-             for (int i = 0; i < accountLength; i++) {
-                 accountBuffer[i] = (wchar_t)data[2 + i];
-             }
-            
-             // 提取密码字符
-             for (int i = 0; i < passwordLength; i++) {
-                 passwordBuffer[i] = (wchar_t)data[2 + accountLength + i];
-             }
-            
-             // 设置账号和密码
-             SetAccountInfo(accountBuffer, passwordBuffer);
-             loginFirst(); // 新增：调用登录函数
-         }
-
+		ProcessWideStringsWithLengths(data, 2, [](wchar_t** strings, int* length) {
+             SetAccountInfo(strings[0], strings[1]);
+             loginFirst();
+         });
         break;
 
 	case 9004: //开组
-		// 这里也要接受字符串name
-		if (data && data[0] > 0) {
-			int nameLength = (int)data[0];
-			if (nameLength > 15) nameLength = 15;
-			DelphiString groupName;
-			groupName.refCount = -1;
-			groupName.length = nameLength;
-			for (int i = 0; i < nameLength; i++) {
-				groupName.data[i] = (wchar_t)data[1 + i];
-			}
-			groupName.data[nameLength] = 0;
-			groupOne(&groupName);
-		}
+		ProcessWideString(data, [](const wchar_t* str, int length) {
+			DelphiString* groupName = CreateDelphiString(str, length);
+			groupOne(groupName);
+			delete groupName; // 释放内存
+		});
 		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);

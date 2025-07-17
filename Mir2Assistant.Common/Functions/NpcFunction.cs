@@ -7,6 +7,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mir2Assistant;
+using Mir2Assistant.Common.Utils; // Add this reference to access DllInject
 
 namespace Mir2Assistant.Common.Functions
 {
@@ -96,13 +98,13 @@ namespace Mir2Assistant.Common.Functions
         /// </summary>
         /// <param name="gameInstance"></param>
         /// <param name="cmd"></param>
-
         public static async Task<string> Talk2(MirGameInstanceModel gameInstance, string cmd)
         {
             return await Talk(gameInstance, () =>
             {
-                SendMirCall.Send(gameInstance, 3002, new nint[] { gameInstance!.MirConfig["买物参数"], gameInstance!.MirConfig["小退参数"],
-                gameInstance!.MirConfig["二级对话CALL地址"] ,cmd.Length}.Concat(SendMirCall.String2NIntArray(cmd)).ToArray());
+                // 使用MemoryUtils中的字符串打包方法
+                nint[] data = MemoryUtils.PackStringsToData(cmd);
+                SendMirCall.Send(gameInstance, 3002, data);
             });
         }
 

@@ -341,4 +341,47 @@ public class MemoryUtils
     }
     #endregion
 
+    /// <summary>
+    /// 将字符串打包成nint数组用于传递给DLL
+    /// </summary>
+    /// <param name="strings">要打包的字符串</param>
+    /// <returns>打包后的nint数组</returns>
+    public static nint[] PackStringsToData(params string[] strings)
+    {
+        if (strings == null || strings.Length == 0)
+            return new nint[0];
+            
+        // 计算所有字符的总数
+        int totalChars = 0;
+        foreach (var str in strings)
+        {
+            totalChars += str?.Length ?? 0;
+        }
+        
+        // 创建数据数组：前N个元素存储每个字符串的长度，后面存储所有字符
+        nint[] data = new nint[strings.Length + totalChars];
+        
+        // 存储长度信息
+        int dataIndex = 0;
+        for (int i = 0; i < strings.Length; i++)
+        {
+            int length = strings[i]?.Length ?? 0;
+            data[dataIndex++] = length;
+        }
+        
+        // 存储字符数据
+        for (int i = 0; i < strings.Length; i++)
+        {
+            if (string.IsNullOrEmpty(strings[i]))
+                continue;
+                
+            char[] chars = strings[i].ToCharArray();
+            for (int j = 0; j < chars.Length; j++)
+            {
+                data[dataIndex++] = chars[j];
+            }
+        }
+        
+        return data;
+    }
 }

@@ -1,12 +1,6 @@
 #pragma once
 #include <Windows.h>
-
-// Delphi字符串结构体定义
-struct DelphiString {
-    DWORD refCount;
-    DWORD length;
-    WCHAR data[32];
-};
+#include "utils.h" // 包含utils.h以获取DelphiString定义
 
 #ifdef __cplusplus
 extern "C" {
