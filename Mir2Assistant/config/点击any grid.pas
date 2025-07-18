@@ -1,12 +1,8 @@
 //通过IDX和bool是否选中 可以找到点击事件, 然后直接call, 参数也不复杂
 // 可以点击所有的
 
-todo procedure TFrmDlg.DHSWWeaponClick(Sender: TObject; X, Y: Integer);
 
-
-
-
-// call test
+// call DItemGridGridSelect test
 
 pushad
 pushfd
@@ -27,7 +23,7 @@ mov edx, [7432F4]
 
 mov eax,[0074350C]
 
-call 005ABB7C
+call 005ABB7C 
 
 popfd
 popad

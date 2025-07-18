@@ -1,4 +1,4 @@
-吃装备 -- fromkeypress
+吃 -- fromkeypress
 
 23D914
 
@@ -12,7 +12,7 @@ ZC.H+23B702 - 83 EA 31              - sub edx,31 { 49 }
 //this is main ZC.H+3524B4 main
 ZC.H+23B708 - E8 07220000           - call ZC.H+23D914
 
-// call eat pkg第一件, 但是装备还不行
+// call eat 第一件, 装备是另外的
 
 pushad
 pushfd

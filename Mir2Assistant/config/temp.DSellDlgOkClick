@@ -1,0 +1,45 @@
+建议用对应的 UI状态和服务器更统一, 不要直接调发包
+2个函数都是通用的 卖修存
+
+
+
+// 声明 DSellDlgOkClick
+push x
+mov ebx  [7432F4] // 随便炒另一个 因为没用 所以写的不报错就行
+mov ecx,y
+mov edx,ebx
+mov  eax,[0067A728];^gvar_0074350C:TFrmDlg
+mov  eax,dword ptr [eax]
+call TFrmDlg.DSellDlgOkClick 005B2380
+
+// test call DSellDlgOkClick
+pushad
+pushfd
+
+push 100
+mov ebx, [7432F4]
+mov ecx, 100
+mov edx,ebx
+mov  eax,[0067A728]
+mov  eax,dword ptr [eax]
+call 005B2380
+
+popfd
+popad
+
+
+// test call DSellDlgSpotClick 005B1D78 其实都是一样的随便写
+pushad
+pushfd
+
+push 100
+mov ebx, [7432F4]
+mov ecx, 100
+mov edx,ebx
+mov  eax,[0067A728]
+mov  eax,dword ptr [eax]
+call 005B1D78
+
+popfd
+popad
+

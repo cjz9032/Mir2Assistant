@@ -38,6 +38,8 @@
             textBox1 = new TextBox();
             button3 = new Button();
             textBox2 = new TextBox();
+            textBox3 = new TextBox();
+            button2 = new Button();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)bindingSource2).BeginInit();
             SuspendLayout();
@@ -105,17 +107,39 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(480, 23);
             textBox2.TabIndex = 6;
-            textBox2.Text = "textBox2";
+            textBox2.Text = "暂时没用 全局WIN 消息";
+            // 
+            // textBox3
+            // 
+            textBox3.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            textBox3.Location = new Point(1, 292);
+            textBox3.Name = "textBox3";
+            textBox3.Size = new Size(480, 23);
+            textBox3.TabIndex = 7;
+            textBox3.Text = "金创药(小量)";
+            // 
+            // button2
+            // 
+            button2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            button2.Location = new Point(144, 234);
+            button2.Name = "button2";
+            button2.Size = new Size(75, 23);
+            button2.TabIndex = 0;
+            button2.Text = "购买";
+            button2.UseVisualStyleBackColor = true;
+            button2.Click += button2_Click;
             // 
             // NPCForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(482, 288);
+            ClientSize = new Size(482, 318);
             Controls.Add(textBox2);
             Controls.Add(textBox1);
             Controls.Add(listBox2);
             Controls.Add(listBox1);
+            Controls.Add(button2);
+            Controls.Add(textBox3);
             Controls.Add(button3);
             Controls.Add(button1);
             Name = "NPCForm";
@@ -138,5 +162,7 @@
         private TextBox textBox1;
         private Button button3;
         private TextBox textBox2;
+        private TextBox textBox3;
+        private Button button2;
     }
 }

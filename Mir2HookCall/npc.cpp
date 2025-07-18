@@ -46,6 +46,41 @@ void talk2(DelphiString* cmd)
 	}
 }
 
+void buy(DelphiString* name)
+{
+
+	auto nameData = name->data;
+	__asm {
+		mov         eax,nameData
+		push        eax
+		push        1
+		mov         ecx, 0x1
+		mov edx,dword ptr ds:[0x6799E8];
+		mov edx,dword ptr [edx]
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x006459F4
+		call esi
+	}
+}
+
+void storeItem(DelphiString* name, int id)
+{
+
+	auto nameData = name->data;
+	__asm {
+		mov         eax,nameData
+		push        eax
+		push        1
+		mov         ecx, id
+		mov edx,dword ptr ds:[0x6799E8];
+		mov edx,dword ptr [edx]
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x006459F4
+		call esi
+	}
+}
 
 void Npc::process(int code, int* data)
 {
@@ -58,7 +93,22 @@ void Npc::process(int code, int* data)
 		ProcessWideString(data, [](const wchar_t* str, int length) {
 			DelphiString* cmd = CreateDelphiString(str, length);
 			talk2(cmd);
-			delete cmd; // ÊÍ·ÅÄÚ´æ
+			delete cmd;
+		});
+		break;
+	case 3010:
+		ProcessWideString(data, [](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			buy(name);
+			delete name; 
+		});
+		break;
+	case 3011:
+		ProcessWideString(data, [data](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			int id = data[length + 1];          // OK, data is now captured
+			storeItem(name, id);
+			delete name;
 		});
 		break;
 	default:

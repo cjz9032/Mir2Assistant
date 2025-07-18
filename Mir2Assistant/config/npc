@@ -167,26 +167,19 @@ say string
 
 
 一般购买 DMenuBuyClick, 一般就在最后, 
-// NPC ID, ID, 名字, 
-// pg := PTClientGoods(MenuList[menuindex]);
-// todo MenuList menuindex
-frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
-g_nCurMerchant 可以拿到
-pg.Name 就随便找个地方赋值delphistr
-stock有点骑怪, 但是不影响, 貌似可以瞎写 
-count为0自动会重置1
-注意name count因为push所以相反, name再c, 这样pop是c再n
 
- 0001:001B012C FState.TFrmDlg.DMenuBuyClick_005B112C
-005B14BC        call        @UStrFromString
-005B14C1        mov         eax,dword ptr [ebp-48]
-005B14C4        push        eax
-005B14C5        mov         ax,word ptr [ebp-10]
-005B14C9        push        eax
-005B14CA        mov         eax,dword ptr [ebp-8]
-005B14CD        mov         ecx,dword ptr [eax+14]
-005B14D0        mov         edx,dword ptr ds:[6799E8];^gvar_007563A4
-005B14D6        mov         edx,dword ptr [edx]
-005B14D8        mov         eax,[00679EBC];^gvar_007524B4:TFrmMain
-005B14DD        mov         eax,dword ptr [eax]
-005B14DF        call        006459F4 // SendBuyItem 
+frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
+  g_nCurMerchant 可以拿到
+  pg.Name 就随便找个地方赋值delphistr
+  stock有点骑怪, 但是不影响, 貌似可以瞎写 
+  count为0自动会重置1
+  注意name count因为push所以相反, name再c, 这样pop是c再n
+
+ 从 FState.TFrmDlg.DMenuBuyClick_005B112C 找到
+  005B14DD        mov         eax,dword ptr [eax]
+  005B14DF        call        006459F4 // SendBuyItem 
+
+// 存由于仓库太麻烦 直接发包存了
+SendStorageItem 00534DB0 -- 从通用里找 DSellDlgOkClick 多断几个就找到了
+procedure TfrmMain.SendStorageItem(merchant, itemindex: Integer; itemname: string; count: Word);
+  同上, count随便写1就好了

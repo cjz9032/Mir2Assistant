@@ -132,5 +132,17 @@ namespace Mir2Assistant.Common.Functions
         {
             return await TaskWrapper.Wait(() => gameInstance.Monsters.Values.Any(o => o.TypeStr == "NPC" && o.Name == npcName), timeout);
         }
+
+        /// <summary>
+        /// 购买物品
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public static void Buy(MirGameInstanceModel gameInstance, string itemName)
+        {
+            nint[] data = MemoryUtils.PackStringsToData(itemName);
+            SendMirCall.Send(gameInstance, 3010, data);
+        }
     }
 }

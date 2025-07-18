@@ -20,7 +20,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
     /// <summary>
     /// NPC
     /// </summary>
-    [Order(3)]
+    [Order(4)]
     public partial class NPCForm : Form, ITabForm
     {
         public NPCForm()
@@ -105,6 +105,14 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 });
             }
 
+        }
+
+        private async void button2_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(textBox3.Text))
+            {
+                NpcFunction.Buy(GameInstance!, textBox3.Text);
+            }
         }
     }
 }

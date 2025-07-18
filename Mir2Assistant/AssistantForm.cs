@@ -114,6 +114,7 @@ namespace Mir2Assistant
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
                         MonsterFunction.ReadMonster(gameInstance);
+                        ItemFunction.ReadBag(gameInstance);
 
                         //CharacterStatusFunction.GetInfo(gameInstance);
                         //if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)

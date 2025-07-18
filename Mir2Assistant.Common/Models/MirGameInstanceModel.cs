@@ -1,4 +1,4 @@
-﻿using Mir2Assistant.Common.Utils;
+using Mir2Assistant.Common.Utils;
 using System.Collections.Concurrent;
 
 namespace Mir2Assistant.Common.Models;
@@ -21,17 +21,20 @@ public class MirGameInstanceModel
     public GameAccountModel? AccountInfo { get; set; }
     
     public byte MonstersUpdateId = 0;
+    public byte ItemsUpdateId = 0;
     /// <summary>
     /// 怪物
     /// </summary>
     public ConcurrentDictionary<int, MonsterModel> Monsters { get; set; } = new ConcurrentDictionary<int, MonsterModel>();
 
     public bool IsReadingMonsters = false;
+    public bool IsReadingItems = false;
 
     /// <summary>
     /// 技能
     /// </summary>
     public ConcurrentBag<SkillModel> Skills { get; set; } = new ConcurrentBag<SkillModel>();
+    public Dictionary<int, ItemModel> Items { get; set; } = new Dictionary<int, ItemModel>();
 
     /// <summary>
     /// 二级对话列表
