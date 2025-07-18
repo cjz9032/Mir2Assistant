@@ -36,15 +36,43 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             SuspendLayout();
             // 
+            // btnSave
+            // 
+            btnSave = new System.Windows.Forms.Button();
+            // 
+            // btnSell
+            // 
+            btnSell = new System.Windows.Forms.Button();
+            // 
             // listBox1
             // 
             listBox1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listBox1.FormattingEnabled = true;
             listBox1.ItemHeight = 17;
-            listBox1.Location = new Point(1, 3);
+            listBox1.Location = new Point(1, 30);
             listBox1.Name = "listBox1";
-            listBox1.Size = new Size(480, 448);
+            listBox1.MultiColumn = false;
+            listBox1.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            listBox1.Size = new System.Drawing.Size(480, 421);
             listBox1.TabIndex = 0;
+            // 
+            // btnSave
+            // 
+            btnSave.Location = new System.Drawing.Point(1, 3);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new System.Drawing.Size(75, 23);
+            btnSave.TabIndex = 1;
+            btnSave.Text = "存";
+            btnSave.UseVisualStyleBackColor = true;
+            // 
+            // btnSell
+            // 
+            btnSell.Location = new System.Drawing.Point(82, 3);
+            btnSell.Name = "btnSell";
+            btnSell.Size = new System.Drawing.Size(75, 23);
+            btnSell.TabIndex = 2;
+            btnSell.Text = "卖";
+            btnSell.UseVisualStyleBackColor = true;
             // 
             // timer1
             // 
@@ -57,6 +85,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(482, 450);
+            Controls.Add(btnSell);
+            Controls.Add(btnSave);
             Controls.Add(listBox1);
             Name = "BagForm";
             Text = "BagForm";
@@ -70,5 +100,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private ListBox listBox1;
         private BindingSource bindingSource1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnSell;
     }
 }

@@ -35,6 +35,8 @@ void talk2(DelphiString* cmd)
 
 	// ÔÚtalk2º¯ÊýÖÐ
 	__asm {
+		pushad
+		pushfd
 
 	    mov ecx, eax
 		mov edx, dword ptr ds : [0x7563A4]
@@ -43,6 +45,9 @@ void talk2(DelphiString* cmd)
 		mov ecx, cmdData
 		mov esi, 0x006446D0
 		call esi
+
+		popfd
+		popad
 	}
 }
 
@@ -51,6 +56,9 @@ void buy(DelphiString* name)
 
 	auto nameData = name->data;
 	__asm {
+		pushad
+		pushfd
+
 		mov         eax,nameData
 		push        eax
 		push        1
@@ -61,6 +69,9 @@ void buy(DelphiString* name)
 		mov eax, [eax]
 		mov esi, 0x006459F4
 		call esi
+
+		popfd
+		popad
 	}
 }
 
@@ -69,6 +80,9 @@ void storeItem(DelphiString* name, int id)
 
 	auto nameData = name->data;
 	__asm {
+		pushad
+		pushfd
+
 		mov         eax,nameData
 		push        eax
 		push        1
@@ -77,8 +91,11 @@ void storeItem(DelphiString* name, int id)
 		mov edx,dword ptr [edx]
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x006459F4
+		mov esi, 0x006452EC
 		call esi
+
+		popfd
+		popad
 	}
 }
 

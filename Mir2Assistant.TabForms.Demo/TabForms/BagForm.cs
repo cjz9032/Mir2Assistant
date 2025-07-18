@@ -32,21 +32,79 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         public MirGameInstanceModel? GameInstance { get; set; }
 
         private ObservableCollection<ItemModel> items = new ObservableCollection<ItemModel>();
+        private HashSet<int> lastItemIds = new HashSet<int>();
+
+        private List<ItemModel> GetSelectedItems()
+        {
+            return listBox1.SelectedItems.Cast<ItemModel>().ToList();
+        }
+
+        private async void btnSave_Click(object sender, EventArgs e)
+        {
+            var selectedItems = GetSelectedItems();
+            foreach (var item in selectedItems)
+            {
+                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
+                Array.Resize(ref data, data.Length + 1);
+                data[data.Length - 1] = item.Id;
+
+                SendMirCall.Send(GameInstance!, 3011, data);
+                await Task.Delay(200);
+            }
+
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance!, 9010, new nint[] { 1 });
+
+        }
+
+        private void btnSell_Click(object sender, EventArgs e)
+        {
+            var selectedItems = GetSelectedItems();
+            // 后续可添加卖选中物品的逻辑
+        }
 
         private void BagForm_Load(object sender, EventArgs e)
         {
             bindingSource1.DataSource = items;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
+            btnSave.Click += btnSave_Click;
+            btnSell.Click += btnSell_Click;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var scrollOffset = listBox1.TopIndex;
-            listBox1.BeginUpdate();
-            bindingSource1.DataSource = GameInstance!.Items.Values.Where(o => !o.IsEmpty).OrderBy(o => o.Index);
-            listBox1.EndUpdate();
-            listBox1.TopIndex = scrollOffset;
+            var currentItems = GameInstance!.Items.Values.Where(o => !o.IsEmpty).OrderBy(o => o.Index).ToList();
+            var currentIds = new HashSet<int>(currentItems.Select(item => item.Id));
+
+            if (!currentIds.SetEquals(lastItemIds))
+            {
+                var scrollOffset = listBox1.TopIndex;
+                var selectedIndices = listBox1.SelectedIndices.Cast<int>().ToList();
+                listBox1.BeginUpdate();
+                
+                items.Clear();
+                foreach (var item in currentItems)
+                {
+                    items.Add(item);
+                }
+                
+                bindingSource1.DataSource = items;
+                bindingSource1.ResetBindings(false);
+
+                listBox1.EndUpdate();
+                listBox1.TopIndex = scrollOffset;
+                
+                foreach (var index in selectedIndices)
+                {
+                    if (index < listBox1.Items.Count)
+                    {
+                        listBox1.SetSelected(index, true);
+                    }
+                }
+
+                lastItemIds = currentIds;
+            }
         }
     }
 }

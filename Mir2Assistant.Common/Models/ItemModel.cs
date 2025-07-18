@@ -5,7 +5,6 @@ namespace Mir2Assistant.Common.Models
     public class ItemModel
     {
         public int Id { get; set; }
-        public byte UpdateId { get; set; }
         public int Index { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsEmpty { get; set; }

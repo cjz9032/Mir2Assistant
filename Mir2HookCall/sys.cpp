@@ -131,6 +131,29 @@ void restore_write_screen_call() {
 }
 
 
+void refPkg()
+{
+	_asm {
+ 		pushad
+		pushfd
+
+		push 00
+		push 00
+		push 00
+		xor ecx,ecx
+		mov edx, 0x51 
+		mov ebx, 0 // unused
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x642524 // sendclientmessage
+		call esi 
+
+		popfd
+		popad
+
+	}
+}
+
 void any_call(int* data) {
 	void (*func)() = reinterpret_cast<void(*)()>(data);
 	func();
@@ -160,6 +183,10 @@ void Sys::process(int code, int* data)
 			groupOne(groupName);
 			delete groupName; // 释放内存
 		});
+		break;
+
+	case 9010: //刷新背包
+		refPkg();
 		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);

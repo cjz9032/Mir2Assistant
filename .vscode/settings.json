@@ -5,6 +5,8 @@
         "*.wxs": "javascript",
         "*.hbs": "typescriptreact",
         "*.tsx": "typescriptreact",
-        "cstddef": "cpp"
+        "cstddef": "cpp",
+        "xstring": "cpp",
+        "xutility": "cpp"
     }
 }

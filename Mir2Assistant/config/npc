@@ -1,7 +1,7 @@
 同样是 SendClientMessage 
 很容易找到
 
-// test call
+// 点npc test call
 pushad
 pushfd
 
@@ -91,28 +91,7 @@ begin
 end;
 
 _Unit101.sub_00657FBC
-00657FBC        push        ebp
-00657FBD        mov         ebp,esp
-00657FBF        add         esp,0FFFFFFE8
-00657FC2        push        ebx
-00657FC3        xor         ebx,ebx
-00657FC5        mov         dword ptr [ebp-14],ebx
-00657FC8        mov         dword ptr [ebp-10],ebx
-00657FCB        mov         dword ptr [ebp-0C],ecx
-00657FCE        mov         dword ptr [ebp-8],edx
-00657FD1        mov         dword ptr [ebp-4],eax
-00657FD4        mov         eax,dword ptr [ebp+8]
-00657FD7        call        @UStrAddRef
-00657FDC        xor         eax,eax
-00657FDE        push        ebp
-00657FDF        push        65808E
-00657FE4        push        dword ptr fs:[eax]
-00657FE7        mov         dword ptr fs:[eax],esp
-00657FEA        mov         eax,[00752764];gvar_00752764
-00657FEF        movzx       eax,word ptr [eax+8]
-00657FF3        mov         [007563A8],eax;gvar_007563A8
-00657FF8        mov         eax,[00752764];gvar_00752764
-00657FFD        movzx       eax,word ptr [eax+0A]
+...
 00658001        mov         [007563AC],eax;gvar_007563AC
 00658006        mov         eax,[007563A4];gvar_007563A4
 0065800B        cmp         eax,dword ptr [ebp-8]
@@ -130,40 +109,7 @@ say string
 00658030        push        0
 00658032        lea         eax,[ebp-14]
 00658035        push        eax
-00658036        mov         word ptr [ebp-18],2F
-0065803C        lea         ecx,[ebp-18]
-0065803F        lea         edx,[ebp-10]
-00658042        mov         eax,dword ptr [ebp+8]
-00658045        call        00534E38
-0065804A        mov         edx,dword ptr [ebp-14]
-0065804D        lea         eax,[ebp+8]
-00658050        call        @UStrLAsg
-00658055        mov         eax,dword ptr [ebp+8]
-00658058        push        eax
-00658059        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
-0065805E        mov         eax,dword ptr [eax]
-00658060        mov         ecx,dword ptr [ebp-10]
-00658063        mov         edx,dword ptr [ebp-0C]
-00658066        call        005ACEDC
-0065806B        xor         eax,eax
-0065806D        pop         edx
-0065806E        pop         ecx
-0065806F        pop         ecx
-00658070        mov         dword ptr fs:[eax],edx
-00658073        push        658095
-00658078        lea         eax,[ebp-14]
-0065807B        mov         edx,2
-00658080        call        @UStrArrayClr
-00658085        lea         eax,[ebp+8]
-00658088        call        @UStrClr
-0065808D        ret
-0065808E>       jmp         @HandleFinally
-00658093>       jmp         00658078
-00658095        pop         ebx
-00658096        mov         esp,ebp
-00658098        pop         ebp
-00658099        ret         4
-
+...
 
 
 一般购买 DMenuBuyClick, 一般就在最后, 
@@ -180,6 +126,65 @@ frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
   005B14DF        call        006459F4 // SendBuyItem 
 
 // 存由于仓库太麻烦 直接发包存了
-SendStorageItem 00534DB0 -- 从通用里找 DSellDlgOkClick 多断几个就找到了
+SendStorageItem 006452EC -- 从通用里找 DSellDlgOkClick 多断几个就找到了
 procedure TfrmMain.SendStorageItem(merchant, itemindex: Integer; itemname: string; count: Word);
   同上, count随便写1就好了
+
+
+
+
+
+
+
+
+
+
+
+
+---- 建议用对应的 UI状态和服务器更统一, 不要直接调发包, 但是暂时不想搞这么麻烦了, 直接发包 刷新就可以了
+
+2个函数都是通用的 卖修存
+
+
+
+// 声明 DSellDlgOkClick
+push x
+mov ebx  [7432F4] // 随便炒另一个 因为没用 所以写的不报错就行
+mov ecx,y
+mov edx,ebx
+mov  eax,[0067A728];^gvar_0074350C:TFrmDlg
+mov  eax,dword ptr [eax]
+call TFrmDlg.DSellDlgOkClick 005B2380
+
+// test call DSellDlgOkClick
+pushad
+pushfd
+
+push 100
+mov ebx, [7432F4]
+mov ecx, 100
+mov edx,ebx
+mov  eax,[0067A728]
+mov  eax,dword ptr [eax]
+call 005B2380
+
+popfd
+popad
+
+
+// test call DSellDlgSpotClick 005B1D78 其实都是一样的随便写
+pushad
+pushfd
+
+push 100
+mov ebx, [7432F4]
+mov ecx, 100
+mov edx,ebx
+mov  eax,[0067A728]
+mov  eax,dword ptr [eax]
+call 005B1D78
+
+popfd
+popad
+
+---- 建议用对应的 UI状态和服务器更统一, 不要直接调发包, 但是暂时不想搞这么麻烦了, 直接发包 刷新就可以了 end

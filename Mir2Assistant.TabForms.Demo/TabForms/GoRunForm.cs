@@ -111,17 +111,7 @@ namespace Mir2Assistant.TabForms.Demo
             string member = textBoxMember.Text.Trim();
             if (string.IsNullOrEmpty(member)) return;
 
-            char[] memberChars = member.ToCharArray();
-            nint[] data = new nint[1 + memberChars.Length];
-
-            // 第一个元素存长度
-            data[0] = memberChars.Length;
-            // 后面存字符
-            for (int i = 0; i < memberChars.Length; i++)
-            {
-                data[1 + i] = memberChars[i];
-            }
-
+            nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(member);
             SendMirCall.Send(GameInstance, 9004, data);
         }
     }
