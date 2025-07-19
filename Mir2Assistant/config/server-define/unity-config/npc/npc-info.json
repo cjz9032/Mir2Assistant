@@ -1,0 +1,2334 @@
+{
+  "list": [
+    {
+      "key": "0102@@屠夫金氏@@9@@7",
+      "mapID": "0102",
+      "x": 9,
+      "y": 7,
+      "marketName": "肉店__屠夫金氏",
+      "scripbtsFile": "1Bme_0102",
+      "name": "屠夫金氏",
+      "appearanceId": 11
+    },
+    {
+      "key": "0@@屠夫@@313@@271",
+      "mapID": "0",
+      "x": 313,
+      "y": 271,
+      "marketName": "比奇省__屠夫",
+      "scripbtsFile": "1Bme_0",
+      "name": "屠夫",
+      "appearanceId": 4
+    },
+    {
+      "key": "0103@@卫家店老板@@19@@18",
+      "mapID": "0103",
+      "x": 19,
+      "y": 18,
+      "marketName": "铁器店__卫家店老板",
+      "scripbtsFile": "2Bwe_0103",
+      "name": "卫家店老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0@@铁匠铺老板@@302@@219",
+      "mapID": "0",
+      "x": 302,
+      "y": 219,
+      "marketName": "比奇省__铁匠铺老板",
+      "scripbtsFile": "2Bbl_0",
+      "name": "铁匠铺老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0106@@安氏@@19@@6",
+      "mapID": "0106",
+      "x": 19,
+      "y": 6,
+      "marketName": "衣服店__安氏",
+      "scripbtsFile": "3Bdr_0106",
+      "name": "安氏",
+      "appearanceId": 7
+    },
+    {
+      "key": "0@@老兵@@330@@270",
+      "mapID": "0",
+      "x": 330,
+      "y": 270,
+      "marketName": "比奇省__老兵",
+      "scripbtsFile": "3Drapers_shop1_0",
+      "name": "老兵",
+      "appearanceId": 1
+    },
+    {
+      "key": "0108@@药店老板@@7@@7",
+      "mapID": "0108",
+      "x": 7,
+      "y": 7,
+      "marketName": "药店__药店老板",
+      "scripbtsFile": "4Bdu_0108",
+      "name": "药店老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0@@夏家店老板@@324@@291",
+      "mapID": "0",
+      "x": 324,
+      "y": 291,
+      "marketName": "比奇省__夏家店老板",
+      "scripbtsFile": "4Bdu_0",
+      "name": "夏家店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0109@@药剂师@@4@@8",
+      "mapID": "0109",
+      "x": 4,
+      "y": 8,
+      "marketName": "炼药房__药剂师",
+      "scripbtsFile": "4Bdm_0109",
+      "name": "药剂师",
+      "appearanceId": 9
+    },
+    {
+      "key": "0104@@陈家铺子老板@@5@@8",
+      "mapID": "0104",
+      "x": 5,
+      "y": 8,
+      "marketName": "技能书店__陈家铺子老板",
+      "scripbtsFile": "5Bbo_0104",
+      "name": "陈家铺子老板",
+      "appearanceId": 2
+    },
+    {
+      "key": "0@@书店老板@@325@@250",
+      "mapID": "0",
+      "x": 325,
+      "y": 250,
+      "marketName": "比奇省__书店老板",
+      "scripbtsFile": "5Bichon_bookstore1_0",
+      "name": "书店老板",
+      "appearanceId": 2
+    },
+    {
+      "key": "0125@@麦家铺子@@8@@6",
+      "mapID": "0125",
+      "x": 8,
+      "y": 6,
+      "marketName": "东方客栈__麦家铺子",
+      "scripbtsFile": "6Bwh_0125",
+      "name": "麦家铺子",
+      "appearanceId": 9
+    },
+    {
+      "key": "0@@仓库管理员@@301@@257",
+      "mapID": "0",
+      "x": 301,
+      "y": 257,
+      "marketName": "比奇省__仓库管理员",
+      "scripbtsFile": "6Bwh_0",
+      "name": "仓库管理员",
+      "appearanceId": 6
+    },
+    {
+      "key": "0@@杂货店老板@@378@@298",
+      "mapID": "0",
+      "x": 378,
+      "y": 298,
+      "marketName": "比奇省__杂货店老板",
+      "scripbtsFile": "7Bst_0",
+      "name": "杂货店老板",
+      "appearanceId": 3
+    },
+    {
+      "key": "0105@@戒指店老板@@18@@6",
+      "mapID": "0105",
+      "x": 18,
+      "y": 6,
+      "marketName": "杂货店__戒指店老板",
+      "scripbtsFile": "8Bri_0105",
+      "name": "戒指店老板",
+      "appearanceId": 4
+    },
+    {
+      "key": "0105@@手镯店老板@@12@@12",
+      "mapID": "0105",
+      "x": 12,
+      "y": 12,
+      "marketName": "杂货店__手镯店老板",
+      "scripbtsFile": "8Bbr_0105",
+      "name": "手镯店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0105@@项链店老板@@6@@18",
+      "mapID": "0105",
+      "x": 6,
+      "y": 18,
+      "marketName": "杂货店__项链店老板",
+      "scripbtsFile": "8Bne_0105",
+      "name": "项链店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0111@@黄飞龙@@7@@11",
+      "mapID": "0111",
+      "x": 7,
+      "y": 11,
+      "marketName": "研究院__黄飞龙",
+      "scripbtsFile": "9teacher_0111",
+      "name": "黄飞龙",
+      "appearanceId": 3
+    },
+    {
+      "key": "0@@网络文明宣传员@@326@@261",
+      "mapID": "0",
+      "x": 326,
+      "y": 261,
+      "marketName": "比奇省__网络文明宣传员",
+      "scripbtsFile": "9snpc1_0",
+      "name": "网络文明宣传员",
+      "appearanceId": 5
+    },
+    {
+      "key": "0119@@许中医@@10@@11",
+      "mapID": "0119",
+      "x": 10,
+      "y": 11,
+      "marketName": "银杏村药店__许中医",
+      "scripbtsFile": "4Gdu_0119",
+      "name": "许中医",
+      "appearanceId": 1
+    },
+    {
+      "key": "0119@@药剂师@@14@@14",
+      "mapID": "0119",
+      "x": 14,
+      "y": 14,
+      "marketName": "银杏村药店__药剂师",
+      "scripbtsFile": "4Gdm_0119",
+      "name": "药剂师",
+      "appearanceId": 9
+    },
+    {
+      "key": "0@@陈家铺老板@@643@@611",
+      "mapID": "0",
+      "x": 643,
+      "y": 611,
+      "marketName": "比奇省__陈家铺老板",
+      "scripbtsFile": "7Gst_0",
+      "name": "陈家铺老板",
+      "appearanceId": 3
+    },
+    {
+      "key": "0@@精武馆老板@@649@@602",
+      "mapID": "0",
+      "x": 649,
+      "y": 602,
+      "marketName": "比奇省__精武馆老板",
+      "scripbtsFile": "2Gwe_0",
+      "name": "精武馆老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0@@高家店老板@@643@@601",
+      "mapID": "0",
+      "x": 643,
+      "y": 601,
+      "marketName": "比奇省__高家店老板",
+      "scripbtsFile": "3Gdr_0",
+      "name": "高家店老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "0@@屠夫@@649@@591",
+      "mapID": "0",
+      "x": 649,
+      "y": 591,
+      "marketName": "比奇省__屠夫",
+      "scripbtsFile": "1Gme_0",
+      "name": "屠夫",
+      "appearanceId": 11
+    },
+    {
+      "key": "0@@廖家店老板@@621@@642",
+      "mapID": "0",
+      "x": 621,
+      "y": 642,
+      "marketName": "比奇省__廖家店老板",
+      "scripbtsFile": "6Gwh_0",
+      "name": "廖家店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0@@助理小敏@@628@@601",
+      "mapID": "0",
+      "x": 628,
+      "y": 601,
+      "marketName": "比奇省__助理小敏",
+      "scripbtsFile": "9helper_0",
+      "name": "助理小敏",
+      "appearanceId": 5
+    },
+    {
+      "key": "0@@边界村小店老板@@291@@610",
+      "mapID": "0",
+      "x": 291,
+      "y": 610,
+      "marketName": "比奇省__边界村小店老板",
+      "scripbtsFile": "4Tdu_0",
+      "name": "边界村小店老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0@@铁匠铺老板@@297@@612",
+      "mapID": "0",
+      "x": 297,
+      "y": 612,
+      "marketName": "比奇省__铁匠铺老板",
+      "scripbtsFile": "2Twe_0",
+      "name": "铁匠铺老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0@@屠夫@@293@@603",
+      "mapID": "0",
+      "x": 293,
+      "y": 603,
+      "marketName": "比奇省__屠夫",
+      "scripbtsFile": "1Tme_0",
+      "name": "屠夫",
+      "appearanceId": 11
+    },
+    {
+      "key": "0@@白家服装老板@@305@@607",
+      "mapID": "0",
+      "x": 305,
+      "y": 607,
+      "marketName": "比奇省__白家服装老板",
+      "scripbtsFile": "3Tdr_0",
+      "name": "白家服装老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "0132@@书店老板@@5@@18",
+      "mapID": "0132",
+      "x": 5,
+      "y": 18,
+      "marketName": "房屋__书店老板",
+      "scripbtsFile": "5Tbo_0132",
+      "name": "书店老板",
+      "appearanceId": 2
+    },
+    {
+      "key": "0140@@仓库保管员@@8@@9",
+      "mapID": "0140",
+      "x": 8,
+      "y": 9,
+      "marketName": "仓库__仓库保管员",
+      "scripbtsFile": "6Twh_0140",
+      "name": "仓库保管员",
+      "appearanceId": 9
+    },
+    {
+      "key": "0141@@戒指店老板@@23@@23",
+      "mapID": "0141",
+      "x": 23,
+      "y": 23,
+      "marketName": "杂货店__戒指店老板",
+      "scripbtsFile": "8Tri_0141",
+      "name": "戒指店老板",
+      "appearanceId": 4
+    },
+    {
+      "key": "0141@@手镯店老板@@16@@16",
+      "mapID": "0141",
+      "x": 16,
+      "y": 16,
+      "marketName": "杂货店__手镯店老板",
+      "scripbtsFile": "8Tbr_0141",
+      "name": "手镯店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0141@@项链店老板@@10@@10",
+      "mapID": "0141",
+      "x": 10,
+      "y": 10,
+      "marketName": "杂货店__项链店老板",
+      "scripbtsFile": "8Tne_0141",
+      "name": "项链店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0@@助理阿妍@@284@@606",
+      "mapID": "0",
+      "x": 284,
+      "y": 606,
+      "marketName": "比奇省__助理阿妍",
+      "scripbtsFile": "9helper_0",
+      "name": "助理阿妍",
+      "appearanceId": 5
+    },
+    {
+      "key": "0114@@高级战士@@14@@9",
+      "mapID": "0114",
+      "x": 14,
+      "y": 9,
+      "marketName": "高级武士之家__高级战士",
+      "scripbtsFile": "9Ehw_0114",
+      "name": "高级战士",
+      "appearanceId": 3
+    },
+    {
+      "key": "01141@@高级战士@@14@@9",
+      "mapID": "01141",
+      "x": 14,
+      "y": 9,
+      "marketName": "高级武士之家__高级战士",
+      "scripbtsFile": "9Ehw_01141",
+      "name": "高级战士",
+      "appearanceId": 3
+    },
+    {
+      "key": "01142@@高级战士@@11@@10",
+      "mapID": "01142",
+      "x": 11,
+      "y": 10,
+      "marketName": "任务地图__高级战士",
+      "scripbtsFile": "9Ehw_01142",
+      "name": "高级战士",
+      "appearanceId": 3
+    },
+    {
+      "key": "0113@@高级道士@@7@@5",
+      "mapID": "0113",
+      "x": 7,
+      "y": 5,
+      "marketName": "高级道士之家__高级道士",
+      "scripbtsFile": "9Eht_0113",
+      "name": "高级道士",
+      "appearanceId": 3
+    },
+    {
+      "key": "01132@@高级道士@@11@@10",
+      "mapID": "01132",
+      "x": 11,
+      "y": 10,
+      "marketName": "任务地图__高级道士",
+      "scripbtsFile": "9Eht_01132",
+      "name": "高级道士",
+      "appearanceId": 3
+    },
+    {
+      "key": "0115@@高级法师@@5@@11",
+      "mapID": "0115",
+      "x": 5,
+      "y": 11,
+      "marketName": "高级魔法师之家__高级法师",
+      "scripbtsFile": "9Ewi_0115",
+      "name": "高级法师",
+      "appearanceId": 3
+    },
+    {
+      "key": "01152@@高级法师@@11@@10",
+      "mapID": "01152",
+      "x": 11,
+      "y": 10,
+      "marketName": "任务地图__高级法师",
+      "scripbtsFile": "9Ewi_01152",
+      "name": "高级法师",
+      "appearanceId": 3
+    },
+    {
+      "key": "1@@铁匠@@314@@72",
+      "mapID": "1",
+      "x": 314,
+      "y": 72,
+      "marketName": "沃玛森林__铁匠",
+      "scripbtsFile": "2Wwe_1",
+      "name": "铁匠",
+      "appearanceId": 0
+    },
+    {
+      "key": "1@@杂货商@@309@@81",
+      "mapID": "1",
+      "x": 309,
+      "y": 81,
+      "marketName": "沃玛森林__杂货商",
+      "scripbtsFile": "4Wdu_1",
+      "name": "杂货商",
+      "appearanceId": 4
+    },
+    {
+      "key": "1@@老人@@235@@305",
+      "mapID": "1",
+      "x": 235,
+      "y": 305,
+      "marketName": "沃玛森林__老人",
+      "scripbtsFile": "9Wqu_1",
+      "name": "老人",
+      "appearanceId": 9
+    },
+    {
+      "key": "1@@老人@@96@@290",
+      "mapID": "1",
+      "x": 96,
+      "y": 290,
+      "marketName": "沃玛森林__老人",
+      "scripbtsFile": "9woomaoldman_1",
+      "name": "老人",
+      "appearanceId": 3
+    },
+    {
+      "key": "D002@@仓库保管员@@174@@216",
+      "mapID": "D002",
+      "x": 174,
+      "y": 216,
+      "marketName": "半兽古墓二层__仓库保管员",
+      "scripbtsFile": "6Ewh_D002",
+      "name": "仓库保管员",
+      "appearanceId": 3
+    },
+    {
+      "key": "D002@@刘老头@@187@@214",
+      "mapID": "D002",
+      "x": 187,
+      "y": 214,
+      "marketName": "半兽古墓二层__刘老头",
+      "scripbtsFile": "9Equ_D002",
+      "name": "刘老头",
+      "appearanceId": 9
+    },
+    {
+      "key": "DM001@@奸商崔氏@@4@@6",
+      "mapID": "DM001",
+      "x": 4,
+      "y": 6,
+      "marketName": "商店__奸商崔氏",
+      "scripbtsFile": "7Est_DM001",
+      "name": "奸商崔氏",
+      "appearanceId": 9
+    },
+    {
+      "key": "DM011@@不法小贩@@4@@6",
+      "mapID": "DM011",
+      "x": 4,
+      "y": 6,
+      "marketName": "商店__不法小贩",
+      "scripbtsFile": "7Wicked_merchant1_DM011",
+      "name": "不法小贩",
+      "appearanceId": 9
+    },
+    {
+      "key": "0120@@朴铁匠@@7@@8",
+      "mapID": "0120",
+      "x": 7,
+      "y": 8,
+      "marketName": "武器店__朴铁匠",
+      "scripbtsFile": "2Swe_0120",
+      "name": "朴铁匠",
+      "appearanceId": 0
+    },
+    {
+      "key": "2@@铁匠@@518@@492",
+      "mapID": "2",
+      "x": 518,
+      "y": 492,
+      "marketName": "毒蛇山谷__铁匠",
+      "scripbtsFile": "2BlackSmith1_2",
+      "name": "铁匠",
+      "appearanceId": 0
+    },
+    {
+      "key": "0117@@薄家药铺老板@@4@@10",
+      "mapID": "0117",
+      "x": 4,
+      "y": 10,
+      "marketName": "药店__薄家药铺老板",
+      "scripbtsFile": "4Sdu_0117",
+      "name": "薄家药铺老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "2@@药铺老板@@505@@497",
+      "mapID": "2",
+      "x": 505,
+      "y": 497,
+      "marketName": "毒蛇山谷__药铺老板",
+      "scripbtsFile": "4Serpent_valley_reagent_store1_2",
+      "name": "药铺老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "2@@罗家铺子老板@@505@@479",
+      "mapID": "2",
+      "x": 505,
+      "y": 479,
+      "marketName": "毒蛇山谷__罗家铺子老板",
+      "scripbtsFile": "7Sst_2",
+      "name": "罗家铺子老板",
+      "appearanceId": 3
+    },
+    {
+      "key": "2@@米家服装老板@@517@@477",
+      "mapID": "2",
+      "x": 517,
+      "y": 477,
+      "marketName": "毒蛇山谷__米家服装老板",
+      "scripbtsFile": "3Sdr_2",
+      "name": "米家服装老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "2@@仓库保管员@@517@@466",
+      "mapID": "2",
+      "x": 517,
+      "y": 466,
+      "marketName": "毒蛇山谷__仓库保管员",
+      "scripbtsFile": "6Swh_2",
+      "name": "仓库保管员",
+      "appearanceId": 5
+    },
+    {
+      "key": "3@@陶氏@@855@@661",
+      "mapID": "3",
+      "x": 855,
+      "y": 661,
+      "marketName": "盟重省__陶氏",
+      "scripbtsFile": "7Est_3",
+      "name": "陶氏",
+      "appearanceId": 3
+    },
+    {
+      "key": "0145@@仓库保管员@@9@@12",
+      "mapID": "0145",
+      "x": 9,
+      "y": 12,
+      "marketName": "仓库__仓库保管员",
+      "scripbtsFile": "6Mwh_0145",
+      "name": "仓库保管员",
+      "appearanceId": 9
+    },
+    {
+      "key": "3@@悦来客栈老板@@305@@373",
+      "mapID": "3",
+      "x": 305,
+      "y": 373,
+      "marketName": "盟重省__悦来客栈老板",
+      "scripbtsFile": "6Mwh_3",
+      "name": "悦来客栈老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0149@@张家布衣老板@@23@@20",
+      "mapID": "0149",
+      "x": 23,
+      "y": 20,
+      "marketName": "服饰店__张家布衣老板",
+      "scripbtsFile": "3Mdr_0149",
+      "name": "张家布衣老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "0149@@手套店老板@@11@@18",
+      "mapID": "0149",
+      "x": 11,
+      "y": 18,
+      "marketName": "服饰店__手套店老板",
+      "scripbtsFile": "3Mga_0149",
+      "name": "手套店老板",
+      "appearanceId": 4
+    },
+    {
+      "key": "0149@@老张头盔店@@8@@5",
+      "mapID": "0149",
+      "x": 8,
+      "y": 5,
+      "marketName": "服饰店__老张头盔店",
+      "scripbtsFile": "3Mhe_0149",
+      "name": "老张头盔店",
+      "appearanceId": 5
+    },
+    {
+      "key": "0159@@铁匠铺老板@@5@@9",
+      "mapID": "0159",
+      "x": 5,
+      "y": 9,
+      "marketName": "武器店__铁匠铺老板",
+      "scripbtsFile": "2Mwe_0159",
+      "name": "铁匠铺老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0160@@罗家铺子老板@@5@@8",
+      "mapID": "0160",
+      "x": 5,
+      "y": 8,
+      "marketName": "售药房__罗家铺子老板",
+      "scripbtsFile": "4Mdu_0160",
+      "name": "罗家铺子老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0158@@戒指店老板@@11@@16",
+      "mapID": "0158",
+      "x": 11,
+      "y": 16,
+      "marketName": "饰品店__戒指店老板",
+      "scripbtsFile": "8Mri_0158",
+      "name": "戒指店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0158@@手镯店老板@@16@@11",
+      "mapID": "0158",
+      "x": 16,
+      "y": 11,
+      "marketName": "饰品店__手镯店老板",
+      "scripbtsFile": "8Mbr_0158",
+      "name": "手镯店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0158@@项链店老板@@4@@21",
+      "mapID": "0158",
+      "x": 4,
+      "y": 21,
+      "marketName": "饰品店__项链店老板",
+      "scripbtsFile": "8Mne_0158",
+      "name": "项链店老板",
+      "appearanceId": 4
+    },
+    {
+      "key": "3@@流浪汉@@346@@334",
+      "mapID": "3",
+      "x": 346,
+      "y": 334,
+      "marketName": "盟重省__流浪汉",
+      "scripbtsFile": "7Mst_3",
+      "name": "流浪汉",
+      "appearanceId": 3
+    },
+    {
+      "key": "3@@蜀汉氏@@355@@329",
+      "mapID": "3",
+      "x": 355,
+      "y": 329,
+      "marketName": "盟重省__蜀汉氏",
+      "scripbtsFile": "1Mme_3",
+      "name": "蜀汉氏",
+      "appearanceId": 11
+    },
+    {
+      "key": "3@@药店老板@@361@@335",
+      "mapID": "3",
+      "x": 361,
+      "y": 335,
+      "marketName": "盟重省__药店老板",
+      "scripbtsFile": "4Mdu_3",
+      "name": "药店老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0161@@书店老板@@11@@16",
+      "mapID": "0161",
+      "x": 11,
+      "y": 16,
+      "marketName": "书店__书店老板",
+      "scripbtsFile": "5Mbo_0161",
+      "name": "书店老板",
+      "appearanceId": 2
+    },
+    {
+      "key": "3@@网络文明宣传员@@297@@302",
+      "mapID": "3",
+      "x": 297,
+      "y": 302,
+      "marketName": "盟重省__网络文明宣传员",
+      "scripbtsFile": "9snpc2_3",
+      "name": "网络文明宣传员",
+      "appearanceId": 5
+    },
+    {
+      "key": "3@@彩票员@@284@@343",
+      "mapID": "3",
+      "x": 284,
+      "y": 343,
+      "marketName": "盟重省__彩票员",
+      "scripbtsFile": "9Mlo_3",
+      "name": "彩票员",
+      "appearanceId": 3
+    },
+    {
+      "key": "0@@彩票员@@298@@317",
+      "mapID": "0",
+      "x": 298,
+      "y": 317,
+      "marketName": "比奇省__彩票员",
+      "scripbtsFile": "9Blo_0",
+      "name": "彩票员",
+      "appearanceId": 3
+    },
+    {
+      "key": "3@@入场员@@480@@350",
+      "mapID": "3",
+      "x": 480,
+      "y": 350,
+      "marketName": "盟重省__入场员",
+      "scripbtsFile": "9match1_3",
+      "name": "入场员",
+      "appearanceId": 2
+    },
+    {
+      "key": "F003@@退场员@@41@@41",
+      "mapID": "F003",
+      "x": 41,
+      "y": 41,
+      "marketName": "蛇谷行会战地图__退场员",
+      "scripbtsFile": "9match2_F003",
+      "name": "退场员",
+      "appearanceId": 2
+    },
+    {
+      "key": "2@@入场员@@450@@300",
+      "mapID": "2",
+      "x": 450,
+      "y": 300,
+      "marketName": "毒蛇山谷__入场员",
+      "scripbtsFile": "9match3_2",
+      "name": "入场员",
+      "appearanceId": 2
+    },
+    {
+      "key": "3@@屠夫@@659@@301",
+      "mapID": "3",
+      "x": 659,
+      "y": 301,
+      "marketName": "盟重省__屠夫",
+      "scripbtsFile": "1Ame_3",
+      "name": "屠夫",
+      "appearanceId": 1
+    },
+    {
+      "key": "0151@@铁匠铺老板@@3@@19",
+      "mapID": "0151",
+      "x": 3,
+      "y": 19,
+      "marketName": "武器店__铁匠铺老板",
+      "scripbtsFile": "2Are_0151",
+      "name": "铁匠铺老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0151@@武器铺老板@@7@@14",
+      "mapID": "0151",
+      "x": 7,
+      "y": 14,
+      "marketName": "武器店__武器铺老板",
+      "scripbtsFile": "2Awe_0151",
+      "name": "武器铺老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "0155@@布衣店老板@@13@@7",
+      "mapID": "0155",
+      "x": 13,
+      "y": 7,
+      "marketName": "服装店__布衣店老板",
+      "scripbtsFile": "3Adr_0155",
+      "name": "布衣店老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "0155@@头盔店老板@@9@@11",
+      "mapID": "0155",
+      "x": 9,
+      "y": 11,
+      "marketName": "服装店__头盔店老板",
+      "scripbtsFile": "3Ahe_0155",
+      "name": "头盔店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0153@@毒药老板@@7@@14",
+      "mapID": "0153",
+      "x": 7,
+      "y": 14,
+      "marketName": "药品店__毒药老板",
+      "scripbtsFile": "4Adm_0153",
+      "name": "毒药老板",
+      "appearanceId": 9
+    },
+    {
+      "key": "0153@@药店老板@@14@@7",
+      "mapID": "0153",
+      "x": 14,
+      "y": 7,
+      "marketName": "药品店__药店老板",
+      "scripbtsFile": "4Adu_0153",
+      "name": "药店老板",
+      "appearanceId": 1
+    },
+    {
+      "key": "0152@@仓库保管员@@7@@12",
+      "mapID": "0152",
+      "x": 7,
+      "y": 12,
+      "marketName": "仓库__仓库保管员",
+      "scripbtsFile": "6Awh_0152",
+      "name": "仓库保管员",
+      "appearanceId": 6
+    },
+    {
+      "key": "3@@小贩@@663@@304",
+      "mapID": "3",
+      "x": 663,
+      "y": 304,
+      "marketName": "盟重省__小贩",
+      "scripbtsFile": "7Ast_3",
+      "name": "小贩",
+      "appearanceId": 3
+    },
+    {
+      "key": "0154@@手套店老板@@14@@7",
+      "mapID": "0154",
+      "x": 14,
+      "y": 7,
+      "marketName": "饰品店__手套店老板",
+      "scripbtsFile": "8Abr_0154",
+      "name": "手套店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0154@@项链店老板@@3@@18",
+      "mapID": "0154",
+      "x": 3,
+      "y": 18,
+      "marketName": "饰品店__项链店老板",
+      "scripbtsFile": "8Ane_0154",
+      "name": "项链店老板",
+      "appearanceId": 6
+    },
+    {
+      "key": "0154@@戒指店老板@@10@@15",
+      "mapID": "0154",
+      "x": 10,
+      "y": 15,
+      "marketName": "饰品店__戒指店老板",
+      "scripbtsFile": "8Ari_0154",
+      "name": "戒指店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "0151@@炼武器老板@@12@@10",
+      "mapID": "0151",
+      "x": 12,
+      "y": 10,
+      "marketName": "武器店__炼武器老板",
+      "scripbtsFile": "9Aup_0151",
+      "name": "炼武器老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "D608@@服装小贩@@30@@22",
+      "mapID": "D608",
+      "x": 30,
+      "y": 22,
+      "marketName": "紫水晶屋__服装小贩",
+      "scripbtsFile": "3Edr_D608",
+      "name": "服装小贩",
+      "appearanceId": 3
+    },
+    {
+      "key": "D514@@服装小贩@@19@@25",
+      "mapID": "D514",
+      "x": 19,
+      "y": 25,
+      "marketName": "图书馆__服装小贩",
+      "scripbtsFile": "3Edr_D514",
+      "name": "服装小贩",
+      "appearanceId": 3
+    },
+    {
+      "key": "D5063@@药品小贩@@62@@36",
+      "mapID": "D5063",
+      "x": 62,
+      "y": 36,
+      "marketName": "祖玛阁__药品小贩",
+      "scripbtsFile": "4Edu_D5063",
+      "name": "药品小贩",
+      "appearanceId": 1
+    },
+    {
+      "key": "D71650@@武器店老板@@23@@27",
+      "mapID": "D71650",
+      "x": 23,
+      "y": 27,
+      "marketName": "武器修理间__武器店老板",
+      "scripbtsFile": "2Ewe_D71650",
+      "name": "武器店老板",
+      "appearanceId": 0
+    },
+    {
+      "key": "D71651@@服装店老板@@23@@27",
+      "mapID": "D71651",
+      "x": 23,
+      "y": 27,
+      "marketName": "服装修理间__服装店老板",
+      "scripbtsFile": "3Edr_D71651",
+      "name": "服装店老板",
+      "appearanceId": 7
+    },
+    {
+      "key": "D71653@@药品店老板@@23@@27",
+      "mapID": "D71653",
+      "x": 23,
+      "y": 27,
+      "marketName": "药品出售间__药品店老板",
+      "scripbtsFile": "4Edu_D71653",
+      "name": "药品店老板",
+      "appearanceId": 3
+    },
+    {
+      "key": "D71652@@首饰店老板@@23@@27",
+      "mapID": "D71652",
+      "x": 23,
+      "y": 27,
+      "marketName": "首饰修理间__首饰店老板",
+      "scripbtsFile": "8Eac_D71652",
+      "name": "首饰店老板",
+      "appearanceId": 5
+    },
+    {
+      "key": "E603@@老人@@31@@191",
+      "mapID": "E603",
+      "x": 31,
+      "y": 191,
+      "marketName": "连接通道__老人",
+      "scripbtsFile": "9Equ_E603",
+      "name": "老人",
+      "appearanceId": 9
+    },
+    {
+      "key": "0148@@林小姐@@10@@9",
+      "mapID": "0148",
+      "x": 10,
+      "y": 9,
+      "marketName": "客栈__林小姐",
+      "scripbtsFile": "9Equ_0148",
+      "name": "林小姐",
+      "appearanceId": 13
+    },
+    {
+      "key": "0126@@商人@@10@@10",
+      "mapID": "0126",
+      "x": 10,
+      "y": 10,
+      "marketName": "东方客栈二层__商人",
+      "scripbtsFile": "9Ech_0126",
+      "name": "商人",
+      "appearanceId": 9
+    },
+    {
+      "key": "0152@@商人@@4@@15",
+      "mapID": "0152",
+      "x": 4,
+      "y": 15,
+      "marketName": "仓库__商人",
+      "scripbtsFile": "9Ech_0152",
+      "name": "商人",
+      "appearanceId": 9
+    },
+    {
+      "key": "0146@@商人@@4@@11",
+      "mapID": "0146",
+      "x": 4,
+      "y": 11,
+      "marketName": "仓库二楼__商人",
+      "scripbtsFile": "9Ech_0146",
+      "name": "商人",
+      "appearanceId": 9
+    },
+    {
+      "key": "3@@占星法师@@850@@662",
+      "mapID": "3",
+      "x": 850,
+      "y": 662,
+      "marketName": "盟重省__占星法师",
+      "scripbtsFile": "9epl_3",
+      "name": "占星法师",
+      "appearanceId": 9
+    },
+    {
+      "key": "Q011@@刘老头@@139@@120",
+      "mapID": "Q011",
+      "x": 139,
+      "y": 120,
+      "marketName": "__刘老头",
+      "scripbtsFile": "9Equ_Q011",
+      "name": "刘老头",
+      "appearanceId": 9
+    },
+    {
+      "key": "Q016@@成男@@14@@21",
+      "mapID": "Q016",
+      "x": 14,
+      "y": 21,
+      "marketName": "__成男",
+      "scripbtsFile": "9Equ_Q016",
+      "name": "成男",
+      "appearanceId": 12
+    },
+    {
+      "key": "0101@@赌场老人@@8@@6",
+      "mapID": "0101",
+      "x": 8,
+      "y": 6,
+      "marketName": "客栈__赌场老人",
+      "scripbtsFile": "9Ega_0101",
+      "name": "赌场老人",
+      "appearanceId": 9
+    },
+    {
+      "key": "B010@@赌场老板@@48@@45",
+      "mapID": "B010",
+      "x": 48,
+      "y": 45,
+      "marketName": "__赌场老板",
+      "scripbtsFile": "9Ega_B010",
+      "name": "赌场老板",
+      "appearanceId": 9
+    },
+    {
+      "key": "B011@@赌场助理@@8@@10",
+      "mapID": "B011",
+      "x": 8,
+      "y": 10,
+      "marketName": "__赌场助理",
+      "scripbtsFile": "9Ega_B011",
+      "name": "赌场助理",
+      "appearanceId": 12
+    },
+    {
+      "key": "B012@@赌场助理@@8@@10",
+      "mapID": "B012",
+      "x": 8,
+      "y": 10,
+      "marketName": "__赌场助理",
+      "scripbtsFile": "9Ega_B012",
+      "name": "赌场助理",
+      "appearanceId": 12
+    },
+    {
+      "key": "B013@@赌场助理@@8@@10",
+      "mapID": "B013",
+      "x": 8,
+      "y": 10,
+      "marketName": "__赌场助理",
+      "scripbtsFile": "9Ega_B013",
+      "name": "赌场助理",
+      "appearanceId": 12
+    },
+    {
+      "key": "B101@@赌场小妖女@@10@@6",
+      "mapID": "B101",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域之门__赌场小妖女",
+      "scripbtsFile": "9Ega_B101",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B102@@赌场小妖女@@10@@6",
+      "mapID": "B102",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B102",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B103@@赌场小妖女@@10@@6",
+      "mapID": "B103",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B103",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B104@@赌场小妖女@@10@@6",
+      "mapID": "B104",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B104",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B105@@赌场小妖女@@10@@6",
+      "mapID": "B105",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B105",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B106@@赌场小妖女@@10@@6",
+      "mapID": "B106",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B106",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B107@@赌场小妖女@@10@@6",
+      "mapID": "B107",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B107",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B108@@赌场小妖女@@10@@6",
+      "mapID": "B108",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B108",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B109@@赌场小妖女@@10@@6",
+      "mapID": "B109",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B109",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B110@@赌场小妖女@@10@@6",
+      "mapID": "B110",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B110",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B111@@赌场小妖女@@10@@6",
+      "mapID": "B111",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B111",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B112@@赌场小妖女@@10@@6",
+      "mapID": "B112",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B112",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B113@@赌场小妖女@@10@@6",
+      "mapID": "B113",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B113",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B114@@赌场小妖女@@10@@6",
+      "mapID": "B114",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B114",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B115@@赌场小妖女@@10@@6",
+      "mapID": "B115",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B115",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B116@@赌场小妖女@@10@@6",
+      "mapID": "B116",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B116",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B117@@赌场小妖女@@10@@6",
+      "mapID": "B117",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B117",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B118@@赌场小妖女@@10@@6",
+      "mapID": "B118",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B118",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B119@@赌场小妖女@@10@@6",
+      "mapID": "B119",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B119",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B120@@赌场小妖女@@10@@6",
+      "mapID": "B120",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B120",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B121@@赌场小妖女@@10@@6",
+      "mapID": "B121",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B121",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B122@@赌场小妖女@@10@@6",
+      "mapID": "B122",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B122",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B123@@赌场小妖女@@10@@6",
+      "mapID": "B123",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B123",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B124@@赌场小妖女@@10@@6",
+      "mapID": "B124",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B124",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B125@@赌场小妖女@@10@@6",
+      "mapID": "B125",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B125",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B126@@赌场小妖女@@10@@6",
+      "mapID": "B126",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B126",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B127@@赌场小妖女@@10@@6",
+      "mapID": "B127",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B127",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B128@@赌场小妖女@@10@@6",
+      "mapID": "B128",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B128",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B129@@赌场小妖女@@10@@6",
+      "mapID": "B129",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B129",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B130@@赌场小妖女@@10@@6",
+      "mapID": "B130",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B130",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B131@@赌场小妖女@@10@@6",
+      "mapID": "B131",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B131",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B132@@赌场小妖女@@10@@6",
+      "mapID": "B132",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B132",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B133@@赌场小妖女@@10@@6",
+      "mapID": "B133",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B133",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B134@@赌场小妖女@@10@@6",
+      "mapID": "B134",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B134",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B135@@赌场小妖女@@10@@6",
+      "mapID": "B135",
+      "x": 10,
+      "y": 6,
+      "marketName": "圣域__赌场小妖女",
+      "scripbtsFile": "9Ega_B135",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B136@@赌场小妖女@@10@@6",
+      "mapID": "B136",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_B136",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B137@@赌场小妖女@@10@@6",
+      "mapID": "B137",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_B137",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B138@@赌场小妖女@@10@@6",
+      "mapID": "B138",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_B138",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B139@@赌场小妖女@@10@@6",
+      "mapID": "B139",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_B139",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "B140@@赌场小妖女@@10@@6",
+      "mapID": "B140",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_B140",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "T105@@恶棍@@7@@6",
+      "mapID": "T105",
+      "x": 7,
+      "y": 6,
+      "marketName": "__恶棍",
+      "scripbtsFile": "9Ega1_T105",
+      "name": "恶棍",
+      "appearanceId": 11
+    },
+    {
+      "key": "T105@@恶棍@@6@@5",
+      "mapID": "T105",
+      "x": 6,
+      "y": 5,
+      "marketName": "__恶棍",
+      "scripbtsFile": "9Ega2_T105",
+      "name": "恶棍",
+      "appearanceId": 11
+    },
+    {
+      "key": "T105@@恶棍@@8@@7",
+      "mapID": "T105",
+      "x": 8,
+      "y": 7,
+      "marketName": "__恶棍",
+      "scripbtsFile": "9Ega3_T105",
+      "name": "恶棍",
+      "appearanceId": 11
+    },
+    {
+      "key": "T105@@恶棍@@9@@8",
+      "mapID": "T105",
+      "x": 9,
+      "y": 8,
+      "marketName": "__恶棍",
+      "scripbtsFile": "9Ega4_T105",
+      "name": "恶棍",
+      "appearanceId": 11
+    },
+    {
+      "key": "T105@@恶棍@@10@@9",
+      "mapID": "T105",
+      "x": 10,
+      "y": 9,
+      "marketName": "__恶棍",
+      "scripbtsFile": "9Ega5_T105",
+      "name": "恶棍",
+      "appearanceId": 11
+    },
+    {
+      "key": "T118@@赌场小妖女@@14@@15",
+      "mapID": "T118",
+      "x": 14,
+      "y": 15,
+      "marketName": "困惑殿堂__赌场小妖女",
+      "scripbtsFile": "9Ega_T118",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "T125@@赌场小妖女@@11@@9",
+      "mapID": "T125",
+      "x": 11,
+      "y": 9,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_T125",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "T1363@@赌场小妖女@@10@@6",
+      "mapID": "T1363",
+      "x": 10,
+      "y": 6,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_T1363",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "T138@@赌场小妖女@@9@@10",
+      "mapID": "T138",
+      "x": 9,
+      "y": 10,
+      "marketName": "__赌场小妖女",
+      "scripbtsFile": "9Ega_T138",
+      "name": "赌场小妖女",
+      "appearanceId": 12
+    },
+    {
+      "key": "0@@商店传送员@@329@@267",
+      "mapID": "0",
+      "x": 329,
+      "y": 267,
+      "marketName": "比奇省__商店传送员",
+      "scripbtsFile": "9Bichon_Teleport_0",
+      "name": "商店传送员",
+      "appearanceId": 9
+    },
+    {
+      "key": "2@@商店传送员@@504@@485",
+      "mapID": "2",
+      "x": 504,
+      "y": 485,
+      "marketName": "毒蛇山谷__商店传送员",
+      "scripbtsFile": "9Serpent_Teleport_2",
+      "name": "商店传送员",
+      "appearanceId": 9
+    },
+    {
+      "key": "3@@商店传送员@@333@@330",
+      "mapID": "3",
+      "x": 333,
+      "y": 330,
+      "marketName": "盟重省__商店传送员",
+      "scripbtsFile": "9Mongchon_Teleport_3",
+      "name": "商店传送员",
+      "appearanceId": 9
+    },
+    {
+      "key": "1001@@武器店老板@@14@@12",
+      "mapID": "1001",
+      "x": 14,
+      "y": 12,
+      "marketName": "白日门武器库__武器店老板",
+      "scripbtsFile": "2Wwe_1001",
+      "name": "武器店老板",
+      "appearanceId": 15
+    },
+    {
+      "key": "1007@@杂货店老板@@11@@14",
+      "mapID": "1007",
+      "x": 11,
+      "y": 14,
+      "marketName": "白日门杂货店__杂货店老板",
+      "scripbtsFile": "7Wst_1007",
+      "name": "杂货店老板",
+      "appearanceId": 17
+    },
+    {
+      "key": "1005@@首饰店老板@@9@@11",
+      "mapID": "1005",
+      "x": 9,
+      "y": 11,
+      "marketName": "白日门饰品屋__首饰店老板",
+      "scripbtsFile": "8Wac_1005",
+      "name": "首饰店老板",
+      "appearanceId": 20
+    },
+    {
+      "key": "1003@@服装店打杂@@13@@16",
+      "mapID": "1003",
+      "x": 13,
+      "y": 16,
+      "marketName": "白日门服装店__服装店打杂",
+      "scripbtsFile": "3Wdr_1003",
+      "name": "服装店打杂",
+      "appearanceId": 23
+    },
+    {
+      "key": "11@@特殊修理师傅@@203@@321",
+      "mapID": "11",
+      "x": 203,
+      "y": 321,
+      "marketName": "白日门__特殊修理师傅",
+      "scripbtsFile": "3Wdr_11",
+      "name": "特殊修理师傅",
+      "appearanceId": 23
+    },
+    {
+      "key": "1006@@药店老板@@9@@10",
+      "mapID": "1006",
+      "x": 9,
+      "y": 10,
+      "marketName": "白日门药品屋__药店老板",
+      "scripbtsFile": "4Wdu_1006",
+      "name": "药店老板",
+      "appearanceId": 25
+    },
+    {
+      "key": "1006@@药剂师@@12@@7",
+      "mapID": "1006",
+      "x": 12,
+      "y": 7,
+      "marketName": "白日门药品屋__药剂师",
+      "scripbtsFile": "4Wdm_1006",
+      "name": "药剂师",
+      "appearanceId": 22
+    },
+    {
+      "key": "1004@@书店老板@@9@@11",
+      "mapID": "1004",
+      "x": 9,
+      "y": 11,
+      "marketName": "白日门图书馆__书店老板",
+      "scripbtsFile": "5Wbo_1004",
+      "name": "书店老板",
+      "appearanceId": 18
+    },
+    {
+      "key": "11@@仓库保管员@@184@@297",
+      "mapID": "11",
+      "x": 184,
+      "y": 297,
+      "marketName": "白日门__仓库保管员",
+      "scripbtsFile": "6Wwh_11",
+      "name": "仓库保管员",
+      "appearanceId": 12
+    },
+    {
+      "key": "1002@@天尊@@14@@13",
+      "mapID": "1002",
+      "x": 14,
+      "y": 13,
+      "marketName": "白日门馆长屋__天尊",
+      "scripbtsFile": "6Wrt_1002",
+      "name": "天尊",
+      "appearanceId": 14
+    },
+    {
+      "key": "11@@武术学员@@179@@309",
+      "mapID": "11",
+      "x": 179,
+      "y": 309,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae1_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术学员@@181@@311",
+      "mapID": "11",
+      "x": 181,
+      "y": 311,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae2_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术学员@@179@@313",
+      "mapID": "11",
+      "x": 179,
+      "y": 313,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae3_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术学员@@177@@311",
+      "mapID": "11",
+      "x": 177,
+      "y": 311,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae4_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术学员@@175@@313",
+      "mapID": "11",
+      "x": 175,
+      "y": 313,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae5_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术学员@@177@@315",
+      "mapID": "11",
+      "x": 177,
+      "y": 315,
+      "marketName": "白日门__武术学员",
+      "scripbtsFile": "9Wae6_11",
+      "name": "武术学员",
+      "appearanceId": 19
+    },
+    {
+      "key": "11@@武术教头@@182@@308",
+      "mapID": "11",
+      "x": 182,
+      "y": 308,
+      "marketName": "白日门__武术教头",
+      "scripbtsFile": "9Wtt_11",
+      "name": "武术教头",
+      "appearanceId": 16
+    },
+    {
+      "key": "11@@道术学员@@191@@329",
+      "mapID": "11",
+      "x": 191,
+      "y": 329,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae1_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术学员@@189@@327",
+      "mapID": "11",
+      "x": 189,
+      "y": 327,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae2_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术学员@@191@@325",
+      "mapID": "11",
+      "x": 191,
+      "y": 325,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae3_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术学员@@193@@327",
+      "mapID": "11",
+      "x": 193,
+      "y": 327,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae4_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术学员@@195@@325",
+      "mapID": "11",
+      "x": 195,
+      "y": 325,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae5_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术学员@@193@@323",
+      "mapID": "11",
+      "x": 193,
+      "y": 323,
+      "marketName": "白日门__道术学员",
+      "scripbtsFile": "9Wae6_11",
+      "name": "道术学员",
+      "appearanceId": 21
+    },
+    {
+      "key": "11@@道术教头@@196@@322",
+      "mapID": "11",
+      "x": 196,
+      "y": 322,
+      "marketName": "白日门__道术教头",
+      "scripbtsFile": "9Wtt_11",
+      "name": "道术教头",
+      "appearanceId": 24
+    },
+    {
+      "key": "D10061@@季正@@11@@16",
+      "mapID": "D10061",
+      "x": 11,
+      "y": 16,
+      "marketName": "恶魔祭坛__季正",
+      "scripbtsFile": "9Wbt_D10061",
+      "name": "季正",
+      "appearanceId": 15
+    },
+    {
+      "key": "0139@@观众@@19@@19",
+      "mapID": "0139",
+      "x": 19,
+      "y": 19,
+      "marketName": "竞技场大厅__观众",
+      "scripbtsFile": "spawn_0139",
+      "name": "观众",
+      "appearanceId": 9
+    },
+    {
+      "key": "0148@@老人@@6@@9",
+      "mapID": "0148",
+      "x": 6,
+      "y": 9,
+      "marketName": "客栈__老人",
+      "scripbtsFile": "SlaveCaveNPC_0148",
+      "name": "老人",
+      "appearanceId": 9
+    },
+    {
+      "key": "r001@@地图清理员@@104@@93",
+      "mapID": "r001",
+      "x": 104,
+      "y": 93,
+      "marketName": "__地图清理员",
+      "scripbtsFile": "majorcleanup_r001",
+      "name": "地图清理员",
+      "appearanceId": 9
+    },
+    {
+      "key": "r001@@游戏管理员仆人@@100@@93",
+      "mapID": "r001",
+      "x": 100,
+      "y": 93,
+      "marketName": "__游戏管理员仆人",
+      "scripbtsFile": "GMservant_r001",
+      "name": "游戏管理员仆人",
+      "appearanceId": 12
+    },
+    {
+      "key": "r001@@测试1@@104@@97",
+      "mapID": "r001",
+      "x": 104,
+      "y": 97,
+      "marketName": "__测试1",
+      "scripbtsFile": "test_r001",
+      "name": "测试1",
+      "appearanceId": 0
+    },
+    {
+      "key": "r001@@测试2@@105@@97",
+      "mapID": "r001",
+      "x": 105,
+      "y": 97,
+      "marketName": "__测试2",
+      "scripbtsFile": "test_r001",
+      "name": "测试2",
+      "appearanceId": 1
+    },
+    {
+      "key": "r001@@测试3@@106@@97",
+      "mapID": "r001",
+      "x": 106,
+      "y": 97,
+      "marketName": "__测试3",
+      "scripbtsFile": "test_r001",
+      "name": "测试3",
+      "appearanceId": 2
+    },
+    {
+      "key": "r001@@测试4@@107@@97",
+      "mapID": "r001",
+      "x": 107,
+      "y": 97,
+      "marketName": "__测试4",
+      "scripbtsFile": "test_r001",
+      "name": "测试4",
+      "appearanceId": 3
+    },
+    {
+      "key": "r001@@测试5@@108@@97",
+      "mapID": "r001",
+      "x": 108,
+      "y": 97,
+      "marketName": "__测试5",
+      "scripbtsFile": "test_r001",
+      "name": "测试5",
+      "appearanceId": 4
+    },
+    {
+      "key": "r001@@测试6@@109@@97",
+      "mapID": "r001",
+      "x": 109,
+      "y": 97,
+      "marketName": "__测试6",
+      "scripbtsFile": "test_r001",
+      "name": "测试6",
+      "appearanceId": 5
+    },
+    {
+      "key": "r001@@测试7@@110@@97",
+      "mapID": "r001",
+      "x": 110,
+      "y": 97,
+      "marketName": "__测试7",
+      "scripbtsFile": "test_r001",
+      "name": "测试7",
+      "appearanceId": 6
+    },
+    {
+      "key": "r001@@测试8@@104@@99",
+      "mapID": "r001",
+      "x": 104,
+      "y": 99,
+      "marketName": "__测试8",
+      "scripbtsFile": "test_r001",
+      "name": "测试8",
+      "appearanceId": 7
+    },
+    {
+      "key": "r001@@测试9@@105@@99",
+      "mapID": "r001",
+      "x": 105,
+      "y": 99,
+      "marketName": "__测试9",
+      "scripbtsFile": "test_r001",
+      "name": "测试9",
+      "appearanceId": 8
+    },
+    {
+      "key": "r001@@测试10@@106@@99",
+      "mapID": "r001",
+      "x": 106,
+      "y": 99,
+      "marketName": "__测试10",
+      "scripbtsFile": "test_r001",
+      "name": "测试10",
+      "appearanceId": 9
+    },
+    {
+      "key": "r001@@测试11@@107@@99",
+      "mapID": "r001",
+      "x": 107,
+      "y": 99,
+      "marketName": "__测试11",
+      "scripbtsFile": "test_r001",
+      "name": "测试11",
+      "appearanceId": 10
+    },
+    {
+      "key": "r001@@测试12@@108@@99",
+      "mapID": "r001",
+      "x": 108,
+      "y": 99,
+      "marketName": "__测试12",
+      "scripbtsFile": "test_r001",
+      "name": "测试12",
+      "appearanceId": 11
+    },
+    {
+      "key": "r001@@测试13@@109@@99",
+      "mapID": "r001",
+      "x": 109,
+      "y": 99,
+      "marketName": "__测试13",
+      "scripbtsFile": "test_r001",
+      "name": "测试13",
+      "appearanceId": 12
+    },
+    {
+      "key": "r001@@测试14@@110@@99",
+      "mapID": "r001",
+      "x": 110,
+      "y": 99,
+      "marketName": "__测试14",
+      "scripbtsFile": "test_r001",
+      "name": "测试14",
+      "appearanceId": 13
+    },
+    {
+      "key": "r001@@测试15@@104@@101",
+      "mapID": "r001",
+      "x": 104,
+      "y": 101,
+      "marketName": "__测试15",
+      "scripbtsFile": "test_r001",
+      "name": "测试15",
+      "appearanceId": 14
+    },
+    {
+      "key": "r001@@测试16@@105@@101",
+      "mapID": "r001",
+      "x": 105,
+      "y": 101,
+      "marketName": "__测试16",
+      "scripbtsFile": "test_r001",
+      "name": "测试16",
+      "appearanceId": 15
+    },
+    {
+      "key": "r001@@测试17@@106@@101",
+      "mapID": "r001",
+      "x": 106,
+      "y": 101,
+      "marketName": "__测试17",
+      "scripbtsFile": "test_r001",
+      "name": "测试17",
+      "appearanceId": 16
+    },
+    {
+      "key": "r001@@测试18@@107@@101",
+      "mapID": "r001",
+      "x": 107,
+      "y": 101,
+      "marketName": "__测试18",
+      "scripbtsFile": "test_r001",
+      "name": "测试18",
+      "appearanceId": 17
+    },
+    {
+      "key": "r001@@测试19@@108@@101",
+      "mapID": "r001",
+      "x": 108,
+      "y": 101,
+      "marketName": "__测试19",
+      "scripbtsFile": "test_r001",
+      "name": "测试19",
+      "appearanceId": 18
+    },
+    {
+      "key": "r001@@测试20@@109@@101",
+      "mapID": "r001",
+      "x": 109,
+      "y": 101,
+      "marketName": "__测试20",
+      "scripbtsFile": "test_r001",
+      "name": "测试20",
+      "appearanceId": 19
+    },
+    {
+      "key": "r001@@测试21@@110@@101",
+      "mapID": "r001",
+      "x": 110,
+      "y": 101,
+      "marketName": "__测试21",
+      "scripbtsFile": "test_r001",
+      "name": "测试21",
+      "appearanceId": 20
+    },
+    {
+      "key": "r001@@测试22@@111@@101",
+      "mapID": "r001",
+      "x": 111,
+      "y": 101,
+      "marketName": "__测试22",
+      "scripbtsFile": "test_r001",
+      "name": "测试22",
+      "appearanceId": 21
+    },
+    {
+      "key": "r001@@测试23@@112@@101",
+      "mapID": "r001",
+      "x": 112,
+      "y": 101,
+      "marketName": "__测试23",
+      "scripbtsFile": "test_r001",
+      "name": "测试23",
+      "appearanceId": 22
+    },
+    {
+      "key": "r001@@测试24@@104@@103",
+      "mapID": "r001",
+      "x": 104,
+      "y": 103,
+      "marketName": "__测试24",
+      "scripbtsFile": "test_r001",
+      "name": "测试24",
+      "appearanceId": 23
+    },
+    {
+      "key": "r001@@测试25@@105@@103",
+      "mapID": "r001",
+      "x": 105,
+      "y": 103,
+      "marketName": "__测试25",
+      "scripbtsFile": "test_r001",
+      "name": "测试25",
+      "appearanceId": 24
+    },
+    {
+      "key": "r001@@测试26@@106@@103",
+      "mapID": "r001",
+      "x": 106,
+      "y": 103,
+      "marketName": "__测试26",
+      "scripbtsFile": "test_r001",
+      "name": "测试26",
+      "appearanceId": 25
+    },
+    {
+      "key": "D717@@猪人@@67@@39",
+      "mapID": "D717",
+      "x": 67,
+      "y": 39,
+      "marketName": "石墓七层__猪人",
+      "scripbtsFile": "9pigman_D717",
+      "name": "猪人",
+      "appearanceId": 3
+    },
+    {
+      "key": "0122@@比齐国王@@29@@32",
+      "mapID": "0122",
+      "x": 29,
+      "y": 32,
+      "marketName": "皇宫__比齐国王",
+      "scripbtsFile": "比齐国王_0122",
+      "name": "比齐国王",
+      "appearanceId": 8
+    },
+    {
+      "key": "0150@@沙巴克管理员@@7@@16",
+      "mapID": "0150",
+      "x": 7,
+      "y": 16,
+      "marketName": "沙巴克皇宫__沙巴克管理员",
+      "scripbtsFile": "沙巴克管理员_0150",
+      "name": "沙巴克管理员",
+      "appearanceId": 8
+    },
+    {
+      "key": "3@@老人@@669@@338",
+      "mapID": "3",
+      "x": 669,
+      "y": 338,
+      "marketName": "盟重省__老人",
+      "scripbtsFile": "老人_3",
+      "name": "老人",
+      "appearanceId": 1
+    },
+    {
+      "key": "0@@传送员@@330@@267",
+      "mapID": "0",
+      "x": 330,
+      "y": 267,
+      "marketName": "比奇省__传送员",
+      "scripbtsFile": "传送员_0",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "0@@传送员@@287@@614",
+      "mapID": "0",
+      "x": 287,
+      "y": 614,
+      "marketName": "比奇省__传送员",
+      "scripbtsFile": "传送员_0",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "0@@传送员@@637@@608",
+      "mapID": "0",
+      "x": 637,
+      "y": 608,
+      "marketName": "比奇省__传送员",
+      "scripbtsFile": "传送员_0",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "2@@传送员@@499@@483",
+      "mapID": "2",
+      "x": 499,
+      "y": 483,
+      "marketName": "毒蛇山谷__传送员",
+      "scripbtsFile": "传送员_2",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "3@@传送员@@339@@333",
+      "mapID": "3",
+      "x": 339,
+      "y": 333,
+      "marketName": "盟重省__传送员",
+      "scripbtsFile": "传送员_3",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "11@@传送员@@181@@322",
+      "mapID": "11",
+      "x": 181,
+      "y": 322,
+      "marketName": "白日门__传送员",
+      "scripbtsFile": "传送员_11",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "r001@@传送员@@96@@94",
+      "mapID": "r001",
+      "x": 96,
+      "y": 94,
+      "marketName": "__传送员",
+      "scripbtsFile": "传送员_r001",
+      "name": "传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "r001@@地图传送员@@97@@94",
+      "mapID": "r001",
+      "x": 97,
+      "y": 94,
+      "marketName": "__地图传送员",
+      "scripbtsFile": "地图传送员_r001",
+      "name": "地图传送员",
+      "appearanceId": 8
+    },
+    {
+      "key": "0@@赌徒@@302@@254",
+      "mapID": "0",
+      "x": 302,
+      "y": 254,
+      "marketName": "比奇省__赌徒",
+      "scripbtsFile": "赌徒_0",
+      "name": "赌徒",
+      "appearanceId": 10
+    }
+  ]
+}
