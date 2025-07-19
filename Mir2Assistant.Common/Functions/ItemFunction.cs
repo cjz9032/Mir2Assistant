@@ -35,6 +35,8 @@ namespace Mir2Assistant.Common.Functions
                             item.Name = string.Empty;
                         }
                         item.IsGodly = memoryUtils.ReadToInt(itemAddr + 0x7C) == 1;
+                        item.Duration = memoryUtils.ReadToShort(itemAddr + 0x78)/100;
+                        item.MaxDuration = memoryUtils.ReadToShort(itemAddr + 0x7A)/100;
                     }
                     else
                     {
