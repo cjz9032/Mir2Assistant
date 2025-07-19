@@ -7,6 +7,8 @@
         "*.tsx": "typescriptreact",
         "cstddef": "cpp",
         "xstring": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "xmemory": "cpp",
+        "map": "cpp"
     }
 }

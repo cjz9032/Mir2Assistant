@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Serilog; // 新增Serilog引用
+using Serilog.Sinks.Debug; // 添加Debug sink引用
 
 namespace Mir2Assistant.TabForms.Demo.TabForms
 {
@@ -41,6 +43,9 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
+            
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
@@ -59,7 +64,10 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnSell_Click(object sender, EventArgs e)
         {
-         var selectedItems = GetSelectedItems();
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
+            
+            var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
                 nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
@@ -76,15 +84,42 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnRepair_Click(object sender, EventArgs e)
         {
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
+
             var selectedItems = GetSelectedItems();
-            foreach (var item in selectedItems)
-            {
+            foreach (var item in selectedItems) {
                 nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
                 Array.Resize(ref data, data.Length + 1);
                 data[data.Length - 1] = item.Id;
 
                 SendMirCall.Send(GameInstance!, 3012, data);
                 await Task.Delay(200);
+            }
+
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance!, 9010, new nint[] { });
+        }
+
+        private async void btnTakeOn_Click(object sender, EventArgs e)
+        {
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
+            
+            var selectedItems = GetSelectedItems();
+            foreach (var item in selectedItems)
+            {
+               
+                // todo 左右手
+                int toIndex = item.stdModeToUseItemIndex;
+                if(toIndex == -1)
+                {
+                    Log.Error($"物品{item.Name}无法装备");
+                    continue;
+                }
+
+                SendMirCall.Send(GameInstance!, 3021, [item.Index, toIndex ]);
+                await Task.Delay(700);
             }
 
             await Task.Delay(500);
@@ -99,6 +134,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             btnSave.Click += btnSave_Click;
             btnSell.Click += btnSell_Click;
             btnRepair.Click += btnRepair_Click;
+            btnTakeOn.Click += btnTakeOn_Click;
         }
 
         private void timer1_Tick(object sender, EventArgs e)

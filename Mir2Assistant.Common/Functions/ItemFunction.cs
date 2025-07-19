@@ -37,6 +37,11 @@ namespace Mir2Assistant.Common.Functions
                         item.IsGodly = memoryUtils.ReadToInt(itemAddr + 0x7C) == 1;
                         item.Duration = memoryUtils.ReadToShort(itemAddr + 0x78)/100;
                         item.MaxDuration = memoryUtils.ReadToShort(itemAddr + 0x7A)/100;
+                        item.stdMode = memoryUtils.ReadToInt8(itemAddr + 0xF);
+                        item.reqType = memoryUtils.ReadToInt8(itemAddr + 0x24);
+                        item.reqPoints = memoryUtils.ReadToInt8(itemAddr + 0x25);
+
+                        
                     }
                     else
                     {

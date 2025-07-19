@@ -130,12 +130,27 @@ void restore_write_screen_call() {
 	VirtualProtect(original_ptr, 8, old_protect, &old_protect);
 }
 
+void cancelItemMoving(){
+	__asm {
+
+		pushad
+		pushfd
+
+		mov eax, dword ptr ds : [0x0074350C]
+		mov esi, 0x0065EA88
+		call esi
+
+		popfd
+		popad
+	}
+}
 
 void refPkg()
 {
 	_asm {
  		pushad
 		pushfd
+		call cancelItemMoving;
 
 		push 00
 		push 00

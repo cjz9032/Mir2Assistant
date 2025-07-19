@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mir2Assistant.Common.Functions;
 
 namespace Mir2Assistant.TabForms.Demo
 {
@@ -31,7 +32,10 @@ namespace Mir2Assistant.TabForms.Demo
         public MirGameInstanceModel? GameInstance { get; set; }
         private ObservableCollection<ItemModel> items = new ObservableCollection<ItemModel>();
         private BindingSource useItemSource = new BindingSource();
-
+        private List<ItemModel> GetSelectedItems()
+        {
+            return useItemsListBox.SelectedItems.Cast<ItemModel>().ToList();
+        }
         public CharacterStatusForm()
         {
             InitializeComponent();
@@ -84,9 +88,20 @@ namespace Mir2Assistant.TabForms.Demo
             }
         }
 
-        private void buttonTakeOff_Click(object sender, EventArgs e)
+        private async void buttonTakeOff_Click(object sender, EventArgs e)
         {
-            // 脱按钮空实现
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
+
+             var selectedItems = GetSelectedItems();
+            foreach (var item in selectedItems)
+            {
+                SendMirCall.Send(GameInstance!, 3020, new nint[] { item.Index });
+                await Task.Delay(700);
+            }
+
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
         }
     }
 }
