@@ -1,0 +1,27 @@
+[@main]
+欢迎光临石墓阵，我将为您提供刷怪服务!\
+您只需要给我<5元宝>!我就为你召唤100只怪物出来!\ \
+每只怪物的经验有1500点哦! \
+<我要召唤怪物/@zhaohuan>   \ \
+[@zhaohuan]
+#IF
+CHECKGAMEGOLD > 4
+CheckRangeMonCount D71622 23 27 100 < 105
+#ACT
+GAMEGOLD - 5
+  Param1 D71622
+  Param2 23
+  Param3 27
+  MonGen 黑野猪1 25 1
+  MonGen 红野猪1 25 1
+  MonGen 楔蛾1 25 1
+  MonGen 黑色恶蛆1 25 1
+sendmsg 1 玩家:「<$USERNAME>」在石墓阵释放了大量的经验猪哦~现在不来抢一把,等待何时?
+#say
+刷怪成功!当前你的元宝总数为:【<$GAMEGOLD>】!\
+<继续刷怪/@zhaohuan>\
+#ELSESAY
+对不起你的元宝不足5个.无法启动刷怪功能\
+或者当前房间怪物数量已满.请杀完再刷\
+每间房间最多只能容纳<105>只怪物\
+<返回/@main>

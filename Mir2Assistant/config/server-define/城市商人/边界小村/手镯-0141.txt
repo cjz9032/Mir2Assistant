@@ -1,0 +1,5 @@
+(@buy @sell @repair )
++24
++26
+[@main]
+#CALL [城市商人\手镯店.txt] @手镯店
