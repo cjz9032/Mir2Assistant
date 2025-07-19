@@ -48,7 +48,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 Array.Resize(ref data, data.Length + 1);
                 data[data.Length - 1] = item.Id;
 
-                SendMirCall.Send(GameInstance!, 3011, data);
+                SendMirCall.Send(GameInstance!, 3015, data);
                 await Task.Delay(200);
             }
 
@@ -57,10 +57,38 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         }
 
-        private void btnSell_Click(object sender, EventArgs e)
+        private async void btnSell_Click(object sender, EventArgs e)
+        {
+         var selectedItems = GetSelectedItems();
+            foreach (var item in selectedItems)
+            {
+                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
+                Array.Resize(ref data, data.Length + 1);
+                data[data.Length - 1] = item.Id;
+
+                SendMirCall.Send(GameInstance!, 3011, data);
+                await Task.Delay(200);
+            }
+
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance!, 9010, new nint[] { });
+        }
+
+        private async void btnRepair_Click(object sender, EventArgs e)
         {
             var selectedItems = GetSelectedItems();
-            // 后续可添加卖选中物品的逻辑
+            foreach (var item in selectedItems)
+            {
+                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
+                Array.Resize(ref data, data.Length + 1);
+                data[data.Length - 1] = item.Id;
+
+                SendMirCall.Send(GameInstance!, 3012, data);
+                await Task.Delay(200);
+            }
+
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance!, 9010, new nint[] { });
         }
 
         private void BagForm_Load(object sender, EventArgs e)
@@ -70,11 +98,12 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             listBox1.DisplayMember = "Display";
             btnSave.Click += btnSave_Click;
             btnSell.Click += btnSell_Click;
+            btnRepair.Click += btnRepair_Click;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var currentItems = GameInstance!.Items.Values.Where(o => !o.IsEmpty).OrderBy(o => o.Index).ToList();
+            var currentItems = GameInstance!.Items.Where(o => !o.IsEmpty).OrderBy(o => o.Index).ToList();
             var currentIds = new HashSet<int>(currentItems.Select(item => item.Id));
 
             if (!currentIds.SetEquals(lastItemIds))

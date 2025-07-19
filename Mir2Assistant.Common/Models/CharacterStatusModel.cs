@@ -12,11 +12,15 @@ public class CharacterStatusModel
     public int? MaxHP { get; set; }
     public int? CurrentMP { get; set; }
     public int? MaxMP { get; set; }
-    public short? ZD { get; set; }
 
-    
-    /// <summary>
-    /// 转生等级
-    /// </summary>
-    public int? GradeZS { get; set; }
+    // 装备9格
+    public List<ItemModel> useItems { get; set; } = new List<ItemModel>();
+
+    public CharacterStatusModel()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            useItems.Add(new ItemModel(i));
+        }
+    }
 }

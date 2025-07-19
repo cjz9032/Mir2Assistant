@@ -75,28 +75,75 @@ void buy(DelphiString* name)
 	}
 }
 
-void storeItem(DelphiString* name, int id)
+// 通用 NPC 功能执行函数
+void executeNpcFunction(DelphiString* name, int id, uintptr_t functionAddress)
 {
-
 	auto nameData = name->data;
 	__asm {
 		pushad
 		pushfd
 
-		mov         eax,nameData
+		mov         eax, nameData
 		push        eax
 		push        1
 		mov         ecx, id
-		mov edx,dword ptr ds:[0x6799E8];
-		mov edx,dword ptr [edx]
+		mov edx, dword ptr ds:[0x6799E8];
+		mov edx, dword ptr [edx]
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x006452EC
+		mov esi, functionAddress
 		call esi
 
 		popfd
 		popad
 	}
+}
+
+void repairItem(DelphiString* name, int id)
+{
+	auto nameData = name->data;
+	__asm {
+		pushad
+		pushfd
+
+		mov         eax, nameData
+		push        eax
+		mov         ecx, id
+		mov edx, dword ptr ds:[0x6799E8];
+		mov edx, dword ptr [edx]
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x006450F8
+		call esi
+
+		popfd
+		popad
+	}
+}
+
+void sell(DelphiString* name, int id)
+{
+	executeNpcFunction(name, id, 0x00645018);
+}
+
+void storeItem(DelphiString* name, int id)
+{
+	executeNpcFunction(name, id, 0x006452EC);
+}
+
+void backStoreItem(DelphiString* name, int id)
+{
+	executeNpcFunction(name, id, 0x006452EC);
+}
+
+
+inline void processNpcCommand(int* data, void (*action)(DelphiString*, int)) {
+	ProcessWideString(data, [data, action](const wchar_t* str, int length) {
+		DelphiString* name = CreateDelphiString(str, length);
+		int id = data[length + 1];
+		action(name, id);
+		delete name;
+	});
 }
 
 void Npc::process(int code, int* data)
@@ -121,12 +168,21 @@ void Npc::process(int code, int* data)
 		});
 		break;
 	case 3011:
-		ProcessWideString(data, [data](const wchar_t* str, int length) {
-			DelphiString* name = CreateDelphiString(str, length);
-			int id = data[length + 1];          // OK, data is now captured
-			storeItem(name, id);
-			delete name;
-		});
+		processNpcCommand(data, sell);
+		break;
+	case 3012:
+		processNpcCommand(data, repairItem);
+		break;
+	case 3015:
+		processNpcCommand(data, storeItem);
+		break;
+	case 3016:
+		processNpcCommand(data, backStoreItem);
+		break;
+
+
+	case 3020: // 脱
+		clickNPC(data[0]);
 		break;
 	default:
 		break;

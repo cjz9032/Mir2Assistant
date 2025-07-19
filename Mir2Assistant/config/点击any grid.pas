@@ -58,7 +58,7 @@ call 0065EA88
 popfd
 popad
  
-// dress call for DSWWeaponClick -- sender map -> 6C4等 查询汇编得到 XY没用, 直接写100
+// 穿 dress call for DSWWeaponClick -- sender map -> 6C4等 查询汇编得到 XY没用, 直接写100
 pushad
 pushfd
 
@@ -71,6 +71,7 @@ call 0059F718
 
 popfd
 popad
+// 脱 也是点上面 + DItemGridGridSelect
 
 procedure TFrmDlg.DItemGridGridSelect(Sender: TObject; ACol, ARow: Integer; Shift: TShiftState);
 

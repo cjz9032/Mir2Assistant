@@ -34,7 +34,15 @@ public class MirGameInstanceModel
     /// 技能
     /// </summary>
     public ConcurrentBag<SkillModel> Skills { get; set; } = new ConcurrentBag<SkillModel>();
-    public Dictionary<int, ItemModel> Items { get; set; } = new Dictionary<int, ItemModel>();
+    public List<ItemModel> Items { get; set; } = new List<ItemModel>();
+
+    public MirGameInstanceModel()
+    {
+        for (int i = 0; i < 40; i++)
+        {
+            Items.Add(new ItemModel(i));
+        }
+    }
 
     /// <summary>
     /// 二级对话列表

@@ -9,6 +9,12 @@ namespace Mir2Assistant.Common.Functions;
 
 public static class CharacterStatusFunction
 {
+    public static void GetUsedItemInfo(MirGameInstanceModel gameInstance)
+    {
+        var bagBaseAddr = gameInstance!.MemoryUtils!.ReadToInt(0x00679940);
+        ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
+    }
+
     public static void GetInfo(MirGameInstanceModel gameInstance)
     {
         var status = gameInstance.CharacterStatus!;
@@ -25,7 +31,8 @@ public static class CharacterStatusFunction
         status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"],0x4C));
         status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4A));
         status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4E));
-        status.ZD = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x178));
+        GetUsedItemInfo(gameInstance);
+        
     }
 }
 

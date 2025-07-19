@@ -125,11 +125,22 @@ frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
   005B14DD        mov         eax,dword ptr [eax]
   005B14DF        call        006459F4 // SendBuyItem 
 
-// 存由于仓库太麻烦 直接发包存了
+// 买/卖/修/存 都是 ... 用完刷新
+// 修特殊加了
+
+// 仓库UI很多, 所以都直接找call 
+// 存
 SendStorageItem 006452EC -- 从通用里找 DSellDlgOkClick 多断几个就找到了
 procedure TfrmMain.SendStorageItem(merchant, itemindex: Integer; itemname: string; count: Word);
   同上, count随便写1就好了
 
+// 取
+SendTakeBackStorageItem 645B6C -- 从通用里找 DMenuBuyClick 多断几个就找到了
+procedure TfrmMain.SendTakeBackStorageItem(merchant, itemserverindex: Integer; itemname: string; count: Word);
+
+
+// 卖
+dmSell: frmMain.SendSellItem(g_nCurMerchant, g_SellDlgItem.MakeIndex, g_SellDlgItem.s.Name, g_SellDlgItem.Dura);
 
 
 
@@ -138,12 +149,10 @@ procedure TfrmMain.SendStorageItem(merchant, itemindex: Integer; itemname: strin
 
 
 
-
-
+// -------------------------------------------------BACKUP 以下 2个函数都是通用的 卖修存 as BACKUP
 
 ---- 建议用对应的 UI状态和服务器更统一, 不要直接调发包, 但是暂时不想搞这么麻烦了, 直接发包 刷新就可以了
 
-2个函数都是通用的 卖修存
 
 
 

@@ -9,5 +9,11 @@ namespace Mir2Assistant.Common.Models
         public string Name { get; set; } = string.Empty;
         public bool IsEmpty { get; set; }
         public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {Name}";
+
+        public ItemModel(int idx = 0)
+        {
+            IsEmpty = true;
+            Index = idx;
+        }
     }
 }

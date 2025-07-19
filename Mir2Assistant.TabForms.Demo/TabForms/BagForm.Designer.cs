@@ -74,6 +74,16 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             btnSell.Text = "卖";
             btnSell.UseVisualStyleBackColor = true;
             // 
+            // btnRepair
+            // 
+            btnRepair = new System.Windows.Forms.Button();
+            btnRepair.Location = new System.Drawing.Point(163, 3);
+            btnRepair.Name = "btnRepair";
+            btnRepair.Size = new System.Drawing.Size(75, 23);
+            btnRepair.TabIndex = 3;
+            btnRepair.Text = "修";
+            btnRepair.UseVisualStyleBackColor = true;
+            // 
             // timer1
             // 
             timer1.Enabled = true;
@@ -86,6 +96,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(482, 450);
             Controls.Add(btnSell);
+            Controls.Add(btnRepair);
             Controls.Add(btnSave);
             Controls.Add(listBox1);
             Name = "BagForm";
@@ -102,5 +113,6 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnSell;
+        private System.Windows.Forms.Button btnRepair;
     }
 }
