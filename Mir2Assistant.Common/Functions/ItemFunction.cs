@@ -34,6 +34,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             item.Name = string.Empty;
                         }
+                        item.IsGodly = memoryUtils.ReadToInt(itemAddr + 0x7C) == 1;
                     }
                     else
                     {

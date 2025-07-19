@@ -30,37 +30,61 @@ namespace Mir2Assistant.TabForms.Demo
         public string Title => "角色状态";
         public MirGameInstanceModel? GameInstance { get; set; }
         private ObservableCollection<ItemModel> items = new ObservableCollection<ItemModel>();
-        private BindingSource bindingSource1 = new BindingSource();
+        private BindingSource useItemSource = new BindingSource();
 
         public CharacterStatusForm()
         {
             InitializeComponent();
-            button1.Click += button1_Click;
+            buttonTakeOff.Click += buttonTakeOff_Click;
         }
 
         private void CharacterStatusForm_Load(object sender, EventArgs e)
         {
-            bindingSource1.DataSource = items;
-            listBox1.DataSource = bindingSource1;
-            listBox1.DisplayMember = "Display";
+            useItemSource.DataSource = items;
+            useItemsListBox.DataSource = useItemSource;
+            useItemsListBox.DisplayMember = "Display";
         }
+        private HashSet<int> lastItemIds = new HashSet<int>();
 
         private void timer1_Tick(object sender, EventArgs e)
         {
             var info = GameInstance!.CharacterStatus;
-            label1.Text=$"{info!.Name}\n{info.MapName}：{info.X} {info.Y} 血：{info.CurrentHP}/{info.MaxHP} 蓝：{info.CurrentMP}/{info.MaxMP}";
+            statusLabel.Text=$"{info!.Name} {info.MapName}[{info.MapId}] --> {info.X}, {info.Y} \n 血：{info.CurrentHP}/{info.MaxHP} 蓝：{info.CurrentMP}/{info.MaxMP}";
             
             var currentItems = GameInstance!.CharacterStatus!.useItems.Where(o => o != null).ToList();
-            items.Clear();
-            foreach (var item in currentItems)
+            var currentIds = new HashSet<int>(currentItems.Select(item => item.Id));
+
+            if (!currentIds.SetEquals(lastItemIds))
             {
-                items.Add(item);
+                var scrollOffset = useItemsListBox.TopIndex;
+                var selectedIndices = useItemsListBox.SelectedIndices.Cast<int>().ToList();
+                useItemsListBox.BeginUpdate();
+                
+                items.Clear();
+                foreach (var item in currentItems)
+                {
+                    items.Add(item);
+                }
+                
+                useItemSource.DataSource = items;
+                useItemSource.ResetBindings(false);
+
+                useItemsListBox.EndUpdate();
+                useItemsListBox.TopIndex = scrollOffset;
+                
+                //foreach (var index in selectedIndices)
+                //{
+                //    if (index < useItemsListBox.Items.Count)
+                //    {
+                //        useItemsListBox.SetSelected(index, true);
+                //    }
+                //}
+
+                lastItemIds = currentIds;
             }
-            bindingSource1.DataSource = items;
-            bindingSource1.ResetBindings(false);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonTakeOff_Click(object sender, EventArgs e)
         {
             // 脱按钮空实现
         }

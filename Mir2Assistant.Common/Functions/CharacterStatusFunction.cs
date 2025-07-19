@@ -23,8 +23,8 @@ public static class CharacterStatusFunction
 
 
         status.Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0, 0x1D4, 0));
-        status.MapName = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x10, 0));
-
+        status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图基址"], 0));
+        status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图ID基址"], 0x2AE8C, 0));
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x8));
         status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0xA));
         status.CurrentHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x48));

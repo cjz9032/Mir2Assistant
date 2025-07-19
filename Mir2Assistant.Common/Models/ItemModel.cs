@@ -8,7 +8,8 @@ namespace Mir2Assistant.Common.Models
         public int Index { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsEmpty { get; set; }
-        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {Name}";
+        public bool IsGodly { get; set; }
+        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {Name.PadRight(10)} {(IsGodly ? "（Jesus）" : "")}";
 
         public ItemModel(int idx = 0)
         {

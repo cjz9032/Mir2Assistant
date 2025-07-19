@@ -4,6 +4,7 @@ public class CharacterStatusModel
 {
     public string? Name { get; set; }
     public string? MapName { get; set; }
+    public string? MapId { get; set; }
     public string? MapBase { get; set; }
     public string? MapPath { get; set; }
     public int? X { get; set; }
