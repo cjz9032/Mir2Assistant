@@ -112,7 +112,7 @@ namespace Mir2Assistant.TabForms.Demo
                 };
             }
 
-            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos, 2, false);
+            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos, 3, false);
             stopwatchTotal.Stop();
             Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
             if (goNodes.Count == 0)
@@ -132,7 +132,7 @@ namespace Mir2Assistant.TabForms.Demo
 
                 GoRunFunction.GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
-                // todo 重试次数N 比如3秒 
+                var tried = 0;
                 while(true){
                     await Task.Delay(100);
                     CharacterStatusFunction.FastUpdateXY(GameInstance!);
@@ -142,7 +142,12 @@ namespace Mir2Assistant.TabForms.Demo
                     var newX = GameInstance!.CharacterStatus.X.Value;
                     var newY = GameInstance!.CharacterStatus.Y.Value;
 
-                        
+                    tried++;
+                    if (tried > 20)
+                    {
+                        return await PerformPathfinding();
+                    }
+
                     if (oldX != newX || oldY != newY)
                     {
                         if (nextX == newX && nextY == newY)
