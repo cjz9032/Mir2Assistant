@@ -229,20 +229,21 @@ public class MemoryUtils
     /// </summary>  
     public IntPtr GetModuleBaseAddress(string moduleName)
     {
-        var process = Process.GetProcessById(_gameInstance.MirPid);
-        IntPtr baseAddress = default;
+        //var process = Process.GetProcessById(_gameInstance.MirPid);
+        //IntPtr baseAddress = default;
 
-        for (int i = 0; i < process.Modules.Count; i++)
-        {
-            var item = process.Modules[i];
-            if (item.ModuleName == moduleName)
-            {
-                baseAddress = item.BaseAddress;
-                break;
-            }
-        }
+        //for (int i = 0; i < process.Modules.Count; i++)
+        //{
+        //    var item = process.Modules[i];
+        //    if (item.ModuleName == moduleName)
+        //    {
+        //        baseAddress = item.BaseAddress;
+        //        break;
+        //    }
+        //}
 
-        return baseAddress;
+        //return baseAddress;
+        return 0x00;
     }
 
 

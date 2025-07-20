@@ -31,8 +31,15 @@ public static class CharacterStatusFunction
         status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"],0x4C));
         status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4A));
         status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4E));
-        GetUsedItemInfo(gameInstance);
         
+    }
+
+    public static void FastUpdateXY(MirGameInstanceModel gameInstance)
+    {
+        var status = gameInstance.CharacterStatus!;
+        var memoryUtils = gameInstance.MemoryUtils!;
+        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x8));
+        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0xA));
     }
 }
 

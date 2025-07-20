@@ -106,13 +106,15 @@ namespace Mir2Assistant
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
-                        Task.Delay(500).Wait();
+                        Task.Delay(300).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();
                             break;
                         }
                         CharacterStatusFunction.GetInfo(gameInstance);
+                        CharacterStatusFunction.GetUsedItemInfo(gameInstance);
+
                         MonsterFunction.ReadMonster(gameInstance);
                         ItemFunction.ReadBag(gameInstance);
 

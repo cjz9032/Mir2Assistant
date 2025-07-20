@@ -1,7 +1,7 @@
 ﻿using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.TabForms;
-using Mir2Assistant.Utils;
+using Serilog;
 using System.DirectoryServices.ActiveDirectory;
 using System.Runtime.InteropServices;
 using RadioButton = System.Windows.Forms.RadioButton;
@@ -63,12 +63,12 @@ namespace Mir2Assistant.TabForms.Demo
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (oldX != GameInstance!.CharacterStatus!.X!.Value || oldY != GameInstance.CharacterStatus.Y!)
-            {
-                GoRunFunction.GoRun(GameInstance, GameInstance.CharacterStatus.X!.Value, GameInstance.CharacterStatus.Y!.Value, direct, type);
-                oldX = GameInstance!.CharacterStatus.X!.Value;
-                oldY = GameInstance.CharacterStatus.Y!.Value;
-            }
+            //if (oldX != GameInstance!.CharacterStatus!.X!.Value || oldY != GameInstance.CharacterStatus.Y!)
+            //{
+            //    GoRunFunction.GoRun(GameInstance, GameInstance.CharacterStatus.X!.Value, GameInstance.CharacterStatus.Y!.Value, direct, type);
+            //    oldX = GameInstance!.CharacterStatus.X!.Value;
+            //    oldY = GameInstance.CharacterStatus.Y!.Value;
+            //}
 
         }
 
@@ -79,9 +79,59 @@ namespace Mir2Assistant.TabForms.Demo
 
         private void button10_Click(object sender, EventArgs e)
         {
-            timer1.Enabled = false;
-            GoRunFunction.FindPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text));
+            Task.Run(async () =>{
+                // todo 寻找路径目的地需要容错处理
 
+                CharacterStatusFunction.GetInfo(GameInstance!);
+
+                MonsterFunction.ReadMonster(GameInstance!);
+
+                var stopwatchTotal = new System.Diagnostics.Stopwatch();
+                stopwatchTotal.Start();
+                var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text));
+                stopwatchTotal.Stop();
+                Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
+                while (goNodes.Count > 0)
+                {
+                    var node = goNodes[0];
+                    goNodes.RemoveAt(0);
+
+                    var oldX = GameInstance!.CharacterStatus.X.Value;
+                    var oldY = GameInstance!.CharacterStatus.Y.Value;
+
+
+                    var (nextX, nextY) = GoRunFunction.getNextPostion(oldX, oldY, node.dir, node.steps);
+
+                    GoRunFunction.GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
+
+                    // todo 重试次数N 比如3秒 
+                    while(true){
+                        await Task.Delay(100);
+                        CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                        MonsterFunction.ReadMonster(GameInstance!);
+
+                        // 执行后发生了变更
+                        var newX = GameInstance!.CharacterStatus.X.Value;
+                        var newY = GameInstance!.CharacterStatus.Y.Value;
+
+                        
+                        if (oldX != newX || oldY != newY)
+                        {
+                            if (nextX == newX && nextY == newY)
+                            {
+                                break;
+                            }else{
+                                // 说明出错了 
+                                // TODO 出错重新寻路, 但是最好是最短路径恢复, 可以遍历跳到10个节点后, 恢复成功就可以砍掉这10个节点
+                                return;
+                            }
+                        }
+                        // 否则继续等待
+                    }
+
+                }
+            });
+     
         }
 
         private void button11_Click(object sender, EventArgs e)

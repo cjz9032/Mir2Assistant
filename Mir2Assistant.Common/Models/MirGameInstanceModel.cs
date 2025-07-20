@@ -58,5 +58,6 @@ public class MirGameInstanceModel
         });
       
     }
-
+    // 字典, 基于地图ID(string), 值是地图的障碍物
+    public Dictionary<string, byte[]> MapObstacles { get; set; } = new Dictionary<string, byte[]>();
 }

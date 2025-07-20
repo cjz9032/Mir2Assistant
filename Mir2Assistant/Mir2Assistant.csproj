@@ -24,7 +24,6 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Mir2Assistant.Common\Mir2Assistant.Common.csproj" />
-	  <ProjectReference Include="..\Mir2Assistant.TabForms.DailyTask\Mir2Assistant.TabForms.DailyTask.csproj" />
 	  <ProjectReference Include="..\Mir2Assistant.TabForms.Demo\Mir2Assistant.TabForms.Demo.csproj" />
 	</ItemGroup>
 	<ItemGroup>
