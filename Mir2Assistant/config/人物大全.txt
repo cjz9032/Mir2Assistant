@@ -35,6 +35,7 @@ ID 4 DW
 X 8 W 067FB298 170
 Y A W
 朝向 C BYTE
+Level 0x3C
 HP 48 W
 mp 4A W
 

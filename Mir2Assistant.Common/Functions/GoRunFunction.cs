@@ -164,8 +164,8 @@ public static class GoRunFunction
         // obstacles 前2个int 32是宽高
         var width = BitConverter.ToInt32(obstacles, 0);
         var height = BitConverter.ToInt32(obstacles, 4);
-        int myX = gameInstance!.CharacterStatus!.X!.Value;
-        int myY = gameInstance!.CharacterStatus!.Y!.Value;
+        int myX = gameInstance!.CharacterStatus!.X;
+        int myY = gameInstance!.CharacterStatus!.Y;
         // 提取后续data
         var data = new byte[obstacles.Length - 8];
         Array.Copy(obstacles, 8, data, 0, data.Length);
@@ -433,7 +433,7 @@ public static class GoRunFunction
         var success = true;
         await Task.Run(() =>
         {
-            while (Math.Abs(x - gameInstance.CharacterStatus!.X.GetValueOrDefault()) > 2 && Math.Abs(y - gameInstance.CharacterStatus!.Y.GetValueOrDefault()) > 2)
+            while (Math.Abs(x - gameInstance.CharacterStatus!.X) > 2 && Math.Abs(y - gameInstance.CharacterStatus!.Y) > 2)
             {
                 if (map != gameInstance.CharacterStatus!.MapName)
                 {

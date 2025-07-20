@@ -360,14 +360,17 @@ namespace Mir2Assistant
                     // sllep 
                    await Task.Delay(30_000);
                    autoAtBackground();
+                    autoForeGround();
                 });
         }
 
-        private async void autoAtBackground(){
-            // Task.Run(() =>
-            // {
+        private async void autoForeGround(){
+            //while(true){
                 
-            // });
+            //}
+        }
+
+        private async void autoAtBackground(){
             while(true){
                 // 其他中断并行需要考虑
                 var instances = GameInstances.ToList();

@@ -153,8 +153,8 @@ namespace Mir2Assistant.TabForms.Demo
                 var node = goNodes[0];
                 goNodes.RemoveAt(0);
 
-                var oldX = GameInstance!.CharacterStatus.X.Value;
-                var oldY = GameInstance!.CharacterStatus.Y.Value;
+                var oldX = GameInstance!.CharacterStatus!.X;
+                var oldY = GameInstance!.CharacterStatus!.Y;
 
 
                 var (nextX, nextY) = GoRunFunction.getNextPostion(oldX, oldY, node.dir, node.steps);
@@ -173,8 +173,8 @@ namespace Mir2Assistant.TabForms.Demo
                     MonsterFunction.ReadMonster(GameInstance!);
 
                     // 执行后发生了变更
-                    var newX = GameInstance!.CharacterStatus.X.Value;
-                    var newY = GameInstance!.CharacterStatus.Y.Value;
+                    var newX = GameInstance!.CharacterStatus.X;
+                    var newY = GameInstance!.CharacterStatus.Y;
 
                     tried++;
                     if (tried > 20)

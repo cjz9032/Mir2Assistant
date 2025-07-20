@@ -31,6 +31,7 @@ public static class CharacterStatusFunction
         status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"],0x4C));
         status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4A));
         status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4E));
+        status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x3C));
         status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563CC, 0x30));
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563C8)) == 1;
     }

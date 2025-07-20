@@ -54,7 +54,7 @@ namespace Mir2Assistant.TabForms.Demo
         private void timer1_Tick(object sender, EventArgs e)
         {
             var info = GameInstance!.CharacterStatus;
-            statusLabel.Text=$"{info!.Name} {info.MapName}[{info.MapId}] --> {info.X}, {info.Y} \n 血：{info.CurrentHP}/{info.MaxHP} 蓝：{info.CurrentMP}/{info.MaxMP}";
+            statusLabel.Text=$"{info!.Name} {info.MapName}[{info.MapId}] --> {info.X}, {info.Y} \n 血：{info.CurrentHP}/{info.MaxHP} 蓝：{info.CurrentMP}/{info.MaxMP} L {info.Level}";
             
             var currentItems = GameInstance!.CharacterStatus!.useItems.Where(o => o != null).ToList();
             var currentIds = new HashSet<int>(currentItems.Select(item => item.Id));
