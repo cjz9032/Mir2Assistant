@@ -247,7 +247,8 @@ void butch(int dir, int monsterId)
 		mov edx, 403 
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
-		call 0x6445AC
+		mov esi, 0x6445AC
+		call esi
 
 		popfd
 		popad
@@ -260,7 +261,8 @@ void pickUp(){
 		pushfd
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
-		call 0x00643F84
+		mov esi, 0x00643F84
+		call esi
 		popfd
 		popad
 	}
