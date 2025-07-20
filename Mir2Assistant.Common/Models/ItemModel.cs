@@ -49,9 +49,9 @@ namespace Mir2Assistant.Common.Models
         public string Name { get; set; } = string.Empty;
         public bool IsEmpty { get; set; }
         public bool IsGodly { get; set; }
-        public int stdMode { get; set; }
-        public int reqType { get; set; }
-        public int reqPoints { get; set; }
+        public byte stdMode { get; set; }
+        public byte reqType { get; set; }
+        public byte reqPoints { get; set; }
         public int Duration { get; set; }
         public int MaxDuration { get; set; }
         public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
