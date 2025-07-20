@@ -92,7 +92,7 @@ namespace Mir2Assistant.TabForms.Demo
             Task.Run(async () =>{
                 try
                 {
-                    bool pathFound = await PerformPathfinding(_cancellationTokenSource.Token);
+                    bool pathFound = await PerformPathfinding(_cancellationTokenSource.Token, int.Parse(textBox1.Text), int.Parse(textBox2.Text));
                     if (pathFound)
                     {
                         Log.Information("寻路任务成功完成。");
@@ -111,7 +111,7 @@ namespace Mir2Assistant.TabForms.Demo
             }, _cancellationTokenSource.Token);
         }
 
-        private async Task<bool> PerformPathfinding(CancellationToken cancellationToken)
+        private async Task<bool> PerformPathfinding(CancellationToken cancellationToken, int tx, int ty)
         {
             // todo 寻找路径目的地需要容错处理
 
@@ -127,13 +127,17 @@ namespace Mir2Assistant.TabForms.Demo
             int index = 0;
             foreach (var monster in GameInstance!.Monsters)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
                 monsPos[index++] = new int[] {
                     monster.Value.X.Value,
                     monster.Value.Y.Value
                 };
             }
 
-            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos, 3, false);
+            var goNodes = GoRunFunction.genGoPath(GameInstance!, tx, ty, monsPos, 3, false);
             stopwatchTotal.Stop();
             Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
             if (goNodes.Count == 0)
@@ -175,7 +179,7 @@ namespace Mir2Assistant.TabForms.Demo
                     tried++;
                     if (tried > 20)
                     {
-                        return await PerformPathfinding(cancellationToken);
+                        return await PerformPathfinding(cancellationToken, tx, ty);
                     }
 
                     if (oldX != newX || oldY != newY)
@@ -185,7 +189,7 @@ namespace Mir2Assistant.TabForms.Demo
                             break;
                         } else {
                             // 遇新障了,导致位置不能通过,或偏移，重新执行寻路逻辑
-                            return await PerformPathfinding(cancellationToken);
+                            return await PerformPathfinding(cancellationToken, tx, ty);
                         }
                     }
                     // 否则继续等待
