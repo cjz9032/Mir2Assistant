@@ -333,15 +333,34 @@ namespace Mir2Assistant
             }
         }
 
+        private void KillAllGameProcess()
+        {
+            // 先杀死所有ZC.H进程
+            foreach (var process in System.Diagnostics.Process.GetProcessesByName("ZC.H"))
+            {
+                try
+                {
+                    process.Kill();
+                    process.WaitForExit();
+                }
+                catch (System.InvalidOperationException) { }
+            }
+        }
+
         private void btnRestartAll_Click(object sender, EventArgs e)
         {
+            // 先杀死所有ZC.H进程
+            KillAllGameProcess();
+
             Log.Information("重启所有游戏进程，账号数量: {AccountCount}", accountList.Count);
-            foreach (var account in accountList)
-            {
-                RestartGameProcess(account);
-                // 添加延迟，避免同时启动多个进程
-                Thread.Sleep(2000);
-            }
+            _ = Task.Run(async () => {
+                foreach (var account in accountList)
+                {
+                    RestartGameProcess(account)
+                    // 添加延迟，避免同时启动多个进程
+                    await Task.Delay(2000);
+                }
+            });
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
