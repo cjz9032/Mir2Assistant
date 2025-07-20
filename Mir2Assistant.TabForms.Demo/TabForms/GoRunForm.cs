@@ -77,20 +77,41 @@ namespace Mir2Assistant.TabForms.Demo
         [DllImport("user32.dll")]
         public static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
+        private CancellationTokenSource? _cancellationTokenSource;
+
         private void button10_Click(object sender, EventArgs e)
         {
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource = null;
+                return;
+            }
+
+            _cancellationTokenSource = new CancellationTokenSource();
             Task.Run(async () =>{
-                bool pathFound = await PerformPathfinding();
-                if (pathFound)
+                try
                 {
-                    Log.Information("寻路任务成功完成。");
-                } else {
-                    Log.Warning("寻路任务未成功完成。");
+                    bool pathFound = await PerformPathfinding(_cancellationTokenSource.Token);
+                    if (pathFound)
+                    {
+                        Log.Information("寻路任务成功完成。");
+                    } else {
+                        Log.Warning("寻路任务未成功完成。");
+                    }
                 }
-            });
+                catch (OperationCanceledException)
+                {
+                    Log.Information("寻路任务已取消。");
+                }
+                finally
+                {
+                    _cancellationTokenSource = null;
+                }
+            }, _cancellationTokenSource.Token);
         }
 
-        private async Task<bool> PerformPathfinding()
+        private async Task<bool> PerformPathfinding(CancellationToken cancellationToken)
         {
             // todo 寻找路径目的地需要容错处理
 
@@ -106,7 +127,7 @@ namespace Mir2Assistant.TabForms.Demo
             int index = 0;
             foreach (var monster in GameInstance!.Monsters)
             {
-                monsPos[index++] = new int[] { 
+                monsPos[index++] = new int[] {
                     monster.Value.X.Value,
                     monster.Value.Y.Value
                 };
@@ -121,6 +142,10 @@ namespace Mir2Assistant.TabForms.Demo
             }
             while (goNodes.Count > 0)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
                 var node = goNodes[0];
                 goNodes.RemoveAt(0);
 
@@ -133,8 +158,13 @@ namespace Mir2Assistant.TabForms.Demo
                 GoRunFunction.GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
                 var tried = 0;
-                while(true){
-                    await Task.Delay(100);
+                while(true)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return false;
+                    }
+                    await Task.Delay(100, cancellationToken);
                     CharacterStatusFunction.FastUpdateXY(GameInstance!);
                     MonsterFunction.ReadMonster(GameInstance!);
 
@@ -145,7 +175,7 @@ namespace Mir2Assistant.TabForms.Demo
                     tried++;
                     if (tried > 20)
                     {
-                        return await PerformPathfinding();
+                        return await PerformPathfinding(cancellationToken);
                     }
 
                     if (oldX != newX || oldY != newY)
@@ -155,7 +185,7 @@ namespace Mir2Assistant.TabForms.Demo
                             break;
                         } else {
                             // 遇新障了,导致位置不能通过,或偏移，重新执行寻路逻辑
-                            return await PerformPathfinding();
+                            return await PerformPathfinding(cancellationToken);
                         }
                     }
                     // 否则继续等待
