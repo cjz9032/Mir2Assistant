@@ -345,7 +345,7 @@ namespace Mir2Assistant
             }
         }
 
-        private void btnRestartAll_Click(object sender, EventArgs e)
+        private async void btnRestartAll_Click(object sender, EventArgs e)
         {
             Log.Information("重启所有游戏进程，账号数量: {AccountCount}", accountList.Count);
             // 先杀死所有ZC.H进程
@@ -354,27 +354,29 @@ namespace Mir2Assistant
                 foreach (var account in accountList)
                 {
                     RestartGameProcess(account);
+                    await Task.Delay(10_000); // 异步延迟5秒
                 }
-                Task.Run(async () =>
-                {
-                    // sllep 
-                   await Task.Delay(30_000);
-                   autoAtBackground();
-                    autoForeGround();
-                });
+             
+                // sllep 
+                await Task.Delay(20_000);
+                autoAtBackground();
+                autoForeGround();
         }
 
+        // TODO behavior tree for the main level up loop
         private async void autoForeGround(){
-            //while(true){
-                
-            //}
+            while(true){
+                // 避免太频繁 先写1000
+                await Task.Delay(1000);
+            }
         }
 
         private async void autoAtBackground(){
             while(true){
                 // 其他中断并行需要考虑
                 var instances = GameInstances.ToList();
-                instances.ForEach(instance => {
+                foreach (var instance in instances)
+                {
                     var CharacterStatus = instance.Value.CharacterStatus;
                     if (CharacterStatus.CurrentHP > 0)
                     {
@@ -383,10 +385,11 @@ namespace Mir2Assistant
                             if(instance.Value.AccountInfo.IsMainControl){
                                 // GameInstances 除了自己
                                 var members = GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
-                                members.ForEach(member => {
+                                foreach (var member in members)
+                                {
                                     nint[] data = StringUtils.GenerateCompactStringData(member);
                                     SendMirCall.Send(instance.Value, 9004, data);
-                                });
+                                }
                             } else {
                                 if (!instance.Value.CharacterStatus.allowGroup)
                                 {
@@ -394,11 +397,38 @@ namespace Mir2Assistant
                                 }
                             }
                         }
-                    //instance.Value.CharacterStatus
-                    // TODO 替换装备, 如果失败就不做
+                        // 替换装备, 如果失败就不做 
+                        // todo 后续修理要避免冲突
+                        var bagItems = instance.Value.Items;
+                        foreach (var itemWithIndex in CharacterStatus.useItems.Select((item, index) => new { item, index }))
+                        {
+                            var item = itemWithIndex.item;
+                            var index = itemWithIndex.index;
+                            // TODO 装备评分
+                            if (item.IsEmpty)
+                            {
+                                // 从bags里找装备, 要符合条件
+                                // 1.index->stdmode
+                                // 2.not IsLowDurability
+                                // 3.能携带, 目前只看等级, reqType  // todo 更多类型,以及携带策略可能要搭配
+                                // 4.TODO 负重腕力等, 先不管
+                                var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
+                                && !o.IsLowDurability
+                                && o.reqType == 0
+                                && o.reqPoints <= CharacterStatus.Level
+                                ).FirstOrDefault();
+                                if (final != null)
+                                {
+                                    // 装回检查的位置
+                                    nint toIndex = index;
+                                    nint bagGridIndex = final.Index;
+                                    SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
+                                    await Task.Delay(800);
+                                }
+                            }
+                        }
                     }
-                  
-                });
+                }
                 await Task.Delay(30_000);
             }
         }

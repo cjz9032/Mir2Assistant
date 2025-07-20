@@ -29,7 +29,7 @@ void clickNPC(int npcId)
 
 // U_DRESS = 0;
 // U_WEAPON = 1;
-// U_RIGHTHAND = 2;
+// U_RIGHTHAND = 2; -- DSWLight
 // U_NECKLACE = 3;
 // U_HELMET = 4;
 // U_ARMRINGL = 5;
@@ -57,6 +57,7 @@ void clickNPC(int npcId)
 const std::map<int, int> offsetMap = {
     {0, 0x6C8},  // DRESS
     {1, 0x6C4},  // WEAPON
+    {2, 0x6B0},  // DSWLight U_RIGHTHAND 
     {3, 0x6AC},  // NECKLACE
     {4, 0x6CC},  // HELMET
     {5, 0x6B8},  // ARMRINGL
@@ -333,6 +334,9 @@ void Npc::process(int code, int* data)
 
 	case 3020: // мя
 		takeOff(data[0]);
+		break;
+	case 3021: // мя
+		takeOn(data[0], data[1]);
 		break;
 	case 3030: // мютв
 		butch(data[0], data[1], data[2], data[3]);

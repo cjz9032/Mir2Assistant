@@ -110,8 +110,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             foreach (var item in selectedItems)
             {
                
-                // todo 左右手
-                int toIndex = item.stdModeToUseItemIndex;
+                // 先随便 左手了
+                byte toIndex = item.stdModeToUseItemIndex[0];
                 if(toIndex == -1)
                 {
                     Log.Error($"物品{item.Name}无法装备");
