@@ -235,7 +235,7 @@ void repairItem(DelphiString* name, int id)
 
 
 
-void butch(int dir, int monsterId)
+void butch(int x, int y,int dir, int monsterId)
 {
 	__asm {
 		pushad
@@ -243,8 +243,8 @@ void butch(int dir, int monsterId)
 
 		push dir
 		push monsterId
-		mov ecx, 345 
-		mov edx, 403 
+		mov ecx, y 
+		mov edx, x 
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
 		mov esi, 0x6445AC
@@ -335,7 +335,7 @@ void Npc::process(int code, int* data)
 		takeOff(data[0]);
 		break;
 	case 3030: // Õ¿‘◊
-		butch(data[0], data[1]);
+		butch(data[0], data[1], data[2], data[3]);
 		break;
 	case 3031: // ºÒ»°
 		pickUp();

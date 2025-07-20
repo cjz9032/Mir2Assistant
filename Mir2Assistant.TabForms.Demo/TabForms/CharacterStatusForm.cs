@@ -40,6 +40,7 @@ namespace Mir2Assistant.TabForms.Demo
         {
             InitializeComponent();
             buttonTakeOff.Click += buttonTakeOff_Click;
+            buttonButch.Click += buttonButch_Click;
         }
 
         private void CharacterStatusForm_Load(object sender, EventArgs e)
@@ -102,6 +103,23 @@ namespace Mir2Assistant.TabForms.Demo
 
             await Task.Delay(500);
             SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+        }
+        private void buttonButch_Click(object sender, EventArgs e)
+        {
+            // 寻找旁边的isDead 并且没有被屠宰的怪物, 还需要距离<=2格
+            var currentX = GameInstance.CharacterStatus.X;
+            var currentY = GameInstance.CharacterStatus.Y;
+            
+            var nearbyMonsters = GameInstance.Monsters
+                .Where(m => m.Value.isDead && !m.Value.isButched)
+                .Where(m => Math.Abs((short)(m.Value.X - currentX)) <= 2 && Math.Abs((short)(m.Value.Y - currentY)) <= 2)
+                .ToList();
+            if (nearbyMonsters.Count > 0)
+            {
+                // 试试固定的dir 0
+                var first = nearbyMonsters.First();
+                SendMirCall.Send(GameInstance!, 3030, new nint[] { (nint)first.Value.X, (nint)first.Value.Y, 0, first.Value.Id });
+            }
         }
     }
 }

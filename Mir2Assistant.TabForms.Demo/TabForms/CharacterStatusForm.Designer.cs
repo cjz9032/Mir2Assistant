@@ -68,6 +68,17 @@ namespace Mir2Assistant.TabForms.Demo
             buttonTakeOff.TabIndex = 2;
             buttonTakeOff.Text = "脱";
             buttonTakeOff.UseVisualStyleBackColor = true;
+
+            buttonButch = new System.Windows.Forms.Button();
+            // 
+            // buttonButch
+            // 
+            buttonButch.Location = new Point(333, 97);
+            buttonButch.Name = "buttonButch";
+            buttonButch.Size = new Size(75, 23);
+            buttonButch.TabIndex = 3;
+            buttonButch.Text = "屠";
+            buttonButch.UseVisualStyleBackColor = true;
             // 
             // CharacterStatusForm
             // 
@@ -75,6 +86,7 @@ namespace Mir2Assistant.TabForms.Demo
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(413, 361);
             Controls.Add(buttonTakeOff);
+            Controls.Add(buttonButch);
             Controls.Add(useItemsListBox);
             Controls.Add(statusLabel);
             Name = "CharacterStatusForm";
@@ -90,5 +102,6 @@ namespace Mir2Assistant.TabForms.Demo
         private System.Windows.Forms.Timer timer1;
         private ListBox useItemsListBox;
         private Button buttonTakeOff;
+        private Button buttonButch;
     }
 }

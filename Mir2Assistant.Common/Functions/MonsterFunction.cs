@@ -80,8 +80,8 @@ public static class MonsterFunction
                 {
                     gameInstance.Monsters.TryAdd(id, monster);
                 }
-                monster.isDead = memoryUtils.ReadToInt8(monsterAddr + 0x28);
-                monster.isButched = memoryUtils.ReadToInt8(monsterAddr + 0x29);
+                monster.isDead = memoryUtils.ReadToInt8(monsterAddr + 0x28) > 0;
+                monster.isButched = memoryUtils.ReadToInt8(monsterAddr + 0x29) > 0;
                 monster.Appr = memoryUtils.ReadToInt8(monsterAddr + 0x16);
             }
             foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))

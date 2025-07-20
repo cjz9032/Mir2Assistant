@@ -18,8 +18,8 @@ namespace Mir2Assistant.Common.Models
         /// 0尸体，1自己，2正常
         /// </summary>
         public byte Flag { get; set; }
-        public byte isDead { get; set; }
-        public byte isButched { get; set; }
+        public bool isDead { get; set; }
+        public bool isButched { get; set; }
         public short Appr { get; set; }
         public string TypeStr
         {
@@ -44,7 +44,6 @@ namespace Mir2Assistant.Common.Models
         /// </summary>
         public string? Guild { get; set; }
 
-        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead == 1 ? "死" : "")} {(isButched == 1 ? "已屠宰" : "")} {Name} {Appr} {Addr:x2} {Id:x2}";
-
+        public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead ? "死" : "")} {(isButched ? "已屠宰" : "")} {Name} {Appr} {Addr:x2} {Id:x2}";
     }
 }
