@@ -245,7 +245,7 @@ public static class GoRunFunction
         // 检查路径是否有障碍物
         // 预计算路径是否畅通的结果，避免重复计算，限制缓存大小
         var pathCache = new Dictionary<(int, int, int, int), bool>();
-        const int MaxCacheSize = 1000;
+        // const int MaxCacheSize = 100000;
         Func<int, int, int, int, bool> IsPathClear = (startX, startY, endX, endY) => {
             var key = (startX, startY, endX, endY);
             if (pathCache.TryGetValue(key, out bool result))
@@ -262,12 +262,12 @@ public static class GoRunFunction
                 int y = startY + dy * i / steps;
                 if (mapData[y * width + x] == 1)
                 {
-                    if (pathCache.Count >= MaxCacheSize) pathCache.Clear();
+                    // if (pathCache.Count >= MaxCacheSize) pathCache.Clear();
                     pathCache[key] = false;
                     return false;
                 }
             }
-            if (pathCache.Count >= MaxCacheSize) pathCache.Clear();
+            // if (pathCache.Count >= MaxCacheSize) pathCache.Clear();
             pathCache[key] = true;
             return true;
         };
