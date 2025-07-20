@@ -1,3 +1,25 @@
+挖肉 -- 根据ID索引找
+SendButchAnimal(g_nMouseCurrX, g_nMouseCurrY, tdir, target.m_nRecogId);
+push tdir
+push monsterId
+mov ecx, 345 
+mov edx, 403 
+mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+mov eax, [eax]
+call 0x6445AC
+
+
+ZC.H+23FE44 - 8B 45 F4              - mov eax,[ebp-0C] -- tdir
+ZC.H+23FE47 - 50                    - push eax
+ZC.H+23FE48 - 8B 45 E0              - mov eax,[ebp-20]
+ZC.H+23FE4B - 8B 40 04              - mov eax,[eax+04] -- monsterId
+ZC.H+23FE4E - 50                    - push eax
+ZC.H+23FE4F - 8B 0D 4C637500        - mov ecx,[ZC.H+35634C] { (345) } // 鼠标xy 随便写
+ZC.H+23FE55 - 8B 15 48637500        - mov edx,[ZC.H+356348] { (403) } // 鼠标xy 随便写
+ZC.H+23FE5B - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+23FE5E - E8 49470000           - call ZC.H+2445AC
+
+
 
 捡物CALL
 

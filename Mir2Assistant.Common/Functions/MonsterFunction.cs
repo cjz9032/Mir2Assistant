@@ -62,10 +62,9 @@ public static class MonsterFunction
                 }
                     
                 // todo side effect
-                memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
+                // memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
 
-                if (monster.TypeStr != "NPC" || monster.X == null)
-                {
+                if (monster.TypeStr != "NPC" || monster.X == null)               {
                     monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
                     monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
                 }

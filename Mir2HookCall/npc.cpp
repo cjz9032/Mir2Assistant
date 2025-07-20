@@ -233,6 +233,42 @@ void repairItem(DelphiString* name, int id)
 	}
 }
 
+
+
+void butch(int dir, int monsterId)
+{
+	__asm {
+		pushad
+		pushfd
+
+		push dir
+		push monsterId
+		mov ecx, 345 
+		mov edx, 403 
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		call 0x6445AC
+
+		popfd
+		popad
+	}
+}
+
+void pickUp(){
+	__asm {
+		pushad
+		pushfd
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		call 0x00643F84
+		popfd
+		popad
+	}
+	
+}
+
+
+
 void sell(DelphiString* name, int id)
 {
 	executeNpcFunction(name, id, 0x00645018);
@@ -296,8 +332,11 @@ void Npc::process(int code, int* data)
 	case 3020: // Õ—
 		takeOff(data[0]);
 		break;
-	case 3021: // ¥©
-		takeOn(data[0], data[1]);
+	case 3030: // Õ¿‘◊
+		butch(data[0], data[1]);
+		break;
+	case 3031: // ºÒ»°
+		pickUp();
 		break;
 	default:
 		break;
