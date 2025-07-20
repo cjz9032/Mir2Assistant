@@ -134,7 +134,7 @@ namespace Mir2Assistant
 
         // 修改StartGameProcess方法，使用PowerShell脚本启动游戏
         // 修改StartGameProcess方法，避免父子进程关系
-        private void StartGameProcess(GameAccountModel account)
+        private async void StartGameProcess(GameAccountModel account)
         {
             try
             {
@@ -152,7 +152,7 @@ namespace Mir2Assistant
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                Thread.Sleep(5000);
+                await Task.Delay(5000);
 
                 string output = process.StandardOutput.ReadLine(); // 只读一行即可
                 // 不需要 WaitForExit
@@ -349,18 +349,14 @@ namespace Mir2Assistant
 
         private void btnRestartAll_Click(object sender, EventArgs e)
         {
+            Log.Information("重启所有游戏进程，账号数量: {AccountCount}", accountList.Count);
             // 先杀死所有ZC.H进程
             KillAllGameProcess();
 
-            Log.Information("重启所有游戏进程，账号数量: {AccountCount}", accountList.Count);
-            _ = Task.Run(async () => {
                 foreach (var account in accountList)
                 {
                     RestartGameProcess(account);
-                    // 添加延迟，避免同时启动多个进程
-                    await Task.Delay(2000);
                 }
-            });
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
