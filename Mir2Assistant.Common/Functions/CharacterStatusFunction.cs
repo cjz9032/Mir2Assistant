@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mir2Assistant.Common.Functions;
@@ -21,8 +22,7 @@ public static class CharacterStatusFunction
         var memoryUtils = gameInstance.MemoryUtils!;
 
 
-
-        status.Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0, 0x1D4, 0));
+        status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x34, 0));
         status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图基址"], 0));
         status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图ID基址"], 0x2AE8C, 0));
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x8));
@@ -31,7 +31,8 @@ public static class CharacterStatusFunction
         status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"],0x4C));
         status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4A));
         status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4E));
-        
+        status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563CC, 0x30));
+        status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563C8)) == 1;
     }
 
     public static void FastUpdateXY(MirGameInstanceModel gameInstance)

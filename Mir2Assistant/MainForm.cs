@@ -72,18 +72,18 @@ namespace Mir2Assistant
 
         private void SaveAccountList()
         {
-            try
-            {
-                Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
-                string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(configFilePath, json);
-                Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "保存账号列表失败");
-                MessageBox.Show($"保存账号列表失败: {ex.Message}");
-            }
+            //try
+            //{
+            //    Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
+            //    string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
+            //    File.WriteAllText(configFilePath, json);
+            //    Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Log.Error(ex, "保存账号列表失败");
+            //    MessageBox.Show($"保存账号列表失败: {ex.Message}");
+            //}
         }
 
         private void RefreshDataGrid()
@@ -132,8 +132,6 @@ namespace Mir2Assistant
             }
         }
 
-        // 修改StartGameProcess方法，使用PowerShell脚本启动游戏
-        // 修改StartGameProcess方法，避免父子进程关系
         private async void StartGameProcess(GameAccountModel account)
         {
             try
@@ -357,6 +355,49 @@ namespace Mir2Assistant
                 {
                     RestartGameProcess(account);
                 }
+                Task.Run(async () =>
+                {
+                    // sllep 
+                   await Task.Delay(30_000);
+                   autoAtBackground();
+                });
+        }
+
+        private async void autoAtBackground(){
+            // Task.Run(() =>
+            // {
+                
+            // });
+            while(true){
+                // 其他中断并行需要考虑
+                var instances = GameInstances.ToList();
+                instances.ForEach(instance => {
+                    var CharacterStatus = instance.Value.CharacterStatus;
+                    if (CharacterStatus.CurrentHP > 0)
+                    {
+                        // 组队
+                        if (CharacterStatus.groupMemCount < GameInstances.Count) { 
+                            if(instance.Value.AccountInfo.IsMainControl){
+                                // GameInstances 除了自己
+                                var members = GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
+                                members.ForEach(member => {
+                                    nint[] data = StringUtils.GenerateCompactStringData(member);
+                                    SendMirCall.Send(instance.Value, 9004, data);
+                                });
+                            } else {
+                                if (!instance.Value.CharacterStatus.allowGroup)
+                                {
+                                    SendMirCall.Send(instance.Value, 9005, new nint[]{1});
+                                }
+                            }
+                        }
+                    //instance.Value.CharacterStatus
+                    // TODO 替换装备, 如果失败就不做
+                    }
+                  
+                });
+                await Task.Delay(30_000);
+            }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

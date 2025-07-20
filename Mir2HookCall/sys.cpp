@@ -27,6 +27,21 @@ void send_msg(char* msg, unsigned flag) {
 char* msg;
 unsigned flag;
 
+// 切组
+void setGroupState(int state) {
+    __asm {
+		pushad
+		pushfd
+		mov edx , state
+		mov eax,[0x007524B4]
+		mov eax,[eax]
+		mov esi, 0x00645F44
+		call esi
+		popfd
+		popad
+    }
+}
+
 //组队
 void groupOne(DelphiString* name)
 {
@@ -192,14 +207,16 @@ void Sys::process(int code, int* data)
          });
         break;
 
-	case 9004: //开组
+	case 9004: // 组人
 		ProcessWideString(data, [](const wchar_t* str, int length) {
 			DelphiString* groupName = CreateDelphiString(str, length);
 			groupOne(groupName);
-			delete groupName; // 释放内存
+			delete groupName;
 		});
 		break;
-
+	case 9005: // 切组
+		setGroupState(data[0]);
+		break;
 	case 9010: //刷新背包
 		refPkg();
 		break;

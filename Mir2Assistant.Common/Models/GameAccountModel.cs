@@ -6,12 +6,20 @@ using System.Threading.Tasks;
 
 namespace Mir2Assistant.Common.Models
 {
+    public enum RoleType
+    {
+        blade,
+        mage,
+        taoist,
+    }
+
     public class GameAccountModel
     {
         public string Account { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string CharacterName { get; set; } = string.Empty;
         public bool IsMainControl { get; set; }
+        public RoleType role { get; set; }
         public int? ProcessId { get; set; }
         public bool IsRunning => ProcessId.HasValue && ProcessId.Value > 0;
     }

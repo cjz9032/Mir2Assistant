@@ -1,3 +1,25 @@
+组开关
+FState.TFrmDlg.DGrpAllowGroupClick_005B71AC
+state: 0x7563C8 随便1/0或者函数内
+   
+call 0x00645F44  //  frmMain.SendGroupMode(g_boAllowGroup);
+// toggle group test call
+pushad
+pushfd
+mov dl , 1
+mov eax,[0x007524B4]
+mov eax,[eax]
+mov esi, 0x00645F44
+call esi
+popfd
+popad
+ 
+
+ZC.H+1B71F3 - 8A 12                 - mov dl,[edx]
+ZC.H+1B71F5 - A1 BC9E6700           - mov eax,[ZC.H+279EBC]
+ZC.H+1B71FA - 8B 00                 - mov eax,[eax]
+ZC.H+1B71FC - E8 43ED0800           - call ZC.H+245F44
+// toggle group test call end
 
 
 队伍成员地址

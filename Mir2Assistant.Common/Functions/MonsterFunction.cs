@@ -53,12 +53,7 @@ public static class MonsterFunction
                 monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr + 0x18); // todo confirm
                 monster.Addr = monsterAddr;
                 if (string.IsNullOrEmpty(monster.Name)) {
-                    var baseAd = memoryUtils.GetMemoryAddress(monsterAddr + 0x34 - 1);
-                        var nestedRef = memoryUtils.GetMemoryAddress(baseAd+1, 0);
-
-                        var len2 = memoryUtils.ReadToInt(nestedRef - 4) * 2;
-
-                        monster.Name = memoryUtils.ReadToUnicode(nestedRef, len2);
+                        monster.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34 , 0));
                 }
                     
                 // todo side effect
