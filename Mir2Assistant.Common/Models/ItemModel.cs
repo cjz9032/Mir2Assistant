@@ -28,22 +28,20 @@ namespace Mir2Assistant.Common.Models
 {
     public class ItemModel
     {
-        public static readonly Dictionary<int, int> StdModeMap = new Dictionary<int, int> {
-            {5, 1},
-            {6, 1},
-            {10, 0},
-            {11, 0},
-            {15, 4},
-            {19, 3},
-            {20, 3},
-            {21, 3},
-            // 7,8
-            {22, 7},
-            {23, 7},
-            // 5,6
-            {24, 5},
-            {26, 5},
-            {30, 2}
+        public static readonly Dictionary<byte, byte[]> StdModeMap = new Dictionary<byte, byte[]> {
+            {5, new byte[] {1}},
+            {6, new byte[] {1}},
+            {10, new byte[] {0}},
+            {11, new byte[] {0}},
+            {15, new byte[] {4}},
+            {19, new byte[] {3}},
+            {20, new byte[] {3}},
+            {21, new byte[] {3}},
+            {22, new byte[] {7, 8}},
+            {23, new byte[] {7, 8}},
+            {24, new byte[] {5, 6}},
+            {26, new byte[] {5, 6}},
+            {30, new byte[] {2}}
         };
 
         public int Id { get; set; }
@@ -58,15 +56,15 @@ namespace Mir2Assistant.Common.Models
         public int MaxDuration { get; set; }
         public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
         public bool IsLowDurability => Duration > 0 ? (((double)Duration / MaxDuration) < 0.25) : false;
-        public int stdModeToUseItemIndex
+        public byte[] stdModeToUseItemIndex
         {
             get
             {
-                if (StdModeMap.TryGetValue(stdMode, out int result))
+                if (StdModeMap.TryGetValue(stdMode, out byte[] result))
                 {
                     return result;
                 }
-                return -1;
+                return new byte[255];
             }
         }
 

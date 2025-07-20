@@ -116,7 +116,7 @@ namespace Mir2Assistant.TabForms.Demo
                 .ToList();
             if (nearbyMonsters.Count > 0)
             {
-                // 试试固定的dir 0
+                // 固定的dir 0 就可以
                 var first = nearbyMonsters.First();
                 SendMirCall.Send(GameInstance!, 3030, new nint[] { (nint)first.Value.X, (nint)first.Value.Y, 0, first.Value.Id });
             }
