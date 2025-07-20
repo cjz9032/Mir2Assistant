@@ -142,8 +142,11 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
     }
 
+
     public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY, 
-    int[][] monsPos 
+    int[][] monsPos ,
+    int blurRange = 0,
+    bool nearBlur = false
     )
     {
         var id = gameInstance!.CharacterStatus!.MapId;
@@ -168,29 +171,59 @@ public static class GoRunFunction
         Array.Copy(obstacles, 8, data, 0, data.Length);
 
 
-        // 检查起点和终点是否为障碍物，若为障碍物则直接返回空路径 
-        if (data[targetY * width + targetX] == 1) {
-            return new List<(byte dir, byte steps)>();
-        }
-
         // 添加怪物位置作为障碍点
         // todo 其实是反着的,需要往上并且加容错选项
         foreach (var pos in monsPos)
         {
-            try
+            int monX = pos[0];
+            int monY = pos[1];
+            if (monX >= 0 && monX < width && monY >= 0 && monY < height)
             {
-                int monX = pos[0];
-                int monY = pos[1];
-                if (monX >= 0 && monX < width && monY >= 0 && monY < height)
-                {
-                    data[monY * width + monX] = 1;
-                }
-            }
-            catch (Exception)
-            {
-                continue;
+                data[monY * width + monX] = 1;
             }
         }
+        // 检查起点和终点是否为障碍物，若为障碍物则直接返回空路径 
+        if (data[targetY * width + targetX] == 1) {
+            if (blurRange > 0) {
+                List<(int X, int Y)> candidatePoints = new List<(int X, int Y)>();
+                
+                // 以target为中心，在range范围内选取n*n的范围
+                for (int y = targetY - blurRange; y <= targetY + blurRange; y++) {
+                    for (int x = targetX - blurRange; x <= targetX + blurRange; x++) {
+                        if (x >= 0 && x < width && y >= 0 && y < height) {
+                            candidatePoints.Add((x, y));
+                        }
+                    }
+                }
+                
+                // 根据blurFirst决定排序顺序
+                if (nearBlur) {
+                    candidatePoints = candidatePoints.OrderBy(p => Math.Abs(p.X - targetX) + Math.Abs(p.Y - targetY)).ToList();
+                } else {
+                    candidatePoints = candidatePoints.OrderByDescending(p => Math.Abs(p.X - targetX) + Math.Abs(p.Y - targetY)).ToList();
+                }
+                
+                targetX = -1;
+                targetY = -1;
+                
+                if (candidatePoints.Count > 0) {
+                    foreach (var point in candidatePoints) {
+                        if (data[point.Y * width + point.X] != 1) {
+                            targetX = point.X;
+                            targetY = point.Y;
+                            break;
+                        }
+                    }
+                }
+                
+                if (targetX == -1) {
+                    return new List<(byte dir, byte steps)>();
+                }
+            } else {
+                return new List<(byte dir, byte steps)>();
+            }
+        }
+
 
 
         // 执行寻路算法
@@ -432,3 +465,5 @@ public static class GoRunFunction
         return await TaskWrapper.Wait(() => gameInstance.CharacterStatus!.MapName == mapName, timeout);
     }
 }
+
+

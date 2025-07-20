@@ -41,7 +41,6 @@ namespace Mir2Assistant.TabForms.Demo
             InitializeComponent();
             buttonTakeOff.Click += buttonTakeOff_Click;
             buttonButch.Click += buttonButch_Click;
-            buttonPickUp.Click += buttonPickUp_Click;
         }
 
         private void CharacterStatusForm_Load(object sender, EventArgs e)
@@ -121,11 +120,6 @@ namespace Mir2Assistant.TabForms.Demo
                 var first = nearbyMonsters.First();
                 SendMirCall.Send(GameInstance!, 3030, new nint[] { (nint)first.Value.X, (nint)first.Value.Y, 0, first.Value.Id });
             }
-        }
-        private void buttonPickUp_Click(object sender, EventArgs e)
-        {
-            // 捡取脚下
-            SendMirCall.Send(GameInstance!, 3031, new nint[] { });
         }
     }
 }

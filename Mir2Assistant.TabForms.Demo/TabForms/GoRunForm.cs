@@ -112,7 +112,7 @@ namespace Mir2Assistant.TabForms.Demo
                 };
             }
 
-            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos);
+            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos, 2, false);
             stopwatchTotal.Stop();
             Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
             if (goNodes.Count == 0)
