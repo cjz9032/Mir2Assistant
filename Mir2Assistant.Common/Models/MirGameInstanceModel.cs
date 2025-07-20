@@ -21,11 +21,15 @@ public class MirGameInstanceModel
     public GameAccountModel? AccountInfo { get; set; }
     
     public byte MonstersUpdateId = 0;
-    public byte ItemsUpdateId = 0;
+    public byte DropsItemsUpdateId = 0;
     /// <summary>
     /// 怪物
     /// </summary>
     public ConcurrentDictionary<int, MonsterModel> Monsters { get; set; } = new ConcurrentDictionary<int, MonsterModel>();
+    // drops
+    public ConcurrentDictionary<int, DropItemModel> DropsItems { get; set; } = new ConcurrentDictionary<int, DropItemModel>();
+    // 捡取过的ItemID名单, 高性能检索
+    public HashSet<int> pickupItemIds { get; set; } = new HashSet<int>();
 
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;

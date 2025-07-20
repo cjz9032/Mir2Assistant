@@ -1,10 +1,10 @@
 using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.Utils;
-using System.Diagnostics;
-using System.Text.Json;
 using Serilog; // 新增Serilog引用
 using Serilog.Sinks.Debug; // 添加Debug sink引用
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace Mir2Assistant
 {
@@ -54,13 +54,13 @@ namespace Mir2Assistant
                 else
                 {
                     // 创建示例账号
-                    Log.Information("配置文件不存在，创建示例账号");
-                    accountList = new List<GameAccountModel>
-                    {
-                        new GameAccountModel { Account = "adad", Password = "adad", CharacterName = "sad13", IsMainControl = true },
-                        new GameAccountModel { Account = "acac", Password = "acac", CharacterName = "sad14", IsMainControl = false }
-                    };
-                    SaveAccountList();
+                    // Log.Information("配置文件不存在，创建示例账号");
+                    // accountList = new List<GameAccountModel>
+                    // {
+                    //     new GameAccountModel { Account = "adad", Password = "adad", CharacterName = "sad13", IsMainControl = true },
+                    //     new GameAccountModel { Account = "acac", Password = "acac", CharacterName = "sad14", IsMainControl = false }
+                    // };
+                    // SaveAccountList();
                 }
             }
             catch (Exception ex)
@@ -72,18 +72,18 @@ namespace Mir2Assistant
 
         private void SaveAccountList()
         {
-            //try
-            //{
-            //    Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
-            //    string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
-            //    File.WriteAllText(configFilePath, json);
-            //    Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
-            //}
-            //catch (Exception ex)
-            //{
-            //    Log.Error(ex, "保存账号列表失败");
-            //    MessageBox.Show($"保存账号列表失败: {ex.Message}");
-            //}
+            try
+            {
+               Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
+               string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
+               File.WriteAllText(configFilePath, json);
+               Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
+            }
+            catch (Exception ex)
+            {
+               Log.Error(ex, "保存账号列表失败");
+               MessageBox.Show($"保存账号列表失败: {ex.Message}");
+            }
         }
 
         private void RefreshDataGrid()
@@ -362,13 +362,169 @@ namespace Mir2Assistant
                 autoAtBackground();
                 autoForeGround();
         }
+        private async void processTasks(){
+                var instances = GameInstances.ToList();
+                instances.ForEach(async instance =>
+                {
+                    var instanceValue = instance.Value;
 
+                    var CharacterStatus = instanceValue.CharacterStatus;
+                    if (CharacterStatus.CurrentHP > 0)
+                    {
+                        var act = instanceValue.AccountInfo!;
+                        // 新手任务
+                        var _cancellationTokenSource = new CancellationTokenSource();
+                        if (CharacterStatus.Level <= 4 && act.TaskMain0Step < 99)
+                        {
+                            // 主线
+                            if (act.TaskMain0Step == 0)
+                            {
+                                // 主线4级
+                                // click 助手小敏 630 603
+                                // @QUEST
+                                // 没有 屠夫正在找
+                                // 有
+                                // npc给你的任务 <做/@QUEST1_1_1> 
+                                // npc给你的任务 <不做/@QUEST1_1_2>
+
+                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,630,603, "", 3);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
+                                    // todo check cmd
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                    act.TaskMain0Step = 1;
+                                    // todo json
+                                    SaveAccountList();
+                                }
+
+                            }
+
+                            if (act.TaskMain0Step == 1)
+                            {
+                                // 主线4级 
+                                // click 屠夫 
+                                // <新手任务对话/@QUEST> 
+                                // <继续/@QUEST1_1_1>
+                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,647,595, "", 3);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue!, "屠夫");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                    act.TaskMain0Step = 2;
+                                    SaveAccountList();
+                                }
+                            }
+                            if (act.TaskMain0Step == 2)
+                            {
+                                // 找肉
+
+                                // 主线4级 
+                                // click 屠夫 
+                                // <新手任务对话/@QUEST> 
+                                // <继续/@QUEST1_1_1>
+                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,647,595, "", 3);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue!, "屠夫");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_2_1");
+                                    act.TaskMain0Step = 3;
+                                    SaveAccountList();
+                                }
+                            }
+                            if (act.TaskMain0Step == 3)
+                            {
+                                // click 助手小敏 630 603
+                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,630,603, "", 3);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
+                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                    // todo 保存json
+                                    act.TaskMain0Step = 4;
+                                    SaveAccountList();
+                                }
+                            }
+                            if (act.TaskMain0Step == 4)
+                            {
+                                // click 助手小敏 630 603
+                                // 升级到3
+                                while (CharacterStatus.Level < 3)
+                                {
+                                    // todo 抽象到巡逻, 然后能退出
+                                    // 巡回升级 625 580->560->540
+                                    (int, int)[] patrolPairs = { (625, 580), (625, 560), (625, 540) }; // 3 对巡回升级数值
+                                    // 当前巡回
+                                    var curP =  0;
+                                    while(true){
+                                        var (px,py) = patrolPairs[curP];
+                                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,px,py, "", 3);
+
+                                        // 查看存活怪物 并且小于距离10个格子
+                                        var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
+                                            Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10)
+                                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                                        .FirstOrDefault();
+                                        if (ani != null)
+                                        {
+                                            // 攻击
+                                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                                        } else {
+                                            // 没怪了 可以捡取东西 或者挖肉
+                                            // 捡取
+                                            // 按距离, 且没捡取过
+                                            var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
+                                            .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
+                                            foreach(var drop in drops){
+                                                bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,drop.Value.X,drop.Value.Y, "", 0);
+                                                if(pathFound2){
+                                                    ItemFunction.Pickup(instanceValue!);
+                                                    // 加捡取过的名单,
+                                                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                                                }
+                                            }
+
+                                            // 挖
+                                            curP++;
+                                            curP = curP % patrolPairs.Length;
+                                            continue;
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                        // todo 可以先做4级的
+                        if (CharacterStatus.Level <= 8 && act.TaskSub0Step < 99)
+                        {
+                            // sub
+                            //支线8级
+                            //click 助手小敏 630 603
+                            // @next
+                            // @next1
+                            // @new01 (提示：点击此处可接支线任务)
+
+                            // 2 屠夫
+                            // <介绍信任务对话/@main1> 
+
+                        }
+                        return;
+                    }
+                });
+        }
         // TODO behavior tree for the main level up loop
         private async void autoForeGround(){
-            while(true){
-                // 避免太频繁 先写1000
-                await Task.Delay(1000);
-            }
+            // while(true){
+            //     // 先写2个新手任务
+            //     // 避免太频繁 先写1000
+            //     await Task.Delay(1000);
+            // }
+            // 先全写一起了不然没法写了
+            // processTasks();
         }
 
         private async void autoAtBackground(){
@@ -438,7 +594,7 @@ namespace Mir2Assistant
             Log.Information("应用程序正在关闭");
             HotKeyUtils.UnregisterHotKey(Handle, 200);
             Log.Debug("已注销热键");
-            SaveAccountList();
+            // SaveAccountList();
             
             Log.Debug("正在解除所有DLL挂钩，游戏实例数量: {InstanceCount}", GameInstances.Count);
             Task.Run(() =>

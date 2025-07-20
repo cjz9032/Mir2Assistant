@@ -42,6 +42,7 @@ namespace Mir2Assistant.Common.Functions
 
         private static async Task<string> Talk(MirGameInstanceModel gameInstance, Action act)
         {
+            gameInstance.TalkCmds.Clear();
             act();
 
             var memoryUtil = gameInstance!.MemoryUtils!;
@@ -56,7 +57,14 @@ namespace Mir2Assistant.Common.Functions
                 return prevAddr != nowAddr && nowAddr != 0;
             }))
             {
-                return "";
+                //TODO 可能会出错, 先用着, 直接读了旧地址 认为不存在, 额外可以判断一些信息得到, 比如字符串是否合法等
+                var nowAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
+                if(nowAddr != 0)
+                {
+                    var str222 = memoryUtil.ReadToDelphiUnicode(nowAddr);
+                    gameInstance.TalkCmds = GetTalkCmds(str222);
+                    return str222;
+                }
             }
            
             var str = memoryUtil.ReadToDelphiUnicode(resAddr);
@@ -102,25 +110,25 @@ namespace Mir2Assistant.Common.Functions
         {
             return await Talk(gameInstance, () =>
             {
-                // 使用MemoryUtils中的字符串打包方法
                 nint[] data = MemoryUtils.PackStringsToData(cmd);
                 SendMirCall.Send(gameInstance, 3002, data);
             });
         }
 
-        public static async Task<string> Talk2Text(MirGameInstanceModel gameInstance, string text)
-        {
-            string? cmd = null;
-            if (!await TaskWrapper.Wait(() =>
-            {
-                cmd = gameInstance.TalkCmds.FirstOrDefault(o => o.Split("/")[0] == text);
-                return cmd != null;
-            }))
-            {
-                return "";
-            }
-            return await Talk2(gameInstance, cmd!.Split("/")[1]);
-        }
+        // 文字没用
+        // public static async Task<string> Talk2Text(MirGameInstanceModel gameInstance, string text)
+        // {
+        //     string? cmd = null;
+        //     if (!await TaskWrapper.Wait(() =>
+        //     {
+        //         cmd = gameInstance.TalkCmds.FirstOrDefault(o => o.Split("/")[0] == text);
+        //         return cmd != null;
+        //     }))
+        //     {
+        //         return "";
+        //     }
+        //     return await Talk2(gameInstance, cmd!.Split("/")[1]);
+        // }
 
         /// <summary>
         /// 等NPC出现

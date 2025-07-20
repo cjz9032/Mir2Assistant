@@ -13,7 +13,7 @@ namespace Mir2Assistant.Common.Functions
         /// 等待任务完成
         /// </summary>
         /// <param name="ack">确认是否完成</param>
-        /// <param name="timeout">超时*100毫秒</param>
+        /// <param name="timeout">超时*150毫秒</param>
         /// <returns>是否成功</returns>
         public static async Task<bool> Wait(Func<bool> ack, int timeout = 10)
         {

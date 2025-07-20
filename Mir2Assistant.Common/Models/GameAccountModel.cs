@@ -21,6 +21,8 @@ namespace Mir2Assistant.Common.Models
         public bool IsMainControl { get; set; }
         public RoleType role { get; set; }
         public int? ProcessId { get; set; }
+        public int TaskMain0Step { get; set; }
+        public int TaskSub0Step { get; set; }
         public bool IsRunning => ProcessId.HasValue && ProcessId.Value > 0;
     }
 }

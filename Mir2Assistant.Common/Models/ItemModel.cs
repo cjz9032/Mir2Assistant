@@ -89,4 +89,14 @@ namespace Mir2Assistant.Common.Models
             Index = idx;
         }
     }
+    public class DropItemModel : ItemModel
+    {
+        public int Id { get; set; }
+        public int UpdateId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public bool IsGodly { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
+        // public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
+    }
 }

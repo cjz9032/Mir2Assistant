@@ -36,8 +36,8 @@ namespace Mir2Assistant.Common.Models
             }
         }
 
-        public int? X { get; set; }
-        public int? Y { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
         public string? Name { get; set; }
         /// <summary>
         /// 行会

@@ -425,6 +425,97 @@ public static class GoRunFunction
         return 10 * (dx + dy) - 6 * Math.Min(dx, dy);
     }
 
+    public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
+          int blurRange = 0,
+          bool nearBlur = false
+        )
+    {
+
+        // todo 跨地图
+        CharacterStatusFunction.GetInfo(GameInstance!);
+        MonsterFunction.ReadMonster(GameInstance!);
+
+        var stopwatchTotal = new System.Diagnostics.Stopwatch();
+        stopwatchTotal.Start();
+        
+        // gameInstance.Monsters -- 额外的怪物也是障碍点
+        var monsterCount = GameInstance!.Monsters.Count;
+        int[][] monsPos = new int[monsterCount][];
+        int index = 0;
+        foreach (var monster in GameInstance!.Monsters)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return false;
+            }
+            monsPos[index++] = new int[] {
+                monster.Value.X,
+                monster.Value.Y
+            };
+        }
+
+        var goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur);
+        stopwatchTotal.Stop();
+        //Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
+        if (goNodes.Count == 0)
+        {
+            return false;
+        }
+        while (goNodes.Count > 0)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return false;
+            }
+            var node = goNodes[0];
+            goNodes.RemoveAt(0);
+
+            var oldX = GameInstance!.CharacterStatus!.X;
+            var oldY = GameInstance!.CharacterStatus!.Y;
+
+
+            var (nextX, nextY) = getNextPostion(oldX, oldY, node.dir, node.steps);
+
+            GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
+
+            var tried = 0;
+            while(true)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return false;
+                }
+                await Task.Delay(100, cancellationToken);
+                CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                MonsterFunction.ReadMonster(GameInstance!);
+
+                // 执行后发生了变更
+                var newX = GameInstance!.CharacterStatus.X;
+                var newY = GameInstance!.CharacterStatus.Y;
+
+                tried++;
+                if (tried > 20)
+                {
+                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                }
+
+                if (oldX != newX || oldY != newY)
+                {
+                    if (nextX == newX && nextY == newY)
+                    {
+                        break;
+                    } else {
+                        // 遇新障了,导致位置不能通过,或偏移，重新执行寻路逻辑
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                    }
+                }
+                // 否则继续等待
+            }
+        }
+
+        return true;
+    }
+
  
 
 

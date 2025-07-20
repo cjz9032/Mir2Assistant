@@ -53,10 +53,56 @@ namespace Mir2Assistant.Common.Functions
                 gameInstance.IsReadingItems = false;
             });
         }
+        public static void ReadDrops(MirGameInstanceModel gameInstance)
+        {   
+            // drops
+            // -- looks +8
+            var memoryUtils = gameInstance!.MemoryUtils!;
+            var dropsAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x7524D0));
+            var count = memoryUtils.ReadToInt(dropsAddr + 0x8);
+            var dropsArrayAddr = memoryUtils.ReadToInt(dropsAddr + 0x4);
+            ++gameInstance.DropsItemsUpdateId;
+
+            for (int i = 0; i < count; i++)
+            {
+                bool isNew = false;
+                var itemAddr = memoryUtils.ReadToInt(dropsArrayAddr + i * 0x4);
+                var id = memoryUtils.ReadToInt(itemAddr);
+                gameInstance.DropsItems.TryGetValue(id, out DropItemModel? item);
+                if (item == null)
+                {
+                    item = new DropItemModel();
+                    isNew = true;
+                }
+                item.UpdateId = gameInstance.DropsItemsUpdateId;
+                item.Id = id;
+                byte nameLength = memoryUtils.ReadToInt8(itemAddr+0x24);
+                item.Name = memoryUtils.ReadToString(itemAddr + 0x25, nameLength);
+                item.IsGodly = memoryUtils.ReadToInt8(itemAddr + 0x54) == 1;
+                item.X = memoryUtils.ReadToShort(itemAddr + 0x4);
+                item.Y = memoryUtils.ReadToShort(itemAddr + 0x6);
+                if (isNew)
+                {
+                    gameInstance.DropsItems.TryAdd(id, item);
+                }
+            }
+            foreach (var item in gameInstance.DropsItems.Values.Where(o => o.UpdateId != gameInstance.DropsItemsUpdateId))
+            {
+                gameInstance.DropsItems.TryRemove(item.Id, out DropItemModel? m);
+            }
+
+        }
 
         public static void ReadBag(MirGameInstanceModel gameInstance)
         {
             ReadItems(gameInstance, 0x007531E8, gameInstance.Items);
+        }
+
+    
+
+        public static void Pickup(MirGameInstanceModel gameInstance)
+        {
+            SendMirCall.Send(gameInstance, 3031, new nint[] { });
         }
     }
 }
