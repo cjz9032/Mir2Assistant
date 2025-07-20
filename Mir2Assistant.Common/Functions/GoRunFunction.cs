@@ -142,7 +142,9 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
     }
 
-    public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY)
+    public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY, 
+    int[][] monsPos 
+    )
     {
         var id = gameInstance!.CharacterStatus!.MapId;
         if (!gameInstance.MapObstacles.TryGetValue(id, out var obstacles)) {
@@ -165,10 +167,31 @@ public static class GoRunFunction
         var data = new byte[obstacles.Length - 8];
         Array.Copy(obstacles, 8, data, 0, data.Length);
 
-        // 检查起点和终点是否为障碍物，若为障碍物则直接返回空路径
-        if (data[myY * width + myX] == 1 || data[targetY * width + targetX] == 1) {
+
+        // 检查起点和终点是否为障碍物，若为障碍物则直接返回空路径 
+        if (data[targetY * width + targetX] == 1) {
             return new List<(byte dir, byte steps)>();
         }
+
+        // 添加怪物位置作为障碍点
+        // todo 其实是反着的,需要往上并且加容错选项
+        foreach (var pos in monsPos)
+        {
+            try
+            {
+                int monX = pos[0];
+                int monY = pos[1];
+                if (monX >= 0 && monX < width && monY >= 0 && monY < height)
+                {
+                    data[monY * width + monX] = 1;
+                }
+            }
+            catch (Exception)
+            {
+                continue;
+            }
+        }
+
 
         // 执行寻路算法
         return FindPath(width, height, data, myX, myY, targetX, targetY);

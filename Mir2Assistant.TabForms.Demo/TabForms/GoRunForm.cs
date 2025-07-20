@@ -80,58 +80,84 @@ namespace Mir2Assistant.TabForms.Demo
         private void button10_Click(object sender, EventArgs e)
         {
             Task.Run(async () =>{
-                // todo 寻找路径目的地需要容错处理
-
-                CharacterStatusFunction.GetInfo(GameInstance!);
-
-                MonsterFunction.ReadMonster(GameInstance!);
-
-                var stopwatchTotal = new System.Diagnostics.Stopwatch();
-                stopwatchTotal.Start();
-                var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text));
-                stopwatchTotal.Stop();
-                Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
-                while (goNodes.Count > 0)
+                bool pathFound = await PerformPathfinding();
+                if (pathFound)
                 {
-                    var node = goNodes[0];
-                    goNodes.RemoveAt(0);
-
-                    var oldX = GameInstance!.CharacterStatus.X.Value;
-                    var oldY = GameInstance!.CharacterStatus.Y.Value;
-
-
-                    var (nextX, nextY) = GoRunFunction.getNextPostion(oldX, oldY, node.dir, node.steps);
-
-                    GoRunFunction.GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
-
-                    // todo 重试次数N 比如3秒 
-                    while(true){
-                        await Task.Delay(100);
-                        CharacterStatusFunction.FastUpdateXY(GameInstance!);
-                        MonsterFunction.ReadMonster(GameInstance!);
-
-                        // 执行后发生了变更
-                        var newX = GameInstance!.CharacterStatus.X.Value;
-                        var newY = GameInstance!.CharacterStatus.Y.Value;
-
-                        
-                        if (oldX != newX || oldY != newY)
-                        {
-                            if (nextX == newX && nextY == newY)
-                            {
-                                break;
-                            }else{
-                                // 说明出错了 
-                                // TODO 出错重新寻路, 但是最好是最短路径恢复, 可以遍历跳到10个节点后, 恢复成功就可以砍掉这10个节点
-                                return;
-                            }
-                        }
-                        // 否则继续等待
-                    }
-
+                    Log.Information("寻路任务成功完成。");
+                } else {
+                    Log.Warning("寻路任务未成功完成。");
                 }
             });
-     
+        }
+
+        private async Task<bool> PerformPathfinding()
+        {
+            // todo 寻找路径目的地需要容错处理
+
+            CharacterStatusFunction.GetInfo(GameInstance!);
+            MonsterFunction.ReadMonster(GameInstance!);
+
+            var stopwatchTotal = new System.Diagnostics.Stopwatch();
+            stopwatchTotal.Start();
+            
+            // gameInstance.Monsters -- 额外的怪物也是障碍点
+            var monsterCount = GameInstance!.Monsters.Count;
+            int[][] monsPos = new int[monsterCount][];
+            int index = 0;
+            foreach (var monster in GameInstance!.Monsters)
+            {
+                monsPos[index++] = new int[] { 
+                    monster.Value.X.Value,
+                    monster.Value.Y.Value
+                };
+            }
+
+            var goNodes = GoRunFunction.genGoPath(GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), monsPos);
+            stopwatchTotal.Stop();
+            Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
+            if (goNodes.Count == 0)
+            {
+                return false;
+            }
+            while (goNodes.Count > 0)
+            {
+                var node = goNodes[0];
+                goNodes.RemoveAt(0);
+
+                var oldX = GameInstance!.CharacterStatus.X.Value;
+                var oldY = GameInstance!.CharacterStatus.Y.Value;
+
+
+                var (nextX, nextY) = GoRunFunction.getNextPostion(oldX, oldY, node.dir, node.steps);
+
+                GoRunFunction.GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
+
+                // todo 重试次数N 比如3秒 
+                while(true){
+                    await Task.Delay(100);
+                    CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                    MonsterFunction.ReadMonster(GameInstance!);
+
+                    // 执行后发生了变更
+                    var newX = GameInstance!.CharacterStatus.X.Value;
+                    var newY = GameInstance!.CharacterStatus.Y.Value;
+
+                        
+                    if (oldX != newX || oldY != newY)
+                    {
+                        if (nextX == newX && nextY == newY)
+                        {
+                            break;
+                        } else {
+                            // 遇新障了,导致位置不能通过,或偏移，重新执行寻路逻辑
+                            return await PerformPathfinding();
+                        }
+                    }
+                    // 否则继续等待
+                }
+            }
+
+            return true;
         }
 
         private void button11_Click(object sender, EventArgs e)
