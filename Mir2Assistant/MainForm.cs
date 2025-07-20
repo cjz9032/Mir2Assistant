@@ -356,7 +356,7 @@ namespace Mir2Assistant
             _ = Task.Run(async () => {
                 foreach (var account in accountList)
                 {
-                    RestartGameProcess(account)
+                    RestartGameProcess(account);
                     // 添加延迟，避免同时启动多个进程
                     await Task.Delay(2000);
                 }
