@@ -177,39 +177,90 @@ public static class GoRunFunction
             {
                 segmentCount++;
                 var segmentSw = Stopwatch.StartNew();
-                // 计算中间点
-                int midX = currentX + Math.Sign(targetX - currentX) * segmentLength;
-                int midY = currentY + Math.Sign(targetY - currentY) * segmentLength;
-                
-                // 确保中间点不是障碍物
+
+                // 计算理想的中间点
+                int dx = targetX - currentX;
+                int dy = targetY - currentY;
+                double ratio = segmentLength / Math.Sqrt(dx * dx + dy * dy);
+                int idealMidX = currentX + (int)(dx * ratio);
+                int idealMidY = currentY + (int)(dy * ratio);
+
+                // 在理想点周围搜索可行点
                 bool foundValidMidPoint = false;
-                for (int range = 0; range < 10; range++)
+                int midX = 0, midY = 0;
+                int bestDistance = int.MaxValue;
+
+                // 先检查理想点
+                if (idealMidX >= 0 && idealMidX < width && idealMidY >= 0 && idealMidY < height &&
+                    obstacleData[idealMidY * width + idealMidX] != 1)
                 {
-                    for (int dx = -range; dx <= range; dx++)
+                    midX = idealMidX;
+                    midY = idealMidY;
+                    foundValidMidPoint = true;
+                }
+                else
+                {
+                    // 如果理想点不行，在周围找最近的可行点
+                    for (int range = 1; range < 10 && !foundValidMidPoint; range++)
                     {
-                        for (int dy = -range; dy <= range; dy++)
+                        // 先检查十字方向
+                        (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
+                        foreach (var (dirX, dirY) in directions)
                         {
-                            int checkX = midX + dx;
-                            int checkY = midY + dy;
+                            int checkX = idealMidX + dirX * range;
+                            int checkY = idealMidY + dirY * range;
+                            
                             if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height &&
                                 obstacleData[checkY * width + checkX] != 1)
                             {
-                                midX = checkX;
-                                midY = checkY;
-                                foundValidMidPoint = true;
-                                break;
+                                int distance = Math.Abs(checkX - idealMidX) + Math.Abs(checkY - idealMidY);
+                                if (distance < bestDistance)
+                                {
+                                    bestDistance = distance;
+                                    midX = checkX;
+                                    midY = checkY;
+                                    foundValidMidPoint = true;
+                                }
                             }
                         }
-                        if (foundValidMidPoint) break;
+
+                        // 如果十字方向都不行，检查斜向
+                        if (!foundValidMidPoint)
+                        {
+                            (int dx, int dy)[] diagonals = { (1, -1), (1, 1), (-1, 1), (-1, -1) };
+                            foreach (var (dirX, dirY) in diagonals)
+                            {
+                                int checkX = idealMidX + dirX * range;
+                                int checkY = idealMidY + dirY * range;
+                                
+                                if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height &&
+                                    obstacleData[checkY * width + checkX] != 1)
+                                {
+                                    int distance = Math.Abs(checkX - idealMidX) + Math.Abs(checkY - idealMidY);
+                                    if (distance < bestDistance)
+                                    {
+                                        bestDistance = distance;
+                                        midX = checkX;
+                                        midY = checkY;
+                                        foundValidMidPoint = true;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    if (foundValidMidPoint) break;
                 }
-                
+
                 if (!foundValidMidPoint)
                 {
-                    sw.Stop();
-                    Log.Warning($"无法找到有效的中间点，总耗时: {sw.ElapsedMilliseconds}ms");
-                    return new List<(byte dir, byte steps, int x, int y)>();
+                    // 如果还找不到，尝试缩短距离再试一次
+                    segmentLength = segmentLength * 2 / 3;
+                    if (segmentLength < 40)
+                    {
+                        sw.Stop();
+                        Log.Warning($"无法找到有效的中间点，总耗时: {sw.ElapsedMilliseconds}ms");
+                        return new List<(byte dir, byte steps, int x, int y)>();
+                    }
+                    continue;
                 }
 
                 // 寻路到中间点
@@ -614,7 +665,7 @@ public static class GoRunFunction
                 var newY = GameInstance!.CharacterStatus.Y;
 
                 tried++;
-                if (tried > 8)
+                if (tried > 6)
                 {
                     return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
                 }
