@@ -37,6 +37,7 @@
             colPid = new DataGridViewTextBoxColumn();
             colRestart = new DataGridViewButtonColumn();
             btnRestartAll = new Button();
+            btnRestartTask = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAccounts).BeginInit();
             SuspendLayout();
             // 
@@ -109,11 +110,22 @@
             btnRestartAll.UseVisualStyleBackColor = true;
             btnRestartAll.Click += btnRestartAll_Click;
             // 
+            // btnRestartTask
+            // 
+            btnRestartTask.Location = new Point(577, 9);
+            btnRestartTask.Name = "btnRestartTask";
+            btnRestartTask.Size = new Size(100, 23);
+            btnRestartTask.TabIndex = 3;
+            btnRestartTask.Text = "重启任务";
+            btnRestartTask.UseVisualStyleBackColor = true;
+            btnRestartTask.Click += btnRestartTask_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(795, 448);
+            Controls.Add(btnRestartTask);
             Controls.Add(btnRestartAll);
             Controls.Add(dataGridViewAccounts);
             Controls.Add(label1);
@@ -137,5 +149,6 @@
         private DataGridViewTextBoxColumn colPid;
         private DataGridViewButtonColumn colRestart;
         private Button btnRestartAll;
+        private Button btnRestartTask;
     }
 }

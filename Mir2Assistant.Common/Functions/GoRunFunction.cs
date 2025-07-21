@@ -141,8 +141,115 @@ public static class GoRunFunction
      
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
     }
+    public static List<(byte dir, byte steps, int x, int y)> FindPathCoreSmallWithAStar(
+        int width, int height, byte[] obstacleData, 
+        int startX, int startY, int targetX, int targetY
+    ){
+        var sw = Stopwatch.StartNew();
 
+        // 如果目的地不能到达
+        if (obstacleData[targetY * width + targetX] == 1) {
+            sw.Stop();
+            Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
+            return new List<(byte dir, byte steps, int x, int y)>();
+        }
 
+        // 定义方向：(dx, dy, 方向值)
+        var directions = new[]
+        {
+            (0, -1, (byte)0),   // 上 8
+            (1, -1, (byte)1),   // 右上 9
+            (1, 0, (byte)2),    // 右 6
+            (1, 1, (byte)3),    // 右下 3
+            (0, 1, (byte)4),    // 下 2
+            (-1, 1, (byte)5),   // 左下 1
+            (-1, 0, (byte)6),   // 左 4
+            (-1, -1, (byte)7)   // 左上 7
+        };
+
+        // 使用优先队列存储待探索的节点
+        var openSet = new PriorityQueue<(int x, int y, List<(byte dir, byte steps, int x, int y)> path), int>();
+        var visited = new HashSet<string>();
+
+        // 将起点加入队列
+        openSet.Enqueue((startX, startY, new List<(byte dir, byte steps, int x, int y)>()), 0);
+        visited.Add($"{startX},{startY}");
+
+        while (openSet.Count > 0)
+        {
+            var (currentX, currentY, currentPath) = openSet.Dequeue();
+
+            // 如果到达目标
+            if (currentX == targetX && currentY == targetY)
+            {
+                sw.Stop();
+                Log.Debug($"A*寻路完成，步数: {currentPath.Count}, 耗时: {sw.ElapsedMilliseconds}ms");
+                return currentPath;
+            }
+
+            // 计算到目标的方向
+            int mainDx = Math.Sign(targetX - currentX);
+            int mainDy = Math.Sign(targetY - currentY);
+
+            // 优先检查朝向目标的方向
+            var directionsToCheck = directions.OrderBy(d => 
+                Math.Abs(d.Item1 - mainDx) + Math.Abs(d.Item2 - mainDy)
+            );
+
+            foreach (var (dx, dy, dir) in directionsToCheck)
+            {
+                // 先尝试2步移动
+                for (byte steps = 2; steps >= 1; steps--)
+                {
+                    // 检查是否可以移动
+                    bool canMove = true;
+                    int newX = currentX + dx * steps;
+                    int newY = currentY + dy * steps;
+
+                    // 检查边界和路径上的每个点
+                    if (newX < 0 || newX >= width || newY < 0 || newY >= height)
+                    {
+                        canMove = false;
+                    }
+                    else
+                    {
+                        for (int i = 1; i <= steps; i++)
+                        {
+                            int checkX = currentX + dx * i;
+                            int checkY = currentY + dy * i;
+                            if (obstacleData[checkY * width + checkX] == 1)
+                            {
+                                canMove = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (canMove)
+                    {
+                        string newPos = $"{newX},{newY}";
+                        if (!visited.Contains(newPos))
+                        {
+                            visited.Add(newPos);
+                            var newPath = new List<(byte dir, byte steps, int x, int y)>(currentPath)
+                            {
+                                (dir, steps, newX, newY)
+                            };
+
+                            // 优先级是到目标的曼哈顿距离
+                            int priority = Math.Abs(targetX - newX) + Math.Abs(targetY - newY);
+                            openSet.Enqueue((newX, newY, newPath), priority);
+                        }
+                        break; // 如果2步可以走，就不用试1步了
+                    }
+                }
+            }
+        }
+
+        sw.Stop();
+        Log.Debug($"A*寻路失败，耗时: {sw.ElapsedMilliseconds}ms");
+        return new List<(byte dir, byte steps, int x, int y)>();
+    }
     /// <summary>
     /// 寻路算法
     /// </summary>
@@ -429,9 +536,7 @@ public static class GoRunFunction
     public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY, 
     int[][] monsPos,
     int blurRange = 0,
-    bool nearBlur = false,
-    int maxDistanceBeforeSegment = 300,
-    int segmentLength = 120
+    bool nearBlur = false
     )
     {
         var sw = Stopwatch.StartNew();
@@ -512,8 +617,16 @@ public static class GoRunFunction
                 return new List<(byte dir, byte steps)>();
             }
         }
-
-        var path = FindPathCore(width, height, data, myX, myY, targetX, targetY, maxDistanceBeforeSegment, segmentLength);
+        // 分距离, 100以内直接a星
+        List<(byte dir, byte steps, int x, int y)> path = new List<(byte dir, byte steps, int x, int y)>();
+        if (Math.Abs(targetX - myX) + Math.Abs(targetY - myY) <= 150)
+        {
+            path = FindPathCoreSmallWithAStar(width, height, data, myX, myY, targetX, targetY);
+        }
+        else
+        {
+            path = FindPathCore(width, height, data, myX, myY, targetX, targetY);
+        }
         sw.Stop();
         Log.Debug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
         return path.Select(p => (p.dir, p.steps)).ToList();
@@ -608,12 +721,12 @@ public static class GoRunFunction
 
         var stopwatchTotal = new System.Diagnostics.Stopwatch();
         stopwatchTotal.Start();
-        
+
         // gameInstance.Monsters -- 额外的怪物也是障碍点
-        var monsterCount = GameInstance!.Monsters.Count;
-        int[][] monsPos = new int[monsterCount][];
+        var monsters = GameInstance!.Monsters.Where(o => !o.Value.isDead);
+        int[][] monsPos = new int[monsters.Count()][];
         int index = 0;
-        foreach (var monster in GameInstance!.Monsters)
+        foreach (var monster in monsters)
         {
             if (cancellationToken.IsCancellationRequested)
             {

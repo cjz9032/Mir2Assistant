@@ -5,6 +5,7 @@ using Serilog; // 新增Serilog引用
 using Serilog.Sinks.Debug; // 添加Debug sink引用
 using System.Diagnostics;
 using System.Text.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Mir2Assistant
 {
@@ -358,163 +359,244 @@ namespace Mir2Assistant
                 }
              
                 // sllep 
-                await Task.Delay(20_000);
-                autoAtBackground();
+                // await Task.Delay(20_000);
+             
+        }
+
+        private async void btnRestartTask_Click(object sender, EventArgs e)
+        {
+            Log.Information("重启所有游戏任务");
+            // 重新开始所有任务
+            // processTasks();
+               autoAtBackground();
                 autoForeGround();
         }
-        private async void processTasks(){
-                var instances = GameInstances.ToList();
-                instances.ForEach(async instance =>
+
+        private static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationTokenSource _cancellationTokenSource, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
+        {
+            var allowMonsters = new string[]  {"鸡", "鹿", "羊", "稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
+                "森林雪人", "蛤蟆", "蝎子",
+                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
+            var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆"};
+            // 当前巡回
+            var curP = 0;
+            var CharacterStatus = instanceValue.CharacterStatus!;
+            while (true)
+            {
+                var (px, py) = patrolPairs[curP];
+                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, px, py, "", 4);
+
+                // 查看存活怪物 并且小于距离10个格子
+                var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
+                allowMonsters.Contains(o.Name) &&
+                    Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                .FirstOrDefault();
+                if (ani != null)
                 {
-                    var instanceValue = instance.Value;
-
-                    var CharacterStatus = instanceValue.CharacterStatus;
-                    if (CharacterStatus.CurrentHP > 0)
+                    // 攻击
+                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, ani.X, ani.Y, "", 1);
+                    if (pathFound2)
                     {
-                        var act = instanceValue.AccountInfo!;
-                        // 新手任务
-                        var _cancellationTokenSource = new CancellationTokenSource();
-                        if (CharacterStatus.Level <= 4 && act.TaskMain0Step < 99)
+                        MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                        // 持续攻击
+                        while (true)
                         {
-                            // 主线
-                            if (act.TaskMain0Step == 0)
+                            await Task.Delay(200);
+                            if (ani.isDead)
                             {
-                                // 主线4级
-                                // click 助手小敏 630 603
-                                // @QUEST
-                                // 没有 屠夫正在找
-                                // 有
-                                // npc给你的任务 <做/@QUEST1_1_1> 
-                                // npc给你的任务 <不做/@QUEST1_1_2>
-
-                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,630,603, "", 3);
-                                if (pathFound)
-                                {
-                                    await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
-                                    // todo check cmd
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-                                    act.TaskMain0Step = 1;
-                                    // todo json
-                                    SaveAccountList();
-                                }
-
-                            }
-
-                            if (act.TaskMain0Step == 1)
-                            {
-                                // 主线4级 
-                                // click 屠夫 
-                                // <新手任务对话/@QUEST> 
-                                // <继续/@QUEST1_1_1>
-                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,647,595, "", 3);
-                                if (pathFound)
-                                {
-                                    await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-                                    act.TaskMain0Step = 2;
-                                    SaveAccountList();
-                                }
-                            }
-                            if (act.TaskMain0Step == 2)
-                            {
-                                // 找肉
-
-                                // 主线4级 
-                                // click 屠夫 
-                                // <新手任务对话/@QUEST> 
-                                // <继续/@QUEST1_1_1>
-                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,647,595, "", 3);
-                                if (pathFound)
-                                {
-                                    await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST1_2_1");
-                                    act.TaskMain0Step = 3;
-                                    SaveAccountList();
-                                }
-                            }
-                            if (act.TaskMain0Step == 3)
-                            {
-                                // click 助手小敏 630 603
-                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,630,603, "", 3);
-                                if (pathFound)
-                                {
-                                    await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
-                                    await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                    // todo 保存json
-                                    act.TaskMain0Step = 4;
-                                    SaveAccountList();
-                                }
-                            }
-                            if (act.TaskMain0Step == 4)
-                            {
-                                // click 助手小敏 630 603
-                                // 升级到3
-                                while (CharacterStatus.Level < 3)
-                                {
-                                    // todo 抽象到巡逻, 然后能退出
-                                    // 巡回升级 625 580->560->540
-                                    (int, int)[] patrolPairs = { (625, 580), (625, 560), (625, 540) }; // 3 对巡回升级数值
-                                    // 当前巡回
-                                    var curP =  0;
-                                    while(true){
-                                        var (px,py) = patrolPairs[curP];
-                                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,px,py, "", 3);
-
-                                        // 查看存活怪物 并且小于距离10个格子
-                                        var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
-                                            Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10)
-                                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
-                                        .FirstOrDefault();
-                                        if (ani != null)
-                                        {
-                                            // 攻击
-                                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
-                                        } else {
-                                            // 没怪了 可以捡取东西 或者挖肉
-                                            // 捡取
-                                            // 按距离, 且没捡取过
-                                            var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
-                                            .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
-                                            foreach(var drop in drops){
-                                                bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!,drop.Value.X,drop.Value.Y, "", 0);
-                                                if(pathFound2){
-                                                    ItemFunction.Pickup(instanceValue!);
-                                                    // 加捡取过的名单,
-                                                    instanceValue.pickupItemIds.Add(drop.Value.Id);
-                                                }
-                                            }
-
-                                            // 挖
-                                            curP++;
-                                            curP = curP % patrolPairs.Length;
-                                            continue;
-                                        }
-                                    }
-
-
-                                }
+                                break;
                             }
                         }
-                        // todo 可以先做4级的
-                        if (CharacterStatus.Level <= 8 && act.TaskSub0Step < 99)
-                        {
-                            // sub
-                            //支线8级
-                            //click 助手小敏 630 603
-                            // @next
-                            // @next1
-                            // @new01 (提示：点击此处可接支线任务)
-
-                            // 2 屠夫
-                            // <介绍信任务对话/@main1> 
-
-                        }
-                        return;
                     }
-                });
+                   
+                }
+                else
+                {
+                    // 没怪了 可以捡取东西 或者挖肉
+                    // 捡取
+                    // 按距离, 且没捡取过
+                    var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
+                    .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
+                    foreach (var drop in drops)
+                    {
+                        bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, drop.Value.X, drop.Value.Y, "", 0);
+                        if (pathFound2)
+                        {
+                            ItemFunction.Pickup(instanceValue!);
+                            // 加捡取过的名单,
+                            instanceValue.pickupItemIds.Add(drop.Value.Id);
+                        }
+                    }
+                    // 屠挖肉
+                    var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                    .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+                    foreach (var body in bodys)
+                    {
+                        bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, body.X, body.Y, "", 2);
+                        if (pathFound2)
+                        {
+                            // 要持续屠宰, 直到尸体消失, 最大尝试 30次
+                            var tried = 0;
+                            while (tried < 20)
+                            {
+                                SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
+                                await Task.Delay(150);
+                                MonsterFunction.ReadMonster(instanceValue!);
+                                if (body.isButched)
+                                {
+                                    break;
+                                }
+                                tried++;
+                            }
+                        }
+                    }
+                    // checker 满足条件就跳出循环, checker是参数
+                    if (checker(instanceValue!))
+                    {
+                        break;
+                    }
+                    curP++;
+                    curP = curP % patrolPairs.Length;
+                    continue;
+                }
+            }
+            return true;
+
+        }
+        private async void processTasks()
+        {
+            var instances = GameInstances.ToList();
+            instances.ForEach(async instance =>
+            {
+                var instanceValue = instance.Value;
+
+                var CharacterStatus = instanceValue.CharacterStatus!;
+                if (CharacterStatus.CurrentHP > 0)
+                {
+                    var act = instanceValue.AccountInfo!;
+                    // 新手任务
+                    var _cancellationTokenSource = new CancellationTokenSource();
+                    // todo 目前是5
+                    if (CharacterStatus.Level <= 4 && act.TaskMain0Step < 5)
+                    {
+                        // 主线
+                        if (act.TaskMain0Step == 0)
+                        {
+                            // 主线4级
+                            // click 助手小敏 630 603
+                            // @QUEST
+                            // 没有 屠夫正在找
+                            // 有
+                            // npc给你的任务 <做/@QUEST1_1_1> 
+                            // npc给你的任务 <不做/@QUEST1_1_2>
+
+                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6, true);
+                            if (pathFound)
+                            {
+                                await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
+                                // todo check cmd
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                act.TaskMain0Step = 1;
+                                // todo json
+                                SaveAccountList();
+                            }
+
+                        }
+
+                        if (act.TaskMain0Step == 1)
+                        {
+                            // 主线4级 
+                            // click 屠夫 
+                            // <新手任务对话/@QUEST> 
+                            // <继续/@QUEST1_1_1>
+                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 647, 595, "", 6, true);
+                            if (pathFound)
+                            {
+                                await NpcFunction.ClickNPC(instanceValue!, "屠夫");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+
+                                await NormalAttackPoints(instanceValue, _cancellationTokenSource, [(625, 580), (625, 570), (625, 560), (625, 550), (625, 540), (625, 530), (625, 520)], (instanceValue) =>
+                                {
+                                    // 检查背包的肉
+                                    var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
+                                    return meat != null;
+                                });
+
+                                act.TaskMain0Step = 2;
+                                SaveAccountList();
+                            }
+                        }
+                        if (act.TaskMain0Step == 2)
+                        {
+                            // 找肉
+
+                            // 主线4级 
+                            // click 屠夫 
+                            // <新手任务对话/@QUEST> 
+                            // <继续/@QUEST1_1_1>
+                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 647, 595, "", 6, true);
+                            if (pathFound)
+                            {
+                                await NpcFunction.ClickNPC(instanceValue!, "屠夫");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_2_1");
+
+                                // await NormalAttackPoints(instanceValue, _cancellationTokenSource, [(625, 580), (625, 560)], (instanceValue) =>
+                                // {
+                                //     // 检查背包的肉
+                                //     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
+                                //     return meat != null;
+                                // });
+
+                                act.TaskMain0Step = 3;
+                                SaveAccountList();
+                            }
+                        }
+                        if (act.TaskMain0Step == 3)
+                        {
+                            // click 助手小敏 630 603
+                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6, true);
+                            if (pathFound)
+                            {
+                                await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                // todo 保存json
+                                act.TaskMain0Step = 4;
+                                SaveAccountList();
+                            }
+                        }
+                        if (act.TaskMain0Step == 4)
+                        {
+                            // 升级到3
+                            // 抽象到巡逻, 然后能退出
+                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, [(625, 580), (625, 560), (625, 540)], (instanceValue) =>
+                            {
+                                return instanceValue.CharacterStatus!.Level >= 3;
+                            });
+                            act.TaskMain0Step = 5;
+                            SaveAccountList();
+                        }
+                    }
+                    // todo 可以先做4级的
+                    if (CharacterStatus.Level <= 8 && act.TaskSub0Step < 99)
+                    {
+                        // sub
+                        //支线8级
+                        //click 助手小敏 630 603
+                        // @next
+                        // @next1
+                        // @new01 (提示：点击此处可接支线任务)
+
+                        // 2 屠夫
+                        // <介绍信任务对话/@main1> 
+
+                    }
+                    return;
+                }
+            });
         }
         // TODO behavior tree for the main level up loop
         private async void autoForeGround(){
@@ -524,7 +606,7 @@ namespace Mir2Assistant
             //     await Task.Delay(1000);
             // }
             // 先全写一起了不然没法写了
-            // processTasks();
+            processTasks();
         }
 
         private async void autoAtBackground(){
@@ -534,11 +616,21 @@ namespace Mir2Assistant
                 foreach (var instance in instances)
                 {
                     var CharacterStatus = instance.Value.CharacterStatus;
+                    // 死亡
+                    if (CharacterStatus.CurrentHP <= 0)
+                    {
+                        // 复活 重启
+                        RestartGameProcess(instance.Value.AccountInfo!);
+                        continue;
+                    }
                     if (CharacterStatus.CurrentHP > 0)
                     {
+
                         // 组队
-                        if (CharacterStatus.groupMemCount < GameInstances.Count) { 
-                            if(instance.Value.AccountInfo.IsMainControl){
+                        if (CharacterStatus.groupMemCount < GameInstances.Count)
+                        {
+                            if (instance.Value.AccountInfo.IsMainControl)
+                            {
                                 // GameInstances 除了自己
                                 var members = GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
                                 foreach (var member in members)
@@ -546,10 +638,12 @@ namespace Mir2Assistant
                                     nint[] data = StringUtils.GenerateCompactStringData(member);
                                     SendMirCall.Send(instance.Value, 9004, data);
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 if (!instance.Value.CharacterStatus.allowGroup)
                                 {
-                                    SendMirCall.Send(instance.Value, 9005, new nint[]{1});
+                                    SendMirCall.Send(instance.Value, 9005, new nint[] { 1 });
                                 }
                             }
                         }
@@ -585,7 +679,7 @@ namespace Mir2Assistant
                         }
                     }
                 }
-                await Task.Delay(30_000);
+                await Task.Delay(60_000);
             }
         }
 
