@@ -671,73 +671,70 @@ public static class GoRunFunction
         return 0;
     }
 
-//     public class PathFindingStats
-//     {
-//         public int StartX { get; set; }
-//         public int StartY { get; set; }
-//         public int TargetX { get; set; }
-//         public int TargetY { get; set; }
-//         public int NodesExplored { get; set; }
-//         public int DirectionsChecked { get; set; }
-//         public int MovementAttempts { get; set; }
-//         public int FailedMoves { get; set; }
-//         public int PathLength { get; set; }
-//         public int OneStepMoves { get; set; }
-//         public int TwoStepMoves { get; set; }
-//         public int AlternativePathsUsed { get; set; }
-//         public bool NoPathFound { get; set; }
-//         public bool PathTooLong { get; set; }
-//         public double ElapsedMs { get; set; }
+    //     public class PathFindingStats
+    //     {
+    //         public int StartX { get; set; }
+    //         public int StartY { get; set; }
+    //         public int TargetX { get; set; }
+    //         public int TargetY { get; set; }
+    //         public int NodesExplored { get; set; }
+    //         public int DirectionsChecked { get; set; }
+    //         public int MovementAttempts { get; set; }
+    //         public int FailedMoves { get; set; }
+    //         public int PathLength { get; set; }
+    //         public int OneStepMoves { get; set; }
+    //         public int TwoStepMoves { get; set; }
+    //         public int AlternativePathsUsed { get; set; }
+    //         public bool NoPathFound { get; set; }
+    //         public bool PathTooLong { get; set; }
+    //         public double ElapsedMs { get; set; }
 
-//         public override string ToString()
-//         {
-//             return $@"寻路统计:
-// - 起点: ({StartX}, {StartY}) -> 终点: ({TargetX}, {TargetY})
-// - 耗时: {ElapsedMs:F2}ms
-// - 探索节点数: {NodesExplored}
-// - 检查方向数: {DirectionsChecked}
-// - 尝试移动次数: {MovementAttempts}
-// - 失败移动次数: {FailedMoves}
-// - 路径长度: {PathLength}
-//   - 1步移动: {OneStepMoves}
-//   - 2步移动: {TwoStepMoves}
-// - 使用备选路径次数: {AlternativePathsUsed}
-// - 是否找到路径: {!NoPathFound}{(PathTooLong ? " (距离过远)" : "")}";
-//         }
-//     }
+    //         public override string ToString()
+    //         {
+    //             return $@"寻路统计:
+    // - 起点: ({StartX}, {StartY}) -> 终点: ({TargetX}, {TargetY})
+    // - 耗时: {ElapsedMs:F2}ms
+    // - 探索节点数: {NodesExplored}
+    // - 检查方向数: {DirectionsChecked}
+    // - 尝试移动次数: {MovementAttempts}
+    // - 失败移动次数: {FailedMoves}
+    // - 路径长度: {PathLength}
+    //   - 1步移动: {OneStepMoves}
+    //   - 2步移动: {TwoStepMoves}
+    // - 使用备选路径次数: {AlternativePathsUsed}
+    // - 是否找到路径: {!NoPathFound}{(PathTooLong ? " (距离过远)" : "")}";
+    //         }
+    //     }
 
- 
 
+
+    public static int[][] GetMonsPos(MirGameInstanceModel GameInstance)
+    {
+        var monsters = GameInstance!.Monsters.Where(o => !o.Value.isDead);
+        int[][] monsPos = new int[monsters.Count()][];
+        int index = 0;
+        foreach (var monster in monsters)
+        {
+            monsPos[index++] = new int[] {
+                monster.Value.X,
+                monster.Value.Y
+            };
+        }
+        return monsPos;
+    }
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
           bool nearBlur = false
         )
     {
-
-        // todo 跨地图
         CharacterStatusFunction.GetInfo(GameInstance!);
         MonsterFunction.ReadMonster(GameInstance!);
 
         var stopwatchTotal = new System.Diagnostics.Stopwatch();
         stopwatchTotal.Start();
 
-        // gameInstance.Monsters -- 额外的怪物也是障碍点
-        var monsters = GameInstance!.Monsters.Where(o => !o.Value.isDead);
-        int[][] monsPos = new int[monsters.Count()][];
-        int index = 0;
-        foreach (var monster in monsters)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return false;
-            }
-            monsPos[index++] = new int[] {
-                monster.Value.X,
-                monster.Value.Y
-            };
-        }
-
+        var monsPos = GetMonsPos(GameInstance!);
         var goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur);
         stopwatchTotal.Stop();
         Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
@@ -745,25 +742,35 @@ public static class GoRunFunction
         {
             return false;
         }
+
+        // 计算每个节点的实际坐标
+        var nodePositions = new List<(int x, int y)>();
+        int calcX = GameInstance!.CharacterStatus!.X;
+        int calcY = GameInstance!.CharacterStatus!.Y;
+        foreach (var node in goNodes)
+        {
+            var (nextX, nextY) = getNextPostion(calcX, calcY, node.dir, node.steps);
+            nodePositions.Add((nextX, nextY));
+            calcX = nextX;
+            calcY = nextY;
+        }
+
         while (goNodes.Count > 0)
         {
             if (cancellationToken.IsCancellationRequested)
             {
                 return false;
             }
-            var node = goNodes[0];
-            goNodes.RemoveAt(0);
 
+            var node = goNodes[0];
             var oldX = GameInstance!.CharacterStatus!.X;
             var oldY = GameInstance!.CharacterStatus!.Y;
-
-
             var (nextX, nextY) = getNextPostion(oldX, oldY, node.dir, node.steps);
 
             GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
             var tried = 0;
-            while(true)
+            while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
@@ -780,17 +787,78 @@ public static class GoRunFunction
                 tried++;
                 if (tried > 6)
                 {
-                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                    // 尝试跳到后面的点
+                    foreach (var jumpSteps in new[] { 3, 6, 9, 12, 15, 18, 21 })
+                    {
+                        if (goNodes.Count <= jumpSteps) continue;
+
+                        // 获取跳跃目标点的坐标
+                        var jumpPos = nodePositions[jumpSteps];
+                        MonsterFunction.ReadMonster(GameInstance!);
+                        monsPos = GetMonsPos(GameInstance!);
+                        var jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y, monsPos);
+                        
+                        if (jumpPath.Count > 0)
+                        {
+                            Log.Debug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
+                            
+                            // 先走到跳跃点
+                            bool jumpSuccess = true;
+                            foreach (var pathNode in jumpPath)
+                            {
+                                var (targetX, targetY) = getNextPostion(GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, pathNode.dir, pathNode.steps);
+                                GoRunAlgorithm(GameInstance, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, pathNode.dir, pathNode.steps);
+                                var localTried = 0;
+                                while (localTried < 6)
+                                {
+                                    await Task.Delay(100, cancellationToken);
+                                    CharacterStatusFunction.FastUpdateXY(GameInstance!);
+
+                                    // 检查是否成功移动到目标位置
+                                    if (GameInstance.CharacterStatus.X == targetX && GameInstance.CharacterStatus.Y == targetY)
+                                    {
+                                        break;
+                                    }
+                                    localTried++;
+                                }
+                                if (localTried > 6)
+                                {
+                                    jumpSuccess = false;
+                                    break;
+                                }
+                            }
+
+                            if (jumpSuccess)
+                            {
+                                // 移除跳过的路径点和对应的位置信息
+                                goNodes.RemoveRange(0, jumpSteps + 1);
+                                nodePositions.RemoveRange(0, jumpSteps + 1);
+                                Log.Debug($"成功跳过{jumpSteps}步");
+                                tried = 0;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (tried > 0)  // 如果所有跳跃尝试都失败
+                    {
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                    }
+                    continue;
                 }
 
                 if (oldX != newX || oldY != newY)
                 {
                     if (nextX == newX && nextY == newY)
                     {
+                        goNodes.RemoveAt(0);
+                        nodePositions.RemoveAt(0);
                         break;
-                    } else {
-                        // 遇新障了,导致位置不能通过,或偏移，重新执行寻路逻辑
-                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                    }
+                    else
+                    {
+                        tried = 7; // 触发跳跃尝试
+                        continue;
                     }
                 }
                 // 否则继续等待

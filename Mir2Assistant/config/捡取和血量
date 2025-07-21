@@ -19,7 +19,9 @@ ZC.H+23FE55 - 8B 15 48637500        - mov edx,[ZC.H+356348] { (403) } // 鼠标x
 ZC.H+23FE5B - 8B 45 FC              - mov eax,[ebp-04]
 ZC.H+23FE5E - E8 49470000           - call ZC.H+2445AC
 
-
+// 丢弃
+DBackgroundBackgroundClick_00599CA0
+尝试找最后一个CALL
 
 捡物CALL
 
