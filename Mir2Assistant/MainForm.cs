@@ -508,7 +508,7 @@ namespace Mir2Assistant
                         while (tried < 20)
                         {
                             SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                            await Task.Delay(150);
+                            await Task.Delay(200);
                             MonsterFunction.ReadMonster(instanceValue!);
                             if (body.isButched)
                             {
@@ -698,7 +698,7 @@ namespace Mir2Assistant
                                 Array.Resize(ref data, data.Length + 1);
                                 data[data.Length - 1] = meat.Id;
                                 SendMirCall.Send(instanceValue!, 3011, data);
-                                await Task.Delay(200);
+                                await Task.Delay(300);
                             }
                             await Task.Delay(500);
                             SendMirCall.Send(instanceValue!, 9010, new nint[] { });

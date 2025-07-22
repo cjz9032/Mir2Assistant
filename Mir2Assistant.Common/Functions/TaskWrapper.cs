@@ -23,7 +23,7 @@ namespace Mir2Assistant.Common.Functions
                 int i = 0;
                 while (!ack())
                 {
-                    Task.Delay(100).Wait();
+                    Task.Delay(300).Wait();
                     i++;
                     if (i > timeout)
                     {
