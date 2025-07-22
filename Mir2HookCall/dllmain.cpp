@@ -179,9 +179,9 @@ __declspec(naked) void HookFunction7()
         // ZC.H+24A846 - A2 EC647500           - mov [ZC.H+3564EC],al { (0) } -->超负重指针
         // ZC.H+24A84B - 83 3D 64277500 00     - cmp dword ptr [ZC.H+352764],00 { (06D0D6A0),0 }
 
-        mov eax, 0x7564EC
-        mov eax, [eax]
-        mov eax, 0x1
+        mov eax, g_BaseAddr
+        add eax, 0x3564EC        // 使用基址+偏移
+        mov byte ptr [eax], 0x1  // 使用正确的数据大小
         jmp originalFunc7
     }
 }

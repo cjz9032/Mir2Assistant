@@ -563,9 +563,19 @@ public static class GoRunFunction
 
         var stopwatchTotal = new System.Diagnostics.Stopwatch();
         stopwatchTotal.Start();
+        var goNodes = new List<(byte dir, byte steps)>();
+        int[][] monsPos = new int[0][];
+        try
+        {
+            monsPos = GetMonsPos(GameInstance!);
+            goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur).Select(o => (o.dir, o.steps)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "寻路异常");
+            return false;
+        }
 
-        var monsPos = GetMonsPos(GameInstance!);
-        var goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur);
         stopwatchTotal.Stop();
         Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
         if (goNodes.Count == 0) {
@@ -684,13 +694,14 @@ public static class GoRunFunction
                     if (!isJumpSuccess)
                     {
                         // 失败了怎么办, 只能放弃先了
-                        Log.Warning($"寻路最终未找到 -- 跳点");
-                        return false;
+                        Log.Warning($"寻路最终未找到 -- 跳点 再次尝试 NB");
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange+1, nearBlur);
+                        // return false;
                     }
                     else
                     {
                         // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
-                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur);
                     }
                 }
 

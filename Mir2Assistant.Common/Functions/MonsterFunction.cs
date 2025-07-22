@@ -52,16 +52,17 @@ public static class MonsterFunction
                 monster.Id = id;
                 monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr + 0x18); // todo confirm
                 monster.Addr = monsterAddr;
-                if (string.IsNullOrEmpty(monster.Name)) {
-                        monster.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34 , 0));
+                if (string.IsNullOrEmpty(monster.Name))
+                {
+                    monster.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0));
                 }
-                    
+
                 // todo side effect
                 // memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
 
                 //if (monster.X == null)               {
-                    monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
-                    monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
+                monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
+                monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
                 //}
                 //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
                 monster.Flag = flag;
@@ -107,5 +108,9 @@ public static class MonsterFunction
         var memoryUtils = gameInstance!.MemoryUtils!;
         memoryUtils.WriteInt(gameInstance.MirConfig["打怪基址"], monsterAddr);
     }
-
+    public static void SlayingMonsterCancel(MirGameInstanceModel gameInstance)
+    {
+        var memoryUtils = gameInstance!.MemoryUtils!;
+        memoryUtils.WriteInt(gameInstance.MirConfig["打怪基址"], 0);
+    }
 }

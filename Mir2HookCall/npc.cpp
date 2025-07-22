@@ -73,8 +73,9 @@ const std::map<int, int> offsetMap = {
 
 void bagGridClick(int index){
 
-	int row = index % (8-1);
-	int col = index / 8;
+	// 8x5的背包布局
+	int row = index % 8;        // 每行8格
+	int col = index / 8;        // 总共5行
 	__asm {
 
 		pushad
@@ -335,7 +336,7 @@ void Npc::process(int code, int* data)
 	case 3020: // 脱
 		takeOff(data[0]);
 		break;
-	case 3021: // 脱
+	case 3021: // 穿
 		takeOn(data[0], data[1]);
 		break;
 	case 3030: // 屠宰

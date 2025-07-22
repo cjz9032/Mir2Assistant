@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Mir2Assistant.Common.Models;
+using Serilog;
 
 namespace Mir2Assistant.Common.Functions
 {
@@ -8,10 +10,10 @@ namespace Mir2Assistant.Common.Functions
         {
             Task.Run(() =>
             {
-                if (gameInstance.IsReadingItems)
-                {
-                    return;
-                }
+                //if (gameInstance.IsReadingItems)
+                //{
+                //    return;
+                //}
                 gameInstance.IsReadingItems = true;
                 var memoryUtils = gameInstance!.MemoryUtils!;
                 int itemSize = 0x80; // 每个item占80字节
@@ -95,7 +97,10 @@ namespace Mir2Assistant.Common.Functions
 
         public static void ReadBag(MirGameInstanceModel gameInstance)
         {
+            var sw = Stopwatch.StartNew();
             ReadItems(gameInstance, 0x007531E8, gameInstance.Items);
+            sw.Stop();
+            Log.Debug($"读取背包耗时: {sw.ElapsedMilliseconds}ms, 物品数量: {gameInstance.Items.Count}");
         }
 
     

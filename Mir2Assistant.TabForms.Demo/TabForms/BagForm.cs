@@ -43,8 +43,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnSave_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
-            await Task.Delay(500);
+           
             
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
@@ -64,8 +63,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnSell_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
-            await Task.Delay(500);
+          
             
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
@@ -84,8 +82,6 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnRepair_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
-            await Task.Delay(500);
 
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems) {
@@ -103,8 +99,6 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnTakeOn_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
-            await Task.Delay(500);
             
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
@@ -119,7 +113,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 }
 
                 SendMirCall.Send(GameInstance!, 3021, [item.Index, toIndex ]);
-                await Task.Delay(700);
+                await Task.Delay(900);
             }
 
             await Task.Delay(500);
