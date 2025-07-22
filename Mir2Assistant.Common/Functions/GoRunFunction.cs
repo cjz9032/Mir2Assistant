@@ -141,398 +141,7 @@ public static class GoRunFunction
      
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
     }
-    public static List<(byte dir, byte steps, int x, int y)> FindPathCoreSmallWithAStar(
-        int width, int height, byte[] obstacleData, 
-        int startX, int startY, int targetX, int targetY
-    ){
-        var sw = Stopwatch.StartNew();
-
-        // 如果目的地不能到达
-        if (obstacleData[targetY * width + targetX] == 1) {
-            sw.Stop();
-            Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
-            return new List<(byte dir, byte steps, int x, int y)>();
-        }
-
-        // 定义方向：(dx, dy, 方向值)
-        var directions = new[]
-        {
-            (0, -1, (byte)0),   // 上 8
-            (1, -1, (byte)1),   // 右上 9
-            (1, 0, (byte)2),    // 右 6
-            (1, 1, (byte)3),    // 右下 3
-            (0, 1, (byte)4),    // 下 2
-            (-1, 1, (byte)5),   // 左下 1
-            (-1, 0, (byte)6),   // 左 4
-            (-1, -1, (byte)7)   // 左上 7
-        };
-
-        // 使用优先队列存储待探索的节点
-        var openSet = new PriorityQueue<(int x, int y, List<(byte dir, byte steps, int x, int y)> path), int>();
-        var visited = new HashSet<string>();
-
-        // 将起点加入队列
-        openSet.Enqueue((startX, startY, new List<(byte dir, byte steps, int x, int y)>()), 0);
-        visited.Add($"{startX},{startY}");
-
-        while (openSet.Count > 0)
-        {
-            var (currentX, currentY, currentPath) = openSet.Dequeue();
-
-            // 如果到达目标
-            if (currentX == targetX && currentY == targetY)
-            {
-                sw.Stop();
-                Log.Debug($"A*寻路完成，步数: {currentPath.Count}, 耗时: {sw.ElapsedMilliseconds}ms");
-                return currentPath;
-            }
-
-            // 计算到目标的方向
-            int mainDx = Math.Sign(targetX - currentX);
-            int mainDy = Math.Sign(targetY - currentY);
-
-            // 优先检查朝向目标的方向
-            var directionsToCheck = directions.OrderBy(d => 
-                Math.Abs(d.Item1 - mainDx) + Math.Abs(d.Item2 - mainDy)
-            );
-
-            foreach (var (dx, dy, dir) in directionsToCheck)
-            {
-                // 先尝试2步移动
-                for (byte steps = 2; steps >= 1; steps--)
-                {
-                    // 检查是否可以移动
-                    bool canMove = true;
-                    int newX = currentX + dx * steps;
-                    int newY = currentY + dy * steps;
-
-                    // 检查边界和路径上的每个点
-                    if (newX < 0 || newX >= width || newY < 0 || newY >= height)
-                    {
-                        canMove = false;
-                    }
-                    else
-                    {
-                        for (int i = 1; i <= steps; i++)
-                        {
-                            int checkX = currentX + dx * i;
-                            int checkY = currentY + dy * i;
-                            if (obstacleData[checkY * width + checkX] == 1)
-                            {
-                                canMove = false;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (canMove)
-                    {
-                        string newPos = $"{newX},{newY}";
-                        if (!visited.Contains(newPos))
-                        {
-                            visited.Add(newPos);
-                            var newPath = new List<(byte dir, byte steps, int x, int y)>(currentPath)
-                            {
-                                (dir, steps, newX, newY)
-                            };
-
-                            // 优先级是到目标的曼哈顿距离
-                            int priority = Math.Abs(targetX - newX) + Math.Abs(targetY - newY);
-                            openSet.Enqueue((newX, newY, newPath), priority);
-                        }
-                        break; // 如果2步可以走，就不用试1步了
-                    }
-                }
-            }
-        }
-
-        sw.Stop();
-        Log.Debug($"A*寻路失败，耗时: {sw.ElapsedMilliseconds}ms");
-        return new List<(byte dir, byte steps, int x, int y)>();
-    }
-    /// <summary>
-    /// 寻路算法
-    /// </summary>
-    public static List<(byte dir, byte steps, int x, int y)> FindPathCore(
-        int width, int height, byte[] obstacleData, 
-        int startX, int startY, int targetX, int targetY,
-        int maxDistanceBeforeSegment = 300,
-        int segmentLength = 120)
-    {
-        var sw = Stopwatch.StartNew();
-
-        // 如果目的地不能到达
-        if (obstacleData[targetY * width + targetX] == 1) {
-            sw.Stop();
-            Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
-            return new List<(byte dir, byte steps, int x, int y)>();
-        }
-
-        // 计算总距离
-        int totalDistance = Math.Abs(targetX - startX) + Math.Abs(targetY - startY);
-        
-        // 如果距离超过阈值，使用分段寻路
-        if (totalDistance > maxDistanceBeforeSegment)
-        {
-            Log.Debug($"距离过远({totalDistance}格)，使用分段寻路");
-            var finalPath = new List<(byte dir, byte steps, int x, int y)>();
-            int currentX = startX;
-            int currentY = startY;
-            int segmentCount = 0;
-            
-            while (Math.Abs(targetX - currentX) + Math.Abs(targetY - currentY) > segmentLength)
-            {
-                segmentCount++;
-                var segmentSw = Stopwatch.StartNew();
-
-                // 计算理想的中间点
-                int dx = targetX - currentX;
-                int dy = targetY - currentY;
-                double ratio = segmentLength / Math.Sqrt(dx * dx + dy * dy);
-                int idealMidX = currentX + (int)(dx * ratio);
-                int idealMidY = currentY + (int)(dy * ratio);
-
-                // 在理想点周围搜索可行点
-                bool foundValidMidPoint = false;
-                int midX = 0, midY = 0;
-                int bestDistance = int.MaxValue;
-
-                // 先检查理想点
-                if (idealMidX >= 0 && idealMidX < width && idealMidY >= 0 && idealMidY < height &&
-                    obstacleData[idealMidY * width + idealMidX] != 1)
-                {
-                    midX = idealMidX;
-                    midY = idealMidY;
-                    foundValidMidPoint = true;
-                }
-                else
-                {
-                    // 如果理想点不行，在周围找最近的可行点
-                    for (int range = 1; range < 10 && !foundValidMidPoint; range++)
-                    {
-                        // 先检查十字方向
-                        (int dx, int dy)[] directions = { (0, -1), (1, 0), (0, 1), (-1, 0) };
-                        foreach (var (dirX, dirY) in directions)
-                        {
-                            int checkX = idealMidX + dirX * range;
-                            int checkY = idealMidY + dirY * range;
-                            
-                            if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height &&
-                                obstacleData[checkY * width + checkX] != 1)
-                            {
-                                int distance = Math.Abs(checkX - idealMidX) + Math.Abs(checkY - idealMidY);
-                                if (distance < bestDistance)
-                                {
-                                    bestDistance = distance;
-                                    midX = checkX;
-                                    midY = checkY;
-                                    foundValidMidPoint = true;
-                                }
-                            }
-                        }
-
-                        // 如果十字方向都不行，检查斜向
-                        if (!foundValidMidPoint)
-                        {
-                            (int dx, int dy)[] diagonals = { (1, -1), (1, 1), (-1, 1), (-1, -1) };
-                            foreach (var (dirX, dirY) in diagonals)
-                            {
-                                int checkX = idealMidX + dirX * range;
-                                int checkY = idealMidY + dirY * range;
-                                
-                                if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height &&
-                                    obstacleData[checkY * width + checkX] != 1)
-                                {
-                                    int distance = Math.Abs(checkX - idealMidX) + Math.Abs(checkY - idealMidY);
-                                    if (distance < bestDistance)
-                                    {
-                                        bestDistance = distance;
-                                        midX = checkX;
-                                        midY = checkY;
-                                        foundValidMidPoint = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!foundValidMidPoint)
-                {
-                    // 如果还找不到，尝试缩短距离再试一次
-                    segmentLength = segmentLength * 2 / 3;
-                    if (segmentLength < 40)
-                    {
-                        sw.Stop();
-                        Log.Warning($"无法找到有效的中间点，总耗时: {sw.ElapsedMilliseconds}ms");
-                        return new List<(byte dir, byte steps, int x, int y)>();
-                    }
-                    continue;
-                }
-
-                // 寻路到中间点
-                var segmentPath = FindPathSingle(width, height, obstacleData, currentX, currentY, midX, midY);
-                if (segmentPath.Count == 0)
-                {
-                    sw.Stop();
-                    Log.Warning($"无法找到到中间点({midX},{midY})的路径，总耗时: {sw.ElapsedMilliseconds}ms");
-                    return new List<(byte dir, byte steps, int x, int y)>();
-                }
-
-                finalPath.AddRange(segmentPath);
-                currentX = midX;
-                currentY = midY;
-                segmentSw.Stop();
-                Log.Debug($"完成第{segmentCount}段寻路: ({currentX},{currentY}), 剩余距离: {Math.Abs(targetX - currentX) + Math.Abs(targetY - currentY)}, 本段耗时: {segmentSw.ElapsedMilliseconds}ms");
-            }
-
-            // 寻路到最终目标
-            var lastSw = Stopwatch.StartNew();
-            var lastPath = FindPathSingle(width, height, obstacleData, currentX, currentY, targetX, targetY);
-            if (lastPath.Count == 0)
-            {
-                sw.Stop();
-                Log.Warning($"无法找到到最终目标的路径，总耗时: {sw.ElapsedMilliseconds}ms");
-                return new List<(byte dir, byte steps, int x, int y)>();
-            }
-
-            finalPath.AddRange(lastPath);
-            lastSw.Stop();
-            sw.Stop();
-            Log.Debug($"分段寻路完成，总段数: {segmentCount + 1}, 总步数: {finalPath.Count}, 最后一段耗时: {lastSw.ElapsedMilliseconds}ms, 总耗时: {sw.ElapsedMilliseconds}ms");
-            return finalPath;
-        }
-        else
-        {
-            var result = FindPathSingle(width, height, obstacleData, startX, startY, targetX, targetY);
-            sw.Stop();
-            Log.Debug($"普通寻路完成，步数: {result.Count}, 耗时: {sw.ElapsedMilliseconds}ms");
-            return result;
-        }
-    }
-
-    /// <summary>
-    /// 单段寻路算法
-    /// </summary>
-    private static List<(byte dir, byte steps, int x, int y)> FindPathSingle(int width, int height, byte[] obstacleData, int startX, int startY, int targetX, int targetY)
-    {
-        // 方向定义：(dx, dy, 方向值)
-        var directions = new[]
-        {
-            (0, -1, (byte)0),   // 上 8
-            (1, -1, (byte)1),   // 右上 9
-            (1, 0, (byte)2),    // 右 6
-            (1, 1, (byte)3),    // 右下 3
-            (0, 1, (byte)4),    // 下 2
-            (-1, 1, (byte)5),   // 左下 1
-            (-1, 0, (byte)6),   // 左 4
-            (-1, -1, (byte)7)   // 左上 7
-        };
-
-        // 如果起点和终点相同，返回空路径
-        if (startX == targetX && startY == targetY)
-        {
-            return new List<(byte dir, byte steps, int x, int y)>();
-        }
-
-        // 如果目标点就在旁边，直接返回一步路径
-        if (Math.Abs(targetX - startX) <= 2 && Math.Abs(targetY - startY) <= 2)
-        {
-            int dx = Math.Sign(targetX - startX);
-            int dy = Math.Sign(targetY - startY);
-            byte dir = GetDirectionFromDelta(dx, dy);
-            byte steps = (byte)Math.Max(Math.Abs(targetX - startX), Math.Abs(targetY - startY));
-            if (steps == 0) steps = 1;
-            
-            // 检查这一步是否可行
-            if (CanMove(startX, startY, dx, dy, steps))
-            {
-                return new List<(byte dir, byte steps, int x, int y)> { (dir, steps, targetX, targetY) };
-            }
-        }
-
-        // 使用优先队列来存储待探索的节点
-        var openSet = new PriorityQueue<(int x, int y, List<(byte dir, byte steps, int x, int y)> path), int>();
-        var visited = new HashSet<string>();
-        
-        // 将起点加入队列
-        openSet.Enqueue((startX, startY, new List<(byte dir, byte steps, int x, int y)>()), 0);
-        visited.Add($"{startX},{startY}");
-
-        while (openSet.Count > 0)
-        {
-            var (currentX, currentY, currentPath) = openSet.Dequeue();
-
-            // 如果到达目标
-            if (currentX == targetX && currentY == targetY)
-            {
-                return currentPath;
-            }
-
-            // 计算到目标的方向
-            int mainDx = Math.Sign(targetX - currentX);
-            int mainDy = Math.Sign(targetY - currentY);
-
-            // 优先检查朝向目标的方向
-            var directionsToCheck = directions.OrderBy(d => 
-                Math.Abs(d.Item1 - mainDx) + Math.Abs(d.Item2 - mainDy)
-            );
-
-            foreach (var (dx, dy, dir) in directionsToCheck)
-            {
-                // 先尝试2步移动
-                for (byte steps = 2; steps >= 1; steps--)
-                {
-                    if (CanMove(currentX, currentY, dx, dy, steps))
-                    {
-                        int newX = currentX + dx * steps;
-                        int newY = currentY + dy * steps;
-                        string newPos = $"{newX},{newY}";
-
-                        // 如果这个位置没访问过
-                        if (!visited.Contains(newPos))
-                        {
-                            visited.Add(newPos);
-                            var newPath = new List<(byte dir, byte steps, int x, int y)>(currentPath)
-                            {
-                                (dir, steps, newX, newY)
-                            };
-
-                            // 优先级是到目标的曼哈顿距离
-                            int priority = Math.Abs(targetX - newX) + Math.Abs(targetY - newY);
-                            openSet.Enqueue((newX, newY, newPath), priority);
-                        }
-                        break; // 如果能移动，不需要尝试1步
-                    }
-                }
-            }
-        }
-
-        // 如果没找到路径
-        return new List<(byte dir, byte steps, int x, int y)>();
-
-        // 局部函数：检查是否可以移动
-        bool CanMove(int x, int y, int dx, int dy, byte stepSize)
-        {
-            // 检查目标点是否有效
-            int newX = x + dx * stepSize;
-            int newY = y + dy * stepSize;
-            if (newX < 0 || newX >= width || newY < 0 || newY >= height)
-                return false;
-
-            // 检查路径上的所有点
-            for (int i = 1; i <= stepSize; i++)
-            {
-                int checkX = x + dx * i;
-                int checkY = y + dy * i;
-                if (obstacleData[checkY * width + checkX] == 1)
-                    return false;
-            }
-
-            return true;
-        }
-    }
-
+ 
     public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY, 
     int[][] monsPos,
     int blurRange = 0,
@@ -572,51 +181,51 @@ public static class GoRunFunction
             }
         }
 
-        // 检查起点和终点是否为障碍物，若为障碍物则直接返回空路径 
-        if (data[targetY * width + targetX] == 1) {
-            if (blurRange > 0) {
-                List<(int X, int Y)> candidatePoints = new List<(int X, int Y)>();
+        // 检查起点和终点是否为障碍物
+        if (blurRange > 0) {
+            List<(int X, int Y, double Distance)> candidatePoints = new List<(int X, int Y, double Distance)>();
                 
-                // 以target为中心，在range范围内选取n*n的范围
-                for (int y = targetY - blurRange; y <= targetY + blurRange; y++) {
-                    for (int x = targetX - blurRange; x <= targetX + blurRange; x++) {
-                        if (x >= 0 && x < width && y >= 0 && y < height) {
-                            candidatePoints.Add((x, y));
-                        }
+            // 以target为中心，在range范围内选取n*n的范围
+            for (int y = targetY - blurRange; y <= targetY + blurRange; y++) {
+                for (int x = targetX - blurRange; x <= targetX + blurRange; x++) {
+                    if (x >= 0 && x < width && y >= 0 && y < height && data[y * width + x] != 1) {
+                        // 计算到起点和终点的距离
+                        double distToStart = Math.Sqrt(Math.Pow(x - myX, 2) + Math.Pow(y - myY, 2));
+                        double distToTarget = Math.Sqrt(Math.Pow(x - targetX, 2) + Math.Pow(y - targetY, 2));
+                        // 综合距离评分：起点距离权重0.7，终点距离权重0.3
+                        double score = nearBlur ? 
+                            (99 * distToStart + 0.3 * distToTarget) :  // 近距离优先
+                            (0.3 * distToStart + 99 * distToTarget);   // 远距离优先
+                            
+                        candidatePoints.Add((x, y, score));
                     }
                 }
+            }
                 
-                // 根据blurFirst决定排序顺序
-                if (nearBlur) {
-                    candidatePoints = candidatePoints.OrderBy(p => Math.Abs(p.X - targetX) + Math.Abs(p.Y - targetY)).ToList();
-                } else {
-                    candidatePoints = candidatePoints.OrderByDescending(p => Math.Abs(p.X - targetX) + Math.Abs(p.Y - targetY)).ToList();
-                }
+            // 根据综合距离评分排序
+            candidatePoints = candidatePoints.OrderBy(p => p.Distance).ToList();
                 
-                targetX = -1;
-                targetY = -1;
+            targetX = -1;
+            targetY = -1;
                 
-                if (candidatePoints.Count > 0) {
-                    foreach (var point in candidatePoints) {
-                        if (data[point.Y * width + point.X] != 1) {
-                            targetX = point.X;
-                            targetY = point.Y;
-                            break;
-                        }
-                    }
-                }
+            if (candidatePoints.Count > 0) {
+                // 取评分最优的点
+                targetX = candidatePoints[0].X;
+                targetY = candidatePoints[0].Y;
+                Log.Debug($"找到最佳模糊目标点: ({targetX}, {targetY}), 距离评分: {candidatePoints[0].Distance:F2}");
+            }
                 
-                if (targetX == -1) {
-                    sw.Stop();
-                    Log.Debug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
-                    return new List<(byte dir, byte steps)>();
-                }
-            } else {
+            if (targetX == -1) {
                 sw.Stop();
-                Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
+                Log.Debug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
                 return new List<(byte dir, byte steps)>();
             }
+        } else if(data[targetY * width + targetX] == 1){
+            sw.Stop();
+            Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
+            return new List<(byte dir, byte steps)>();
         }
+        
         // 分距离, 100以内直接a星
         List<(byte dir, byte steps, int x, int y)> path = new List<(byte dir, byte steps, int x, int y)>();
         if (Math.Abs(targetX - myX) + Math.Abs(targetY - myY) <= 150)
@@ -625,8 +234,10 @@ public static class GoRunFunction
         }
         else
         {
-            path = FindPathCore(width, height, data, myX, myY, targetX, targetY);
+            path = FindPathJPS(width, height, data, myX, myY, targetX, targetY);
         }
+        // 优化路径
+        path = OptimizePath(path);
         sw.Stop();
         Log.Debug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
         return path.Select(p => (p.dir, p.steps)).ToList();
@@ -671,41 +282,260 @@ public static class GoRunFunction
         return 0;
     }
 
-    //     public class PathFindingStats
-    //     {
-    //         public int StartX { get; set; }
-    //         public int StartY { get; set; }
-    //         public int TargetX { get; set; }
-    //         public int TargetY { get; set; }
-    //         public int NodesExplored { get; set; }
-    //         public int DirectionsChecked { get; set; }
-    //         public int MovementAttempts { get; set; }
-    //         public int FailedMoves { get; set; }
-    //         public int PathLength { get; set; }
-    //         public int OneStepMoves { get; set; }
-    //         public int TwoStepMoves { get; set; }
-    //         public int AlternativePathsUsed { get; set; }
-    //         public bool NoPathFound { get; set; }
-    //         public bool PathTooLong { get; set; }
-    //         public double ElapsedMs { get; set; }
+    private static List<(byte dir, byte steps, int x, int y)> FindPathCoreSmallWithAStar(int width, int height, byte[] obstacles, int startX, int startY, int targetX, int targetY)
+    {
+        var openSet = new PriorityQueue<Node, int>();
+        var closedSet = new HashSet<string>();
+        var startNode = new Node(startX, startY);
+        startNode.G = 0;
+        startNode.H = Math.Abs(targetX - startX) + Math.Abs(targetY - startY);
+        openSet.Enqueue(startNode, startNode.F);
 
-    //         public override string ToString()
-    //         {
-    //             return $@"寻路统计:
-    // - 起点: ({StartX}, {StartY}) -> 终点: ({TargetX}, {TargetY})
-    // - 耗时: {ElapsedMs:F2}ms
-    // - 探索节点数: {NodesExplored}
-    // - 检查方向数: {DirectionsChecked}
-    // - 尝试移动次数: {MovementAttempts}
-    // - 失败移动次数: {FailedMoves}
-    // - 路径长度: {PathLength}
-    //   - 1步移动: {OneStepMoves}
-    //   - 2步移动: {TwoStepMoves}
-    // - 使用备选路径次数: {AlternativePathsUsed}
-    // - 是否找到路径: {!NoPathFound}{(PathTooLong ? " (距离过远)" : "")}";
-    //         }
-    //     }
+        while (openSet.Count > 0)
+        {
+            var current = openSet.Dequeue();
 
+            if (current.X == targetX && current.Y == targetY)
+            {
+                return ReconstructPath(current);
+            }
+
+            var key = $"{current.X},{current.Y}";
+            if (closedSet.Contains(key)) continue;
+            closedSet.Add(key);
+
+            // 8个方向
+            int[] dx = { 0, 1, 1, 1, 0, -1, -1, -1 };
+            int[] dy = { -1, -1, 0, 1, 1, 1, 0, -1 };
+
+            for (int i = 0; i < 8; i++)
+            {
+                int newX = current.X + dx[i];
+                int newY = current.Y + dy[i];
+
+                if (newX < 0 || newX >= width || newY < 0 || newY >= height) continue;
+                if (obstacles[newY * width + newX] == 1) continue;
+
+                var neighbor = new Node(newX, newY, current);
+                neighbor.Direction = (byte)i;
+                neighbor.StepSize = 1;
+                
+                // 对角线移动代价和直线移动一样
+                neighbor.G = current.G + 1;
+                neighbor.H = Math.Abs(targetX - newX) + Math.Abs(targetY - newY);
+
+                if (!closedSet.Contains($"{newX},{newY}"))
+                {
+                    openSet.Enqueue(neighbor, neighbor.F);
+                }
+            }
+        }
+
+        return new List<(byte dir, byte steps, int x, int y)>();
+    }
+
+    private static List<(byte dir, byte steps, int x, int y)> FindPathJPS(int width, int height, byte[] obstacles, int startX, int startY, int targetX, int targetY)
+    {
+        var openSet = new PriorityQueue<Node, int>();
+        var closedSet = new HashSet<string>();
+        var startNode = new Node(startX, startY);
+        startNode.G = 0;
+        startNode.H = Math.Abs(targetX - startX) + Math.Abs(targetY - startY);
+        openSet.Enqueue(startNode, startNode.F);
+
+        while (openSet.Count > 0)
+        {
+            var current = openSet.Dequeue();
+
+            if (current.X == targetX && current.Y == targetY)
+            {
+                return ReconstructPath(current);
+            }
+
+            var key = $"{current.X},{current.Y}";
+            if (closedSet.Contains(key)) continue;
+            closedSet.Add(key);
+
+            var successors = IdentifySuccessors(current, width, height, obstacles, targetX, targetY);
+            foreach (var successor in successors)
+            {
+                if (!closedSet.Contains($"{successor.X},{successor.Y}"))
+                {
+                    openSet.Enqueue(successor, successor.F);
+                }
+            }
+        }
+
+        return new List<(byte dir, byte steps, int x, int y)>();
+    }
+
+    private static List<Node> IdentifySuccessors(Node node, int width, int height, byte[] obstacles, int targetX, int targetY)
+    {
+        var successors = new List<Node>();
+        var neighbors = GetPrunedNeighbors(node, width, height, obstacles);
+
+        foreach (var neighbor in neighbors)
+        {
+            var jumpPoint = Jump(neighbor.X, neighbor.Y, node.X, node.Y, width, height, obstacles, targetX, targetY);
+            if (jumpPoint != null)
+            {
+                jumpPoint.Parent = node;
+                jumpPoint.G = node.G + GetDistance(node.X, node.Y, jumpPoint.X, jumpPoint.Y);
+                jumpPoint.H = Math.Abs(targetX - jumpPoint.X) + Math.Abs(targetY - jumpPoint.Y);
+                jumpPoint.Direction = GetDirectionFromDelta(jumpPoint.X - node.X, jumpPoint.Y - node.Y);
+                jumpPoint.StepSize = 1;
+                successors.Add(jumpPoint);
+            }
+        }
+
+        return successors;
+    }
+
+    private static List<Node> GetPrunedNeighbors(Node node, int width, int height, byte[] obstacles)
+    {
+        var neighbors = new List<Node>();
+        int[] dx = { 0, 1, 1, 1, 0, -1, -1, -1 };
+        int[] dy = { -1, -1, 0, 1, 1, 1, 0, -1 };
+
+        for (int i = 0; i < 8; i++)
+        {
+            int newX = node.X + dx[i];
+            int newY = node.Y + dy[i];
+
+            if (newX < 0 || newX >= width || newY < 0 || newY >= height) continue;
+            if (obstacles[newY * width + newX] == 1) continue;
+
+            // 对角线移动时需要检查两个相邻格子是否可通行
+            if (i % 2 == 1) // 对角线方向
+            {
+                int x1 = node.X + dx[i - 1];
+                int y1 = node.Y + dy[i - 1];
+                int x2 = node.X + dx[(i + 1) % 8];
+                int y2 = node.Y + dy[(i + 1) % 8];
+
+                if (obstacles[y1 * width + x1] == 1 || obstacles[y2 * width + x2] == 1)
+                    continue;
+            }
+
+            neighbors.Add(new Node(newX, newY));
+        }
+
+        return neighbors;
+    }
+
+    private static Node? Jump(int x, int y, int px, int py, int width, int height, byte[] obstacles, int targetX, int targetY)
+    {
+        if (x < 0 || x >= width || y < 0 || y >= height || obstacles[y * width + x] == 1)
+            return null;
+
+        if (x == targetX && y == targetY)
+            return new Node(x, y);
+
+        int dx = x - px;
+        int dy = y - py;
+
+        // 对角线移动
+        if (dx != 0 && dy != 0)
+        {
+            // 检查强制邻居
+            if ((IsWalkable(x - dx, y + dy, width, height, obstacles) && !IsWalkable(x - dx, y, width, height, obstacles)) ||
+                (IsWalkable(x + dx, y - dy, width, height, obstacles) && !IsWalkable(x, y - dy, width, height, obstacles)))
+            {
+                return new Node(x, y);
+            }
+
+            // 递归检查水平和垂直方向
+            if (Jump(x + dx, y, x, y, width, height, obstacles, targetX, targetY) != null ||
+                Jump(x, y + dy, x, y, width, height, obstacles, targetX, targetY) != null)
+            {
+                return new Node(x, y);
+            }
+        }
+        else // 直线移动
+        {
+            if (dx != 0) // 水平移动
+            {
+                // 检查强制邻居
+                if ((IsWalkable(x + dx, y + 1, width, height, obstacles) && !IsWalkable(x, y + 1, width, height, obstacles)) ||
+                    (IsWalkable(x + dx, y - 1, width, height, obstacles) && !IsWalkable(x, y - 1, width, height, obstacles)))
+                {
+                    return new Node(x, y);
+                }
+            }
+            else // 垂直移动
+            {
+                // 检查强制邻居
+                if ((IsWalkable(x + 1, y + dy, width, height, obstacles) && !IsWalkable(x + 1, y, width, height, obstacles)) ||
+                    (IsWalkable(x - 1, y + dy, width, height, obstacles) && !IsWalkable(x - 1, y, width, height, obstacles)))
+                {
+                    return new Node(x, y);
+                }
+            }
+        }
+
+        // 如果没有强制邻居，继续在同一方向跳跃
+        return Jump(x + dx, y + dy, x, y, width, height, obstacles, targetX, targetY);
+    }
+
+    private static bool IsWalkable(int x, int y, int width, int height, byte[] obstacles)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height && obstacles[y * width + x] != 1;
+    }
+
+    private static int GetDistance(int x1, int y1, int x2, int y2)
+    {
+        return Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1));
+    }
+
+    private static List<(byte dir, byte steps, int x, int y)> ReconstructPath(Node node)
+    {
+        var path = new List<(byte dir, byte steps, int x, int y)>();
+        var current = node;
+
+        while (current.Parent != null)
+        {
+            path.Add((current.Direction, current.StepSize, current.X, current.Y));
+            current = current.Parent;
+        }
+
+        path.Reverse();
+        return path;
+    }
+
+    private static List<(byte dir, byte steps, int x, int y)> OptimizePath(List<(byte dir, byte steps, int x, int y)> path)
+    {
+        if (path.Count < 2) return path;
+
+        var optimizedPath = new List<(byte dir, byte steps, int x, int y)>();
+        int i = 0;
+
+        while (i < path.Count)
+        {
+            // 当前点
+            var current = path[i];
+            
+            // 检查是否可以和下一个点合并
+            if (i + 1 < path.Count)
+            {
+                var next = path[i + 1];
+                
+                // 如果方向相同且都是步长1，可以合并
+                if (current.dir == next.dir && current.steps == 1 && next.steps == 1)
+                {
+                    // 合并为步长2的点，使用第二个点的坐标
+                    optimizedPath.Add((current.dir, 2, next.x, next.y));
+                    i += 2; // 跳过下一个点
+                    continue;
+                }
+            }
+            
+            // 不能合并，保持原样添加
+            optimizedPath.Add(current);
+            i++;
+        }
+
+        return optimizedPath;
+    }
 
 
     public static int[][] GetMonsPos(MirGameInstanceModel GameInstance)
@@ -725,7 +555,7 @@ public static class GoRunFunction
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
-          bool nearBlur = false
+          bool nearBlur = true
         )
     {
         CharacterStatusFunction.GetInfo(GameInstance!);
