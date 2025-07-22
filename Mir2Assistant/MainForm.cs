@@ -382,11 +382,11 @@ namespace Mir2Assistant
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
             var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆"};
-            // >=5级 排除掉鹿先
-            if (instanceValue.CharacterStatus!.Level >= 5)
-            {
-                allowMonsters = allowMonsters.Where(o => o != "鹿").ToArray();
-            }
+            // >=5级 排除掉鹿先 但是少肉
+            // if (instanceValue.CharacterStatus!.Level >= 5)
+            // {
+            //     allowMonsters = allowMonsters.Where(o => o != "鹿").ToArray();
+            // }
             // 当前巡回
             var curP = 0;
             var CharacterStatus = instanceValue.CharacterStatus!;

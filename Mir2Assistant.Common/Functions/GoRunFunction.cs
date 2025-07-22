@@ -642,8 +642,17 @@ public static class GoRunFunction
                         // 获取跳跃目标点的坐标
                         var jumpPos = nodePositions[jumpSteps];
                         MonsterFunction.ReadMonster(GameInstance!);
-                        monsPos = GetMonsPos(GameInstance!);
-                        var jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y, monsPos);
+                        var jumpPath = new List<(byte dir, byte steps)>();
+                        try
+                        {
+                            monsPos = GetMonsPos(GameInstance!);
+                            jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y, monsPos).Select(o => (o.dir, o.steps)).ToList();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, "寻路异常");
+                            return false;
+                        }
 
                         if (jumpPath.Count > 0)
                         {
