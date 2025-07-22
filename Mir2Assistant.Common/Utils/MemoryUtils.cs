@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Mir2Assistant.Common.Utils;
-public class MemoryUtils
+public class MemoryUtils : IDisposable
 {
     #region API
 
@@ -37,6 +37,7 @@ public class MemoryUtils
 
     private readonly MirGameInstanceModel _gameInstance;
     private nint _handle;
+    private bool _disposed = false;
 
     public MemoryUtils(MirGameInstanceModel gameInstance)
     {
@@ -46,7 +47,33 @@ public class MemoryUtils
 
     ~MemoryUtils()
     {
-        CloseHandle(_handle);
+        Dispose(false);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                // 释放托管资源
+            }
+
+            // 释放非托管资源
+            if (_handle != IntPtr.Zero)
+            {
+                CloseHandle(_handle);
+                _handle = IntPtr.Zero;
+            }
+
+            _disposed = true;
+        }
     }
 
     #region Read

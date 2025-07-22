@@ -11,7 +11,7 @@ namespace Mir2Assistant
 {
     public partial class MainForm : Form
     {
-        private Dictionary<int, MirGameInstanceModel> GameInstances = new Dictionary<int, MirGameInstanceModel>();
+        static private Dictionary<int, MirGameInstanceModel> GameInstances = new Dictionary<int, MirGameInstanceModel>();
         private string currentProcessName = Process.GetCurrentProcess().ProcessName;
         private List<GameAccountModel> accountList = new List<GameAccountModel>();
         private string configFilePath = Path.Combine(Directory.GetCurrentDirectory(), "accounts.json");
@@ -77,8 +77,11 @@ namespace Mir2Assistant
             try
             {
                Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
-               string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { WriteIndented = true });
-               File.WriteAllText(configFilePath, json);
+               string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { 
+                   WriteIndented = true,
+                   Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+               });
+               File.WriteAllText(configFilePath, json, System.Text.Encoding.UTF8);
                Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
             }
             catch (Exception ex)
@@ -356,7 +359,7 @@ namespace Mir2Assistant
                 foreach (var account in accountList)
                 {
                     RestartGameProcess(account);
-                    await Task.Delay(10_000); // 异步延迟5秒
+                    await Task.Delay(7_000); // 异步延迟5秒
                 }
              
                 // sllep 
@@ -384,8 +387,28 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             while (true)
             {
-                var (px, py) = patrolPairs[curP];
-                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, px, py, "", 4);
+                // 主从模式
+                // 主人是点位
+                var (px, py) = (0, 0);
+                // 从是跟随
+                if (instanceValue.AccountInfo!.IsMainControl)
+                {
+                    // 主人是点位
+                    (px, py) = patrolPairs[curP];
+                }
+                else
+                {
+                    // 从是跟随
+                    var instances = GameInstances.ToList();
+                    var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
+                    if (mainInstance.Key != 0)
+                    {
+                        (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
+                    }
+                }
+                
+
+                bool _whateverPathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, px, py, "", 5);
 
                 // 无怪退出
                 while (true)
@@ -487,9 +510,34 @@ namespace Mir2Assistant
             instances.ForEach(async instance =>
             {
                 var instanceValue = instance.Value;
-                var fixedPoints = new (int, int)[] { (625, 580), (625, 570), (625, 560), (625, 550), (625, 540), (625, 530), (625, 520) };
-
                 var CharacterStatus = instanceValue.CharacterStatus!;
+                var fixedPoints = new List<(int, int)>();
+                var patrolSteps = 15;
+                var portalStartX = 580;
+                var portalEndX = 660;
+                var portalStartY = 580;
+                var portalEndY = 660;
+                // 生成矩形区域内的所有点位
+                for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
+                {
+                    // 根据x的奇偶性决定y的遍历方向，形成蛇形路线
+                    var yStart = (x - portalStartX) / patrolSteps % 2 == 0 ? portalStartY : portalEndY;
+                    var yEnd = (x - portalStartX) / patrolSteps % 2 == 0 ? portalEndY : portalStartY;
+                    var yStep = (x - portalStartX) / patrolSteps % 2 == 0 ? patrolSteps : -patrolSteps;
+
+                    for (int y = yStart; yStep > 0 ? y <= yEnd : y >= yEnd; y += yStep)
+                    {
+                        // 生成点位
+                        fixedPoints.Add((x, y));
+                        Log.Debug($"生成巡逻点: ({x}, {y})");
+                    }
+                }
+
+                Log.Information($"共生成 {fixedPoints.Count} 个巡逻点");
+
+                // 转换为数组
+                var patrolPairs = fixedPoints.ToArray();
+                
                 if (CharacterStatus.CurrentHP > 0)
                 {
                     var act = instanceValue.AccountInfo!;
@@ -536,7 +584,7 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
 
-                                await NormalAttackPoints(instanceValue, _cancellationTokenSource,fixedPoints, (instanceValue) =>
+                                await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
                                 {
                                     // 检查背包的肉
                                     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
@@ -590,7 +638,7 @@ namespace Mir2Assistant
                         {
                             // 升级到5
                             // 抽象到巡逻, 然后能退出
-                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, fixedPoints, (instanceValue) =>
+                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
                             {
                                 return instanceValue.CharacterStatus!.Level >= 5;
                             });

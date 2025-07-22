@@ -13,7 +13,8 @@ OriginalFuncType originalFunc2 = NULL;
 OriginalFuncType originalFunc3 = NULL;
 OriginalFuncType originalFunc4 = NULL;
 OriginalFuncType originalFunc5 = NULL;
-OriginalFuncType originalFunc6 = NULL; // 新增hook6原函数指针
+OriginalFuncType originalFunc6 = NULL; 
+OriginalFuncType originalFunc7 = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -171,6 +172,20 @@ __declspec(naked) void HookFunction6()
     }
 }
 
+__declspec(naked) void HookFunction7()
+{
+    __asm {
+        // ZC.H+24A840 - 8A 85 48FEFFFF        - mov al,[ebp-000001B8]
+        // ZC.H+24A846 - A2 EC647500           - mov [ZC.H+3564EC],al { (0) } -->超负重指针
+        // ZC.H+24A84B - 83 3D 64277500 00     - cmp dword ptr [ZC.H+352764],00 { (06D0D6A0),0 }
+
+        mov eax, 0x7564EC
+        mov eax, [eax]
+        mov eax, 0x1
+        jmp originalFunc7
+    }
+}
+
 bool InitHook()
 {
     InitBaseAddr();
@@ -229,6 +244,13 @@ bool InitHook()
     if (MH_CreateHook((LPVOID)targetAddress6, HookFunction6, (LPVOID*)&originalFunc6) != MH_OK)
     {
         printf("hook 6 fail\n");
+        return false;
+    }
+    // 7 又一些开关, 超负重, 不确定是否有其他
+    DWORD targetAddress7 = 0x24A84B + (DWORD)GetModuleHandle(L"ZC.H");
+    if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
+    {
+        printf("hook 7 fail\n");
         return false;
     }
 

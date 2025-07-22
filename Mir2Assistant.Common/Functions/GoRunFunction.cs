@@ -568,8 +568,8 @@ public static class GoRunFunction
         var goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur);
         stopwatchTotal.Stop();
         Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
-        if (goNodes.Count == 0)
-        {
+        if (goNodes.Count == 0) {
+            Log.Warning($"寻路最终未找到");
             return false;
         }
 
@@ -617,9 +617,16 @@ public static class GoRunFunction
                 tried++;
                 if (tried > 6)
                 {
-                    // 尝试跳到后面的点
-                    foreach (var jumpSteps in new[] { 3, 6, 9, 12, 15, 18, 21 })
+                    // 如果在模糊范围内也算成功
+                    if (Math.Abs(tx - newX) <= blurRange && Math.Abs(ty - newY) <= blurRange)
                     {
+                        return true;
+                    }
+                    // 尝试跳到后面的点
+                    var isJumpSuccess = false;
+                    foreach (var jumpSteps in new[] { 1, 2, 3, 4, 5, 10, 11, 15 })
+                    {
+                        await Task.Delay(100, cancellationToken);
                         if (goNodes.Count <= jumpSteps) continue;
 
                         // 获取跳跃目标点的坐标
@@ -627,13 +634,12 @@ public static class GoRunFunction
                         MonsterFunction.ReadMonster(GameInstance!);
                         monsPos = GetMonsPos(GameInstance!);
                         var jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y, monsPos);
-                        
+
                         if (jumpPath.Count > 0)
                         {
                             Log.Debug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
-                            
+
                             // 先走到跳跃点
-                            bool jumpSuccess = true;
                             foreach (var pathNode in jumpPath)
                             {
                                 var (targetX, targetY) = getNextPostion(GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, pathNode.dir, pathNode.steps);
@@ -647,18 +653,19 @@ public static class GoRunFunction
                                     // 检查是否成功移动到目标位置
                                     if (GameInstance.CharacterStatus.X == targetX && GameInstance.CharacterStatus.Y == targetY)
                                     {
+                                        isJumpSuccess = true;
                                         break;
                                     }
                                     localTried++;
                                 }
                                 if (localTried > 6)
                                 {
-                                    jumpSuccess = false;
+                                    isJumpSuccess = false;
                                     break;
                                 }
                             }
 
-                            if (jumpSuccess)
+                            if (isJumpSuccess)
                             {
                                 // 移除跳过的路径点和对应的位置信息
                                 goNodes.RemoveRange(0, jumpSteps + 1);
@@ -667,14 +674,24 @@ public static class GoRunFunction
                                 tried = 0;
                                 break;
                             }
+                            else
+                            {
+                                continue;
+                            }
                         }
+                   
                     }
-                    
-                    if (tried > 0)  // 如果所有跳跃尝试都失败
+                    if (!isJumpSuccess)
                     {
+                        // 失败了怎么办, 只能放弃先了
+                        Log.Warning($"寻路最终未找到 -- 跳点");
+                        return false;
+                    }
+                    else
+                    {
+                        // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
                         return await PerformPathfinding(cancellationToken, GameInstance, tx, ty);
                     }
-                    continue;
                 }
 
                 if (oldX != newX || oldY != newY)

@@ -16,6 +16,7 @@ namespace Mir2Assistant
         public MirGameInstanceModel? gameInstance { get; set; }
         private string accountName = string.Empty;
         private string characterName = string.Empty;
+        private bool isDisposed = false;
 
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
@@ -159,11 +160,45 @@ namespace Mir2Assistant
 
         private void AssistantForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            e.Cancel = true;
-            this.Hide();
+            if (!isDisposed)
+            {
+                CleanupResources();
+            }
         }
 
+        private void CleanupResources()
+        {
+            if (!isDisposed)
+            {
+                isDisposed = true;
+                
+                // 取消后台任务
+                if (!cancellationTokenSource.IsCancellationRequested)
+                {
+                    cancellationTokenSource.Cancel();
+                }
+                cancellationTokenSource.Dispose();
 
+                // 清理所有Tab页中的Form
+                foreach (TabPage tp in tabControl.TabPages)
+                {
+                    foreach (Control ctrl in tp.Controls)
+                    {
+                        if (ctrl is Form form && !form.IsDisposed)
+                        {
+                            form.Dispose();
+                        }
+                    }
+                }
+
+                // 清理游戏实例相关资源
+                if (gameInstance != null)
+                {
+                    gameInstance.MemoryUtils?.Dispose();
+                    gameInstance.AssistantForm = null;
+                }
+            }
+        }
 
         protected override void WndProc(ref Message m)
         {

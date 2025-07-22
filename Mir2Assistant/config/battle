@@ -78,6 +78,16 @@ ZC.H+240ED9 - 75 0E                 - jne ZC.H+240EE9
 ZC.H+240EDB - A1 24A76700           - mov eax,[ZC.H+27A724] { (0067723D) }
 
 
+超负重
+[0067A318] = 1
+这里是读取的地方
+ZC.H+24A834 - 81 BD 3CFEFFFF 622B0000 - cmp [ebp-000001C4],00002B62 { 11106 }
+ZC.H+24A83E - 75 0B                 - jne ZC.H+24A84B
+ZC.H+24A840 - 8A 85 48FEFFFF        - mov al,[ebp-000001B8]
+ZC.H+24A846 - A2 EC647500           - mov [ZC.H+3564EC],al { (0) } -->超负重指针
+ZC.H+24A84B - 83 3D 64277500 00     - cmp dword ptr [ZC.H+352764],00 { (06D0D6A0),0 }
+
+
 刺杀
 0074355D
 烈火
