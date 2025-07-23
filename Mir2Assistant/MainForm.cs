@@ -586,22 +586,16 @@ namespace Mir2Assistant
                             bool pathFound1 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6);
                             if (pathFound1)
                             {
-                                // TODO 不确定对不对 先debug下这里
                                 await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
-
-
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
                             }
                             // 精武馆老板
                             bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 649, 602, "", 6);
                             if (pathFound2)
                             {
-
                                 await NpcFunction.ClickNPC(instanceValue!, "精武馆老板");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                // 这里也是 感觉不太对 先debug下这里
-
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
                                 await NpcFunction.ClickNPC(instanceValue!, "精武馆老板");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
@@ -614,11 +608,10 @@ namespace Mir2Assistant
                             {
 
                                 await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
-                                // 这里也是 感觉不太对 先debug下这里
-                                // todo 这里也要记录下 这个不对
-
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                // <下一页/@Q705_1_1_1>
+                                await NpcFunction.Talk2(instanceValue!, "@Q705_1_1_1");
+                                await NpcFunction.Talk2(instanceValue!, "@exit");
                             }
                             // 查询所有号的等级>=5, 再出去
                             // 逛街
@@ -679,7 +672,7 @@ namespace Mir2Assistant
                             {
                                 var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
                                 var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                                return meats.Count > 0 || chickens.Count > 0;
+                                return meats.Count > 0 && chickens.Count > 0;
                             });
                             act.TaskSub0Step = 3;
                             SaveAccountList();
@@ -692,9 +685,41 @@ namespace Mir2Assistant
                             {
                                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
                                 await NpcFunction.Talk2(instanceValue!, "@main1");
-                                await NpcFunction.Talk2(instanceValue!, "@next");
+                                // <确定/@newnew1_1>
+                                await NpcFunction.Talk2(instanceValue!, "@newnew1_1");
+                                // <真的吗？太好了！/@job>
+                                await NpcFunction.Talk2(instanceValue!, "@job");
                             }
                             act.TaskSub0Step = 4;
+                            SaveAccountList();
+                        }
+                        if (act.TaskSub0Step == 4)
+                        {
+                            // 去银杏村药店 药剂师
+                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
+                            if (pathFound)
+                            {
+                                await NpcFunction.ClickNPC(instanceValue!, "药剂师");
+                                // 介绍信任务/@news
+                                await NpcFunction.Talk2(instanceValue!, "@news");
+                                // < 可以 / @new2_21 >,
+                                await NpcFunction.Talk2(instanceValue!, "@new2_21");
+                                // <接受/@new2_211>
+                                await NpcFunction.Talk2(instanceValue!, "@new2_211");
+                            }
+                            act.TaskSub0Step = 5;
+                            SaveAccountList();
+                        }
+                         if (act.TaskSub0Step == 5)
+                        {
+                            // 继续找肉 5 5
+                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            {
+                                var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                                var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                                return meats.Count > 4 && chickens.Count > 4;
+                            });
+                            act.TaskSub0Step = 6;
                             SaveAccountList();
                         }
                     }
@@ -703,13 +728,13 @@ namespace Mir2Assistant
                     // 道士 544, 560
                     // 武士 107, 316
                     // 魔法 314, 474
-                    if (CharacterStatus.Level <= 15 && act.TaskMain0Step == 6)
+                    if (CharacterStatus.Level >= 7 && act.TaskMain0Step == 6)
                     {
-                        // 书店老板
-                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
-                        if (pathFound)
-                        {
-                        }
+                        // todo 跨地图
+                        // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
+                        // if (pathFound)
+                        // {
+                        // }
 
                         return;
                     }
