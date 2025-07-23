@@ -155,7 +155,7 @@ namespace Mir2Assistant
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                await Task.Delay(5000);
+                await Task.Delay(8000);
 
                 string output = process.StandardOutput.ReadLine(); // 只读一行即可
                 // 不需要 WaitForExit
@@ -260,7 +260,7 @@ namespace Mir2Assistant
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
                         {
-                            await Task.Delay(15000);
+                            await Task.Delay(18000);
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         });
                         
@@ -364,7 +364,7 @@ namespace Mir2Assistant
                 foreach (var account in accountList)
                 {
                     RestartGameProcess(account);
-                    await Task.Delay(7_000); // 异步延迟5秒
+                    await Task.Delay(9_000); // 异步延迟5秒
                 }
              
                 // sllep 
@@ -458,21 +458,21 @@ namespace Mir2Assistant
                     var act = instanceValue.AccountInfo!;
                     var _cancellationTokenSource = new CancellationTokenSource();
 
-                    // 没买蜡烛先买, 背包蜡烛小于3
-                    if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
-                    {
-                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
-                        if (pathFound)
-                        {
-                            await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                            for (int i = 0; i < 4; i++)
-                            {
-                                NpcFunction.Buy(instanceValue!, "蜡烛");
-                                await Task.Delay(500);
-                            }
-                            SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
-                        }
-                    }
+                    // // 没买蜡烛先买, 背包蜡烛小于3
+                    // if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
+                    // {
+                    //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
+                    //     if (pathFound)
+                    //     {
+                    //         await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+                    //         for (int i = 0; i < 4; i++)
+                    //         {
+                    //             NpcFunction.Buy(instanceValue!, "蜡烛");
+                    //             await Task.Delay(500);
+                    //         }
+                    //         SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
+                    //     }
+                    // }
                     // 卖肉
                     await sellMeat(instanceValue, _cancellationTokenSource.Token);
                     // 新手任务
