@@ -175,8 +175,8 @@ void buy(DelphiString* name)
 
 		mov         eax,nameData
 		push        eax
-		push        1
-		mov         ecx, 0x1
+		push        0 // count 1或0 不懂
+		mov         ecx, 0xC93E8C9 // 这库存也不懂
 		mov edx,dword ptr ds:[0x6799E8];
 		mov edx,dword ptr [edx]
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
