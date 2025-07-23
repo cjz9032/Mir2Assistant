@@ -376,6 +376,43 @@ namespace Mir2Assistant
                 autoForeGround();
         }
 
+        private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
+        {
+            ItemFunction.ReadBag(instanceValue);
+          
+            // 修理装备 -- 应该还不需要 以后再加
+            // 穿先不管 自己会穿
+            // 先卖掉多余的肉和鸡肉, 保留5个 没意义
+
+            var meats = instanceValue.Items.Where(o => o.Name == "肉");
+            var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
+            var expressMeats = meats.Skip(5).ToList();
+            var expressChickens = chickens.Skip(5).ToList();
+            var allMeats = expressMeats.Concat(expressChickens).ToList();
+            if (allMeats.Count > 0)
+            {
+                // 屠夫 647 595 // todo 屠夫记录NPC
+                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 647, 595, "", 6);
+                if (pathFound)
+                {
+                    // 只要点一次就够
+                    await NpcFunction.ClickNPC(instanceValue!, "屠夫");
+                }   
+                foreach (var meat in allMeats)
+                {
+                    // 卖肉 TODO 抽象方法
+                    nint[] data = StringUtils.GenerateCompactStringData(meat.Name);
+                    Array.Resize(ref data, data.Length + 1);
+                    data[data.Length - 1] = meat.Id;
+                    SendMirCall.Send(instanceValue!, 3011, data);
+                    await Task.Delay(300);
+                }   
+                
+                await Task.Delay(500);
+                SendMirCall.Send(instanceValue!, 9010, new nint[] { });
+            }
+         
+        }
      
         private async void processTasks()
         {
@@ -414,8 +451,26 @@ namespace Mir2Assistant
                 if (CharacterStatus.CurrentHP > 0)
                 {
                     var act = instanceValue.AccountInfo!;
-                    // 新手任务
                     var _cancellationTokenSource = new CancellationTokenSource();
+
+                    // 没买蜡烛先买, 背包蜡烛小于3
+                    if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
+                    {
+                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
+                        if (pathFound)
+                        {
+                            await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+                            for (int i = 0; i < 4; i++)
+                            {
+                                NpcFunction.Buy(instanceValue!, "蜡烛");
+                                await Task.Delay(300);
+                            }
+                            SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
+                        }
+                    }
+                    // 卖肉
+                    await sellMeat(instanceValue, _cancellationTokenSource.Token);
+                    // 新手任务
                     // todo 目前是5
                     if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6)
                     {
@@ -521,34 +576,7 @@ namespace Mir2Assistant
                         if (act.TaskMain0Step == 5)
                         {
                             Debugger.Break();
-
-                            // 屠夫 647 595 // todo 屠夫记录NPC
-                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 647, 595, "", 6);
-                            if (pathFound)
-                            {
-                                // 只要点一次就够
-                                await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                            }
-                            // 修理装备 -- 应该还不需要 以后再加
-                            // 穿先不管 自己会穿
-                            // 先卖掉多余的肉和鸡肉, 保留5个 没意义
-                            ItemFunction.ReadBag(instanceValue);
-                            var meats = instanceValue.Items.Where(o => o.Name == "肉");
-                            var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
-                            var expressMeats = meats.Skip(5).ToList(); 
-                            var expressChickens = chickens.Skip(5).ToList(); 
-                            var allMeats = expressMeats.Concat(expressChickens).ToList();
-                            foreach (var meat in allMeats)
-                            {
-                                // 卖肉 TODO 抽象方法
-                                nint[] data = StringUtils.GenerateCompactStringData(meat.Name);
-                                Array.Resize(ref data, data.Length + 1);
-                                data[data.Length - 1] = meat.Id;
-                                SendMirCall.Send(instanceValue!, 3011, data);
-                                await Task.Delay(300);
-                            }
-                            await Task.Delay(500);
-                            SendMirCall.Send(instanceValue!, 9010, new nint[] { });
+                            await sellMeat(instanceValue, _cancellationTokenSource.Token);
                             // 先找助手
                             bool pathFound1 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6);
                             if (pathFound1)
@@ -556,7 +584,7 @@ namespace Mir2Assistant
                                 // TODO 不确定对不对 先debug下这里
                                 await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            
+
 
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
                             }
@@ -673,11 +701,11 @@ namespace Mir2Assistant
                     if (CharacterStatus.Level <= 15 && act.TaskMain0Step == 6)
                     {
                         // 书店老板
-                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282,636, "", 10);
+                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
                         if (pathFound)
                         {
                         }
-                        
+
                         return;
                     }
                 }

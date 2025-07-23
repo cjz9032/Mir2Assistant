@@ -589,7 +589,7 @@ public static class GoRunFunction
             var allowMonsters = new string[]  {"鸡", "鹿", "羊", "稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
-            var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆"};
+            var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆", "羊"};
             // >=5级 排除掉鹿先 但是少肉
             // if (instanceValue.CharacterStatus!.Level >= 5)
             // {
@@ -732,7 +732,7 @@ public static class GoRunFunction
                         while (tried < 20)
                         {
                             SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                            await Task.Delay(400);
+                            await Task.Delay(700);
                             MonsterFunction.ReadMonster(instanceValue!);
                             if (body.isButched)
                             {
