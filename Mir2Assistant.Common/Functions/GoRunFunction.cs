@@ -642,7 +642,7 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                     {
                         // 跟随
-                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 999);
+                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
                     }
                 }
 
