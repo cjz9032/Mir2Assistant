@@ -258,6 +258,11 @@ namespace Mir2Assistant
                         gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
+                         Task.Run(async () =>
+                        {
+                            await Task.Delay(15000);
+                            SendMirCall.Send(gameInstance!, 9099, new nint[] { });
+                        });
                         
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {

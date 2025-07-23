@@ -58,12 +58,13 @@ __declspec(naked) void HookFunction2()
         add         ebx, 0x00242A48
         call        ebx
   
+ 
+        // 在汇编代码外调用C++函数
+     
+        // call        CreateDelayedStartGame
+
         popfd
         popad
-        // 在汇编代码外调用C++函数
-        push        eax             // 保存eax
-        call        CreateDelayedStartGame
-        pop         eax             // 恢复eax
     
         jmp originalFunc2
 

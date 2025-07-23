@@ -184,6 +184,22 @@ void refPkg()
 	}
 }
 
+void startButton(){
+	_asm {
+		pushad
+		pushfd
+
+		mov eax, 0x0067A018
+        mov eax, [eax]
+        mov eax, [eax]
+        mov esi, 0x0056D10C
+        call esi
+
+		popfd
+		popad
+	}
+}
+
 void any_call(int* data) {
 	void (*func)() = reinterpret_cast<void(*)()>(data);
 	func();
@@ -219,6 +235,9 @@ void Sys::process(int code, int* data)
 		break;
 	case 9010: //刷新背包
 		refPkg();
+		break;
+	case 9099:
+		startButton();
 		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);
