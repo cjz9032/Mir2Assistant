@@ -459,20 +459,20 @@ namespace Mir2Assistant
                     var _cancellationTokenSource = new CancellationTokenSource();
 
                     // 没买蜡烛先买, 背包蜡烛小于3
-                    // if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
-                    // {
-                    //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
-                    //     if (pathFound)
-                    //     {
-                    //         await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                    //         for (int i = 0; i < 4; i++)
-                    //         {
-                    //             NpcFunction.Buy(instanceValue!, "蜡烛");
-                    //             await Task.Delay(300);
-                    //         }
-                    //         SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
-                    //     }
-                    // }
+                    if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
+                    {
+                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
+                        if (pathFound)
+                        {
+                            await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+                            for (int i = 0; i < 4; i++)
+                            {
+                                NpcFunction.Buy(instanceValue!, "蜡烛");
+                                await Task.Delay(500);
+                            }
+                            SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
+                        }
+                    }
                     // 卖肉
                     await sellMeat(instanceValue, _cancellationTokenSource.Token);
                     // 新手任务
