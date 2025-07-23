@@ -6,12 +6,12 @@ using Serilog.Sinks.Debug; // 添加Debug sink引用
 using System.Diagnostics;
 using System.Text.Json;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
+using Mir2Assistant.Common;
 
 namespace Mir2Assistant
 {
     public partial class MainForm : Form
     {
-        static private Dictionary<int, MirGameInstanceModel> GameInstances = new Dictionary<int, MirGameInstanceModel>();
         private string currentProcessName = Process.GetCurrentProcess().ProcessName;
         private List<GameAccountModel> accountList = new List<GameAccountModel>();
         private string configFilePath = Path.Combine(Directory.GetCurrentDirectory(), "accounts.json");
@@ -193,13 +193,13 @@ namespace Mir2Assistant
                     Process process = Process.GetProcessById(account.ProcessId.Value);
                     
                     // 如果有关联的辅助窗口，先解除挂钩并关闭
-                    if (GameInstances.ContainsKey(account.ProcessId.Value))
+                    if (GameState.GameInstances.ContainsKey(account.ProcessId.Value))
                     {
                         Log.Debug("解除DLL挂钩并关闭辅助窗口");
-                        var gameInstance = GameInstances[account.ProcessId.Value];
+                        var gameInstance = GameState.GameInstances[account.ProcessId.Value];
                         DllInject.Unhook(gameInstance);
                         gameInstance.AssistantForm?.Close();
-                        GameInstances.Remove(account.ProcessId.Value);
+                        GameState.GameInstances.Remove(account.ProcessId.Value);
                     }
                     
                     process.Kill();
@@ -232,11 +232,11 @@ namespace Mir2Assistant
                     
                     Log.Information("准备绑定游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, pid);
                     
-                    if (!GameInstances.ContainsKey(pid))
+                    if (!GameState.GameInstances.ContainsKey(pid))
                     {
                         var rect = WindowUtils.GetClientRect(hwnd);
                         var gameInstance = new MirGameInstanceModel();
-                        GameInstances.Add(pid, gameInstance);
+                        GameState.GameInstances.Add(pid, gameInstance);
                         gameInstance.AssistantForm = new AssistantForm(gameInstance, account.Account, account.CharacterName);
                         gameInstance.MirHwnd = hwnd;
                         gameInstance.MirPid = pid;
@@ -262,7 +262,7 @@ namespace Mir2Assistant
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {
                             Log.Debug("辅助窗口已关闭，移除游戏实例，PID: {ProcessId}", gameInstance.MirPid);
-                            GameInstances.Remove(gameInstance.MirPid);
+                            GameState.GameInstances.Remove(gameInstance.MirPid);
                         };
                     }
                 }
@@ -290,16 +290,16 @@ namespace Mir2Assistant
 
                     if (process.ProcessName == "ZC.H")
                     {
-                        if (GameInstances.ContainsKey(pid))
+                        if (GameState.GameInstances.ContainsKey(pid))
                         {
-                            if (GameInstances[pid].AssistantForm!.Visible)
+                            if (GameState.GameInstances[pid].AssistantForm!.Visible)
                             {
-                                GameInstances[pid].AssistantForm!.Hide();
+                                GameState.GameInstances[pid].AssistantForm!.Hide();
                             }
                             else
                             {
-                                GameInstances[pid].AssistantForm!.Show();
-                                GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Normal;
+                                GameState.GameInstances[pid].AssistantForm!.Show();
+                                GameState.GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Normal;
                             }
                         }
                         else
@@ -319,7 +319,7 @@ namespace Mir2Assistant
                     }
                     else if (process.ProcessName == currentProcessName)
                     {
-                        GameInstances.Values.FirstOrDefault(o => o.AssistantForm?.Handle == hwnd)?.AssistantForm!.Hide();
+                        GameState.GameInstances.Values.FirstOrDefault(o => o.AssistantForm?.Handle == hwnd)?.AssistantForm!.Hide();
                     }
                     break;
             }
@@ -376,163 +376,10 @@ namespace Mir2Assistant
                 autoForeGround();
         }
 
-        private static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationTokenSource _cancellationTokenSource, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
-        {
-            var allowMonsters = new string[]  {"鸡", "鹿", "羊", "稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
-                "森林雪人", "蛤蟆", "蝎子",
-                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
-            var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆"};
-            // >=5级 排除掉鹿先 但是少肉
-            // if (instanceValue.CharacterStatus!.Level >= 5)
-            // {
-            //     allowMonsters = allowMonsters.Where(o => o != "鹿").ToArray();
-            // }
-            // 当前巡回
-            var curP = 0;
-            var CharacterStatus = instanceValue.CharacterStatus!;
-            while (true)
-            {
-                // 主从模式
-                // 主人是点位
-                var (px, py) = (0, 0);
-                // 从是跟随
-                if (instanceValue.AccountInfo!.IsMainControl)
-                {
-                    // 主人是点位
-                    (px, py) = patrolPairs[curP];
-                }
-                else
-                {
-                    // 从是跟随
-                    var instances = GameInstances.ToList();
-                    var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
-                    if (mainInstance.Key != 0)
-                    {
-                        (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
-                    }
-                }
-                
-
-                bool _whateverPathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, px, py, "", 5);
-                // 如果是跟随
-                if (!instanceValue.AccountInfo!.IsMainControl)
-                {
-                    // 从是跟随 -- 这是重复代码 先放着
-                    var instances = GameInstances.ToList();
-                    var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
-                    if (mainInstance.Key != 0)
-                    {
-                        (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
-                    }
-                    // 检测距离
-                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
-                    {
-                        // 跟随
-                        await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, px, py, "", 1);
-                    }
-                }
-
-                // 无怪退出
-                while (true)
-                {
-                    // 查看存活怪物 并且小于距离10个格子
-                    var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
-                    allowMonsters.Contains(o.Name) &&
-                     // 还要看下是不是距离巡逻太远了, 就不要
-                     Math.Max(Math.Abs(o.X - px), Math.Abs(o.Y - py)) < 16
-                     && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-                    .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
-                    .FirstOrDefault();
-                    if (ani != null)
-                    {
-                        // 如果距离超过1 就需要寻路
-                        if (Math.Max(Math.Abs(ani.X - px), Math.Abs(ani.Y - py)) > 1)
-                        {
-                            // 暂时就给1了
-                            await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, ani.X, ani.Y, "", 1);
-                        }
-                        // 攻击
-                        // 持续攻击, 超过就先放弃
-                        var monTried = 0;
-                        while (true)
-                        {
-                            monTried++;
-                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
-                            // 注意判断距离 可能会跑
-                            if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
-                            {
-                                MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                                await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, ani.X, ani.Y, "", 1);
-                            }
-                            await Task.Delay(200);
-                            if (ani.isDead || monTried > 150)
-                            {
-                                MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-               
-             
-                // 没怪了 可以捡取东西 或者挖肉
-                // 捡取
-                // 按距离, 且没捡取过
-                var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
-                .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
-                foreach (var drop in drops)
-                {
-                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, drop.Value.X, drop.Value.Y, "", 0);
-                    if (pathFound2)
-                    {
-                        ItemFunction.Pickup(instanceValue!);
-                        // 加捡取过的名单,
-                        instanceValue.pickupItemIds.Add(drop.Value.Id);
-                    }
-                }
-                // 屠挖肉
-                var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-                .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
-                foreach (var body in bodys)
-                {
-                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, body.X, body.Y, "", 2);
-                    if (pathFound2)
-                    {
-                        // 要持续屠宰, 直到尸体消失, 最大尝试 30次
-                        var tried = 0;
-                        while (tried < 20)
-                        {
-                            SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                            await Task.Delay(200);
-                            MonsterFunction.ReadMonster(instanceValue!);
-                            if (body.isButched)
-                            {
-                                break;
-                            }
-                            tried++;
-                        }
-                    }
-                }
-                // checker 满足条件就跳出循环, checker是参数
-                if (checker(instanceValue!))
-                {
-                    break;
-                }
-                curP++;
-                curP = curP % patrolPairs.Length;
-                continue;
-            }
-            return true;
-
-        }
+     
         private async void processTasks()
         {
-            var instances = GameInstances.ToList();
+            var instances = GameState.GameInstances.ToList();
             instances.ForEach(async instance =>
             {
                 var instanceValue = instance.Value;
@@ -610,7 +457,7 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
 
-                                await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                                 {
                                     // 检查背包的肉
                                     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
@@ -664,7 +511,7 @@ namespace Mir2Assistant
                         {
                             // 升级到5
                             // 抽象到巡逻, 然后能退出
-                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
+                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                             {
                                 return instanceValue.CharacterStatus!.Level >= 5;
                             });
@@ -742,9 +589,9 @@ namespace Mir2Assistant
                             }
                             // 查询所有号的等级>=5, 再出去
                             // 逛街
-                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
+                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                             {
-                                var instances = GameInstances.ToList();
+                                var instances = GameState.GameInstances.ToList();
                                 var allLevel5 = instances.Where(o => o.Value.CharacterStatus!.Level < 5).ToList();
                                 if (allLevel5.Count == 0)
                                 {
@@ -795,7 +642,7 @@ namespace Mir2Assistant
                         if (act.TaskSub0Step == 2)
                         {
                             // 再次开始找肉和鸡肉
-                            await NormalAttackPoints(instanceValue, _cancellationTokenSource, patrolPairs, (instanceValue) =>
+                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                             {
                                 var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
                                 var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
@@ -814,16 +661,23 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@main1");
                                 await NpcFunction.Talk2(instanceValue!, "@next");
                             }
+                            act.TaskSub0Step = 4;
+                            SaveAccountList();
                         }
                     }
-                    // 去道士武士之家, todo 跨地图寻路
-                    if (CharacterStatus.Level <= 15 && act.TaskSub0Step < 99)
+                    // 主线
+                    // 去道士武士魔法之家, todo 跨地图寻路
+                    // 道士 544, 560
+                    // 武士 107, 316
+                    // 魔法 314, 474
+                    if (CharacterStatus.Level <= 15 && act.TaskMain0Step == 6)
                     {
                         // 书店老板
-                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 649, 602, "", 6);
+                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282,636, "", 10);
                         if (pathFound)
                         {
                         }
+                        
                         return;
                     }
                 }
@@ -845,7 +699,7 @@ namespace Mir2Assistant
                 await Task.Delay(15000);
 
                 // 其他中断并行需要考虑 
-                var instances = GameInstances.ToList();
+                var instances = GameState.GameInstances.ToList();
                 foreach (var instance in instances)
                 {
                     // todo ref方法 避免重复调用
@@ -865,12 +719,12 @@ namespace Mir2Assistant
                     {
 
                         // 组队
-                        if (CharacterStatus.groupMemCount < GameInstances.Count)
+                        if (CharacterStatus.groupMemCount < GameState.GameInstances.Count)
                         {
                             if (instance.Value.AccountInfo.IsMainControl)
                             {
                                 // GameInstances 除了自己
-                                var members = GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
+                                var members = GameState.GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
                                 foreach (var member in members)
                                 {
                                     nint[] data = StringUtils.GenerateCompactStringData(member);
@@ -941,10 +795,10 @@ namespace Mir2Assistant
             Log.Debug("已注销热键");
             // SaveAccountList();
             
-            Log.Debug("正在解除所有DLL挂钩，游戏实例数量: {InstanceCount}", GameInstances.Count);
+            Log.Debug("正在解除所有DLL挂钩，游戏实例数量: {InstanceCount}", GameState.GameInstances.Count);
             Task.Run(() =>
             {
-                foreach (var gameInstance in GameInstances.Values)
+                foreach (var gameInstance in GameState.GameInstances.Values)
                 {
                     DllInject.Unhook(gameInstance);
                 }

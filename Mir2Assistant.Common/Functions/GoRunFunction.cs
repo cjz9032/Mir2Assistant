@@ -209,10 +209,13 @@ public static class GoRunFunction
             targetY = -1;
                 
             if (candidatePoints.Count > 0) {
-                // 取评分最优的点
-                targetX = candidatePoints[0].X;
-                targetY = candidatePoints[0].Y;
-                Log.Debug($"找到最佳模糊目标点: ({targetX}, {targetY}), 距离评分: {candidatePoints[0].Distance:F2}");
+                // 从前3个点中随机选择一个（如果不足3个则在现有点中随机选择）
+                var random = new Random();
+                var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
+                var selectedPoint = topPoints[random.Next(topPoints.Count)];
+                targetX = selectedPoint.X;
+                targetY = selectedPoint.Y;
+                Log.Debug($"从{topPoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY}), 距离评分: {selectedPoint.Distance:F2}");
             }
                 
             if (targetX == -1) {
@@ -228,7 +231,7 @@ public static class GoRunFunction
         
         // 分距离, 100以内直接a星
         List<(byte dir, byte steps, int x, int y)> path = new List<(byte dir, byte steps, int x, int y)>();
-        if (Math.Abs(targetX - myX) + Math.Abs(targetY - myY) <= 150)
+        if (Math.Abs(targetX - myX) + Math.Abs(targetY - myY) <= 999)
         {
             path = FindPathCoreSmallWithAStar(width, height, data, myX, myY, targetX, targetY);
         }
@@ -506,35 +509,63 @@ public static class GoRunFunction
     {
         if (path.Count < 2) return path;
 
+        Log.Debug($"开始优化路径，原始路径点数: {path.Count}");
+        // foreach (var p in path)
+        // {
+        //     Log.Debug($"原始点: 方向={p.dir}, 步长={p.steps}, 坐标=({p.x}, {p.y})");
+        // }
+
         var optimizedPath = new List<(byte dir, byte steps, int x, int y)>();
         int i = 0;
 
         while (i < path.Count)
         {
-            // 当前点
             var current = path[i];
             
             // 检查是否可以和下一个点合并
-            if (i + 1 < path.Count)
+            if (i + 1 < path.Count && current.steps == 1)
             {
                 var next = path[i + 1];
                 
-                // 如果方向相同且都是步长1，可以合并
-                if (current.dir == next.dir && current.steps == 1 && next.steps == 1)
+                // 只在以下条件下合并：
+                // 1. 两点方向相同
+                // 2. 两点步长都是1
+                // 3. 两点是连续的（通过坐标检查）
+                bool canMerge = current.dir == next.dir && 
+                               next.steps == 1 &&
+                               IsConsecutivePoints(current.x, current.y, next.x, next.y, current.dir);
+                
+                if (canMerge)
                 {
-                    // 合并为步长2的点，使用第二个点的坐标
-                    optimizedPath.Add((current.dir, 2, next.x, next.y));
-                    i += 2; // 跳过下一个点
+                    var merged = (current.dir, (byte)2, next.x, next.y);
+                    // Log.Debug($"合并点: ({current.x},{current.y})和({next.x},{next.y}) -> 方向={merged.Item1}, 步长={merged.Item2}, 终点=({merged.Item3},{merged.Item4})");
+                    optimizedPath.Add(merged);
+                    i += 2;
                     continue;
                 }
             }
             
             // 不能合并，保持原样添加
+            // Log.Debug($"保持原点: 方向={current.dir}, 步长={current.steps}, 坐标=({current.x}, {current.y})");
             optimizedPath.Add(current);
             i++;
         }
 
+        Log.Debug($"优化后路径点数: {optimizedPath.Count}");
+        // foreach (var p in optimizedPath)
+        // {
+        //     Log.Debug($"优化后点: 方向={p.dir}, 步长={p.steps}, 坐标=({p.x}, {p.y})");
+        // }
+
         return optimizedPath;
+    }
+
+    // 检查两个点是否是连续的（基于方向）
+    private static bool IsConsecutivePoints(int x1, int y1, int x2, int y2, byte dir)
+    {
+        // 根据方向计算期望的下一个点的坐标
+        var (expectedX, expectedY) = getNextPostion(x1, y1, dir, 1);
+        return expectedX == x2 && expectedY == y2;
     }
 
 
@@ -553,9 +584,182 @@ public static class GoRunFunction
         return monsPos;
     }
 
+   public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
+        {
+            var allowMonsters = new string[]  {"鸡", "鹿", "羊", "稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
+                "森林雪人", "蛤蟆", "蝎子",
+                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
+            var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆"};
+            // >=5级 排除掉鹿先 但是少肉
+            // if (instanceValue.CharacterStatus!.Level >= 5)
+            // {
+            //     allowMonsters = allowMonsters.Where(o => o != "鹿").ToArray();
+            // }
+            // 当前巡回
+            var curP = 0;
+            var CharacterStatus = instanceValue.CharacterStatus!;
+            while (true)
+            {
+                // 不寻路模式, 其实就是只打怪, 需要抽象
+                    
+                // 主从模式
+                // 主人是点位
+                var (px, py) = (0, 0);
+                var (rpx, rpy) = patrolPairs[0];
+                if (rpx > 0 && rpy > 0)
+                {
+                    // 从是跟随
+                    if (instanceValue.AccountInfo!.IsMainControl)
+                    {
+                        // 主人是点位
+                        (px, py) = patrolPairs[curP];
+                    }
+                    else
+                    {
+                        // 从是跟随
+                        var instances = GameState.GameInstances.ToList();
+                        var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
+                        if (mainInstance.Key != 0)
+                        {
+                            (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
+                        }
+                    }
+                    bool _whateverPathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5);
+                }
+          
+
+                // 如果是跟随
+                if (!instanceValue.AccountInfo!.IsMainControl)
+                {
+                    // 从是跟随 -- 这是重复代码 先放着
+                    var instances = GameState.GameInstances.ToList();
+                    var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
+                    if (mainInstance.Key != 0)
+                    {
+                        (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
+                    }
+                    // 检测距离
+                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                    {
+                        // 跟随
+                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 999);
+                    }
+                }
+
+            // 无怪退出
+            while (true)
+            {
+                // 查看存活怪物 并且小于距离10个格子
+                var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
+                allowMonsters.Contains(o.Name) &&
+                // 还要看下是不是距离巡逻太远了, 就不要, 
+                (px == 0 ? true : Math.Max(Math.Abs(o.X - px), Math.Abs(o.Y - py)) < 16)
+                 && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                // 还要把鹿羊鸡放最后
+                .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
+                .ThenBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                .FirstOrDefault();
+                if (ani != null)
+                {
+                    // 如果距离超过1 就需要寻路
+                    if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                    {
+                        // 暂时就给1了
+                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
+                    }
+                    // 攻击
+                    // 持续攻击, 超过就先放弃
+                    var monTried = 0;
+                    while (true)
+                    {
+                        monTried++;
+                        MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                        // 注意判断距离 可能会跑
+                        if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                        {
+                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1);
+                        }
+                        await Task.Delay(200);
+                        if (ani.isDead || monTried > 150)
+                        {
+                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    break;
+                }
+                    if (px == 0 && py == 0)
+                    {
+                                if (checker(instanceValue!))
+                    {
+                        break;
+                    }
+                        
+                    }
+                }
+
+               
+             
+                // 没怪了 可以捡取东西 或者挖肉
+                // 捡取
+                // 按距离, 且没捡取过
+                var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
+                .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
+                foreach (var drop in drops)
+                {
+                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0);
+                    if (pathFound2)
+                    {
+                        ItemFunction.Pickup(instanceValue!);
+                        // 加捡取过的名单,
+                        instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    }
+                }
+                // 屠挖肉
+                var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+                foreach (var body in bodys)
+                {
+                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2);
+                    if (pathFound2)
+                    {
+                        // 要持续屠宰, 直到尸体消失, 最大尝试 30次
+                        var tried = 0;
+                        while (tried < 20)
+                        {
+                            SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
+                            await Task.Delay(400);
+                            MonsterFunction.ReadMonster(instanceValue!);
+                            if (body.isButched)
+                            {
+                                break;
+                            }
+                            tried++;
+                        }
+                    }
+                }
+                // checker 满足条件就跳出循环, checker是参数
+                if (checker(instanceValue!))
+                {
+                    break;
+                }
+                curP++;
+                curP = curP % patrolPairs.Length;
+                continue;
+            }
+            return true;
+
+        }
+
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
-          bool nearBlur = true
+          bool nearBlur = true,
+          int attacksThan = 10,
+          int retries = 0
         )
     {
         CharacterStatusFunction.GetInfo(GameInstance!);
@@ -578,8 +782,17 @@ public static class GoRunFunction
 
         stopwatchTotal.Stop();
         Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
-        if (goNodes.Count == 0) {
-            Log.Warning($"寻路最终未找到");
+        if (goNodes.Count == 0)
+        {
+            // 加个重试次数3次
+            await Task.Delay(300);
+            
+            if (retries < 3)
+            {
+                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange , nearBlur, attacksThan, retries + 1);
+            }
+
+            Log.Warning($"寻路最终未找到，已重试{retries}次");
             return false;
         }
 
@@ -601,6 +814,32 @@ public static class GoRunFunction
             {
                 return false;
             }
+            if (attacksThan > 0)
+            {
+                // 
+                // 攻击怪物, 太多了 过不去
+                var monsters = GameInstance.Monsters.Where(o => !o.Value.isDead).ToList();
+                if (monsters.Count > attacksThan)
+                {
+                    // 算出怪物中间点 取整
+                    // var midX = (int)Math.Round(monsters.Average(o => o.Value.X));
+                    // var midY = (int)Math.Round(monsters.Average(o => o.Value.Y));
+                    // var midPoint = (midX, midY);
+                    // 给个中间点
+                    await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0,0) }, (instanceValue) =>
+                    {
+                        // 重读怪物
+                        MonsterFunction.ReadMonster(instanceValue!);
+                        var existsCount = instanceValue.Monsters.Where(o => !o.Value.isDead).Count();
+                        // 怪物死了剩余一半就可以通过
+                        if (existsCount <= monsters.Count / 2)
+                        {
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            }
 
             var node = goNodes[0];
             var oldX = GameInstance!.CharacterStatus!.X;
@@ -610,6 +849,7 @@ public static class GoRunFunction
             GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
             var tried = 0;
+            var maxed = 9;
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -625,7 +865,7 @@ public static class GoRunFunction
                 var newY = GameInstance!.CharacterStatus.Y;
 
                 tried++;
-                if (tried > 6)
+                if (tried > maxed)
                 {
                     // 如果在模糊范围内也算成功
                     if (Math.Abs(tx - newX) <= blurRange && Math.Abs(ty - newY) <= blurRange)
@@ -698,13 +938,13 @@ public static class GoRunFunction
                                 continue;
                             }
                         }
-                   
+
                     }
                     if (!isJumpSuccess)
                     {
                         // 失败了怎么办, 只能放弃先了
                         Log.Warning($"寻路最终未找到 -- 跳点 再次尝试 NB");
-                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange+1, nearBlur);
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange + 1, nearBlur);
                         // return false;
                     }
                     else
@@ -724,7 +964,6 @@ public static class GoRunFunction
                     }
                     else
                     {
-                        tried = 7; // 触发跳跃尝试
                         continue;
                     }
                 }
