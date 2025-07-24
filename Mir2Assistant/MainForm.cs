@@ -491,9 +491,9 @@ namespace Mir2Assistant
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 20;
                 var portalStartX = 500;
-                var portalEndX = 620;
-                var portalStartY = 500;
-                var portalEndY = 600;
+                var portalEndX = 630;
+                var portalStartY = 530;
+                var portalEndY = 610;
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                 {
