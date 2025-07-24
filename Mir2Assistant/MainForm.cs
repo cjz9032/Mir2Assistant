@@ -490,9 +490,9 @@ namespace Mir2Assistant
                 var CharacterStatus = instanceValue.CharacterStatus!;
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 20;
-                var portalStartX = 450;
-                var portalEndX = 650;
-                var portalStartY = 450;
+                var portalStartX = 500;
+                var portalEndX = 620;
+                var portalStartY = 500;
                 var portalEndY = 600;
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
@@ -789,9 +789,9 @@ namespace Mir2Assistant
                             await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                             {
                                 // 查是否满包 要卖了
-                                var meats = instanceValue.Items;
+                                var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
                                 return meats.Count > 32;
-                                // 或者需要修理了
+                                // 或者需要修理了 算了先
                             });
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
