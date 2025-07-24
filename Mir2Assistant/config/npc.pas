@@ -112,8 +112,33 @@ say string
 ...
 
 
-一般购买 DMenuBuyClick, 一般就在最后, 
+一般购买 
+// 第一个是获取列表的函数 
+frmMain.SendGetDetailItem(g_nCurMerchant, 0, pg.Name);
+ZC.H+1B11E8 - 8B 45 E0              - mov eax,[ebp-20]
+ZC.H+1B11EB - 50                    - push eax
+ZC.H+1B11EC - 8B 15 E8996700        - mov edx,[ZC.H+2799E8] { (007563A4) }
+ZC.H+1B11F2 - 8B 12                 - mov edx,[edx]
+ZC.H+1B11F4 - A1 BC9E6700           - mov eax,[ZC.H+279EBC] { (007524B4) }
+ZC.H+1B11F9 - 8B 00                 - mov eax,[eax]
+ZC.H+1B11FB - 33 C9                 - xor ecx,ecx
+ZC.H+1B11FD - E8 AA420900           - call ZC.H+2454AC
 
+// test call
+push eax // name
+mov edx,ptr 0x6799E8
+mov edx,[edx]
+mov eax,ptr 0x679EBC
+mov eax,[eax]
+xor ecx,ecx
+mov esi, 0x6454AC
+call esi
+
+// 使用选index 购买 ZC.H+34350C C6C
+
+// 调用 DMenuBuyClick
+2. 直接call内部
+// DMenuBuyClick, 一般就在最后, 
 frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
   g_nCurMerchant 可以拿到
   pg.Name 就随便找个地方赋值delphistr

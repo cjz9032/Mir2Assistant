@@ -111,7 +111,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         {
             if (!string.IsNullOrEmpty(textBox3.Text))
             {
-                NpcFunction.Buy(GameInstance!, textBox3.Text);
+                NpcFunction.BuyDrug(GameInstance!, textBox3.Text);
             }
         }
     }

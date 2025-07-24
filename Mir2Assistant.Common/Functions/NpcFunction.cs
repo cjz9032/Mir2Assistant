@@ -142,15 +142,46 @@ namespace Mir2Assistant.Common.Functions
         }
 
         /// <summary>
+        /// 盲选蜡烛
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public async static Task BuyLZ(MirGameInstanceModel gameInstance, string itemName, int count = 2)
+        {
+
+            nint[] data = MemoryUtils.PackStringsToData(itemName);
+            await Talk2(gameInstance!, "@buy");
+            await Task.Delay(500);
+            SendMirCall.Send(gameInstance, 3005, data);
+            await Task.Delay(800);
+            // 盲选
+            for (int i = 0; i < count; i++)
+            {
+                var memoryUtils = gameInstance!.MemoryUtils!;
+                var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
+                memoryUtils.WriteInt(addr, i);
+                await Task.Delay(300);
+                SendMirCall.Send(gameInstance, 3006, new nint[] { i });
+                await Task.Delay(300);
+            }
+          
+        }
+
+        /// <summary>
         /// 购买物品
         /// </summary>
         /// <param name="gameInstance"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public static void Buy(MirGameInstanceModel gameInstance, string itemName)
+        public async static Task BuyDrug(MirGameInstanceModel gameInstance, string itemName, int count = 1)
         {
             nint[] data = MemoryUtils.PackStringsToData(itemName);
-            SendMirCall.Send(gameInstance, 3010, data);
+            for (int i = 0; i < count; i++)
+            {
+                SendMirCall.Send(gameInstance, 3010, data);
+                await Task.Delay(300);
+            }
         }
     }
 }

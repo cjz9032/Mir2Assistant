@@ -36,7 +36,7 @@ inline void ProcessWideString(int* data, Func callback) {
         }
         
         // 确保字符串以null结尾
-        buffer[length] = 0;
+        // buffer[length] = 0;
         
         // 执行回调函数
         callback(buffer, length);

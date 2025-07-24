@@ -165,6 +165,49 @@ void talk2(DelphiString* cmd)
 	}
 }
 
+void getGoodsList(DelphiString* name)
+{
+
+	auto nameData = name->data;
+	__asm {
+		pushad
+		pushfd
+		mov eax,nameData
+		push eax
+		mov edx,dword ptr ds:[0x6799E8];
+		mov edx,[edx]
+		mov eax,dword ptr ds:[0x679EBC];
+		mov eax,[eax]
+		xor ecx,ecx
+		mov esi, 0x6454AC
+		call esi
+		popfd
+		popad
+	}
+}
+
+void buyGoodsFixedIndex()
+{
+	__asm {
+		// DItemBuyClick_005C9C58
+		pushad
+		pushfd
+		push 100
+		mov ebx, 0x7432F4
+		mov ebx, [ebx]
+		mov ecx, 100
+		mov edx, ebx
+
+		mov eax, dword ptr ds : [0x0074350C]
+		mov esi, 0x005B112C
+		call esi	
+
+		popfd
+		popad
+	}
+}
+
+
 void buy(DelphiString* name)
 {
 
@@ -176,7 +219,7 @@ void buy(DelphiString* name)
 		mov         eax,nameData
 		push        eax
 		push        0 // count 1或0 不懂
-		mov         ecx, 0xC93E8C9 // 这库存也不懂
+		mov         ecx, 0 // stock 药水不用
 		mov edx,dword ptr ds:[0x6799E8];
 		mov edx,dword ptr [edx]
 		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
@@ -311,6 +354,17 @@ void Npc::process(int code, int* data)
 			talk2(cmd);
 			delete cmd;
 		});
+		break;
+	case 3005:
+		ProcessWideString(data, [](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			getGoodsList(name);
+			delete name; 
+		});
+		break;
+	case 3006:
+		// 按index随便买
+		buyGoodsFixedIndex();
 		break;
 	case 3010:
 		ProcessWideString(data, [](const wchar_t* str, int length) {

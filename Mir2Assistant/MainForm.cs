@@ -459,20 +459,16 @@ namespace Mir2Assistant
                     var _cancellationTokenSource = new CancellationTokenSource();
 
                     // // 没买蜡烛先买, 背包蜡烛小于3
-                    // if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
-                    // {
-                    //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
-                    //     if (pathFound)
-                    //     {
-                    //         await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                    //         for (int i = 0; i < 4; i++)
-                    //         {
-                    //             NpcFunction.Buy(instanceValue!, "蜡烛");
-                    //             await Task.Delay(500);
-                    //         }
-                    //         SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
-                    //     }
-                    // }
+                    if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
+                    {
+                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
+                        if (pathFound)
+                        {
+                            await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+                            await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 6);
+                            SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
+                        }
+                    }
                     // 卖肉
                     await sellMeat(instanceValue, _cancellationTokenSource.Token);
                     // 新手任务
@@ -735,6 +731,14 @@ namespace Mir2Assistant
                         // if (pathFound)
                         // {
                         // }
+                        await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                        {
+                            var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                            var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                            return meats.Count > 4 && chickens.Count > 4;
+                        });
+                        act.TaskSub0Step = 6;
+                        SaveAccountList();
 
                         return;
                     }
