@@ -249,13 +249,16 @@ namespace Mir2Assistant
                         
                         Log.Debug("加载DLL到游戏进程");
                         DllInject.loadDll(gameInstance);
-                        
+
                         // 如果是主控，显示辅助窗口
                         // if (account.IsMainControl)
                         // {
-                       
+
                         // }
-                        gameInstance.AssistantForm.Show();
+                        if (gameInstance.AccountInfo.IsMainControl)
+                        {
+                            gameInstance.AssistantForm.Show();
+                        }
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
@@ -438,8 +441,8 @@ namespace Mir2Assistant
 
             var meats = instanceValue.Items.Where(o => o.Name == "肉");
             var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
-            var expressMeats = meats.Skip(5).ToList();
-            var expressChickens = chickens.Skip(5).ToList();
+            var expressMeats = meats.Skip(1).ToList();
+            var expressChickens = chickens.Skip(1).ToList();
             var allMeats = expressMeats.Concat(expressChickens).ToList();
             if (allMeats.Count > 0)
             {
@@ -457,7 +460,7 @@ namespace Mir2Assistant
                     Array.Resize(ref data, data.Length + 1);
                     data[data.Length - 1] = meat.Id;
                     SendMirCall.Send(instanceValue!, 3011, data);
-                    await Task.Delay(300);
+                    await Task.Delay(400);
                 }
 
                 await Task.Delay(500);
@@ -467,10 +470,10 @@ namespace Mir2Assistant
         }
         private async Task prepareBags(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
-            // 蜡烛检测
-            await BuyLZ(instanceValue, _cancellationToken);
             // 卖肉
             await sellMeat(instanceValue, _cancellationToken);
+            // 蜡烛检测
+            await BuyLZ(instanceValue, _cancellationToken);
             // 修衣服和武器
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
         }
@@ -621,8 +624,8 @@ namespace Mir2Assistant
                         }
                         if (act.TaskMain0Step == 5)
                         {
-                            Debugger.Break();
-                            await sellMeat(instanceValue, _cancellationTokenSource.Token);
+
+                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             // 先找助手
                             bool pathFound1 = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6);
                             if (pathFound1)
