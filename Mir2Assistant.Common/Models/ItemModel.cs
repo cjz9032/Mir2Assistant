@@ -26,8 +26,48 @@ using System;
 //   end;
 namespace Mir2Assistant.Common.Models
 {
+        public enum EquipPosition
+        {
+            /// <summary>
+            /// 衣服
+            /// </summary>
+            Dress = 0,
+            /// <summary>
+            /// 武器
+            /// </summary>
+            Weapon = 1,
+            /// <summary>
+            /// 右手
+            /// </summary>
+            RightHand = 2,
+            /// <summary>
+            /// 项链
+            /// </summary>
+            Necklace = 3,
+            /// <summary>
+            /// 头盔
+            /// </summary>
+            Helmet = 4,
+            /// <summary>
+            /// 左手镯
+            /// </summary>
+            ArmRingLeft = 5,
+            /// <summary>
+            /// 右手镯
+            /// </summary>
+            ArmRingRight = 6,
+            /// <summary>
+            /// 左戒指
+            /// </summary>
+            RingLeft = 7,
+            /// <summary>
+            /// 右戒指
+            /// </summary>
+            RingRight = 8
+        }
     public class ItemModel
     {
+
         public static readonly Dictionary<byte, byte[]> StdModeMap = new Dictionary<byte, byte[]> {
             {5, new byte[] {1}},
             {6, new byte[] {1}},
@@ -54,7 +94,7 @@ namespace Mir2Assistant.Common.Models
         public byte reqPoints { get; set; }
         public int Duration { get; set; }
         public int MaxDuration { get; set; }
-        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
+        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
         public bool IsLowDurability => Duration > 0 ? (((double)Duration / MaxDuration) < 0.25) : false;
         public byte[] stdModeToUseItemIndex
         {

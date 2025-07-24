@@ -380,14 +380,55 @@ namespace Mir2Assistant
                autoAtBackground();
                 autoForeGround();
         }
+        private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            // 没买蜡烛先买, 背包蜡烛小于5
+            if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 5)
+            {
+                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "", 6);
+                if (pathFound)
+                {
+                    await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+                    await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 6);
+                    SendMirCall.Send(instanceValue, 9010, new nint[] { 1 });
+                }
+            }
+        }
+        
+        private async Task repairBasicWeaponClothes(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            // // 没买蜡烛先买, 背包蜡烛小于5
+            bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 649, 602, "", 6);
+            if (pathFound2)
+            {
+                await NpcFunction.ClickNPC(instanceValue!, "精武馆老板");
+                await NpcFunction.Talk2(instanceValue!, "@repair");
 
+                SendMirCall.Send(instanceValue!, 9010, new nint[] { });
+                await Task.Delay(500);
+                var taked = await NpcFunction.TakeOffItem(instanceValue, EquipPosition.Weapon);
+                if (taked != null)
+                {
+                    await NpcFunction.RepairItem(instanceValue, taked);
+                }
+                // rep 1
+            }
+
+            bool pathFound3 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 649, 602, "", 6);
+            if (pathFound3)
+            {
+                await NpcFunction.ClickNPC(instanceValue!, "高家店老板");
+                await NpcFunction.Talk2(instanceValue!, "@repair");
+                var taked = await NpcFunction.TakeOffItem(instanceValue, EquipPosition.Dress);
+                if (taked != null)
+                {
+                    await NpcFunction.RepairItem(instanceValue, taked);
+                }
+            }
+        }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
         {
             ItemFunction.ReadBag(instanceValue);
-          
-            // 修理装备 -- 应该还不需要 以后再加
-            // 穿先不管 自己会穿
-            // 先卖掉多余的肉和鸡肉, 保留5个 没意义
 
             var meats = instanceValue.Items.Where(o => o.Name == "肉");
             var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
@@ -402,7 +443,7 @@ namespace Mir2Assistant
                 {
                     // 只要点一次就够
                     await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                }   
+                }
                 foreach (var meat in allMeats)
                 {
                     // 卖肉 TODO 抽象方法
@@ -411,13 +452,23 @@ namespace Mir2Assistant
                     data[data.Length - 1] = meat.Id;
                     SendMirCall.Send(instanceValue!, 3011, data);
                     await Task.Delay(300);
-                }   
-                
+                }
+
                 await Task.Delay(500);
                 SendMirCall.Send(instanceValue!, 9010, new nint[] { });
             }
-         
+
         }
+        private async Task prepareBags(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            // 蜡烛检测
+            await BuyLZ(instanceValue, _cancellationToken);
+            // 卖肉
+            await sellMeat(instanceValue, _cancellationToken);
+            // 修衣服和武器
+            await repairBasicWeaponClothes(instanceValue, _cancellationToken);
+        }
+        
      
         private async void processTasks()
         {
@@ -428,10 +479,10 @@ namespace Mir2Assistant
                 var CharacterStatus = instanceValue.CharacterStatus!;
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 20;
-                var portalStartX = 580;
-                var portalEndX = 690;
-                var portalStartY = 560;
-                var portalEndY = 640;
+                var portalStartX = 450;
+                var portalEndX = 650;
+                var portalStartY = 450;
+                var portalEndY = 600;
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                 {
@@ -458,19 +509,7 @@ namespace Mir2Assistant
                     var act = instanceValue.AccountInfo!;
                     var _cancellationTokenSource = new CancellationTokenSource();
 
-                    // // 没买蜡烛先买, 背包蜡烛小于3
-                    if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
-                    {
-                        bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 640, 613, "", 6);
-                        if (pathFound)
-                        {
-                            await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                            await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 6);
-                            SendMirCall.Send(instance.Value, 9010, new nint[] { 1 });
-                        }
-                    }
-                    // 卖肉
-                    await sellMeat(instanceValue, _cancellationTokenSource.Token);
+                    await prepareBags(instanceValue, _cancellationTokenSource.Token);
                     // 新手任务
                     // todo 目前是5
                     if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6)
@@ -689,58 +728,64 @@ namespace Mir2Assistant
                             act.TaskSub0Step = 4;
                             SaveAccountList();
                         }
-                        if (act.TaskSub0Step == 4)
-                        {
-                            // 去银杏村药店 药剂师
-                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
-                            if (pathFound)
-                            {
-                                await NpcFunction.ClickNPC(instanceValue!, "药剂师");
-                                // 介绍信任务/@news
-                                await NpcFunction.Talk2(instanceValue!, "@news");
-                                // < 可以 / @new2_21 >,
-                                await NpcFunction.Talk2(instanceValue!, "@new2_21");
-                                // <接受/@new2_211>
-                                await NpcFunction.Talk2(instanceValue!, "@new2_211");
-                            }
-                            act.TaskSub0Step = 5;
-                            SaveAccountList();
-                        }
-                         if (act.TaskSub0Step == 5)
-                        {
-                            // 继续找肉 5 5
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                            {
-                                var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
-                                var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                                return meats.Count > 4 && chickens.Count > 4;
-                            });
-                            act.TaskSub0Step = 6;
-                            SaveAccountList();
-                        }
+                        // 一点经验没啥用
+                        // if (act.TaskSub0Step == 4)
+                        // {
+                        //     // 去银杏村药店 药剂师
+                        //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
+                        //     if (pathFound)
+                        //     {
+                        //         await NpcFunction.ClickNPC(instanceValue!, "药剂师");
+                        //         // 介绍信任务/@news
+                        //         await NpcFunction.Talk2(instanceValue!, "@news");
+                        //         // < 可以 / @new2_21 >,
+                        //         await NpcFunction.Talk2(instanceValue!, "@new2_21");
+                        //         // <接受/@new2_211>
+                        //         await NpcFunction.Talk2(instanceValue!, "@new2_211");
+                        //     }
+                        //     act.TaskSub0Step = 5;
+                        //     SaveAccountList();
+                        // }
+                        //  if (act.TaskSub0Step == 5)
+                        // {
+                        //     // 继续找肉 5 5
+                        //     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                        //     {
+                        //         var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                        //         var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                        //         return meats.Count > 4 && chickens.Count > 4;
+                        //     });
+                        //     act.TaskSub0Step = 6;
+                        //     SaveAccountList();
+                        // }
                     }
                     // 主线
                     // 去道士武士魔法之家, todo 跨地图寻路
                     // 道士 544, 560
                     // 武士 107, 316
                     // 魔法 314, 474
-                    if (CharacterStatus.Level >= 7 && act.TaskMain0Step == 6)
+                    if (CharacterStatus.Level >= 5)
                     {
                         // todo 跨地图
                         // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
                         // if (pathFound)
                         // {
                         // }
-                        await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                        {
-                            var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
-                            var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                            return meats.Count > 4 && chickens.Count > 4;
-                        });
-                        act.TaskSub0Step = 6;
-                        SaveAccountList();
 
-                        return;
+                        // 目前死循环
+                        while (true)
+                        {
+                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            {
+                                // 查是否满包 要卖了
+                                var meats = instanceValue.Items;
+                                return meats.Count > 32;
+                                // 或者需要修理了
+                            });
+                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                        }
+                        // act.TaskSub0Step = 6;
+                        // SaveAccountList();
                     }
                 }
             });
@@ -774,7 +819,9 @@ namespace Mir2Assistant
                     if (CharacterStatus.CurrentHP <= 0)
                     {
                         // 复活 重启
-                        RestartGameProcess(instance.Value.AccountInfo!);
+                        // 尝试小退
+                        await GoRunFunction.ExitToSelectScene(instance.Value);
+                        // RestartGameProcess(instance.Value.AccountInfo!);
                         continue;
                     }
                     if (CharacterStatus.CurrentHP > 0)
@@ -812,10 +859,10 @@ namespace Mir2Assistant
                             // TODO 装备评分
                             // 先非常简略从背包找乌木剑, 并且手上是木剑, 后面再优化
                             if (item.Name == "木剑")
-                           {
+                            {
                                 var final = bagItems.Where(o => o.Name == "乌木剑" && !o.IsLowDurability).FirstOrDefault();
                                 if (final != null)
-                                {   
+                                {
                                     nint toIndex = index;
                                     nint bagGridIndex = final.Index;
                                     SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
@@ -843,6 +890,12 @@ namespace Mir2Assistant
                                     await Task.Delay(800);
                                 }
                             }
+                        }
+
+                        // 找红药
+                        if (CharacterStatus.CurrentHP <= 15)
+                        {
+                            NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
                         }
                     }
                 }

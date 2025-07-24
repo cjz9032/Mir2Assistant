@@ -509,12 +509,6 @@ public static class GoRunFunction
     {
         if (path.Count < 2) return path;
 
-        Log.Debug($"开始优化路径，原始路径点数: {path.Count}");
-        // foreach (var p in path)
-        // {
-        //     Log.Debug($"原始点: 方向={p.dir}, 步长={p.steps}, 坐标=({p.x}, {p.y})");
-        // }
-
         var optimizedPath = new List<(byte dir, byte steps, int x, int y)>();
         int i = 0;
 
@@ -526,11 +520,6 @@ public static class GoRunFunction
             if (i + 1 < path.Count && current.steps == 1)
             {
                 var next = path[i + 1];
-                
-                // 只在以下条件下合并：
-                // 1. 两点方向相同
-                // 2. 两点步长都是1
-                // 3. 两点是连续的（通过坐标检查）
                 bool canMerge = current.dir == next.dir && 
                                next.steps == 1 &&
                                IsConsecutivePoints(current.x, current.y, next.x, next.y, current.dir);
@@ -538,24 +527,14 @@ public static class GoRunFunction
                 if (canMerge)
                 {
                     var merged = (current.dir, (byte)2, next.x, next.y);
-                    // Log.Debug($"合并点: ({current.x},{current.y})和({next.x},{next.y}) -> 方向={merged.Item1}, 步长={merged.Item2}, 终点=({merged.Item3},{merged.Item4})");
                     optimizedPath.Add(merged);
                     i += 2;
                     continue;
                 }
             }
-            
-            // 不能合并，保持原样添加
-            // Log.Debug($"保持原点: 方向={current.dir}, 步长={current.steps}, 坐标=({current.x}, {current.y})");
             optimizedPath.Add(current);
             i++;
         }
-
-        Log.Debug($"优化后路径点数: {optimizedPath.Count}");
-        // foreach (var p in optimizedPath)
-        // {
-        //     Log.Debug($"优化后点: 方向={p.dir}, 步长={p.steps}, 坐标=({p.x}, {p.y})");
-        // }
 
         return optimizedPath;
     }
@@ -732,7 +711,7 @@ public static class GoRunFunction
                         while (tried < 20)
                         {
                             SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                            await Task.Delay(700);
+                            await Task.Delay(600);
                             MonsterFunction.ReadMonster(instanceValue!);
                             if (body.isButched)
                             {
@@ -974,33 +953,13 @@ public static class GoRunFunction
         return true;
     }
 
- 
 
-
-    public static async Task<bool> WaitGoPath(MirGameInstanceModel gameInstance, string map, int x, int y)
+    public static async Task ExitToSelectScene(MirGameInstanceModel gameInstance)
     {
-        var success = true;
-        await Task.Run(() =>
-        {
-            while (Math.Abs(x - gameInstance.CharacterStatus!.X) > 2 && Math.Abs(y - gameInstance.CharacterStatus!.Y) > 2)
-            {
-                if (map != gameInstance.CharacterStatus!.MapName)
-                {
-                    success = false;
-                    return;
-                }
-                // FindPath(gameInstance, x, y);
-                Task.Delay(3000).Wait();
-            }
-        });
-        return success;
-    }
-
-    public static async Task<bool> FlyCY(MirGameInstanceModel gameInstance)
-    {
-
-        SendMirCall.Send(gameInstance, 1010, new nint[] { gameInstance!.MirConfig["通用参数"], gameInstance!.MirConfig["对话CALL地址"] });
-        return await NpcFunction.WaitNPC(gameInstance, "天虹法师");
+        SendMirCall.Send(gameInstance, 9098, new nint[] { });
+        await Task.Delay(5000);
+        SendMirCall.Send(gameInstance, 9099, new nint[] { });
+        await Task.Delay(5000);
     }
 
     /// <summary>

@@ -59,14 +59,14 @@ namespace Mir2Assistant.Common.Functions
             {
                 //TODO 可能会出错, 先用着, 直接读了旧地址 认为不存在, 额外可以判断一些信息得到, 比如字符串是否合法等
                 var nowAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
-                if(nowAddr != 0)
+                if (nowAddr != 0)
                 {
                     var str222 = memoryUtil.ReadToDelphiUnicode(nowAddr);
                     gameInstance.TalkCmds = GetTalkCmds(str222);
                     return str222;
                 }
             }
-           
+
             var str = memoryUtil.ReadToDelphiUnicode(resAddr);
             gameInstance.TalkCmds = GetTalkCmds(str);
             return str;
@@ -165,7 +165,7 @@ namespace Mir2Assistant.Common.Functions
                 SendMirCall.Send(gameInstance, 3006, new nint[] { i });
                 await Task.Delay(300);
             }
-          
+
         }
 
         /// <summary>
@@ -182,6 +182,57 @@ namespace Mir2Assistant.Common.Functions
                 SendMirCall.Send(gameInstance, 3010, data);
                 await Task.Delay(300);
             }
+        }
+
+        /// <summary>
+        /// 吃东西
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public static void EatIndexItem(MirGameInstanceModel gameInstance, string itemName)
+        {
+            ItemFunction.ReadBag(gameInstance);
+            var bagItems2 = gameInstance.Items;
+            var idx = bagItems2.FindIndex(o => o.Name == itemName);
+            if (idx >= 0)
+            {
+                SendMirCall.Send(gameInstance, 3019, new nint[] { idx });
+            }
+        }
+
+        /// <summary>
+        /// 脱东西
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public async static Task<ItemModel?> TakeOffItem(MirGameInstanceModel gameInstance, EquipPosition pos)
+        {
+            var item = gameInstance.CharacterStatus.useItems[(int)pos];
+            if (!item.IsEmpty)
+            {
+                SendMirCall.Send(gameInstance!, 3020, new nint[] { item.Index });
+                await Task.Delay(700);
+                return item;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 修东西
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <param name="itemName"></param>
+        /// <returns></returns>
+        public async static Task RepairItem(MirGameInstanceModel gameInstance, ItemModel item)
+        {
+            nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
+            Array.Resize(ref data, data.Length + 1);
+            data[data.Length - 1] = item.Id;
+
+            SendMirCall.Send(gameInstance!, 3012, data);
+            await Task.Delay(500);
         }
     }
 }

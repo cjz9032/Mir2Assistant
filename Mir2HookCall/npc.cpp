@@ -140,7 +140,18 @@ void takeOn(int girdIdx, int itemIdx) {
 	bagGridClick(girdIdx);
 	CreateThread(NULL, 0, TakeOnDelayThread, reinterpret_cast<LPVOID>(itemIdx), 0, NULL);
 }
-
+void eatIndexItem(int idx){
+	__asm {
+		pushfd
+		mov edx, idx
+		mov eax, [0x7524B4]
+		mov eax, [eax]
+		mov esi, 0x63D914
+		call esi
+		popfd
+		popad
+	}
+}
 //二级对话 
 void talk2(DelphiString* cmd)
 {
@@ -385,8 +396,9 @@ void Npc::process(int code, int* data)
 	case 3016:
 		processNpcCommand(data, backStoreItem);
 		break;
-
-
+	case 3019: // 吃
+		eatIndexItem(data[0]);
+		break;
 	case 3020: // 脱
 		takeOff(data[0]);
 		break;

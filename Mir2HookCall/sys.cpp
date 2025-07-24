@@ -183,7 +183,18 @@ void refPkg()
 
 	}
 }
-
+void exitToSelectScene(){
+	_asm {
+		pushad
+		pushfd
+		mov eax, 0x7524B4
+		mov eax,[eax]
+		mov esi, 0x006399A8
+		call esi
+		popfd
+		popad
+	}
+}
 void startButton(){
 	_asm {
 		pushad
@@ -235,6 +246,9 @@ void Sys::process(int code, int* data)
 		break;
 	case 9010: //刷新背包
 		refPkg();
+		break;
+	case 9098:
+		exitToSelectScene();
 		break;
 	case 9099:
 		startButton();
