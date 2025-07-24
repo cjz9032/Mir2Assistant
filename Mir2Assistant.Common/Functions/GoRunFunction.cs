@@ -577,6 +577,8 @@ public static class GoRunFunction
             // 当前巡回
             var curP = 0;
             var CharacterStatus = instanceValue.CharacterStatus!;
+            var (rpx, rpy) = patrolPairs[0];
+            var skipTempCheckMon = rpx == 0;
             while (true)
             {
                 // 不寻路模式, 其实就是只打怪, 需要抽象
@@ -584,8 +586,7 @@ public static class GoRunFunction
                 // 主从模式
                 // 主人是点位
                 var (px, py) = (0, 0);
-                var (rpx, rpy) = patrolPairs[0];
-                if (rpx > 0 && rpy > 0)
+                if (!skipTempCheckMon)
                 {
                     // 从是跟随
                     if (instanceValue.AccountInfo!.IsMainControl)
@@ -603,12 +604,12 @@ public static class GoRunFunction
                             (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
                         }
                     }
-                    bool _whateverPathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5);
                 }
           
 
                 // 如果是跟随
-                if (!instanceValue.AccountInfo!.IsMainControl)
+                if (!instanceValue.AccountInfo!.IsMainControl && !skipTempCheckMon)
                 {
                     // 从是跟随 -- 这是重复代码 先放着
                     var instances = GameState.GameInstances.ToList();
@@ -621,7 +622,7 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                     {
                         // 跟随
-                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
                     }
                 }
 
@@ -644,7 +645,7 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
                     {
                         // 暂时就给1了
-                        await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
                     }
                     // 攻击
                     // 持续攻击, 超过就先放弃
@@ -657,7 +658,7 @@ public static class GoRunFunction
                         if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1);
+                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
                         }
                         await Task.Delay(200);
                         if (ani.isDead || monTried > 150)
@@ -690,7 +691,7 @@ public static class GoRunFunction
                 .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
                 foreach (var drop in drops)
                 {
-                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0);
+                    bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 999);
                     if (pathFound2)
                     {
                         ItemFunction.Pickup(instanceValue!);
@@ -703,7 +704,7 @@ public static class GoRunFunction
                 .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
                 foreach (var body in bodys)
                 {
-                    bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2);
+                    bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 999);
                     if (pathFound2)
                     {
                         // 要持续屠宰, 直到尸体消失, 最大尝试 30次

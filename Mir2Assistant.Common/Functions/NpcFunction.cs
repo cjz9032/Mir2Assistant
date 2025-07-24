@@ -212,9 +212,19 @@ namespace Mir2Assistant.Common.Functions
             var item = gameInstance.CharacterStatus.useItems[(int)pos];
             if (!item.IsEmpty)
             {
+                var itemCopy = new ItemModel
+                {
+                    Id = item.Id,
+                    Index = item.Index,
+                    Name = item.Name,
+                    Duration = item.Duration,
+                    MaxDuration = item.MaxDuration,
+                    stdMode = item.stdMode,
+                    IsGodly = item.IsGodly
+                };
                 SendMirCall.Send(gameInstance!, 3020, new nint[] { item.Index });
                 await Task.Delay(700);
-                return item;
+                return itemCopy;
             }
             return null;
         }

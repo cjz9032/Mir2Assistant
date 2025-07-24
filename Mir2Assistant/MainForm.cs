@@ -399,11 +399,10 @@ namespace Mir2Assistant
                 {
                     await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
                     await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 6);
-                    SendMirCall.Send(instanceValue, 9010, new nint[] { 1 });
                 }
             }
         }
-        
+
         private async Task repairBasicWeaponClothes(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             // // 没买蜡烛先买, 背包蜡烛小于5
@@ -413,7 +412,6 @@ namespace Mir2Assistant
                 await NpcFunction.ClickNPC(instanceValue!, "精武馆老板");
                 await NpcFunction.Talk2(instanceValue!, "@repair");
 
-                SendMirCall.Send(instanceValue!, 9010, new nint[] { });
                 await Task.Delay(500);
                 var taked = await NpcFunction.TakeOffItem(instanceValue, EquipPosition.Weapon);
                 if (taked != null)
@@ -434,6 +432,8 @@ namespace Mir2Assistant
                     await NpcFunction.RepairItem(instanceValue, taked);
                 }
             }
+
+            SendMirCall.Send(instanceValue!, 9010, new nint[] { });
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
         {
@@ -885,11 +885,12 @@ namespace Mir2Assistant
                                 // 2.not IsLowDurability
                                 // 3.能携带, 目前只看等级, reqType  // todo 更多类型,以及携带策略可能要搭配
                                 // 4.TODO 负重腕力等, 先不管
+                                // 5. 排序等级第一名, 剩余持久度第一名
                                 var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
-                                && !o.IsLowDurability
+                                // && !o.IsLowDurability
                                 && o.reqType == 0
                                 && o.reqPoints <= CharacterStatus.Level
-                                ).FirstOrDefault();
+                                ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
                                 if (final != null)
                                 {
                                     // 装回检查的位置
@@ -898,6 +899,26 @@ namespace Mir2Assistant
                                     SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
                                     await Task.Delay(800);
                                 }
+                            }
+                            else
+                            {
+                                // 如果发现比身上更NB的,需要比较
+                                // 目前只比较req 0(等级) 和 reqp 
+                                var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
+                                && o.reqType == 0
+                                && o.reqPoints <= CharacterStatus.Level
+                                && o.reqPoints > item.reqPoints
+                                ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
+
+                                if (final != null)
+                                {
+                                    // 装回检查的位置
+                                    nint toIndex = index;
+                                    nint bagGridIndex = final.Index;
+                                    SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
+                                    await Task.Delay(800);
+                                }
+                                    
                             }
                         }
 
