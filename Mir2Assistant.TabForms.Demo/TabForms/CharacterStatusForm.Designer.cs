@@ -90,6 +90,18 @@ namespace Mir2Assistant.TabForms.Demo
             buttonPickUp.TabIndex = 4;
             buttonPickUp.Text = "捡取";
             buttonPickUp.UseVisualStyleBackColor = true;
+
+            buttonHit = new System.Windows.Forms.Button();
+            // 
+            // buttonHit
+            // 
+            buttonHit.Location = new Point(333, 155);
+            buttonHit.Name = "buttonHit";
+            buttonHit.Size = new Size(75, 23);
+            buttonHit.TabIndex = 5;
+            buttonHit.Text = "打";
+            buttonHit.UseVisualStyleBackColor = true;
+            buttonHit.Click += buttonHit_Click;
             // 
             // CharacterStatusForm
             // 
@@ -99,6 +111,7 @@ namespace Mir2Assistant.TabForms.Demo
             Controls.Add(buttonTakeOff);
             Controls.Add(buttonButch);
             Controls.Add(buttonPickUp);
+            Controls.Add(buttonHit);
             Controls.Add(useItemsListBox);
             Controls.Add(statusLabel);
             Name = "CharacterStatusForm";
@@ -116,5 +129,6 @@ namespace Mir2Assistant.TabForms.Demo
         private Button buttonTakeOff;
         private Button buttonButch;
         private Button buttonPickUp;
+        private Button buttonHit;
     }
 }

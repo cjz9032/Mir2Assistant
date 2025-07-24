@@ -41,6 +41,7 @@ namespace Mir2Assistant.TabForms.Demo
             InitializeComponent();
             buttonTakeOff.Click += buttonTakeOff_Click;
             buttonButch.Click += buttonButch_Click;
+            buttonHit.Click += buttonHit_Click;
         }
 
         private void CharacterStatusForm_Load(object sender, EventArgs e)
@@ -120,6 +121,11 @@ namespace Mir2Assistant.TabForms.Demo
                 var first = nearbyMonsters.First();
                 SendMirCall.Send(GameInstance!, 3030, new nint[] { (nint)first.Value.X, (nint)first.Value.Y, 0, first.Value.Id });
             }
+        }
+
+        private void buttonHit_Click(object sender, EventArgs e)
+        {
+            // Empty implementation for the Hit button click event
         }
     }
 }
