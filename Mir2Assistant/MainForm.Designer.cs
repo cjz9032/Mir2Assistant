@@ -38,6 +38,7 @@
             colRestart = new DataGridViewButtonColumn();
             btnRestartAll = new Button();
             btnRestartTask = new Button();
+            btnCloseAll = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAccounts).BeginInit();
             SuspendLayout();
             // 
@@ -52,15 +53,15 @@
             // 
             // dataGridViewAccounts
             // 
+            dataGridViewAccounts.AllowUserToAddRows = false;
             dataGridViewAccounts.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridViewAccounts.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridViewAccounts.Columns.AddRange(new DataGridViewColumn[] { colAccount, colPassword, colCharName, colIsMainControl, colPid, colRestart });
             dataGridViewAccounts.Location = new Point(12, 45);
             dataGridViewAccounts.Name = "dataGridViewAccounts";
-            dataGridViewAccounts.Size = new Size(771, 387);
+            dataGridViewAccounts.Size = new Size(922, 340);
             dataGridViewAccounts.TabIndex = 1;
             dataGridViewAccounts.CellContentClick += dataGridViewAccounts_CellContentClick;
-            dataGridViewAccounts.AllowUserToAddRows = false; // 禁止新增行
             // 
             // colAccount
             // 
@@ -102,7 +103,7 @@
             // 
             // btnRestartAll
             // 
-            btnRestartAll.Location = new Point(683, 9);
+            btnRestartAll.Location = new Point(450, 9);
             btnRestartAll.Name = "btnRestartAll";
             btnRestartAll.Size = new Size(100, 23);
             btnRestartAll.TabIndex = 2;
@@ -112,7 +113,7 @@
             // 
             // btnRestartTask
             // 
-            btnRestartTask.Location = new Point(577, 9);
+            btnRestartTask.Location = new Point(569, 9);
             btnRestartTask.Name = "btnRestartTask";
             btnRestartTask.Size = new Size(100, 23);
             btnRestartTask.TabIndex = 3;
@@ -120,13 +121,24 @@
             btnRestartTask.UseVisualStyleBackColor = true;
             btnRestartTask.Click += btnRestartTask_Click;
             // 
+            // btnCloseAll
+            // 
+            btnCloseAll.Location = new Point(834, 9);
+            btnCloseAll.Name = "btnCloseAll";
+            btnCloseAll.Size = new Size(100, 23);
+            btnCloseAll.TabIndex = 3;
+            btnCloseAll.Text = "关闭全部";
+            btnCloseAll.UseVisualStyleBackColor = true;
+            btnCloseAll.Click += btnCloseAll_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(795, 448);
+            ClientSize = new Size(946, 401);
             Controls.Add(btnRestartTask);
             Controls.Add(btnRestartAll);
+            Controls.Add(btnCloseAll);
             Controls.Add(dataGridViewAccounts);
             Controls.Add(label1);
             Name = "MainForm";
@@ -150,5 +162,6 @@
         private DataGridViewButtonColumn colRestart;
         private Button btnRestartAll;
         private Button btnRestartTask;
+        private Button btnCloseAll;
     }
 }

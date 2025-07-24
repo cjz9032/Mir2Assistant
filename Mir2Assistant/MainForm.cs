@@ -358,8 +358,7 @@ namespace Mir2Assistant
         private async void btnRestartAll_Click(object sender, EventArgs e)
         {
             Log.Information("重启所有游戏进程，账号数量: {AccountCount}", accountList.Count);
-            // 先杀死所有ZC.H进程
-            KillAllGameProcess();
+  
 
                 foreach (var account in accountList)
                 {
@@ -370,6 +369,13 @@ namespace Mir2Assistant
                 // sllep 
                 // await Task.Delay(20_000);
              
+        }
+
+        private void btnCloseAll_Click(object sender, EventArgs e)
+        {
+                    //   先杀死所有ZC.H进程 有bug, 会导致丢失
+            KillAllGameProcess();
+            // Empty implementation for closing all instances
         }
 
         private async void btnRestartTask_Click(object sender, EventArgs e)
