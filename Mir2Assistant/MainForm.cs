@@ -489,11 +489,11 @@ namespace Mir2Assistant
                 var instanceValue = instance.Value;
                 var CharacterStatus = instanceValue.CharacterStatus!;
                 var fixedPoints = new List<(int, int)>();
-                var patrolSteps = 20;
-                var portalStartX = 500;
+                var patrolSteps = 10;
+                var portalStartX = 530;
                 var portalEndX = 630;
-                var portalStartY = 530;
-                var portalEndY = 610;
+                var portalStartY = 550;
+                var portalEndY = 630;
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                 {
