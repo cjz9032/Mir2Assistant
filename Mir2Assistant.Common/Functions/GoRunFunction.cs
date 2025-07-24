@@ -586,7 +586,7 @@ public static class GoRunFunction
 
    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
         {
-            var allowMonsters = new string[]  {"鸡", "鹿", "羊", "稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
+            var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
             var allowButch = new string[]  {"鸡", "鹿", "蝎子", "蜘蛛", "洞蛆", "羊"};
@@ -650,7 +650,7 @@ public static class GoRunFunction
             while (true)
             {
                 // 查看存活怪物 并且小于距离10个格子
-                var ani = instanceValue.Monsters.Values.Where(o => !o.isDead &&
+                var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 allowMonsters.Contains(o.Name) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
                 (px == 0 ? true : Math.Max(Math.Abs(o.X - px), Math.Abs(o.Y - py)) < 16)
@@ -818,7 +818,7 @@ public static class GoRunFunction
             {
                 // 
                 // 攻击怪物, 太多了 过不去
-                var monsters = GameInstance.Monsters.Where(o => !o.Value.isDead).ToList();
+                var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon).ToList();
                 if (monsters.Count > attacksThan)
                 {
                     // 算出怪物中间点 取整

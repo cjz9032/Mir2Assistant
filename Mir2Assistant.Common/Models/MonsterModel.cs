@@ -43,6 +43,7 @@ namespace Mir2Assistant.Common.Models
         /// 行会
         /// </summary>
         public string? Guild { get; set; }
+        public bool stdAliveMon => !isDead && TypeStr == "(怪)" && !Name!.Contains(")");
 
         public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead ? "死" : "")} {(isButched ? "已屠宰" : "")} {Name} {Appr} {Addr:x2} {Id:x2}";
     }
