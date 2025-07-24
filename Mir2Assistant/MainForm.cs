@@ -255,10 +255,8 @@ namespace Mir2Assistant
                         // {
 
                         // }
-                        if (gameInstance.AccountInfo.IsMainControl)
-                        {
-                            gameInstance.AssistantForm.Show();
-                        }
+                        // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
+                        gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
@@ -405,6 +403,7 @@ namespace Mir2Assistant
 
         private async Task repairBasicWeaponClothes(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
+            await NpcFunction.RefreshPackages(instanceValue);
             // // 没买蜡烛先买, 背包蜡烛小于5
             bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 649, 602, "", 6);
             if (pathFound2)
@@ -417,6 +416,8 @@ namespace Mir2Assistant
                 if (taked != null)
                 {
                     await NpcFunction.RepairItem(instanceValue, taked);
+                    await Task.Delay(5000);
+                    await NpcFunction.RefreshPackages(instanceValue);
                 }
                 // rep 1
             }
@@ -430,10 +431,11 @@ namespace Mir2Assistant
                 if (taked != null)
                 {
                     await NpcFunction.RepairItem(instanceValue, taked);
+                    await Task.Delay(5000);
+                    await NpcFunction.RefreshPackages(instanceValue);
                 }
             }
 
-            SendMirCall.Send(instanceValue!, 9010, new nint[] { });
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
         {
@@ -464,7 +466,7 @@ namespace Mir2Assistant
                 }
 
                 await Task.Delay(500);
-                SendMirCall.Send(instanceValue!, 9010, new nint[] { });
+                await NpcFunction.RefreshPackages(instanceValue);
             }
 
         }
@@ -876,6 +878,7 @@ namespace Mir2Assistant
                                     nint bagGridIndex = final.Index;
                                     SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
                                     await Task.Delay(800);
+                                    ItemFunction.ReadBag(instance.Value);
                                 }
                             }
                             if (item.IsEmpty)
@@ -898,6 +901,7 @@ namespace Mir2Assistant
                                     nint bagGridIndex = final.Index;
                                     SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
                                     await Task.Delay(800);
+                                    ItemFunction.ReadBag(instance.Value);
                                 }
                             }
                             else
@@ -917,8 +921,10 @@ namespace Mir2Assistant
                                     nint bagGridIndex = final.Index;
                                     SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
                                     await Task.Delay(800);
+                                    ItemFunction.ReadBag(instance.Value);
+
                                 }
-                                    
+
                             }
                         }
 

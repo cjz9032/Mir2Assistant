@@ -239,8 +239,8 @@ public static class GoRunFunction
         {
             path = FindPathJPS(width, height, data, myX, myY, targetX, targetY);
         }
-        // 优化路径
-        path = OptimizePath(path);
+        // 优化路径 TODO 暂时先不用 费血
+        // path = OptimizePath(path);
         sw.Stop();
         Log.Debug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
         return path.Select(p => (p.dir, p.steps)).ToList();

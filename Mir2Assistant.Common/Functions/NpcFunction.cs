@@ -244,5 +244,17 @@ namespace Mir2Assistant.Common.Functions
             SendMirCall.Send(gameInstance!, 3012, data);
             await Task.Delay(500);
         }
+
+        /// <summary>
+        /// 刷新
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <returns></returns>
+        public async static Task RefreshPackages(MirGameInstanceModel gameInstance)
+        {
+            SendMirCall.Send(gameInstance!, 9010, new nint[] { });
+            await Task.Delay(500);
+            ItemFunction.ReadBag(gameInstance);
+        }
     }
 }
