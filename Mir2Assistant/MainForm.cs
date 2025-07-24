@@ -260,7 +260,7 @@ namespace Mir2Assistant
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
                         {
-                            await Task.Delay(18000);
+                            await Task.Delay(14000);
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         });
                         
