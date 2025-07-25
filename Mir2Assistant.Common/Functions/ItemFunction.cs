@@ -40,6 +40,7 @@ namespace Mir2Assistant.Common.Functions
                         item.Duration = memoryUtils.ReadToShort(itemAddr + 0x78)/100;
                         item.MaxDuration = memoryUtils.ReadToShort(itemAddr + 0x7A)/100;
                         item.stdMode = memoryUtils.ReadToInt8(itemAddr + 0xF);
+                        item.addr = itemAddr;
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + 0x24);
                         item.reqPoints = memoryUtils.ReadToInt8(itemAddr + 0x25);
 

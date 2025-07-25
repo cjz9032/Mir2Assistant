@@ -222,8 +222,15 @@ namespace Mir2Assistant.Common.Functions
                     stdMode = item.stdMode,
                     IsGodly = item.IsGodly
                 };
-                SendMirCall.Send(gameInstance!, 3020, new nint[] { item.Index });
-                await Task.Delay(700);
+
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,    
+                    item.Index, 
+                    item.Id   
+                );
+                SendMirCall.Send(gameInstance!, 3022, data);
+                gameInstance!.MemoryUtils!.WriteByte(item.addr, 0);
+                await Task.Delay(500);
                 return itemCopy;
             }
             return null;

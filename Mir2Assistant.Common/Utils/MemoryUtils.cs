@@ -178,6 +178,15 @@ public class MemoryUtils : IDisposable
         return WriteByteArray(address, BitConverter.GetBytes(value));
     }
 
+    public bool WriteBool(IntPtr address, bool value)
+    {
+        return WriteByteArray(address, BitConverter.GetBytes(value));
+    }
+
+    public bool WriteByte(IntPtr address, byte value)
+    {
+        return WriteByteArray(address, [value]);
+    }
     public bool WriteShort(IntPtr address, short value)
     {
         return WriteByteArray(address, BitConverter.GetBytes(value));

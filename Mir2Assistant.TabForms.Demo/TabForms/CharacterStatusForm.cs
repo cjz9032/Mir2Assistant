@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mir2Assistant.Common.Functions;
+using Mir2Assistant.Common.Utils;
 
 namespace Mir2Assistant.TabForms.Demo
 {
@@ -104,7 +105,9 @@ namespace Mir2Assistant.TabForms.Demo
                 );
                 SendMirCall.Send(GameInstance!, 3022, data);
                 await Task.Delay(200);
-
+                // var addr = GameInstance!.MemoryUtils!.GetMemoryAddress(item.addr);
+                GameInstance!.MemoryUtils!.WriteByte(item.addr, 0);
+                
                 await Task.Delay(700);
             }
 

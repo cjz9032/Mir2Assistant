@@ -93,8 +93,9 @@ namespace Mir2Assistant.Common.Models
         public byte reqType { get; set; }
         public byte reqPoints { get; set; }
         public int Duration { get; set; }
+        public int addr { get; set; }
         public int MaxDuration { get; set; }
-        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
+        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode} {addr:x2}";
         public bool IsLowDurability => Duration > 0 ? (((double)Duration / MaxDuration) < 0.25) : false;
         public byte[] stdModeToUseItemIndex
         {
