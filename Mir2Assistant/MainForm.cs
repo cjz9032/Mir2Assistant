@@ -261,8 +261,13 @@ namespace Mir2Assistant
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
                         {
-                            await Task.Delay(12000);
+                            await Task.Delay(10000);
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
+                            await Task.Delay(6000);
+                            if (gameInstance.CharacterStatus.CurrentHP == 0)
+                            {
+                                RestartGameProcess(account);
+                            }
                         });
                         
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
@@ -390,13 +395,13 @@ namespace Mir2Assistant
         private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             // 没买蜡烛先买, 背包蜡烛小于5
-            if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 5)
+            if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
             {
                 bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "", 6);
                 if (pathFound)
                 {
                     await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                    await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 6);
+                    await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 3);
                 }
             }
         }
@@ -639,23 +644,23 @@ namespace Mir2Assistant
                             }
                             // 查询所有号的等级>=5, 再出去
                             // 逛街
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                            {
-                                var instances = GameState.GameInstances.ToList();
-                                var allLevel5 = instances.Where(o => o.Value.CharacterStatus!.Level < 5).ToList();
-                                if (allLevel5.Count == 0)
-                                {
-                                    return true;
-                                }
-                                return false;
-                            });
+                            // await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            // {
+                            //     var instances = GameState.GameInstances.ToList();
+                            //     var allLevel5 = instances.Where(o => o.Value.CharacterStatus!.Level < 5).ToList();
+                            //     if (allLevel5.Count == 0)
+                            //     {
+                            //         return true;
+                            //     }
+                            //     return false;
+                            // });
                             act.TaskMain0Step = 6;
                             SaveAccountList();
 
                         }
                     }
-                    // 支线8级, 主线先做一半到支线一起做
-                    if (CharacterStatus.Level <= 8 && act.TaskSub0Step < 99)
+                    // 支线8级, 没啥调用 先不要了
+                    if (CharacterStatus.Level >= 999 && act.TaskSub0Step < 99)
                     {
                         // 1、7级前从新手村助手阿妍处接介绍信任务
                         // 2、给屠夫1块鹿肉、1块鸡肉（得到太阳水1瓶）
@@ -753,7 +758,7 @@ namespace Mir2Assistant
                     // 道士 544, 560
                     // 武士 107, 316
                     // 魔法 314, 474
-                    if (CharacterStatus.Level >= 5)
+                    if (CharacterStatus.Level >= 3)
                     {
                         // todo 跨地图
                         // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
@@ -766,10 +771,9 @@ namespace Mir2Assistant
                         {
                             await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                             {
-                                // 查是否满包 要卖了
+                                // go home
                                 var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
                                 return meats.Count > 32;
-                                // 或者需要修理了 算了先
                             });
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
