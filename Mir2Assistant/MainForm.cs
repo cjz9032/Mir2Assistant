@@ -474,6 +474,7 @@ namespace Mir2Assistant
             var allMeats = expressMeats.Concat(expressChickens).ToList();
             if (allMeats.Count > 0)
             {
+                Log.Information("卖肉");
                 // 屠夫 647 595 // todo 屠夫记录NPC
                 await findMeatNpc(instanceValue, _cancellationToken);
                 foreach (var meat in allMeats)
@@ -512,6 +513,7 @@ namespace Mir2Assistant
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
+            Log.Information($"找助手 {isLeftAlive}");
 
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "", 6);
             if (pathFound)
@@ -526,6 +528,7 @@ namespace Mir2Assistant
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
+            Log.Information($"找屠夫 {isLeftAlive}");
 
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 287, !isLeftAlive ? 603 : 604, "", 6);
             if (pathFound)
@@ -538,6 +541,7 @@ namespace Mir2Assistant
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
+            Log.Information($"找武器 {isLeftAlive}");
 
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 295, !isLeftAlive ? 603 : 608, "", 6);
             if (pathFound)
@@ -722,29 +726,21 @@ namespace Mir2Assistant
                         if (act.TaskSub0Step == 0)
                         {
                             // click 助手阿妍 630 603
-                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 630, 603, "", 6);
-                            if (pathFound)
-                            {
-                                await NpcFunction.ClickNPC(instanceValue!, "助手小敏");
-                                await NpcFunction.Talk2(instanceValue!, "@next");
-                                await NpcFunction.Talk2(instanceValue!, "@next1");
-                                await NpcFunction.Talk2(instanceValue!, "@new01");
-                                act.TaskSub0Step = 1;
-                                SaveAccountList();
-                            }
+                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                            await NpcFunction.Talk2(instanceValue!, "@next");
+                            await NpcFunction.Talk2(instanceValue!, "@next1");
+                            await NpcFunction.Talk2(instanceValue!, "@new01");
+                            act.TaskSub0Step = 1;
+                            SaveAccountList();
                         }
                         // 2 屠夫
                         if (act.TaskSub0Step == 1)
                         {
                             // click 屠夫 647 595
-                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 647, 595, "", 6);
-                            if (pathFound)
-                            {
-                                await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                                await NpcFunction.Talk2(instanceValue!, "@main1");
-                                act.TaskSub0Step = 2;
-                                SaveAccountList();
-                            }
+                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                            await NpcFunction.Talk2(instanceValue!, "@main1");
+                            act.TaskSub0Step = 2;
+                            SaveAccountList();
                         }
                         if (act.TaskSub0Step == 2)
                         {
@@ -761,16 +757,12 @@ namespace Mir2Assistant
                         if (act.TaskSub0Step == 3)
                         {
                             // 回屠夫给肉他
-                            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 647, 595, "", 6);
-                            if (pathFound)
-                            {
-                                await NpcFunction.ClickNPC(instanceValue!, "屠夫");
-                                await NpcFunction.Talk2(instanceValue!, "@main1");
-                                // <确定/@newnew1_1>
-                                await NpcFunction.Talk2(instanceValue!, "@newnew1_1");
-                                // <真的吗？太好了！/@job>
-                                await NpcFunction.Talk2(instanceValue!, "@job");
-                            }
+                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                            await NpcFunction.Talk2(instanceValue!, "@main1");
+                            // <确定/@newnew1_1>
+                            await NpcFunction.Talk2(instanceValue!, "@newnew1_1");
+                            // <真的吗？太好了！/@job>
+                            await NpcFunction.Talk2(instanceValue!, "@job");
                             act.TaskSub0Step = 4;
                             SaveAccountList();
                         }
@@ -831,6 +823,7 @@ namespace Mir2Assistant
                         }
                         // act.TaskSub0Step = 6;
                         // SaveAccountList();
+
                     }
                 }
             });

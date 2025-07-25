@@ -8,7 +8,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mir2Assistant;
-using Mir2Assistant.Common.Utils; // Add this reference to access DllInject
+using Mir2Assistant.Common.Utils;
+using Serilog; // Add this reference to access DllInject
 
 namespace Mir2Assistant.Common.Functions
 {
@@ -298,13 +299,13 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public async static Task RepairEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
         {
-            // 先检查是否需要修理
             var needRep = await CheckNeedRep(gameInstance, position);
             if (!needRep)
             {
                 return;
             }
 
+            Log.Information($"修理{npcName}的{position}装备");
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
             if (pathFound)
             {
@@ -324,13 +325,13 @@ namespace Mir2Assistant.Common.Functions
         
         public async static Task BuyEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
         {
-            // 先检查是否需要修理
             var need = await CheckNeedBuy(gameInstance, position);
             if (!need)
             {
                 return;
             }
 
+            Log.Information($"购买{npcName}的{position}装备");
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
             if (pathFound)
             {
