@@ -579,8 +579,17 @@ public static class GoRunFunction
             var CharacterStatus = instanceValue.CharacterStatus!;
             var (rpx, rpy) = patrolPairs[0];
             var skipTempCheckMon = rpx == 0;
+            // skipTempCheckMon 也可以用来回复先
+            // todo 需要更多的技能治疗
+            if(instanceValue.CharacterStatus!.CurrentHP < 15 && instanceValue.CharacterStatus!.Level < 7)
+            {
+                skipTempCheckMon = true;
+                await Task.Delay(100);
+                // 回复
+            }
             while (true)
             {
+                
                 // 不寻路模式, 其实就是只打怪, 需要抽象
                     
                 // 主从模式
