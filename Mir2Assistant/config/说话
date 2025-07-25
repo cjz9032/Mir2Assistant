@@ -1,0 +1,39 @@
+直写说话call AddChatBoardString
+0064F4DB        mov         ecx,0FFFF
+0064F4E0        mov         edx,654558;'在战斗的时候你不能退出游戏'
+0064F4E5        mov         eax,[007524B8];gvar_007524B8:TDrawScreen
+0064F4EA        call        00567034
+
+
+
+
+
+
+
+
+
+说话call
+ZC.H+23ABD4 - 05 E8030000           - add eax,000003E8 { 1000 }
+ZC.H+23ABD9 - 8B 55 FC              - mov edx,[ebp-04]
+ZC.H+23ABDC - 89 82 58040000        - mov [edx+00000458],eax
+ZC.H+23ABE2 - 6A 00                 - push 00 { 0 }
+ZC.H+23ABE4 - 6A 00                 - push 00 { 0 }
+ZC.H+23ABE6 - 6A 00                 - push 00 { 0 }
+ZC.H+23ABE8 - 33 C9                 - xor ecx,ecx
+ZC.H+23ABEA - BA 51000000           - mov edx,00000051 { 81 }
+ZC.H+23ABEF - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+23ABF2 - E8 2D790000           - call ZC.H+242524
+ZC.H+23ABF7 - E9 10020000           - jmp ZC.H+23AE0C
+ZC.H+23ABFC - F6 45 08 04           - test byte ptr [ebp+08],04 { 4 }
+ZC.H+23AC00 - 0F84 06020000         - je ZC.H+23AE0C
+ZC.H+23AC06 - 33 C9                 - xor ecx,ecx
+ZC.H+23AC08 - BA 50B06300           - mov edx,ZC.H+23B050 { ("@AttackMode") }
+ZC.H+23AC0D - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+23AC10 - E8 8B880000           - call ZC.H+2434A0
+ZC.H+23AC15 - E9 F2010000           - jmp ZC.H+23AE0C
+ZC.H+23AC1A - F6 45 08 04           - test byte ptr [ebp+08],04 { 4 }
+ZC.H+23AC1E - 0F84 E8010000         - je ZC.H+23AE0C
+ZC.H+23AC24 - 33 C9                 - xor ecx,ecx
+ZC.H+23AC26 - BA 74B06300           - mov edx,ZC.H+23B074 { ("@Rest") }
+ZC.H+23AC2B - 8B 45 FC              - mov eax,[ebp-04]
+ZC.H+23AC2E - E8 6D880000           - call ZC.H+2434A0

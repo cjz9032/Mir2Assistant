@@ -435,7 +435,8 @@ namespace Mir2Assistant
             // 修理装备
             var repairTasks = new[] {
                 (npc: "精武馆老板", pos: EquipPosition.Weapon, x: 649, y: 602),
-                (npc: "高家店老板", pos: EquipPosition.Dress, x: 649, y: 602)
+                (npc: "高家店老板", pos: EquipPosition.Dress, x: 649, y: 602),
+                (npc: "高家店老板", pos: EquipPosition.Helmet, x: 649, y: 602)
             };
 
             foreach (var task in repairTasks)
@@ -837,13 +838,13 @@ namespace Mir2Assistant
                         // 复活 重启
                         // 尝试小退
                         await GoRunFunction.RestartByToSelectScene(instance.Value);
-                        await Task.Delay(3000);
-                        CharacterStatusFunction.GetInfo(instance.Value);
-                        // check hp -- 其实还不起作用
-                        if (CharacterStatus.CurrentHP == 0)
-                        {
-                            RestartGameProcess(instance.Value.AccountInfo!);
-                        }
+                        //await Task.Delay(3000);
+                        //CharacterStatusFunction.GetInfo(instance.Value);
+                        //// check hp -- 其实还不起作用
+                        //if (CharacterStatus.CurrentHP == 0)
+                        //{
+                        //    RestartGameProcess(instance.Value.AccountInfo!);
+                        //}
                         continue;
                     }
                     if (CharacterStatus.CurrentHP > 0)
