@@ -529,8 +529,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
             Log.Information($"找屠夫 {isLeftAlive}");
-
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 287, !isLeftAlive ? 603 : 604, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 287, !isLeftAlive ? 603 : 595, "", 6);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
