@@ -198,7 +198,16 @@ namespace Mir2Assistant.Common.Functions
             var idx = bagItems2.FindIndex(o => o.Name == itemName);
             if (idx >= 0)
             {
-                SendMirCall.Send(gameInstance, 3019, new nint[] { idx });
+                SendMirCall.Send(gameInstance, 3019, new nint[] { idx - 6 });
+            }
+            else
+            {
+                var quickItems = gameInstance.QuickItems;
+                var idx2 = quickItems.FindIndex(o => o.Name == itemName);
+                if (idx2 >= 0)
+                {
+                    SendMirCall.Send(gameInstance, 3019, new nint[] { idx2 });
+                }
             }
         }
 

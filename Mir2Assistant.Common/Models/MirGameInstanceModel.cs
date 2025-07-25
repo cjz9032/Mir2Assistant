@@ -38,10 +38,18 @@ public class MirGameInstanceModel
     /// 技能
     /// </summary>
     public ConcurrentBag<SkillModel> Skills { get; set; } = new ConcurrentBag<SkillModel>();
+
+    public List<ItemModel> QuickItems { get; set; } = new List<ItemModel>();
+
     public List<ItemModel> Items { get; set; } = new List<ItemModel>();
 
     public MirGameInstanceModel()
     {
+        for (int i = 0; i < 6; i++)
+        {
+            QuickItems.Add(new ItemModel(i));
+        }
+
         for (int i = 0; i < 40; i++)
         {
             Items.Add(new ItemModel(i));

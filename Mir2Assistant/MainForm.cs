@@ -843,7 +843,7 @@ namespace Mir2Assistant
 
         private async void autoAtBackground(){
             while(true){
-                await Task.Delay(15000);
+                await Task.Delay(10_000);
 
                 // 其他中断并行需要考虑 
                 var instances = GameState.GameInstances.ToList();
@@ -966,11 +966,11 @@ namespace Mir2Assistant
                         // 找红药
                         if (CharacterStatus.CurrentHP <= 15)
                         {
-                            NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
+                           NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
                         }
                     }
                 }
-                await Task.Delay(30_000);
+                await Task.Delay(10_000);
             }
         }
 

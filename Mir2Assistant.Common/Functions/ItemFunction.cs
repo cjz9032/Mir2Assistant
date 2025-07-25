@@ -100,6 +100,7 @@ namespace Mir2Assistant.Common.Functions
         {
             // var sw = Stopwatch.StartNew();
             ReadItems(gameInstance, 0x007531E8, gameInstance.Items);
+            ReadItems(gameInstance, 0x007531E8 - 0x80 * 6, gameInstance.QuickItems);
             // sw.Stop();
             // Log.Debug($"读取背包耗时: {sw.ElapsedMilliseconds}ms, 物品数量: {gameInstance.Items.Count}");
         }

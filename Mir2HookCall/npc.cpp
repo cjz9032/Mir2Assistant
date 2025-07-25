@@ -191,9 +191,10 @@ void takeOn2(DelphiString* name, int idx, int id) {
 
 void eatIndexItem(int idx){
 	__asm {
+		pushad
 		pushfd
 		mov edx, idx
-		mov eax, [0x7524B4]
+		mov eax, dword ptr ds : [0x7524B4]
 		mov eax, [eax]
 		mov esi, 0x63D914
 		call esi
