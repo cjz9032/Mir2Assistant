@@ -198,7 +198,10 @@ namespace Mir2Assistant
                         Log.Debug("解除DLL挂钩并关闭辅助窗口");
                         var gameInstance = GameState.GameInstances[account.ProcessId.Value];
                         DllInject.Unhook(gameInstance);
-                        gameInstance.AssistantForm?.Close();
+                        if (gameInstance.AssistantForm != null)
+                        {
+                            gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                        }
                         GameState.GameInstances.Remove(account.ProcessId.Value);
                     }
                     
@@ -274,6 +277,24 @@ namespace Mir2Assistant
                         {
                             Log.Debug("辅助窗口已关闭，移除游戏实例，PID: {ProcessId}", gameInstance.MirPid);
                             GameState.GameInstances.Remove(gameInstance.MirPid);
+                        };
+
+                        // 添加进程退出事件监听
+                        process.EnableRaisingEvents = true;
+                        process.Exited += (sender, e) =>
+                        {
+                            try
+                            {
+                                if (GameState.GameInstances.TryGetValue(process.Id, out var instance) && instance.AssistantForm != null)
+                                {
+                                    if (!instance.AssistantForm.IsDisposed)
+                                    {
+                                        instance.AssistantForm.Invoke(new Action(() => instance.AssistantForm.Close()));
+                                    }
+                                    GameState.GameInstances.Remove(process.Id);
+                                }
+                            }
+                            catch { }
                         };
                     }
                 }
@@ -813,8 +834,14 @@ namespace Mir2Assistant
                     {
                         // 复活 重启
                         // 尝试小退
-                        await GoRunFunction.ExitToSelectScene(instance.Value);
-                        // RestartGameProcess(instance.Value.AccountInfo!);
+                        await GoRunFunction.RestartByToSelectScene(instance.Value);
+                        await Task.Delay(3000);
+                        CharacterStatusFunction.GetInfo(instance.Value);
+                        // check hp -- 其实还不起作用
+                        if (CharacterStatus.CurrentHP == 0)
+                        {
+                            RestartGameProcess(instance.Value.AccountInfo!);
+                        }
                         continue;
                     }
                     if (CharacterStatus.CurrentHP > 0)

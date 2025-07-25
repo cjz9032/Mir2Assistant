@@ -955,7 +955,7 @@ public static class GoRunFunction
     }
 
 
-    public static async Task ExitToSelectScene(MirGameInstanceModel gameInstance)
+    public static async Task RestartByToSelectScene(MirGameInstanceModel gameInstance)
     {
         SendMirCall.Send(gameInstance, 9098, new nint[] { });
         await Task.Delay(5000);
