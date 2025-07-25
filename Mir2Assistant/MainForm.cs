@@ -404,38 +404,16 @@ namespace Mir2Assistant
         private async Task repairBasicWeaponClothes(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             await NpcFunction.RefreshPackages(instanceValue);
-            // // 没买蜡烛先买, 背包蜡烛小于5
-            bool pathFound2 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 649, 602, "", 6);
-            if (pathFound2)
+            // 修理装备
+            var repairTasks = new[] {
+                (npc: "精武馆老板", pos: EquipPosition.Weapon, x: 649, y: 602),
+                (npc: "高家店老板", pos: EquipPosition.Dress, x: 649, y: 602)
+            };
+
+            foreach (var task in repairTasks)
             {
-                await NpcFunction.ClickNPC(instanceValue!, "精武馆老板");
-                await NpcFunction.Talk2(instanceValue!, "@repair");
-
-                await Task.Delay(500);
-                var taked = await NpcFunction.TakeOffItem(instanceValue, EquipPosition.Weapon);
-                if (taked != null)
-                {
-                    await NpcFunction.RepairItem(instanceValue, taked);
-                    await Task.Delay(5000);
-                    await NpcFunction.RefreshPackages(instanceValue);
-                }
-                // rep 1
+                await NpcFunction.RepairEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
             }
-
-            bool pathFound3 = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 649, 602, "", 6);
-            if (pathFound3)
-            {
-                await NpcFunction.ClickNPC(instanceValue!, "高家店老板");
-                await NpcFunction.Talk2(instanceValue!, "@repair");
-                var taked = await NpcFunction.TakeOffItem(instanceValue, EquipPosition.Dress);
-                if (taked != null)
-                {
-                    await NpcFunction.RepairItem(instanceValue, taked);
-                    await Task.Delay(5000);
-                    await NpcFunction.RefreshPackages(instanceValue);
-                }
-            }
-
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
         {
@@ -490,10 +468,10 @@ namespace Mir2Assistant
                 var CharacterStatus = instanceValue.CharacterStatus!;
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 10;
-                var portalStartX = 530;
-                var portalEndX = 630;
+                var portalStartX = 550;
+                var portalEndX = 620;
                 var portalStartY = 550;
-                var portalEndY = 630;
+                var portalEndY = 620;
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                 {

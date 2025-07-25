@@ -256,5 +256,53 @@ namespace Mir2Assistant.Common.Functions
             await Task.Delay(500);
             ItemFunction.ReadBag(gameInstance);
         }
+
+        public async static Task<bool> CheckNeedRep(MirGameInstanceModel gameInstance, EquipPosition position)
+        {
+            var item = gameInstance.CharacterStatus.useItems[(int)position];
+            if (item.IsEmpty)
+            {
+                return false;
+            }
+            if (item.Duration < 2000 || (item.Duration / item.MaxDuration) < 0.8)
+            {
+                return false;
+            }
+            return true;
+        }
+        /// <summary>
+        /// 修理指定位置的装备
+        /// </summary>
+        /// <param name="gameInstance">游戏实例</param>
+        /// <param name="npcName">NPC名称</param>
+        /// <param name="position">装备位置</param>
+        /// <param name="x">NPC的X坐标</param>
+        /// <param name="y">NPC的Y坐标</param>
+        /// <returns></returns>
+        public async static Task RepairEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
+        {
+            // 先检查是否需要修理
+            var needRep = await CheckNeedRep(gameInstance, position);
+            if (!needRep)
+            {
+                return;
+            }
+
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@repair");
+
+                await Task.Delay(500);
+                var taked = await TakeOffItem(gameInstance, position);
+                if (taked != null)
+                {
+                    await RepairItem(gameInstance, taked);
+                    await Task.Delay(1000);
+                    await RefreshPackages(gameInstance);
+                }
+            }
+        }
     }
 }

@@ -48,9 +48,10 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
-                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
-                Array.Resize(ref data, data.Length + 1);
-                data[data.Length - 1] = item.Id;
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,
+                    item.Id
+                );
 
                 SendMirCall.Send(GameInstance!, 3015, data);
                 await Task.Delay(200);
@@ -68,9 +69,10 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
-                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
-                Array.Resize(ref data, data.Length + 1);
-                data[data.Length - 1] = item.Id;
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,
+                    item.Id
+                );
 
                 SendMirCall.Send(GameInstance!, 3011, data);
                 await Task.Delay(200);
@@ -85,9 +87,10 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems) {
-                nint[] data = Mir2Assistant.Common.Utils.StringUtils.GenerateCompactStringData(item.Name);
-                Array.Resize(ref data, data.Length + 1);
-                data[data.Length - 1] = item.Id;
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,
+                    item.Id
+                );
 
                 SendMirCall.Send(GameInstance!, 3012, data);
                 await Task.Delay(200);
@@ -99,7 +102,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnTakeOn_Click(object sender, EventArgs e)
         {
-            
+            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            await Task.Delay(500);
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
@@ -111,9 +115,13 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                     Log.Error($"物品{item.Name}无法装备");
                     continue;
                 }
-
-                SendMirCall.Send(GameInstance!, 3021, [item.Index, toIndex ]);
-                await Task.Delay(900);
+      
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,    
+                    toIndex, 
+                    item.Id   
+                );
+                SendMirCall.Send(GameInstance!, 3023, data);
             }
 
             await Task.Delay(500);

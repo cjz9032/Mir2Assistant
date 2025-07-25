@@ -140,6 +140,55 @@ void takeOn(int girdIdx, int itemIdx) {
 	bagGridClick(girdIdx);
 	CreateThread(NULL, 0, TakeOnDelayThread, reinterpret_cast<LPVOID>(itemIdx), 0, NULL);
 }
+
+void takeOff2(DelphiString* name, int idx, int id) {
+	auto nameData = name->data;
+
+	_asm{
+		pushad
+		pushfd
+
+		mov eax, nameData
+		push eax
+		mov edx, idx
+		mov ecx, id
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x006440F4
+		call esi
+
+		popfd
+		popad
+	}
+
+}
+
+void takeOn2(DelphiString* name, int idx, int id) {
+	auto nameData = name->data;
+	_asm{
+		pushad
+		pushfd
+
+		mov eax, nameData
+		push eax
+		mov edx, idx
+		mov ecx, id
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x64401C
+		call esi
+
+		popfd
+		popad
+	}
+
+}
+
+
+
+
+
+
 void eatIndexItem(int idx){
 	__asm {
 		pushfd
@@ -404,6 +453,25 @@ void Npc::process(int code, int* data)
 		break;
 	case 3021: // ´©
 		takeOn(data[0], data[1]);
+		break;
+
+	case 3022: // ÍÑ2
+		ProcessWideString(data, [data](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			int idx = data[length + 1];
+			int id = data[length + 2];
+			takeOff2(name, idx, id);
+			delete name;
+		});
+		break;
+	case 3023: // ´©2
+		ProcessWideString(data, [data](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			int idx = data[length + 1];
+			int id = data[length + 2];
+			takeOn2(name, idx, id);
+			delete name;
+		});
 		break;
 	case 3030: // ÍÀÔ×
 		butch(data[0], data[1], data[2], data[3]);

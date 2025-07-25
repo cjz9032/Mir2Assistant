@@ -94,11 +94,17 @@ namespace Mir2Assistant.TabForms.Demo
         {
             SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
             await Task.Delay(500);
-
-             var selectedItems = GetSelectedItems();
+            var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
-                SendMirCall.Send(GameInstance!, 3020, new nint[] { item.Index });
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,    
+                    item.Index, 
+                    item.Id   
+                );
+                SendMirCall.Send(GameInstance!, 3022, data);
+                await Task.Delay(200);
+
                 await Task.Delay(700);
             }
 

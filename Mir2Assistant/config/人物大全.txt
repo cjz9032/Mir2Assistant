@@ -140,29 +140,20 @@ ZC.H+1ABE8F - 8B 00                 - mov eax,[eax]
 ZC.H+1ABE91 - E8 5E820900           - call ZC.H+2440F4
 
 take off
+pushad
+pushfd
+
+mov eax, nameData
 push eax
-push edx
-mov eax,0x00753218
-mov edx,007531E8
-call 408008
-mov eax,0x00753218
-pop edx
-pop eax
-push eax
-push ecx
-push edx
-mov eax, [00753218]
-push eax
-mov dl, 0x01
-mov ecx, 0C8CC2A6
-mov eax,[679EBC]
+mov dl, idx
+mov ecx, id
+mov eax,[0x679EBC]
 mov eax,[eax]
-call 6440F4
-pop edx
-pop ecx
-pop eax
+mov esi, 0x006440F4
+call esi
 
-
+popfd
+popad
 
 --
 
