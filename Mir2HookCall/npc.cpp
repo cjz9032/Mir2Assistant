@@ -194,7 +194,7 @@ void eatIndexItem(int idx){
 		pushad
 		pushfd
 		mov edx, idx
-		mov eax, dword ptr ds : [0x7524B4]
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
 		mov eax, [eax]
 		mov esi, 0x63D914
 		call esi
