@@ -328,7 +328,7 @@ namespace Mir2Assistant
                             if (GameState.GameInstances[pid].AssistantForm!.Visible)
                             {
                                 //GameState.GameInstances[pid].AssistantForm!.Hide();
-                                GameState.GameInstances[pid].AssistantForm.WindowState = FormWindowState.Minimized;
+                                // GameState.GameInstances[pid].AssistantForm.WindowState = FormWindowState.Minimized;
                             }
                             else
                             {
@@ -555,6 +555,9 @@ namespace Mir2Assistant
             var instances = GameState.GameInstances.ToList();
             instances.ForEach(async instance =>
             {
+                CharacterStatusFunction.GetInfo(instance.Value);
+                CharacterStatusFunction.GetUsedItemInfo(instance.Value);
+                ItemFunction.ReadBag(instance.Value);
                 // 查看当前出生点
                 var instanceValue = instance.Value;
                 var CharacterStatus = instanceValue.CharacterStatus!;

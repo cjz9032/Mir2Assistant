@@ -767,6 +767,10 @@ public static class GoRunFunction
         {
             Log.Error(ex, "寻路异常");
             await Task.Delay(100);
+            if(GameInstance.CharacterStatus!.CurrentHP == 0)
+            {
+                await Task.Delay(60_000);
+            }
             return false;
         }
 
@@ -882,6 +886,10 @@ public static class GoRunFunction
                         {
                             Log.Error(ex, "寻路异常");
                             await Task.Delay(100);
+                            if(GameInstance.CharacterStatus!.CurrentHP == 0)
+                            {
+                                await Task.Delay(60_000);
+                            }
                             return false;
                         }
 
