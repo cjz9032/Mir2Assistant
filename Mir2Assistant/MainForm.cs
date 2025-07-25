@@ -529,7 +529,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
             Log.Information($"找屠夫 {isLeftAlive}");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 287, !isLeftAlive ? 603 : 595, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 287, !isLeftAlive ? 595 : 595, "", 6);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -542,7 +542,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             Log.Information($"找武器 {isLeftAlive}");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 295, !isLeftAlive ? 603 : 608, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 608, "", 6);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "精武馆老板" : "边界村铁匠铺");
