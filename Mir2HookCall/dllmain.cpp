@@ -15,6 +15,7 @@ OriginalFuncType originalFunc4 = NULL;
 OriginalFuncType originalFunc5 = NULL;
 OriginalFuncType originalFunc6 = NULL; 
 OriginalFuncType originalFunc7 = NULL;
+OriginalFuncType originalFunc8 = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -187,7 +188,26 @@ __declspec(naked) void HookFunction7()
     }
 }
 
-bool InitHook()
+// 跳过弹窗的hook函数
+__declspec(naked) void SkipPopup()
+{
+    __asm {
+        pop eax
+        add eax, 5
+        jmp eax
+    }
+}
+
+// 定义要跳过的地址结构
+struct SkipHookInfo {
+    const wchar_t* moduleName;
+    DWORD offset;
+    void* hookFunc;
+    void** originalFunc;
+    const char* hookName;
+};
+
+bool InstallHooks()
 {
     InitBaseAddr();
     
@@ -255,6 +275,27 @@ bool InitHook()
         return false;
     }
 
+    // 定义所有要跳过的弹窗
+    SkipHookInfo skipHooks[] = {
+        // 00650312        mov         edx,654720;'物品被卖出。'
+        {L"ZC.H", 0x250317, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
+        // 0065034C        mov         edx,654760;'金币不足。'
+        {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc8, "skip_popup2"},  // hook在这里
+        // 0065015B        mov         edx,65466C;'你不能修理这个物品'
+        {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc8, "skip_popup3"}  // hook在这里
+    };
+
+    // 批量安装所有跳过钩子
+    for (const auto& hook : skipHooks)
+    {
+        DWORD targetAddress = hook.offset + (DWORD)GetModuleHandle(hook.moduleName);
+        if (MH_CreateHook((LPVOID)targetAddress, (LPVOID)hook.hookFunc, hook.originalFunc) != MH_OK)
+        {
+            printf("hook %s fail\n", hook.hookName);
+            return false;
+        }
+    }
+
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {
         printf("enable all hooks fail\n");
@@ -280,7 +321,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        InitHook();
+        InstallHooks();
         break;  // 添加 break
     case DLL_THREAD_ATTACH:
         break;  // 添加 break
@@ -292,4 +333,5 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     }
     return TRUE;
 }
+
 

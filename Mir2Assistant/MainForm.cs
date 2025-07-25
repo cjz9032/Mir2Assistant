@@ -155,7 +155,7 @@ namespace Mir2Assistant
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                await Task.Delay(8000);
+                await Task.Delay(6000);
 
                 string output = process.StandardOutput.ReadLine(); // 只读一行即可
                 // 不需要 WaitForExit
@@ -261,7 +261,7 @@ namespace Mir2Assistant
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
                         {
-                            await Task.Delay(14000);
+                            await Task.Delay(12000);
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         });
                         
@@ -364,7 +364,7 @@ namespace Mir2Assistant
                 foreach (var account in accountList)
                 {
                     RestartGameProcess(account);
-                    await Task.Delay(9_000); // 异步延迟5秒
+                    await Task.Delay(7_000); // 异步延迟5秒
                 }
              
                 // sllep 
