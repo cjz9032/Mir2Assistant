@@ -253,14 +253,15 @@ namespace Mir2Assistant
                         Log.Debug("加载DLL到游戏进程");
                         DllInject.loadDll(gameInstance);
 
-                        // 如果是主控，显示辅助窗口
-                        // if (account.IsMainControl)
-                        // {
-
-                        // }
+                 
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
+                               // 如果是主控，显示辅助窗口
+                        if (!account.IsMainControl)
+                        {
+                            gameInstance.AssistantForm.WindowState = FormWindowState.Minimized;
+                        }
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                          Task.Run(async () =>
                         {
@@ -326,7 +327,8 @@ namespace Mir2Assistant
                         {
                             if (GameState.GameInstances[pid].AssistantForm!.Visible)
                             {
-                                GameState.GameInstances[pid].AssistantForm!.Hide();
+                                //GameState.GameInstances[pid].AssistantForm!.Hide();
+                                GameState.GameInstances[pid].AssistantForm.WindowState = FormWindowState.Minimized;
                             }
                             else
                             {
