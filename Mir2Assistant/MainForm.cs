@@ -452,11 +452,10 @@ namespace Mir2Assistant
             await NpcFunction.RefreshPackages(instanceValue);
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
-            // 修理装备
             var tasks  = new[] {
                 (npc: !isLeftAlive ? "精武馆老板" : "边界村铁匠铺", pos: EquipPosition.Weapon, x: !isLeftAlive ? 649 : 295, y: !isLeftAlive ? 602 : 608),
                 (npc: !isLeftAlive ? "高家店老板" : "白家服装老板", pos: EquipPosition.Dress, x: !isLeftAlive ? 649 : 298, y: !isLeftAlive ? 602 : 607),
-                (npc: !isLeftAlive ? "高家店老板" : "白家服装老板", pos: EquipPosition.Helmet, x: !isLeftAlive ? 649 : 298, y: !isLeftAlive ? 602 : 607)
+                //(npc: !isLeftAlive ? "高家店老板" : "白家服装老板", pos: EquipPosition.Helmet, x: !isLeftAlive ? 649 : 298, y: !isLeftAlive ? 602 : 607)
             };
         
             foreach (var task in tasks)

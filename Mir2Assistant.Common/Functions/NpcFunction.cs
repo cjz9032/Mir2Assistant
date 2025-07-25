@@ -351,7 +351,7 @@ namespace Mir2Assistant.Common.Functions
                         break;
                 }
                 nint[] data = MemoryUtils.PackStringsToData(itemName);
-                await Task.Delay(500);
+                await Task.Delay(600);
                 SendMirCall.Send(gameInstance, 3005, data);
                 await Task.Delay(800);
                 // 盲选
