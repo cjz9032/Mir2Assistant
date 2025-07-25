@@ -333,7 +333,7 @@ namespace Mir2Assistant
                             else
                             {
                                 GameState.GameInstances[pid].AssistantForm!.Show();
-                                GameState.GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Normal;
+                                GameState.GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Maximized;
                             }
                         }
                         else
@@ -442,6 +442,22 @@ namespace Mir2Assistant
             foreach (var task in repairTasks)
             {
                 await NpcFunction.RepairEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
+            }
+        }
+
+        private async Task buyBasicWeaponClothes(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            await NpcFunction.RefreshPackages(instanceValue);
+            // 修理装备
+            var tasks = new[] {
+                (npc: "精武馆老板", pos: EquipPosition.Weapon, x: 649, y: 602),
+                (npc: "高家店老板", pos: EquipPosition.Dress, x: 649, y: 602),
+                (npc: "高家店老板", pos: EquipPosition.Helmet, x: 649, y: 602)
+            };
+
+            foreach (var task in tasks)
+            {
+                await NpcFunction.BuyEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
             }
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)

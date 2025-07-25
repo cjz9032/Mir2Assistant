@@ -224,9 +224,9 @@ namespace Mir2Assistant.Common.Functions
                 };
 
                 var data = Common.Utils.StringUtils.GenerateMixedData(
-                    item.Name,    
-                    item.Index, 
-                    item.Id   
+                    item.Name,
+                    item.Index,
+                    item.Id
                 );
                 SendMirCall.Send(gameInstance!, 3022, data);
                 gameInstance!.MemoryUtils!.WriteByte(item.addr, 0);
@@ -277,6 +277,16 @@ namespace Mir2Assistant.Common.Functions
             }
             return true;
         }
+
+        public async static Task<bool> CheckNeedBuy(MirGameInstanceModel gameInstance, EquipPosition position)
+        {
+            var item = gameInstance.CharacterStatus.useItems[(int)position];
+            if (item.IsEmpty)
+            {
+                return true;
+            }
+            return false;
+        }
         /// <summary>
         /// 修理指定位置的装备
         /// </summary>
@@ -309,6 +319,49 @@ namespace Mir2Assistant.Common.Functions
                     await Task.Delay(1000);
                     await RefreshPackages(gameInstance);
                 }
+            }
+        }
+        
+        public async static Task BuyEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
+        {
+            // 先检查是否需要修理
+            var need = await CheckNeedBuy(gameInstance, position);
+            if (!need)
+            {
+                return;
+            }
+
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@buy");
+
+                string itemName = "";
+                var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
+                // todo 自动推荐装备, 目前写死
+                switch (position)
+                {
+                    // todo 性别
+                    case EquipPosition.Dress:
+                        itemName = "布衣" + genderStr;
+                        break;
+                    case EquipPosition.Weapon:
+                        itemName = "木剑";
+                        break;
+                }
+                nint[] data = MemoryUtils.PackStringsToData(itemName);
+                await Task.Delay(500);
+                SendMirCall.Send(gameInstance, 3005, data);
+                await Task.Delay(800);
+                // 盲选
+                var memoryUtils = gameInstance!.MemoryUtils!;
+                var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
+                memoryUtils.WriteInt(addr, 0);
+                await Task.Delay(300);
+                SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
+                await Task.Delay(500);
+               
             }
         }
     }

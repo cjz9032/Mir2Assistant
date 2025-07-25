@@ -17,6 +17,7 @@ namespace Mir2Assistant.Common.Models
     {
         public string Account { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        public int Gender { get; set; } = 0; // 0 女 1 男
         public string CharacterName { get; set; } = string.Empty;
         public bool IsMainControl { get; set; }
         public RoleType role { get; set; }
