@@ -1090,24 +1090,25 @@ public static class GoRunFunction
         sendSpell(GameInstance, 2, people.X, people.Y, people.Id);
     }
 
-    public static int findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
+    public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
     {
+        // TODO 打包这种还没算
         var bagItems2 = GameInstance.Items;
-        var idx = bagItems2.FindIndex(o => o.Name == name);
-        if (idx >= 0)
+        var idx = bagItems2.Where(o => o.Name == name).ToList();
+        if (idx.Count > 0)
         {
-            return idx + 6;
+            return idx.Select(o => o.Id).ToArray();
         }
         else
         {
             var quickItems = GameInstance.QuickItems;
-            var idx2 = quickItems.FindIndex(o => o.Name == name);
-            if (idx2 >= 0)
+            var idx2 = quickItems.Where(o => o.Name == name).ToList();
+            if (idx2.Count > 0)
             {
-                return idx2;
+                return idx2.Select(o => o.Id).ToArray();
             }
         }
-        return -1;
+        return null;
     }
 
     public static void TryEatDrug(MirGameInstanceModel GameInstance)
@@ -1122,9 +1123,9 @@ public static class GoRunFunction
             foreach (var item in items)
             {
                 var idx = findIdxInAllItems(GameInstance, item);
-                if (idx >= 0)
+                if (idx != null)
                 {
-                    resIdx = idx;
+                    resIdx = idx[0];
                     break;
                 }
             }
@@ -1146,9 +1147,9 @@ public static class GoRunFunction
             foreach (var item in items)
             {
                 var idx = findIdxInAllItems(GameInstance, item);
-                if (idx >= 0)
+                if (idx != null)
                 {
-                    resIdx = idx;
+                    resIdx = idx[0];
                     break;
                 }
             }

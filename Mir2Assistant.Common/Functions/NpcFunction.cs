@@ -449,6 +449,25 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
             }
         }
+        public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string npcName, int x, int y, string itemName, int count)
+        {
+            Log.Information($"购买药品 {itemName} {count}个");
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@buy");
+                await Task.Delay(500);
+                
+                // 已经检测过存在了, 只看是否为空先
+                for (int i = 0; i < count; i++)
+                {
+                    nint[] data = MemoryUtils.PackStringsToData(itemName);
+                    SendMirCall.Send(gameInstance, 3005, data);
+                    await Task.Delay(500);
+                }
+            }
+        }
 
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance)
         {

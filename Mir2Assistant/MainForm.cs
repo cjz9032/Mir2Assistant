@@ -486,6 +486,36 @@ namespace Mir2Assistant
                 await NpcFunction.BuyEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
             }
         }
+
+        private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            await NpcFunction.RefreshPackages(instanceValue);
+            var CharacterStatus = instanceValue.CharacterStatus!;
+            var isLeftAlive = CharacterStatus.X < 400;
+
+            var task  = (npc: !isLeftAlive ? "TODO????" : "边界村小店老板", x: !isLeftAlive ? 649 : 295, y: !isLeftAlive ? 602 : 608);
+            // 目前只有
+            if (instanceValue.AccountInfo.role == RoleType.taoist)
+            {
+                var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
+                var exitsQuan = 0;
+                items.ForEach(async item =>
+                {
+                    var bags = GoRunFunction.findIdxInAllItems(instanceValue!, item);
+                    if (bags != null)
+                    {
+                        exitsQuan += bags.Length;
+                    }
+                });
+
+                if(exitsQuan < 10){
+                    await NpcFunction.BuyDrugs(instanceValue!, task.npc, task.x, task.y, 
+                     "魔法药(小量)", 10 - exitsQuan
+                    );
+                }
+            }
+           
+        }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
         {
             ItemFunction.ReadBag(instanceValue);
@@ -532,6 +562,9 @@ namespace Mir2Assistant
             await NpcFunction.autoReplaceEquipment(instanceValue);
             // 修衣服和武器
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
+            await buyDrugs(instanceValue, _cancellationToken);
+
+            
         }
 
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -854,7 +887,9 @@ namespace Mir2Assistant
                                 var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                 var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
                                 var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability; 
-                                return meats.Count > 32 && !isLow;
+                                var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2); 
+
+                                return meats.Count > 32 && !isLow && !isLowHpMP;
                             });
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
