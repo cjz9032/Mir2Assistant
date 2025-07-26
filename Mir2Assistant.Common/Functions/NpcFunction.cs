@@ -388,6 +388,10 @@ namespace Mir2Assistant.Common.Functions
                         }
                         else
                         {
+                            if (CharacterStatus.Level >= 5)
+                            {
+                                itemNames.Add("青铜剑");
+                            }
                             if (CharacterStatus.Level >= 15)
                             {
                                 itemNames.Add("海魂");

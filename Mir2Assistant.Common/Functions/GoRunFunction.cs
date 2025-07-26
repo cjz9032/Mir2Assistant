@@ -666,8 +666,8 @@ public static class GoRunFunction
                     {
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
-                        // 注意判断距离 可能会跑 测距 需要重新考虑怎么设计状态
-                        if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                        // 这时候可能找不到了就上去, 或者是会跑的少数不用管
+                        if (monTried > 20 && Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
