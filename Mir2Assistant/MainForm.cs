@@ -277,7 +277,7 @@ namespace Mir2Assistant
                         DllInject.loadDll(gameInstance);
                         // 不知道加载多久 随便写个
                         await Task.Delay(Environment.ProcessorCount <= 4 ? 10_000 : 5000);
-                    
+                        // todo 挪走到外面
                         nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
                         // auto login 
                         SendMirCall.Send(gameInstance, 9003, data);
@@ -293,6 +293,7 @@ namespace Mir2Assistant
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                 
                         await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
+                        // todo 挪走到外面
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
                         if (gameInstance.CharacterStatus.CurrentHP == 0)
