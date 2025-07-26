@@ -600,19 +600,10 @@ public static class GoRunFunction
         if (rpx != 0)
         {
             // 查找离我最近的巡逻点
-            var minDis = 9999;
-            var minIdx = 0;
-            for (int i = 0; i < patrolPairs.Length; i++)
-            {
-                var (px, py) = patrolPairs[i];
-                var dis = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
-                if (dis < minDis)
-                {
-                    minDis = dis;
-                    minIdx = i;
-                }
-            }
-            curP = minIdx;
+            curP = patrolPairs
+                .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - CharacterStatus.X), Math.Abs(p.Item2 - CharacterStatus.Y))))
+                .MinBy(x => x.dis)
+                .i;
         }
         while (true)
         {
