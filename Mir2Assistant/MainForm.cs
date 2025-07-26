@@ -123,14 +123,17 @@ namespace Mir2Assistant
             // 更新进程状态
             foreach (var account in accountList)
             {
-                var ins = GameState.GameInstances.FirstOrDefault(o => o.AccountInfo.Account == account.Account);
-                if (ins != null)
+                if (account.ProcessId.HasValue)
                 {
-                    account.ProcessId = ins.MirPid;
-                }
-                else
-                {
-                    account.ProcessId = null;
+                    try
+                    {
+                        Process.GetProcessById(account.ProcessId.Value);
+                    }
+                    catch
+                    {
+                        Log.Information("进程 {ProcessId} 已不存在，重置账号 {Account} 的进程ID", account.ProcessId, account.Account);
+                        account.ProcessId = null;
+                    }
                 }
             }
 
@@ -185,6 +188,7 @@ namespace Mir2Assistant
                 if (int.TryParse(output.Trim(), out int pid))
                 {
                     Log.Information("PowerShell已直接启动游戏进程，账号: {Account}, PID: {Pid}", account.Account, pid);
+                    account.ProcessId = pid;
                     // 通过PID获取进程对象
                     var gameProcess = Process.GetProcessById(pid);
                     // 后续绑定DLL等逻辑
@@ -207,24 +211,26 @@ namespace Mir2Assistant
 
         private void KillGameProcess(GameAccountModel account)
         {
-            // 查找instance
-            var gameInstance = GameState.GameInstances.FirstOrDefault(o => o.AccountInfo.Account == account.Account);
-            if (gameInstance != null && gameInstance.IsAttached)
+            if (account.ProcessId.HasValue)
             {
-                  try
+                try
                 {
                     Log.Information("准备关闭游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, account.ProcessId);
-                    Process process = Process.GetProcessById(gameInstance.MirPid);
-
+                    Process process = Process.GetProcessById(account.ProcessId.Value);
+                    
                     // 如果有关联的辅助窗口，先解除挂钩并关闭
-                    Log.Debug("解除DLL挂钩并关闭辅助窗口");
-                    DllInject.Unhook(gameInstance);
-                    if (gameInstance.AssistantForm != null)
+                    if (GameState.GameInstances.Any(o => o.MirPid == account.ProcessId.Value))
                     {
-                        gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                        Log.Debug("解除DLL挂钩并关闭辅助窗口");
+                        var gameInstance = GameState.GameInstances.First(o => o.MirPid == account.ProcessId.Value);
+                        DllInject.Unhook(gameInstance);
+                        if (gameInstance.AssistantForm != null)
+                        {
+                            gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                        }
+                        gameInstance.Clear();
                     }
-                    gameInstance.Clear();
-
+                    
                     process.Kill();
                     account.ProcessId = null;
                     Log.Information("游戏进程已关闭，账号: {Account}", account.Account);
@@ -280,7 +286,7 @@ namespace Mir2Assistant
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         // 如果是主控，显示辅助窗口
-                        if (account.IsMainControl)
+                        if (!account.IsMainControl)
                         {
                             gameInstance.AssistantForm.Show();
                         }
@@ -896,10 +902,10 @@ namespace Mir2Assistant
                             if (instance.AccountInfo.IsMainControl)
                             {
                                 // GameInstances 除了自己
-                                var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
+                                var members = GameState.GameInstances.Where(o => o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
                                 foreach (var member in members)
                                 {
-                                    nint[] data = StringUtils.GenerateCompactStringData(member ?? "");
+                                    nint[] data = StringUtils.GenerateCompactStringData(member);
                                     SendMirCall.Send(instance, 9004, data);
                                     await Task.Delay(300);
                                 }
