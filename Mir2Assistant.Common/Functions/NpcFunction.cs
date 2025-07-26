@@ -170,7 +170,7 @@ namespace Mir2Assistant.Common.Functions
         }
 
         /// <summary>
-        /// 购买物品
+        /// 购买药品
         /// </summary>
         /// <param name="gameInstance"></param>
         /// <param name="itemName"></param>
@@ -458,14 +458,9 @@ namespace Mir2Assistant.Common.Functions
                 await ClickNPC(gameInstance!, npcName);
                 await Talk2(gameInstance!, "@buy");
                 await Task.Delay(500);
-                
+
                 // 已经检测过存在了, 只看是否为空先
-                for (int i = 0; i < count; i++)
-                {
-                    nint[] data = MemoryUtils.PackStringsToData(itemName);
-                    SendMirCall.Send(gameInstance, 3005, data);
-                    await Task.Delay(500);
-                }
+                await BuyDrug(gameInstance, itemName, count);
             }
         }
 
