@@ -648,6 +648,14 @@ public static class GoRunFunction
             // 无怪退出
             while (true)
             {
+                // 发现活人先停下 并且不是自己人
+                var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
+                var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
+                if (otherPeople != null)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 allowMonsters.Contains(o.Name) &&
