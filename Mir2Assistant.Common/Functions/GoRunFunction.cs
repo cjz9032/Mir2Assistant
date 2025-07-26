@@ -1097,7 +1097,7 @@ public static class GoRunFunction
         var idx = bagItems2.Where(o => o.Name == name).ToList();
         if (idx.Count > 0)
         {
-            return idx.Select(o => o.Id).ToArray();
+            return idx.Select(o => o.Index + 6).ToArray();
         }
         else
         {
@@ -1105,7 +1105,7 @@ public static class GoRunFunction
             var idx2 = quickItems.Where(o => o.Name == name).ToList();
             if (idx2.Count > 0)
             {
-                return idx2.Select(o => o.Id).ToArray();
+                return idx2.Select(o => o.Index).ToArray();
             }
         }
         return null;
@@ -1139,7 +1139,7 @@ public static class GoRunFunction
         }
 
         // for low mp
-        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.5)
+        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 1.2)
         {
             // 找蓝药 太阳水
             var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
