@@ -1125,7 +1125,6 @@ public static class GoRunFunction
                 return;
             }
             NpcFunction.EatIndexItem(GameInstance, resIdx);
-            await Task.Delay(100);
         }
     }
 }
