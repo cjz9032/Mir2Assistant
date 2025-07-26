@@ -22,16 +22,16 @@ public static class CharacterStatusFunction
         var memoryUtils = gameInstance.MemoryUtils!;
 
 
-        status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x34, 0));
-        status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图基址"], 0));
-        status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["地图ID基址"], 0x2AE8C, 0));
-        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x8));
-        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0xA));
-        status.CurrentHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x48));
-        status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4C));
-        status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4A));
-        status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x4E));
-        status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x3C));
+        status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x34, 0));
+        status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图基址"], 0));
+        status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图ID基址"], 0x2AE8C, 0));
+        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
+        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
+        status.CurrentHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x48));
+        status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4C));
+        status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4A));
+        status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4E));
+        status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x3C));
         status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563CC, 0x30));
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563C8)) == 1;
     }
@@ -40,8 +40,8 @@ public static class CharacterStatusFunction
     {
         var status = gameInstance.CharacterStatus!;
         var memoryUtils = gameInstance.MemoryUtils!;
-        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0x8));
-        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(gameInstance.MirConfig["角色基址"], 0xA));
+        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
+        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
     }
     
 }

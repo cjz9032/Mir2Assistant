@@ -16,7 +16,6 @@ public class MirGameInstanceModel
     public nint? HookHandle { get; set; }
     public IntPtr? LibIpdl { get; set; }
     public Form AssistantForm { get; set; }
-    public Dictionary<string, nint> MirConfig = new Dictionary<string, nint>();
 
     public CharacterStatusModel CharacterStatus { get; set; } = new CharacterStatusModel();
     public MemoryUtils MemoryUtils { get; set; }

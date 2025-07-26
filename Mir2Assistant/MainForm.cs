@@ -33,6 +33,18 @@ namespace Mir2Assistant
                 };
                 GameState.GameInstances.Add(gameInstance);
             }
+
+            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config", "2.1.0.1226.ini");
+            var cfgStr = File.ReadAllText(configPath, System.Text.Encoding.GetEncoding("gb2312"));
+
+            foreach (var cfg in cfgStr.Split('\n'))
+            {
+                if (cfg?.Contains("=") ?? false)
+                {
+                    GameState.MirConfig.Add(cfg.Split('=')[0].Trim(), Convert.ToInt32(cfg.Split('=')[1].Trim(), 16));
+                }
+            }
+
         }
 
         HotKeyUtils hotKeyUtils = new HotKeyUtils();
@@ -249,7 +261,6 @@ namespace Mir2Assistant
                     {
                         var rect = WindowUtils.GetClientRect(hwnd);
                         var gameInstance = new MirGameInstanceModel();
-                        GameState.GameInstances.Add(gameInstance);
                         gameInstance.AssistantForm = new AssistantForm(gameInstance, account.Account, account.CharacterName);
                         gameInstance.MirHwnd = hwnd;
                         gameInstance.MirPid = pid;
@@ -853,10 +864,6 @@ namespace Mir2Assistant
             while(true){
                 await Task.Delay(15_000);
                 var instances = GameState.GameInstances;
-                instances.ForEach(instance =>
-                {
-                    instance.RefreshAll();
-                });
 
                 // 其他中断并行需要考虑 
                 instances.ForEach(async instance =>
@@ -865,6 +872,7 @@ namespace Mir2Assistant
                     {
                         return;
                     }
+                    instance.RefreshAll();
                     // todo ref方法 避免重复调用
                     var CharacterStatus = instance.CharacterStatus;
                     // 死亡

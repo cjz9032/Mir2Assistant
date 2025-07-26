@@ -47,7 +47,7 @@ namespace Mir2Assistant.Common.Functions
             act();
 
             var memoryUtil = gameInstance!.MemoryUtils!;
-            var base2 = memoryUtil.GetMemoryAddress(gameInstance.MirConfig["对话框基址"], 0);
+            var base2 = memoryUtil.GetMemoryAddress(GameState.MirConfig["对话框基址"], 0);
             var prevAddr2 = memoryUtil.GetMemoryAddress(base2) + 0xC40;
             var prevAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
             nint resAddr = 0;

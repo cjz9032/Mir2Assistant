@@ -23,7 +23,7 @@ public static class SkillFunction
         {
             gameInstance.Skills.Clear();
             var memoryUtils = gameInstance!.MemoryUtils!;
-            var addr = memoryUtils.GetMemoryAddress(gameInstance.MirConfig["技能基址"], 0x4, 0);
+            var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, 0);
             while (memoryUtils.ReadToInt(addr) != 0)
             {
                 var length = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 0));
@@ -56,7 +56,7 @@ public static class SkillFunction
     /// </summary>
     public static void SkillCall(MirGameInstanceModel gameInstance, int skillAddr)
     {
-        SendMirCall.Send(gameInstance, 2001, [skillAddr, gameInstance!.MirConfig["技能CALL地址"]]);
+        SendMirCall.Send(gameInstance, 2001, [skillAddr, GameState.MirConfig["技能CALL地址"]]);
     }
 
 }

@@ -52,17 +52,7 @@ namespace Mir2Assistant
             //SendMirCall.Send(gameInstance!, 1999, new nint[] { });
 
             gameInstance!.MemoryUtils = new MemoryUtils(gameInstance);
-            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config", "2.1.0.1226.ini");
-            var cfgStr = File.ReadAllText(configPath, System.Text.Encoding.GetEncoding("gb2312"));
-
-            foreach (var cfg in cfgStr.Split('\n'))
-            {
-                if (cfg?.Contains("=") ?? false)
-                {
-                    gameInstance.MirConfig.Add(cfg.Split('=')[0].Trim(), Convert.ToInt32(cfg.Split('=')[1].Trim(), 16));
-                }
-            }
-
+          
 
             //加载tab页
             string currentDirectory = Directory.GetCurrentDirectory();
@@ -125,7 +115,7 @@ namespace Mir2Assistant
                         //{
                         //    if (gameInstance.Skills.Count == 0)
                         //    {
-                        //        this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [gameInstance.MirConfig["写屏CALL地址"], this.Handle]));
+                        //        this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [GameState.MirConfig["写屏CALL地址"], this.Handle]));
 
                         //        SkillFunction.ReadSkills(gameInstance);
                         //    }

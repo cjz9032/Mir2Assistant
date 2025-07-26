@@ -82,7 +82,7 @@ public static class GoRunFunction
                 typePara = 0xbc3;
                 break;
         }
-        SendMirCall.Send(gameInstance, 1001, new nint[] { x, y, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
+        SendMirCall.Send(gameInstance, 1001, new nint[] { x, y, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
@@ -140,7 +140,7 @@ public static class GoRunFunction
         }
         var (nextX, nextY) = getNextPostion(x, y, dir, steps);
 
-        SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, gameInstance!.MirConfig["角色基址"], gameInstance!.MirConfig["UpdateMsg"] });
+        SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
     public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
