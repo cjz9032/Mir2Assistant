@@ -850,7 +850,11 @@ namespace Mir2Assistant
                             {
                                 // go home
                                 var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
-                                return meats.Count > 32;
+                                // 或者衣服武器破了 // todo 其他再看
+                                var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
+                                var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
+                                var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability; 
+                                return meats.Count > 32 && !isLow;
                             });
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }

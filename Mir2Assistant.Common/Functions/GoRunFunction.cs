@@ -657,6 +657,11 @@ public static class GoRunFunction
                     await Task.Delay(1000);
                     continue;
                 }
+                // todo 法师暂时不要砍了 要配合2边一起改
+                if (instanceValue.AccountInfo.role == RoleType.mage)
+                {
+                    break;
+                }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 allowMonsters.Contains(o.Name) &&
@@ -820,7 +825,8 @@ public static class GoRunFunction
             {
                 return false;
             }
-            if (attacksThan > 0)
+            // todo 法师暂时不要砍了 要配合2边一起改
+            if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
             {
                 // 
                 // 攻击怪物, 太多了 过不去
