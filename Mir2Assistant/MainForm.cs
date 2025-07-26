@@ -562,7 +562,7 @@ namespace Mir2Assistant
                 // 查看当前出生点
                 var instanceValue = instance.Value;
                 var CharacterStatus = instanceValue.CharacterStatus!;
-                var isLeftAlive = CharacterStatus.X < 400;
+                var isLeftAlive = CharacterStatus.X < 400 || CharacterStatus.Level > 10;
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 10;
                 var portalStartX = isLeftAlive ? 200 : 550;
