@@ -1003,7 +1003,7 @@ public static class GoRunFunction
         {
             return false;
         }
-        if (GameInstance.spellLastTime + 700 > Environment.TickCount)
+        if (GameInstance.spellLastTime + 1100 > Environment.TickCount)
         {
             return false;
         }
