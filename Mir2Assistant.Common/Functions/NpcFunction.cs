@@ -297,6 +297,13 @@ namespace Mir2Assistant.Common.Functions
             }
             return false;
         }
+
+        public async static Task<bool> CheckExistsInBags(MirGameInstanceModel gameInstance, string name)
+        {
+            var item = gameInstance.Items.Where(o => o.Name == name).FirstOrDefault();
+            
+            return !item.IsEmpty;
+        }
         /// <summary>
         /// 修理指定位置的装备
         /// </summary>
@@ -349,17 +356,62 @@ namespace Mir2Assistant.Common.Functions
 
                 string itemName = "";
                 var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
+                var role = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
+                var CharacterStatus = gameInstance.CharacterStatus;
                 // todo 自动推荐装备, 目前写死
                 switch (position)
                 {
                     // todo 性别
                     case EquipPosition.Dress:
                         itemName = "布衣" + genderStr;
+                        if (gameInstance.AccountInfo.role != RoleType.mage)
+                        {
+                            if (CharacterStatus.Level >= 11)
+                            {
+                                itemName = "轻型盔甲";
+                            }
+                        }
+                        else
+                        {
+                            if (CharacterStatus.Level >= 11)
+                            {
+                                itemName = "轻型盔甲";
+                            }
+                        }
                         break;
                     case EquipPosition.Weapon:
                         itemName = "木剑";
-                        break;
+                        if (gameInstance.AccountInfo.role != RoleType.mage)
+                        {
+                            if (CharacterStatus.Level >= 5)
+                            {
+                                itemName = "青铜剑";
+                            }
+                            if (CharacterStatus.Level >= 10) { 
+                                itemName = "铁剑";
+                            }
+                            if (CharacterStatus.Level >= 13)
+                            {
+                                itemName = "青铜斧";
+                            }
+                        }
+                        else
+                        {
+                            if (CharacterStatus.Level >= 15)
+                            {
+                                itemName = "海魂";
+                            }
+                        }
+                            break;
                 }
+                // 检测背包里没有
+                var exists = await CheckExistsInBags(gameInstance, itemName);
+                if (exists)
+                {
+                    return;
+                }
+
+
                 nint[] data = MemoryUtils.PackStringsToData(itemName);
                 await Task.Delay(600);
                 SendMirCall.Send(gameInstance, 3005, data);
