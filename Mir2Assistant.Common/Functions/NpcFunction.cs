@@ -269,13 +269,13 @@ namespace Mir2Assistant.Common.Functions
             var item = gameInstance.CharacterStatus.useItems[(int)position];
             if (item.IsEmpty)
             {
-                return false;
+                return true;
             }
-            if (item.Duration < 2000 || (item.Duration / item.MaxDuration) < 0.8)
+            if (item.Duration < 20 || ((double)item.Duration / (double)item.MaxDuration) < 0.8)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 
         public async static Task<bool> CheckNeedBuy(MirGameInstanceModel gameInstance, EquipPosition position)
