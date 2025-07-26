@@ -977,21 +977,26 @@ namespace Mir2Assistant
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Log.Information("应用程序正在关闭");
-            HotKeyUtils.UnregisterHotKey(Handle, 200);
-            Log.Debug("已注销热键");
-            // SaveAccountList();
             
-            Log.Debug("正在解除所有DLL挂钩，游戏实例数量: {InstanceCount}", GameState.GameInstances.Count);
-            Task.Run(() =>
+            // 注销热键
+            HotKeyUtils.UnregisterHotKey(Handle, 200);
+            
+            // 同步关闭所有资源
+            foreach (var gameInstance in GameState.GameInstances.Values)
             {
-                foreach (var gameInstance in GameState.GameInstances.Values)
+                DllInject.Unhook(gameInstance);
+                if (gameInstance.AssistantForm != null && !gameInstance.AssistantForm.IsDisposed)
                 {
-                    DllInject.Unhook(gameInstance);
+                    gameInstance.AssistantForm.Close();
                 }
-            });
-            Thread.Sleep(200);
+            }
+            GameState.GameInstances.Clear();
+
             Log.Information("应用程序已关闭");
             Log.CloseAndFlush();
+            
+            // 强制退出进程
+            Process.GetCurrentProcess().Kill();
         }
     }
 }
