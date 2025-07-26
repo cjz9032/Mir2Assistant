@@ -286,7 +286,7 @@ bool InstallHooks()
         {L"ZC.H", 0x250317, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
         {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
         {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
-        {L"ZC.H", 0x64BF87, SkipPopup, (void**)&originalFunc11, "skip_popup3"}  // hook在这里
+        {L"ZC.H", 0x64BF87, SkipPopup, (void**)&originalFunc11, "skip_popup4"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子
