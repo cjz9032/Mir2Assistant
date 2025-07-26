@@ -302,7 +302,7 @@ namespace Mir2Assistant.Common.Functions
         {
             var item = gameInstance.Items.Where(o => o.Name == name).FirstOrDefault();
             
-            return !item.IsEmpty;
+            return item != null;
         }
         /// <summary>
         /// 修理指定位置的装备
