@@ -583,13 +583,21 @@ namespace Mir2Assistant
                 // 查看当前出生点
                 var instanceValue = instance;
                 var CharacterStatus = instanceValue.CharacterStatus!;
-                var isLeftAlive = CharacterStatus.X < 400 || CharacterStatus.Level > 10;
+                var isLeftAlive = CharacterStatus.X < 400;
                 var fixedPoints = new List<(int, int)>();
                 var patrolSteps = 10;
                 var portalStartX = isLeftAlive ? 200 : 550;
                 var portalEndX = isLeftAlive ? 300 : 620;
                 var portalStartY = 550;
                 var portalEndY = 620;
+                if (CharacterStatus.Level > 10)
+                {
+                     portalStartX = 50;
+                    portalEndX = 250;
+                    portalStartY = 350;
+                    portalEndY = 550;
+                }
+
                 // 生成矩形区域内的所有点位
                 for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                 {
