@@ -508,9 +508,9 @@ namespace Mir2Assistant
                     }
                 });
 
-                if(exitsQuan < 10){
+                if(exitsQuan < 16){
                     await NpcFunction.BuyDrugs(instanceValue!, task.npc, task.x, task.y, 
-                     "魔法药(小量)", 10 - exitsQuan
+                     "魔法药(小量)", 16 - exitsQuan
                     );
                 }
             }
