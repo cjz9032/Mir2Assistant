@@ -5,6 +5,6 @@ namespace Mir2Assistant.Common
 {
     public static class GameState
     {
-        public static Dictionary<int, MirGameInstanceModel> GameInstances { get; } = new Dictionary<int, MirGameInstanceModel>();
+        public static List<MirGameInstanceModel> GameInstances { get; } = new List<MirGameInstanceModel>();
     }
 } 

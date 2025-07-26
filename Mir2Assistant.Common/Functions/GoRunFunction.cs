@@ -608,7 +608,7 @@ public static class GoRunFunction
             if (!skipTempCheckMon)
             {
                 // 从是跟随
-                if (instanceValue.AccountInfo!.IsMainControl)
+                if (instanceValue.AccountInfo.IsMainControl)
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
@@ -616,11 +616,11 @@ public static class GoRunFunction
                 else
                 {
                     // 从是跟随
-                    var instances = GameState.GameInstances.ToList();
-                    var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
-                    if (mainInstance.Key != 0)
+                    var instances = GameState.GameInstances;
+                    var mainInstance = instances.FirstOrDefault(o => o.AccountInfo.IsMainControl)!;
+                    if (mainInstance.IsAttached)
                     {
-                        (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
+                        (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                     }
                 }
                 bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5);
@@ -631,11 +631,11 @@ public static class GoRunFunction
             if (!instanceValue.AccountInfo!.IsMainControl && !skipTempCheckMon)
             {
                 // 从是跟随 -- 这是重复代码 先放着
-                var instances = GameState.GameInstances.ToList();
-                var mainInstance = instances.FirstOrDefault(o => o.Value.AccountInfo!.IsMainControl);
-                if (mainInstance.Key != 0)
+                var instances = GameState.GameInstances;
+                var mainInstance = instances.FirstOrDefault(o => o.AccountInfo.IsMainControl)!;
+                if (mainInstance.IsAttached)
                 {
-                    (px, py) = (mainInstance.Value.CharacterStatus!.X!, mainInstance.Value.CharacterStatus!.Y!);
+                    (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                 }
                 // 检测距离
                 if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
@@ -1035,15 +1035,15 @@ public static class GoRunFunction
         }
         // pick the needed people
         // 组队成员
-        var instances = GameState.GameInstances.ToList();
+        var instances = GameState.GameInstances;
 
-        var actNames = instances.Select(o => o.Value.AccountInfo.CharacterName).ToList();
+        var actNames = instances.Select(o => o.AccountInfo.CharacterName).ToList();
 
-        // 添加别的客户端的怪物信息
+        // 添加别的客户端的怪物信息 -- todo 远程机器信息 开socket连接
         var allMonsInClients = new List<MonsterModel>();
         foreach (var instance in instances)
         {
-            allMonsInClients.AddRange(instance.Value.Monsters.Values);
+            allMonsInClients.AddRange(instance.Monsters.Values);
         }
 
         var people = allMonsInClients.Where(o =>

@@ -39,6 +39,7 @@
             btnRestartAll = new Button();
             btnRestartTask = new Button();
             btnCloseAll = new Button();
+            btnAttachAll = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridViewAccounts).BeginInit();
             SuspendLayout();
             // 
@@ -131,11 +132,22 @@
             btnCloseAll.UseVisualStyleBackColor = true;
             btnCloseAll.Click += btnCloseAll_Click;
             // 
+            // btnAttachAll
+            // 
+            btnAttachAll.Location = new Point(344, 9);
+            btnAttachAll.Name = "btnAttachAll";
+            btnAttachAll.Size = new Size(100, 23);
+            btnAttachAll.TabIndex = 3;
+            btnAttachAll.Text = "附加全部";
+            btnAttachAll.UseVisualStyleBackColor = true;
+            btnAttachAll.Click += btnAttachAll_Click;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(946, 401);
+            Controls.Add(btnAttachAll);
             Controls.Add(btnRestartTask);
             Controls.Add(btnRestartAll);
             Controls.Add(btnCloseAll);
@@ -163,5 +175,6 @@
         private Button btnRestartAll;
         private Button btnRestartTask;
         private Button btnCloseAll;
+        private Button btnAttachAll;
     }
 }

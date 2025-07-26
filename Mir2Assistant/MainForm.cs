@@ -22,6 +22,17 @@ namespace Mir2Assistant
         public MainForm()
         {
             InitializeComponent();
+            LoadAccountList();
+
+            // 为每个账号创建一个游戏实例
+            foreach (var account in accountList)
+            {
+                var gameInstance = new MirGameInstanceModel
+                {
+                    AccountInfo = account
+                };
+                GameState.GameInstances.Add(gameInstance);
+            }
         }
 
         HotKeyUtils hotKeyUtils = new HotKeyUtils();
@@ -38,7 +49,6 @@ namespace Mir2Assistant
             Log.Information("应用程序启动");
             HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // 注册热键
             Log.Debug("已注册热键: Delete");
-            LoadAccountList();
             RefreshDataGrid();
         }
 
@@ -193,16 +203,16 @@ namespace Mir2Assistant
                     Process process = Process.GetProcessById(account.ProcessId.Value);
                     
                     // 如果有关联的辅助窗口，先解除挂钩并关闭
-                    if (GameState.GameInstances.ContainsKey(account.ProcessId.Value))
+                    if (GameState.GameInstances.Any(o => o.MirPid == account.ProcessId.Value))
                     {
                         Log.Debug("解除DLL挂钩并关闭辅助窗口");
-                        var gameInstance = GameState.GameInstances[account.ProcessId.Value];
+                        var gameInstance = GameState.GameInstances.First(o => o.MirPid == account.ProcessId.Value);
                         DllInject.Unhook(gameInstance);
                         if (gameInstance.AssistantForm != null)
                         {
                             gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
                         }
-                        GameState.GameInstances.Remove(account.ProcessId.Value);
+                        gameInstance.Clear();
                     }
                     
                     process.Kill();
@@ -235,11 +245,11 @@ namespace Mir2Assistant
                     
                     Log.Information("准备绑定游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, pid);
                     
-                    if (!GameState.GameInstances.ContainsKey(pid))
+                    if (!GameState.GameInstances.Any(o => o.MirPid == pid))
                     {
                         var rect = WindowUtils.GetClientRect(hwnd);
                         var gameInstance = new MirGameInstanceModel();
-                        GameState.GameInstances.Add(pid, gameInstance);
+                        GameState.GameInstances.Add(gameInstance);
                         gameInstance.AssistantForm = new AssistantForm(gameInstance, account.Account, account.CharacterName);
                         gameInstance.MirHwnd = hwnd;
                         gameInstance.MirPid = pid;
@@ -276,7 +286,7 @@ namespace Mir2Assistant
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {
                             Log.Debug("辅助窗口已关闭，移除游戏实例，PID: {ProcessId}", gameInstance.MirPid);
-                            GameState.GameInstances.Remove(gameInstance.MirPid);
+                            gameInstance.Clear();
                         };
 
                         // 添加进程退出事件监听
@@ -285,13 +295,13 @@ namespace Mir2Assistant
                         {
                             try
                             {
-                                if (GameState.GameInstances.TryGetValue(process.Id, out var instance) && instance.AssistantForm != null)
+                                if (GameState.GameInstances.Any(o => o.MirPid == process.Id) && gameInstance.AssistantForm != null)
                                 {
-                                    if (!instance.AssistantForm.IsDisposed)
+                                    if (!gameInstance.AssistantForm.IsDisposed)
                                     {
-                                        instance.AssistantForm.Invoke(new Action(() => instance.AssistantForm.Close()));
+                                        gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
                                     }
-                                    GameState.GameInstances.Remove(process.Id);
+                                    gameInstance.Clear();
                                 }
                             }
                             catch { }
@@ -322,17 +332,15 @@ namespace Mir2Assistant
 
                     if (process.ProcessName == "ZC.H")
                     {
-                        if (GameState.GameInstances.ContainsKey(pid))
+                        if (GameState.GameInstances.Any(o => o.MirPid == pid))
                         {
-                            if (GameState.GameInstances[pid].AssistantForm!.Visible)
+                            if (GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm!.Visible)
                             {
-                                //GameState.GameInstances[pid].AssistantForm!.Hide();
-                                // GameState.GameInstances[pid].AssistantForm.WindowState = FormWindowState.Minimized;
+                                GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm.Hide();
                             }
                             else
                             {
-                                GameState.GameInstances[pid].AssistantForm!.Show();
-                                GameState.GameInstances[pid].AssistantForm!.WindowState = FormWindowState.Maximized;
+                                GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm.Show();
                             }
                         }
                         else
@@ -352,7 +360,7 @@ namespace Mir2Assistant
                     }
                     else if (process.ProcessName == currentProcessName)
                     {
-                        GameState.GameInstances.Values.FirstOrDefault(o => o.AssistantForm?.Handle == hwnd)?.AssistantForm!.Hide();
+                        GameState.GameInstances.FirstOrDefault(o => o.AssistantForm?.Handle == hwnd)?.AssistantForm!.Hide();
                     }
                     break;
             }
@@ -553,14 +561,12 @@ namespace Mir2Assistant
      
         private async void processTasks()
         {
-            var instances = GameState.GameInstances.ToList();
+            var instances = GameState.GameInstances;
             instances.ForEach(async instance =>
             {
-                CharacterStatusFunction.GetInfo(instance.Value);
-                CharacterStatusFunction.GetUsedItemInfo(instance.Value);
-                ItemFunction.ReadBag(instance.Value);
+                // todo cancel
                 // 查看当前出生点
-                var instanceValue = instance.Value;
+                var instanceValue = instance;
                 var CharacterStatus = instanceValue.CharacterStatus!;
                 var isLeftAlive = CharacterStatus.X < 400 || CharacterStatus.Level > 10;
                 var fixedPoints = new List<(int, int)>();
@@ -846,33 +852,33 @@ namespace Mir2Assistant
         private async void autoAtBackground(){
             while(true){
                 await Task.Delay(15_000);
-                var instances = GameState.GameInstances.ToList();
+                var instances = GameState.GameInstances;
                 instances.ForEach(instance =>
                 {
-                    CharacterStatusFunction.GetInfo(instance.Value);
-                    CharacterStatusFunction.GetUsedItemInfo(instance.Value);
-                    MonsterFunction.ReadMonster(instance.Value);
-                    ItemFunction.ReadBag(instance.Value);
-                    ItemFunction.ReadDrops(instance.Value);
+                    instance.RefreshAll();
                 });
 
                 // 其他中断并行需要考虑 
                 instances.ForEach(async instance =>
                 {
+                    if (!instance.IsAttached)
+                    {
+                        return;
+                    }
                     // todo ref方法 避免重复调用
-                    var CharacterStatus = instance.Value.CharacterStatus;
+                    var CharacterStatus = instance.CharacterStatus;
                     // 死亡
                     if (CharacterStatus.CurrentHP <= 0)
                     {
                         // 复活 重启
                         // 尝试小退
-                        await GoRunFunction.RestartByToSelectScene(instance.Value);
+                        await GoRunFunction.RestartByToSelectScene(instance);
                         //await Task.Delay(3000);
-                        //CharacterStatusFunction.GetInfo(instance.Value);
+                        //CharacterStatusFunction.GetInfo(instance);
                         //// check hp -- 其实还不起作用
                         //if (CharacterStatus.CurrentHP == 0)
                         //{
-                        //    RestartGameProcess(instance.Value.AccountInfo!);
+                        //    RestartGameProcess(instance.AccountInfo!);
                         //}
                         return;
                     }
@@ -882,26 +888,26 @@ namespace Mir2Assistant
                         // 组队
                         if (CharacterStatus.groupMemCount < GameState.GameInstances.Count)
                         {
-                            if (instance.Value.AccountInfo.IsMainControl)
+                            if (instance.AccountInfo.IsMainControl)
                             {
                                 // GameInstances 除了自己
-                                var members = GameState.GameInstances.Where(o => o.Key != instance.Key).Select(o => o.Value.CharacterStatus.Name).ToList();
+                                var members = GameState.GameInstances.Where(o => o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
                                 foreach (var member in members)
                                 {
                                     nint[] data = StringUtils.GenerateCompactStringData(member);
-                                    SendMirCall.Send(instance.Value, 9004, data);
+                                    SendMirCall.Send(instance, 9004, data);
                                     await Task.Delay(300);
                                 }
                             }
                             else
                             {
-                                if (!instance.Value.CharacterStatus.allowGroup)
+                                if (!instance.CharacterStatus.allowGroup)
                                 {
-                                    SendMirCall.Send(instance.Value, 9005, new nint[] { 1 });
+                                    SendMirCall.Send(instance, 9005, new nint[] { 1 });
                                 }
                             }
                         }
-                        await NpcFunction.autoReplaceEquipment(instance.Value);
+                        await NpcFunction.autoReplaceEquipment(instance);
                     }
                 });
             }
@@ -911,19 +917,20 @@ namespace Mir2Assistant
             // 其他中断并行需要考虑 
             while (true)
             {
-                var instances = GameState.GameInstances.ToList();
+        
+                var instances = GameState.GameInstances;
                 instances.ForEach(instance =>
                 {
-                    CharacterStatusFunction.GetInfo(instance.Value);
-                    CharacterStatusFunction.GetUsedItemInfo(instance.Value);
-                    MonsterFunction.ReadMonster(instance.Value);
-                    ItemFunction.ReadBag(instance.Value);
-                    ItemFunction.ReadDrops(instance.Value);
-
-                    if (instance.Value.CharacterStatus.CurrentHP > 0)
+                    if (!instance.IsAttached)
                     {
-                        GoRunFunction.TryEatDrug(instance.Value);
-                        GoRunFunction.TryHealPeople(instance.Value);
+                        return;
+                    }
+                    instance.RefreshAll();
+
+                    if (instance.CharacterStatus.CurrentHP > 0)
+                    {
+                        GoRunFunction.TryEatDrug(instance);
+                        GoRunFunction.TryHealPeople(instance);
                     }
                 });
                 await Task.Delay(200);
@@ -938,7 +945,7 @@ namespace Mir2Assistant
             HotKeyUtils.UnregisterHotKey(Handle, 200);
 
             // 同步关闭所有资源
-            foreach (var gameInstance in GameState.GameInstances.Values)
+            foreach (var gameInstance in GameState.GameInstances)
             {
                 DllInject.Unhook(gameInstance);
                 if (gameInstance.AssistantForm != null && !gameInstance.AssistantForm.IsDisposed)
@@ -953,6 +960,29 @@ namespace Mir2Assistant
 
             // 强制退出进程
             Process.GetCurrentProcess().Kill();
+        }
+
+        private void btnAttachAll_Click(object sender, EventArgs e)
+        {
+            // 获取所有运行中的游戏进程
+            foreach (var process in Process.GetProcessesByName("ZC.H"))
+            {
+                try
+                {
+                    // 通过窗口标题匹配账号
+                    var title = process.MainWindowTitle;
+                    var account = accountList.FirstOrDefault(a => title.Contains($"<{a.CharacterName}>"));
+                    if (account != null)
+                    {
+                        AttachToGameProcess(process, account);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "附加到进程失败，PID: {ProcessId}", process.Id);
+                }
+            }
         }
     }
 }

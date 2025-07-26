@@ -1,3 +1,4 @@
+using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Utils;
 using System.Collections.Concurrent;
 
@@ -14,14 +15,14 @@ public class MirGameInstanceModel
     public string? mirVer { get; set; }
     public nint? HookHandle { get; set; }
     public IntPtr? LibIpdl { get; set; }
-    public Form? AssistantForm { get; set; }
+    public Form AssistantForm { get; set; }
     public Dictionary<string, nint> MirConfig = new Dictionary<string, nint>();
 
     public CharacterStatusModel CharacterStatus { get; set; } = new CharacterStatusModel();
     public MemoryUtils MemoryUtils { get; set; }
 
     public GameAccountModel AccountInfo { get; set; }
-    
+
     public byte MonstersUpdateId = 0;
     public byte DropsItemsUpdateId = 0;
     /// <summary>
@@ -70,8 +71,38 @@ public class MirGameInstanceModel
         {
             NewSysMsg?.Invoke(flag, msg);
         });
-      
+
     }
     // 字典, 基于地图ID(string), 值是地图的障碍物
     public Dictionary<string, byte[]> MapObstacles { get; set; } = new Dictionary<string, byte[]>();
+
+    // 需要clear方法, 因为实例还在 但是数据要清空
+    public void Clear()
+    {
+        Monsters.Clear();
+        DropsItems.Clear();
+        Skills.Clear();
+        QuickItems.Clear();
+        Items.Clear();
+        TalkCmds.Clear();
+        MapObstacles.Clear();
+        CharacterStatus = new CharacterStatusModel();
+        AccountInfo = new GameAccountModel();
+        MirPid = 0;
+        spellLastTime = 0;
+        eatItemLastTime = 0;
+        MirThreadId = 0;
+    }
+
+    // 直接用属性pid来判断, 快但是可能不准, 后面需要确认是不是及时更新的, 及时就没问题
+    public bool IsAttached => MirPid != 0;
+
+    public void RefreshAll()
+    {
+        CharacterStatusFunction.GetInfo(this);
+        CharacterStatusFunction.GetUsedItemInfo(this);
+        MonsterFunction.ReadMonster(this);
+        ItemFunction.ReadBag(this);
+        ItemFunction.ReadDrops(this);
+    }
 }
