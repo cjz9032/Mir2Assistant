@@ -16,7 +16,7 @@ public class MirGameInstanceModel
     public Dictionary<string, nint> MirConfig = new Dictionary<string, nint>();
 
     public CharacterStatusModel? CharacterStatus { get; set; } = new CharacterStatusModel();
-    public MemoryUtils? MemoryUtils { get; set; }
+    public MemoryUtils MemoryUtils { get; set; }
 
     public GameAccountModel? AccountInfo { get; set; }
     

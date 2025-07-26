@@ -354,76 +354,104 @@ namespace Mir2Assistant.Common.Functions
                 await ClickNPC(gameInstance!, npcName);
                 await Talk2(gameInstance!, "@buy");
 
-                string itemName = "";
+                var itemNames = new List<string>();
                 var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
-                var role = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
                 var CharacterStatus = gameInstance.CharacterStatus;
                 // todo 自动推荐装备, 目前写死
                 switch (position)
                 {
                     // todo 性别
                     case EquipPosition.Dress:
-                        itemName = "布衣" + genderStr;
+                        itemNames.Add("布衣" + genderStr);
                         if (gameInstance.AccountInfo.role != RoleType.mage)
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemName = "轻型盔甲";
+                                itemNames.Add("轻型盔甲");
                             }
                         }
                         else
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemName = "轻型盔甲";
+                                itemNames.Add("轻型盔甲");
                             }
                         }
                         break;
                     case EquipPosition.Weapon:
-                        itemName = "木剑";
+                        itemNames.Add("木剑");
                         if (gameInstance.AccountInfo.role != RoleType.mage)
                         {
                             if (CharacterStatus.Level >= 5)
                             {
-                                itemName = "青铜剑";
+                                itemNames.Add("青铜剑");
                             }
-                            if (CharacterStatus.Level >= 10) { 
-                                itemName = "铁剑";
+                            if (CharacterStatus.Level >= 10)
+                            {
+                                itemNames.Add("铁剑");
                             }
                             if (CharacterStatus.Level >= 13)
                             {
-                                itemName = "青铜斧";
+                                itemNames.Add("青铜斧");
                             }
                         }
                         else
                         {
                             if (CharacterStatus.Level >= 15)
                             {
-                                itemName = "海魂";
+                                itemNames.Add("海魂");
                             }
                         }
-                            break;
+                        break;
                 }
-                // 检测背包里没有
-                var exists = await CheckExistsInBags(gameInstance, itemName);
-                if (exists)
+
+
+                // test 
+                //itemNames = new List<string>{"木剑" , "青铜剑" ,"青铜斧", "降魔"};
+
+
+                // 只检测最高的
+                if (itemNames.Count == 0)
                 {
                     return;
                 }
 
+            
 
-                nint[] data = MemoryUtils.PackStringsToData(itemName);
-                await Task.Delay(600);
-                SendMirCall.Send(gameInstance, 3005, data);
-                await Task.Delay(800);
-                // 盲选
-                var memoryUtils = gameInstance!.MemoryUtils!;
+
+                var exists = await CheckExistsInBags(gameInstance, itemNames.Last());
+                if (exists)
+                {
+                    return;
+                }
+                var memoryUtils = gameInstance.MemoryUtils!;
+
+                itemNames.Reverse();
+                var menuListLen = 0;
+                // 从高到低找 , 找不到就用前面的
+                for (int i = 0; i < itemNames.Count; i++)
+                {
+                    nint[] data = MemoryUtils.PackStringsToData(itemNames[i]);
+                    SendMirCall.Send(gameInstance, 3005, data);
+                    await Task.Delay(800);
+                    // 判断是否存在
+                    // len [[0x74350C]+0x00000C5C]+08
+                    menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(0x74350C, 0x00000C5C, 08)));
+                    if (menuListLen > 0)
+                    {
+                        break;
+                    }
+                    // 盲选
+                }
+                if (menuListLen == 0)
+                {
+                    return;
+                }
                 var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
                 memoryUtils.WriteInt(addr, 0);
                 await Task.Delay(300);
                 SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
                 await Task.Delay(500);
-               
             }
         }
     }
