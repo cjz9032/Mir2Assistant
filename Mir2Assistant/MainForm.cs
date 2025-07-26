@@ -609,296 +609,306 @@ namespace Mir2Assistant
      
         private async void processTasks()
         {
-            var instances = GameState.GameInstances;
-            instances.ForEach(async instance =>
+            try
             {
-                // todo cancel
-                // 查看当前出生点
-                var instanceValue = instance;
-                var CharacterStatus = instanceValue.CharacterStatus!;
-                var isLeftAlive = CharacterStatus.X < 400;
-                var fixedPoints = new List<(int, int)>();
-                var patrolSteps = 10;
-                var portalStartX = isLeftAlive ? 200 : 550;
-                var portalEndX = isLeftAlive ? 300 : 620;
-                var portalStartY = 550;
-                var portalEndY = 620;
-                if (CharacterStatus.Level > 10)
-                {
-                     portalStartX = 50;
-                    portalEndX = 250;
-                    portalStartY = 350;
-                    portalEndY = 550;
-                }
 
-                // 生成矩形区域内的所有点位
-                for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
+                var instances = GameState.GameInstances;
+                instances.ForEach(async instance =>
                 {
-                    // 根据x的奇偶性决定y的遍历方向，形成蛇形路线
-                    var yStart = (x - portalStartX) / patrolSteps % 2 == 0 ? portalStartY : portalEndY;
-                    var yEnd = (x - portalStartX) / patrolSteps % 2 == 0 ? portalEndY : portalStartY;
-                    var yStep = (x - portalStartX) / patrolSteps % 2 == 0 ? patrolSteps : -patrolSteps;
-
-                    for (int y = yStart; yStep > 0 ? y <= yEnd : y >= yEnd; y += yStep)
+                    // todo cancel
+                    // 查看当前出生点
+                    var instanceValue = instance;
+                    var CharacterStatus = instanceValue.CharacterStatus!;
+                    var isLeftAlive = CharacterStatus.X < 400;
+                    var fixedPoints = new List<(int, int)>();
+                    var patrolSteps = 10;
+                    var portalStartX = isLeftAlive ? 200 : 550;
+                    var portalEndX = isLeftAlive ? 300 : 620;
+                    var portalStartY = 550;
+                    var portalEndY = 620;
+                    if (CharacterStatus.Level > 10)
                     {
-                        // 生成点位
-                        fixedPoints.Add((x, y));
-                        Log.Debug($"生成巡逻点: ({x}, {y})");
+                        portalStartX = 50;
+                        portalEndX = 250;
+                        portalStartY = 350;
+                        portalEndY = 550;
                     }
-                }
 
-                Log.Information($"共生成 {fixedPoints.Count} 个巡逻点");
-
-                // 转换为数组
-                var patrolPairs = fixedPoints.ToArray();
-
-                if (CharacterStatus.CurrentHP > 0)
-                {
-                    var act = instanceValue.AccountInfo;
-                    var _cancellationTokenSource = new CancellationTokenSource();
-
-                    await prepareBags(instanceValue, _cancellationTokenSource.Token);
-                    // 新手任务
-                    // todo 目前是5
-                    if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6)
+                    // 生成矩形区域内的所有点位
+                    for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
                     {
-                        // 主线
-                        if (act.TaskMain0Step == 0)
-                        {
-                            // 主线4级
-                            // click 助手小敏 630 603
-                            // @QUEST
-                            // 没有 屠夫正在找
-                            // 有
-                            // npc给你的任务 <做/@QUEST1_1_1> 
-                            // npc给你的任务 <不做/@QUEST1_1_2>
+                        // 根据x的奇偶性决定y的遍历方向，形成蛇形路线
+                        var yStart = (x - portalStartX) / patrolSteps % 2 == 0 ? portalStartY : portalEndY;
+                        var yEnd = (x - portalStartX) / patrolSteps % 2 == 0 ? portalEndY : portalStartY;
+                        var yStep = (x - portalStartX) / patrolSteps % 2 == 0 ? patrolSteps : -patrolSteps;
 
-                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
-                            // todo check cmd
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-                            act.TaskMain0Step = 1;
-                            // todo json
-                            SaveAccountList();
+                        for (int y = yStart; yStep > 0 ? y <= yEnd : y >= yEnd; y += yStep)
+                        {
+                            // 生成点位
+                            fixedPoints.Add((x, y));
+                            Log.Debug($"生成巡逻点: ({x}, {y})");
                         }
+                    }
 
-                        if (act.TaskMain0Step == 1)
+                    Log.Information($"共生成 {fixedPoints.Count} 个巡逻点");
+
+                    // 转换为数组
+                    var patrolPairs = fixedPoints.ToArray();
+
+                    if (CharacterStatus.CurrentHP > 0)
+                    {
+                        var act = instanceValue.AccountInfo;
+                        var _cancellationTokenSource = new CancellationTokenSource();
+
+                        await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                        // 新手任务
+                        // todo 目前是5
+                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6)
                         {
-                            // 主线4级 
-                            // click 屠夫 
-                            // <新手任务对话/@QUEST> 
-                            // <继续/@QUEST1_1_1>
-                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            // 主线
+                            if (act.TaskMain0Step == 0)
                             {
-                                // 检查背包的肉
-                                var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
-                                return meat != null;
-                            });
+                                // 主线4级
+                                // click 助手小敏 630 603
+                                // @QUEST
+                                // 没有 屠夫正在找
+                                // 有
+                                // npc给你的任务 <做/@QUEST1_1_1> 
+                                // npc给你的任务 <不做/@QUEST1_1_2>
 
-                            act.TaskMain0Step = 2;
-                            SaveAccountList();
-                        }
-                        if (act.TaskMain0Step == 2)
-                        {
-                            // 找肉
+                                await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                                // todo check cmd
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                act.TaskMain0Step = 1;
+                                // todo json
+                                SaveAccountList();
+                            }
 
-                            // 主线4级 
-                            // click 屠夫 
-                            // <新手任务对话/@QUEST> 
-                            // <继续/@QUEST1_1_1>
-                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST1_2_1");
-
-                            // await NormalAttackPoints(instanceValue, _cancellationTokenSource, [(625, 580), (625, 560)], (instanceValue) =>
-                            // {
-                            //     // 检查背包的肉
-                            //     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
-                            //     return meat != null;
-                            // });
-
-                            act.TaskMain0Step = 3;
-                            SaveAccountList();
-                        }
-                        if (act.TaskMain0Step == 3)
-                        {
-                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            // todo 保存json
-                            act.TaskMain0Step = 4;
-                            SaveAccountList();
-                        }
-                        if (act.TaskMain0Step == 4)
-                        {
-                            // 升级到5
-                            // 抽象到巡逻, 然后能退出
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            if (act.TaskMain0Step == 1)
                             {
-                                return instanceValue.CharacterStatus!.Level >= 5;
-                            });
-                            act.TaskMain0Step = 5;
-                            SaveAccountList();
-                        }
-                        if (act.TaskMain0Step == 5)
-                        {
+                                // 主线4级 
+                                // click 屠夫 
+                                // <新手任务对话/@QUEST> 
+                                // <继续/@QUEST1_1_1>
+                                await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
 
-                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
-                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-                            // 精武馆老板
-                            await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                            await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                            // 回复会得到乌木剑, 会自动带
-                            // 再次找助手 会让你接着走 武士之家
-                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                            // <下一页/@Q705_1_1_1>
-                            await NpcFunction.Talk2(instanceValue!, "@Q705_1_1_1");
-                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                            // 查询所有号的等级>=5, 再出去
-                            // 逛街
-                            // await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                {
+                                    // 检查背包的肉
+                                    var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
+                                    return meat != null;
+                                });
+
+                                act.TaskMain0Step = 2;
+                                SaveAccountList();
+                            }
+                            if (act.TaskMain0Step == 2)
+                            {
+                                // 找肉
+
+                                // 主线4级 
+                                // click 屠夫 
+                                // <新手任务对话/@QUEST> 
+                                // <继续/@QUEST1_1_1>
+                                await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_2_1");
+
+                                // await NormalAttackPoints(instanceValue, _cancellationTokenSource, [(625, 580), (625, 560)], (instanceValue) =>
+                                // {
+                                //     // 检查背包的肉
+                                //     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
+                                //     return meat != null;
+                                // });
+
+                                act.TaskMain0Step = 3;
+                                SaveAccountList();
+                            }
+                            if (act.TaskMain0Step == 3)
+                            {
+                                await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                // todo 保存json
+                                act.TaskMain0Step = 4;
+                                SaveAccountList();
+                            }
+                            if (act.TaskMain0Step == 4)
+                            {
+                                // 升级到5
+                                // 抽象到巡逻, 然后能退出
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                {
+                                    return instanceValue.CharacterStatus!.Level >= 5;
+                                });
+                                act.TaskMain0Step = 5;
+                                SaveAccountList();
+                            }
+                            if (act.TaskMain0Step == 5)
+                            {
+
+                                await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
+                                // 精武馆老板
+                                await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@exit");
+                                await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                await NpcFunction.Talk2(instanceValue!, "@exit");
+                                // 回复会得到乌木剑, 会自动带
+                                // 再次找助手 会让你接着走 武士之家
+                                await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                // <下一页/@Q705_1_1_1>
+                                await NpcFunction.Talk2(instanceValue!, "@Q705_1_1_1");
+                                await NpcFunction.Talk2(instanceValue!, "@exit");
+                                // 查询所有号的等级>=5, 再出去
+                                // 逛街
+                                // await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                // {
+                                //     var instances = GameState.GameInstances.ToList();
+                                //     var allLevel5 = instances.Where(o => o.Value.CharacterStatus!.Level < 5).ToList();
+                                //     if (allLevel5.Count == 0)
+                                //     {
+                                //         return true;
+                                //     }
+                                //     return false;
+                                // });
+                                act.TaskMain0Step = 6;
+                                SaveAccountList();
+
+                            }
+                        }
+                        // 支线8级, 没啥调用 先不要了
+                        if (CharacterStatus.Level >= 999 && act.TaskSub0Step < 99)
+                        {
+                            // 1、7级前从新手村助手阿妍处接介绍信任务
+                            // 2、给屠夫1块鹿肉、1块鸡肉（得到太阳水1瓶）
+                            // 3、得到佛牌，然后找书店老板（15级前完成）
+                            // 4、给边界村书店或银杏村药店5块12以上肉和5块5以上的鸡肉，对话选择“助人为快乐之本,我不能要”可得祈福项链。
+                            // 5、祈福项链拿给比奇黄飞龙可升到10级。
+                            if (act.TaskSub0Step == 0)
+                            {
+                                // click 助手阿妍 630 603
+                                await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@next");
+                                await NpcFunction.Talk2(instanceValue!, "@next1");
+                                await NpcFunction.Talk2(instanceValue!, "@new01");
+                                act.TaskSub0Step = 1;
+                                SaveAccountList();
+                            }
+                            // 2 屠夫
+                            if (act.TaskSub0Step == 1)
+                            {
+                                // click 屠夫 647 595
+                                await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@main1");
+                                act.TaskSub0Step = 2;
+                                SaveAccountList();
+                            }
+                            if (act.TaskSub0Step == 2)
+                            {
+                                // 再次开始找肉和鸡肉
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                {
+                                    var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                                    var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                                    return meats.Count > 0 && chickens.Count > 0;
+                                });
+                                act.TaskSub0Step = 3;
+                                SaveAccountList();
+                            }
+                            if (act.TaskSub0Step == 3)
+                            {
+                                // 回屠夫给肉他
+                                await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.Talk2(instanceValue!, "@main1");
+                                // <确定/@newnew1_1>
+                                await NpcFunction.Talk2(instanceValue!, "@newnew1_1");
+                                // <真的吗？太好了！/@job>
+                                await NpcFunction.Talk2(instanceValue!, "@job");
+                                act.TaskSub0Step = 4;
+                                SaveAccountList();
+                            }
+                            // 一点经验没啥用
+                            // if (act.TaskSub0Step == 4)
                             // {
-                            //     var instances = GameState.GameInstances.ToList();
-                            //     var allLevel5 = instances.Where(o => o.Value.CharacterStatus!.Level < 5).ToList();
-                            //     if (allLevel5.Count == 0)
+                            //     // 去银杏村药店 药剂师
+                            //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
+                            //     if (pathFound)
                             //     {
-                            //         return true;
+                            //         await NpcFunction.ClickNPC(instanceValue!, "药剂师");
+                            //         // 介绍信任务/@news
+                            //         await NpcFunction.Talk2(instanceValue!, "@news");
+                            //         // < 可以 / @new2_21 >,
+                            //         await NpcFunction.Talk2(instanceValue!, "@new2_21");
+                            //         // <接受/@new2_211>
+                            //         await NpcFunction.Talk2(instanceValue!, "@new2_211");
                             //     }
-                            //     return false;
-                            // });
-                            act.TaskMain0Step = 6;
-                            SaveAccountList();
+                            //     act.TaskSub0Step = 5;
+                            //     SaveAccountList();
+                            // }
+                            //  if (act.TaskSub0Step == 5)
+                            // {
+                            //     // 继续找肉 5 5
+                            //     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            //     {
+                            //         var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                            //         var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                            //         return meats.Count > 4 && chickens.Count > 4;
+                            //     });
+                            //     act.TaskSub0Step = 6;
+                            //     SaveAccountList();
+                            // }
+                        }
+                        // 主线
+                        // 去道士武士魔法之家, todo 跨地图寻路
+                        // 道士 544, 560
+                        // 武士 107, 316
+                        // 魔法 314, 474
+                        if (CharacterStatus.Level >= 3)
+                        {
+                            // todo 跨地图
+                            // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
+                            // if (pathFound)
+                            // {
+                            // }
 
-                        }
-                    }
-                    // 支线8级, 没啥调用 先不要了
-                    if (CharacterStatus.Level >= 999 && act.TaskSub0Step < 99)
-                    {
-                        // 1、7级前从新手村助手阿妍处接介绍信任务
-                        // 2、给屠夫1块鹿肉、1块鸡肉（得到太阳水1瓶）
-                        // 3、得到佛牌，然后找书店老板（15级前完成）
-                        // 4、给边界村书店或银杏村药店5块12以上肉和5块5以上的鸡肉，对话选择“助人为快乐之本,我不能要”可得祈福项链。
-                        // 5、祈福项链拿给比奇黄飞龙可升到10级。
-                        if (act.TaskSub0Step == 0)
-                        {
-                            // click 助手阿妍 630 603
-                            await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@next");
-                            await NpcFunction.Talk2(instanceValue!, "@next1");
-                            await NpcFunction.Talk2(instanceValue!, "@new01");
-                            act.TaskSub0Step = 1;
-                            SaveAccountList();
-                        }
-                        // 2 屠夫
-                        if (act.TaskSub0Step == 1)
-                        {
-                            // click 屠夫 647 595
-                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@main1");
-                            act.TaskSub0Step = 2;
-                            SaveAccountList();
-                        }
-                        if (act.TaskSub0Step == 2)
-                        {
-                            // 再次开始找肉和鸡肉
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                            // 目前死循环
+                            while (true)
                             {
-                                var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
-                                var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                                return meats.Count > 0 && chickens.Count > 0;
-                            });
-                            act.TaskSub0Step = 3;
-                            SaveAccountList();
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                {
+                                    // go home
+                                    var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
+                                    // 或者衣服武器破了 // todo 其他再看
+                                    var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
+                                    var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
+                                    var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
+                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+
+                                    return meats.Count > 32 && !isLow && !isLowHpMP;
+                                });
+                                await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                            }
+                            // act.TaskSub0Step = 6;
+                            // SaveAccountList();
+
                         }
-                        if (act.TaskSub0Step == 3)
-                        {
-                            // 回屠夫给肉他
-                            await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
-                            await NpcFunction.Talk2(instanceValue!, "@main1");
-                            // <确定/@newnew1_1>
-                            await NpcFunction.Talk2(instanceValue!, "@newnew1_1");
-                            // <真的吗？太好了！/@job>
-                            await NpcFunction.Talk2(instanceValue!, "@job");
-                            act.TaskSub0Step = 4;
-                            SaveAccountList();
-                        }
-                        // 一点经验没啥用
-                        // if (act.TaskSub0Step == 4)
-                        // {
-                        //     // 去银杏村药店 药剂师
-                        //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
-                        //     if (pathFound)
-                        //     {
-                        //         await NpcFunction.ClickNPC(instanceValue!, "药剂师");
-                        //         // 介绍信任务/@news
-                        //         await NpcFunction.Talk2(instanceValue!, "@news");
-                        //         // < 可以 / @new2_21 >,
-                        //         await NpcFunction.Talk2(instanceValue!, "@new2_21");
-                        //         // <接受/@new2_211>
-                        //         await NpcFunction.Talk2(instanceValue!, "@new2_211");
-                        //     }
-                        //     act.TaskSub0Step = 5;
-                        //     SaveAccountList();
-                        // }
-                        //  if (act.TaskSub0Step == 5)
-                        // {
-                        //     // 继续找肉 5 5
-                        //     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                        //     {
-                        //         var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
-                        //         var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                        //         return meats.Count > 4 && chickens.Count > 4;
-                        //     });
-                        //     act.TaskSub0Step = 6;
-                        //     SaveAccountList();
-                        // }
                     }
-                    // 主线
-                    // 去道士武士魔法之家, todo 跨地图寻路
-                    // 道士 544, 560
-                    // 武士 107, 316
-                    // 魔法 314, 474
-                    if (CharacterStatus.Level >= 3)
-                    {
-                        // todo 跨地图
-                        // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
-                        // if (pathFound)
-                        // {
-                        // }
-
-                        // 目前死循环
-                        while (true)
-                        {
-                            await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                            {
-                                // go home
-                                var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
-                                // 或者衣服武器破了 // todo 其他再看
-                                var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
-                                var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
-                                var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability; 
-                                var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2); 
-
-                                return meats.Count > 32 && !isLow && !isLowHpMP;
-                            });
-                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
-                        }
-                        // act.TaskSub0Step = 6;
-                        // SaveAccountList();
-
-                    }
-                }
-            });
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "processTasks error");
+                await Task.Delay(3000);
+                processTasks();
+            }
         }
         // TODO behavior tree for the main level up loop
         private async void autoForeGround(){
