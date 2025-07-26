@@ -45,7 +45,7 @@ namespace Mir2Assistant.Common.Models
         public int CurrentMP { get; set; }
         public int MaxMP { get; set; }
         public byte Level { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; } = "";
         /// <summary>
         /// 行会
         /// </summary>

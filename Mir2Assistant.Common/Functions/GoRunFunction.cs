@@ -1039,23 +1039,32 @@ public static class GoRunFunction
 
         var actNames = instances.Select(o => o.Value.AccountInfo.CharacterName).ToList();
 
-        var people = GameInstance.Monsters.Where(o => !o.Value.isDead && actNames.Contains(o.Value.Name)
-        // 低血量
-        && ((o.Value.CurrentHP < o.Value.MaxHP * 0.8) || o.Value.CurrentHP < 10)
-        // 距离足够
-        && (Math.Abs(GameInstance.CharacterStatus.X - o.Value.X) < 8
-        && Math.Abs(GameInstance.CharacterStatus.Y - o.Value.Y) < 8)
+        // 添加别的客户端的怪物信息
+        var allMonsInClients = new List<MonsterModel>();
+        foreach (var instance in instances)
+        {
+            allMonsInClients.AddRange(instance.Value.Monsters.Values);
+        }
+
+        var people = allMonsInClients.Where(o =>
+            o.CurrentHP > 0 &&
+            !o.isDead && actNames.Contains(o.Name)
+            // 低血量
+            && ((o.CurrentHP < o.MaxHP * 0.8) || o.CurrentHP < 10)
+            // 距离足够
+            && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
+            && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
-        .OrderBy(o => o.Value.TypeStr == "玩家" ? 0 : 1)
-        .ThenBy(o => Math.Abs(o.Value.CurrentHP - o.Value.MaxHP * 0.8))
+        .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
+        .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.8))
         .FirstOrDefault();
 
-        if (people.Key == 0)
+        if (people == null)
         {
             return;
         }
-        sendSpell(GameInstance, 2, people.Value.X, people.Value.Y, people.Key);
+        sendSpell(GameInstance, 2, people.X, people.Y, people.Id);
     }
 
     public static int findIdxInAllItems(MirGameInstanceModel GameInstance, string name)

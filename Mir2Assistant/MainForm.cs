@@ -846,9 +846,17 @@ namespace Mir2Assistant
         private async void autoAtBackground(){
             while(true){
                 await Task.Delay(15_000);
+                var instances = GameState.GameInstances.ToList();
+                instances.ForEach(instance =>
+                {
+                    CharacterStatusFunction.GetInfo(instance.Value);
+                    CharacterStatusFunction.GetUsedItemInfo(instance.Value);
+                    MonsterFunction.ReadMonster(instance.Value);
+                    ItemFunction.ReadBag(instance.Value);
+                    ItemFunction.ReadDrops(instance.Value);
+                });
 
                 // 其他中断并行需要考虑 
-                var instances = GameState.GameInstances.ToList();
                 instances.ForEach(async instance =>
                 {
                     // todo ref方法 避免重复调用
