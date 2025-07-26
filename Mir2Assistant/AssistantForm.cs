@@ -95,53 +95,53 @@ namespace Mir2Assistant
             {
                 try
                 {
-                    while (gameInstance.LibIpdl > 0)
-                    {
-                        Task.Delay(500).Wait();
-                        if (cancellationTokenSource.Token.IsCancellationRequested)
-                        {
-                            cancellationTokenSource.Token.ThrowIfCancellationRequested();
-                            break;
-                        }
-                        CharacterStatusFunction.GetInfo(gameInstance);
-                        CharacterStatusFunction.GetUsedItemInfo(gameInstance);
+                    // while (gameInstance.LibIpdl > 0)
+                    // {
+                    //     Task.Delay(500).Wait();
+                    //     if (cancellationTokenSource.Token.IsCancellationRequested)
+                    //     {
+                    //         cancellationTokenSource.Token.ThrowIfCancellationRequested();
+                    //         break;
+                    //     }
+                    //     CharacterStatusFunction.GetInfo(gameInstance);
+                    //     CharacterStatusFunction.GetUsedItemInfo(gameInstance);
 
-                        MonsterFunction.ReadMonster(gameInstance);
-                        ItemFunction.ReadBag(gameInstance);
-                        ItemFunction.ReadDrops(gameInstance);
+                    //     MonsterFunction.ReadMonster(gameInstance);
+                    //     ItemFunction.ReadBag(gameInstance);
+                    //     ItemFunction.ReadDrops(gameInstance);
 
-                        //CharacterStatusFunction.GetInfo(gameInstance);
-                        //if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
-                        //{
-                        //    if (gameInstance.Skills.Count == 0)
-                        //    {
-                        //        this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [GameState.MirConfig["写屏CALL地址"], this.Handle]));
+                    //     //CharacterStatusFunction.GetInfo(gameInstance);
+                    //     //if (gameInstance.CharacterStatus!.MaxMP > 0 && gameInstance.CharacterStatus.MaxHP > 0)
+                    //     //{
+                    //     //    if (gameInstance.Skills.Count == 0)
+                    //     //    {
+                    //     //        this.Invoke(() => SendMirCall.Send(gameInstance, 9001, [GameState.MirConfig["写屏CALL地址"], this.Handle]));
 
-                        //        SkillFunction.ReadSkills(gameInstance);
-                        //    }
+                    //     //        SkillFunction.ReadSkills(gameInstance);
+                    //     //    }
 
-                        //}
-                        //else //已小退
-                        //{
-                        //    gameInstance.Skills.Clear();
-                        //    gameInstance.Monsters.Clear();
-                        //    this.Invoke(() => SendMirCall.Send(gameInstance, 9002, new nint[] { }));
+                    //     //}
+                    //     //else //已小退
+                    //     //{
+                    //     //    gameInstance.Skills.Clear();
+                    //     //    gameInstance.Monsters.Clear();
+                    //     //    this.Invoke(() => SendMirCall.Send(gameInstance, 9002, new nint[] { }));
 
-                        //}
-                    }
+                    //     //}
+                    // }
                 }
                 catch (Exception ex)
                 {
-                    if (ex.Message.EndsWith("is not running."))
-                    {
-                        //游戏退出了
-                        this.Invoke(() =>
-                        {
-                            DllInject.Unhook(gameInstance);
-                            this.Dispose();
-                        });
+                    // if (ex.Message.EndsWith("is not running."))
+                    // {
+                    //     //游戏退出了
+                    //     this.Invoke(() =>
+                    //     {
+                    //         DllInject.Unhook(gameInstance);
+                    //         this.Dispose();
+                    //     });
 
-                    }
+                    // }
                     //将异常抛给主线程
                     //this.BeginInvoke(new EventHandler(delegate { throw ex; }));
                 }

@@ -133,16 +133,16 @@ bool hook_address(void* target_address, void* hook_function) {
 }
 
 void restore_write_screen_call() {
-	if (original_ptr == nullptr || trampoline == nullptr) {
-		return;
-	}
-	DWORD old_protect;
-	VirtualProtect(original_ptr, 8, PAGE_EXECUTE_READWRITE, &old_protect);
-	//memcpy(original_ptr, trampoline, 8);
-	char org[8] = { 0x55, 0x8b,0xec,0x83,0xc4,0xd8 ,0x53,0x56 };
-	memcpy(original_ptr, org, 8);
-	//memcpy(original_ptr, trampoline, 5);
-	VirtualProtect(original_ptr, 8, old_protect, &old_protect);
+	// if (original_ptr == nullptr || trampoline == nullptr) {
+	// 	return;
+	// }
+	// DWORD old_protect;
+	// VirtualProtect(original_ptr, 8, PAGE_EXECUTE_READWRITE, &old_protect);
+	// //memcpy(original_ptr, trampoline, 8);
+	// char org[8] = { 0x55, 0x8b,0xec,0x83,0xc4,0xd8 ,0x53,0x56 };
+	// memcpy(original_ptr, org, 8);
+	// //memcpy(original_ptr, trampoline, 5);
+	// VirtualProtect(original_ptr, 8, old_protect, &old_protect);
 }
 
 void cancelItemMoving(){
@@ -221,11 +221,11 @@ void Sys::process(int code, int* data)
 	switch (code)
 	{
 	case 9001: //hook 写屏call
-		hwnd = (HWND)data[1];
-		hook_address((void*)data[0], override_write_screen_call);
+		// hwnd = (HWND)data[1];
+		// hook_address((void*)data[0], override_write_screen_call);
 		break;
 	case 9002: //恢复写屏call
-		restore_write_screen_call();
+		// restore_write_screen_call();
 		break;
 	case 9003: // 接收账号和密码数据
 		ProcessWideStringsWithLengths(data, 2, [](wchar_t** strings, int* length) {

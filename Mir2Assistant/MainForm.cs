@@ -31,6 +31,8 @@ namespace Mir2Assistant
                 {
                     AccountInfo = account
                 };
+                gameInstance.AccountInfo = account;
+
                 GameState.GameInstances.Add(gameInstance);
             }
 
@@ -267,10 +269,7 @@ namespace Mir2Assistant
                         gameInstance.MirBaseAddress = process.MainModule!.BaseAddress;
                         gameInstance.mirVer = process.MainModule?.FileVersionInfo?.FileVersion;
                         gameInstance.MirThreadId = (uint)process.Threads[0].Id;
-                        
-                        // 设置账号信息
-                        gameInstance.AccountInfo = account;
-                        
+                                                
                         Log.Debug("加载DLL到游戏进程");
                         await DllInject.loadDll(gameInstance);
 
