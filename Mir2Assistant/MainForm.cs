@@ -915,7 +915,7 @@ namespace Mir2Assistant
                             if (instance.AccountInfo.IsMainControl)
                             {
                                 // GameInstances 除了自己
-                                var members = GameState.GameInstances.Where(o => o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
+                                var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
                                 foreach (var member in members)
                                 {
                                     nint[] data = StringUtils.GenerateCompactStringData(member);
