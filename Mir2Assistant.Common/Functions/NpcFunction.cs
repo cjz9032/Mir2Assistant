@@ -357,14 +357,14 @@ namespace Mir2Assistant.Common.Functions
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemNames.Add("轻型盔甲");
+                                itemNames.Add("轻型盔甲"+ genderStr);
                             }
                         }
                         else
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemNames.Add("轻型盔甲");
+                                itemNames.Add("轻型盔甲"+ genderStr);
                             }
                         }
                         break;
