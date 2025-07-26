@@ -193,7 +193,6 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public static void EatIndexItem(MirGameInstanceModel gameInstance, int idx)
         {
-            gameInstance.eatItemLastTime = Environment.TickCount;
             if (gameInstance.eatItemLastTime + 800 > Environment.TickCount)
             {
                 return;
