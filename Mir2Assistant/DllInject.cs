@@ -86,7 +86,7 @@ namespace Mir2Assistant
             }
         }
 
-        static  async public Task loadDll(MirGameInstanceModel gi)
+        static  public void loadDll(MirGameInstanceModel gi)
         {
             IntPtr addr = (IntPtr)0;
             string dllPath = Path.Combine(Application.StartupPath, "Mir2HookCall.dll");
@@ -117,16 +117,6 @@ namespace Mir2Assistant
             gi.LibIpdl = ipdl;
             var thread = new Thread(() => SetHook(addr, gi));
             thread.Start();
-
-
-            // 等待DLL加载完成
-            await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 5000);
-
-            if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
-            {
-                nint[] data = MemoryUtils.PackStringsToData(gi.AccountInfo.Account, gi.AccountInfo.Password);
-                SendMirCall.Send(gi, 9003, data);
-            }
         }
 
         // 将字符串数组打包成nint数组用于传递给DLL

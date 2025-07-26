@@ -262,7 +262,7 @@ namespace Mir2Assistant
                     if (!GameState.GameInstances.Any(o => o.MirPid == pid))
                     {
                         var rect = WindowUtils.GetClientRect(hwnd);
-                        var gameInstance = new MirGameInstanceModel();
+                        var gameInstance = GameState.GameInstances.First(o => o.AccountInfo.Account == account.Account);
                         gameInstance.AssistantForm = new AssistantForm(gameInstance, account.Account, account.CharacterName);
                         gameInstance.MirHwnd = hwnd;
                         gameInstance.MirPid = pid;
@@ -271,9 +271,15 @@ namespace Mir2Assistant
                         gameInstance.MirThreadId = (uint)process.Threads[0].Id;
                                                 
                         Log.Debug("加载DLL到游戏进程");
-                        await DllInject.loadDll(gameInstance);
+                        DllInject.loadDll(gameInstance);
+                        // 不知道加载多久 随便写个
+                        await Task.Delay(Environment.ProcessorCount <= 4 ? 10_000 : 5000);
+                    
+                        nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
+                        // auto login 
+                        SendMirCall.Send(gameInstance, 9003, data);
+                      
 
-                 
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
@@ -344,7 +350,7 @@ namespace Mir2Assistant
                     {
                         if (GameState.GameInstances.Any(o => o.MirPid == pid))
                         {
-                            if (GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm!.Visible)
+                            if (GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm.Visible)
                             {
                                 GameState.GameInstances.First(o => o.MirPid == pid).AssistantForm.Hide();
                             }
@@ -608,7 +614,7 @@ namespace Mir2Assistant
 
                 if (CharacterStatus.CurrentHP > 0)
                 {
-                    var act = instanceValue.AccountInfo!;
+                    var act = instanceValue.AccountInfo;
                     var _cancellationTokenSource = new CancellationTokenSource();
 
                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
