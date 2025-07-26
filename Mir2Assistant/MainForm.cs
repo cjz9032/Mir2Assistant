@@ -123,17 +123,14 @@ namespace Mir2Assistant
             // 更新进程状态
             foreach (var account in accountList)
             {
-                if (account.ProcessId.HasValue)
+                var ins = GameState.GameInstances.FirstOrDefault(o => o.AccountInfo.Account == account.Account);
+                if (ins != null)
                 {
-                    try
-                    {
-                        Process.GetProcessById(account.ProcessId.Value);
-                    }
-                    catch
-                    {
-                        Log.Information("进程 {ProcessId} 已不存在，重置账号 {Account} 的进程ID", account.ProcessId, account.Account);
-                        account.ProcessId = null;
-                    }
+                    account.ProcessId = ins.MirPid;
+                }
+                else
+                {
+                    account.ProcessId = null;
                 }
             }
 
@@ -188,7 +185,6 @@ namespace Mir2Assistant
                 if (int.TryParse(output.Trim(), out int pid))
                 {
                     Log.Information("PowerShell已直接启动游戏进程，账号: {Account}, PID: {Pid}", account.Account, pid);
-                    account.ProcessId = pid;
                     // 通过PID获取进程对象
                     var gameProcess = Process.GetProcessById(pid);
                     // 后续绑定DLL等逻辑
@@ -211,26 +207,24 @@ namespace Mir2Assistant
 
         private void KillGameProcess(GameAccountModel account)
         {
-            if (account.ProcessId.HasValue)
+            // 查找instance
+            var gameInstance = GameState.GameInstances.FirstOrDefault(o => o.AccountInfo.Account == account.Account);
+            if (gameInstance != null && gameInstance.IsAttached)
             {
-                try
+                  try
                 {
                     Log.Information("准备关闭游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, account.ProcessId);
-                    Process process = Process.GetProcessById(account.ProcessId.Value);
-                    
+                    Process process = Process.GetProcessById(gameInstance.MirPid);
+
                     // 如果有关联的辅助窗口，先解除挂钩并关闭
-                    if (GameState.GameInstances.Any(o => o.MirPid == account.ProcessId.Value))
+                    Log.Debug("解除DLL挂钩并关闭辅助窗口");
+                    DllInject.Unhook(gameInstance);
+                    if (gameInstance.AssistantForm != null)
                     {
-                        Log.Debug("解除DLL挂钩并关闭辅助窗口");
-                        var gameInstance = GameState.GameInstances.First(o => o.MirPid == account.ProcessId.Value);
-                        DllInject.Unhook(gameInstance);
-                        if (gameInstance.AssistantForm != null)
-                        {
-                            gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
-                        }
-                        gameInstance.Clear();
+                        gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
                     }
-                    
+                    gameInstance.Clear();
+
                     process.Kill();
                     account.ProcessId = null;
                     Log.Information("游戏进程已关闭，账号: {Account}", account.Account);
@@ -364,13 +358,9 @@ namespace Mir2Assistant
                         }
                         else
                         {
-                            // 查找对应的账号
-                            var account = accountList.FirstOrDefault(a => a.ProcessId == pid);
-                           if (account == null)
-                            {
-                                account = accountList[0];
-                            }
-
+                            // 通过窗口标题匹配账号
+                            var title = process.MainWindowTitle;
+                            var account = accountList.FirstOrDefault(a => title.Contains($"<{a.CharacterName}>"));
                             if (account != null)
                             {
                                 AttachToGameProcess(process, account);

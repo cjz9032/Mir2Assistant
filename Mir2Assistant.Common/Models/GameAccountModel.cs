@@ -23,6 +23,7 @@ namespace Mir2Assistant.Common.Models
 
         public bool IsMainControl { get; set; }
         public RoleType role { get; set; }
+        // 只显示 不要做任何逻辑
         public int? ProcessId { get; set; }
         public int TaskMain0Step { get; set; }
         public int TaskSub0Step { get; set; }
