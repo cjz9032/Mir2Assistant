@@ -293,10 +293,13 @@ namespace Mir2Assistant
                         await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
-
+                        // TODO 临时搞一把 还是要后台
+                        gameInstance.RefreshAll();
                         if (gameInstance.CharacterStatus.CurrentHP == 0)
                         {
                             RestartGameProcess(account);
+                            /// 后续没意义了
+                            return;
                         }
                         
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
