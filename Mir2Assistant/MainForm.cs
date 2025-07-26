@@ -493,7 +493,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
 
-            var task  = (npc: !isLeftAlive ? "TODO????" : "边界村小店老板", x: !isLeftAlive ? 649 : 295, y: !isLeftAlive ? 602 : 608);
+            var task  = (npc: !isLeftAlive ? "TODO????" : "边界村小店老板", x: !isLeftAlive ? 649 : 290, y: !isLeftAlive ? 602 : 611);
             // 目前只有
             if (instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 9)
             {
@@ -587,7 +587,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
             Log.Information($"找屠夫 {isLeftAlive}");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 287, !isLeftAlive ? 595 : 595, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "", 6);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -600,7 +600,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             Log.Information($"找武器 {isLeftAlive}");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 608, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "", 6);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "精武馆老板" : "边界村铁匠铺");
