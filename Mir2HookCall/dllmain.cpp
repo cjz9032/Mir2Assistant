@@ -285,9 +285,8 @@ bool InstallHooks()
 
         {L"ZC.H", 0x250317, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
         {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
-        {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"}  // hook在这里
-        // 0064BF82        mov         edx,6542F0;'[失败] 购买物品失败，卖家已经下线了'
-        {L"ZC.H", 0x0064BF87, SkipPopup, (void**)&originalFunc11, "skip_popup3"}  // hook在这里
+        {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
+        {L"ZC.H", 0x64BF87, SkipPopup, (void**)&originalFunc11, "skip_popup3"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子
