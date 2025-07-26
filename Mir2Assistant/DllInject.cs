@@ -86,7 +86,7 @@ namespace Mir2Assistant
             }
         }
 
-        async public static void loadDll(MirGameInstanceModel gi)
+        static  async public Task loadDll(MirGameInstanceModel gi)
         {
             IntPtr addr = (IntPtr)0;
             string dllPath = Path.Combine(Application.StartupPath, "Mir2HookCall.dll");
@@ -120,7 +120,7 @@ namespace Mir2Assistant
 
 
             // 等待DLL加载完成
-            await Task.Delay(4000);
+            await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 5000);
 
             if (gi.AccountInfo != null && !string.IsNullOrEmpty(gi.AccountInfo.Account))
             {

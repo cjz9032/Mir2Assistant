@@ -65,6 +65,15 @@ public static class MonsterFunction
                 monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
                 //}
                 //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
+
+                monster.CurrentHP = memoryUtils.ReadToShort(monsterAddr + 0x48);
+                monster.MaxHP = memoryUtils.ReadToShort(monsterAddr + 0x4C);
+
+                monster.CurrentMP = memoryUtils.ReadToShort(monsterAddr + 0x4A);
+                monster.MaxMP = memoryUtils.ReadToShort(monsterAddr + 0x4E);
+
+                monster.Level = memoryUtils.ReadToInt8(monsterAddr + 0x3C);
+
                 monster.Flag = flag;
 
                 if (monster.Name == gameInstance.CharacterStatus!.Name)

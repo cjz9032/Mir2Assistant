@@ -375,6 +375,26 @@ void pickUp(){
 	
 }
 
+void sendSpell(int spellId, int x, int y, int targetId){
+	__asm {
+		pushad
+		pushfd
+		push y
+		push spellId
+		push targetId
+		mov ecx,x
+		mov edx, 0x00000BC9
+		mov eax, 0x7524B4
+		mov eax, [eax]
+		mov esi, 0x643C88
+		call esi 
+		popfd
+		popad
+	}
+	
+}
+
+
 
 
 void sell(DelphiString* name, int id)
@@ -479,6 +499,9 @@ void Npc::process(int code, int* data)
 		break;
 	case 3031: // ¼ñÈ¡
 		pickUp();
+		break;
+	case 3100: // Ä§·¨
+		sendSpell(data[0], data[1], data[2], data[3]);
 		break;
 	default:
 		break;

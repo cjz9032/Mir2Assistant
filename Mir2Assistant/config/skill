@@ -1,0 +1,48 @@
+技能call 
+
+// TEST CALL 
+pushad
+pushfd
+push 114
+push 2
+push 0
+mov ecx,145
+mov edx, 0x00000BC9
+mov eax, 0x7524B4
+mov eax, [eax]
+mov esi, 0x643C88
+call esi 
+popfd
+popad
+
+
+
+特征 81 B8 ?? ???????? C90B0000
+procedure TfrmMain.SendSpellMsg(ident, X, Y, dir, target: Integer; bLock: Boolean);
+
+    if g_MySelf.RealActionMsg.ident = CM_SPELL then
+    begin
+      SendSpellMsg(g_MySelf.RealActionMsg.ident,
+        g_MySelf.RealActionMsg.X,
+        g_MySelf.RealActionMsg.Y,
+        g_MySelf.RealActionMsg.dir,
+        g_MySelf.RealActionMsg.State);
+		
+ZC.H+23A71C - 81 B8 90020000 C90B0000 - cmp [eax+00000290],00000BC9 { 3017 }
+ZC.H+23A726 - 75 44                 - jne ZC.H+23A76C
+ZC.H+23A728 - A1 64277500           - mov eax,[ZC.H+352764] { (053CB120) }
+ZC.H+23A72D - 8B 80 98020000        - mov eax,[eax+00000298]
+ZC.H+23A733 - 50                    - push eax -- 276 y
+ZC.H+23A734 - A1 64277500           - mov eax,[ZC.H+352764] { (053CB120) }
+ZC.H+23A739 - 8B 80 9C020000        - mov eax,[eax+0000029C]
+ZC.H+23A73F - 50                    - push eax -- 2 dir ...魔法ID 治愈术 
+ZC.H+23A740 - A1 64277500           - mov eax,[ZC.H+352764] { (053CB120) }
+ZC.H+23A745 - 8B 80 A4020000        - mov eax,[eax+000002A4]
+ZC.H+23A74B - 50                    - push eax -- 0 target // 自己就是0
+ZC.H+23A74C - A1 64277500           - mov eax,[ZC.H+352764] { (053CB120) }
+ZC.H+23A751 - 8B 88 94020000        - mov ecx,[eax+00000294] -- 225 x 
+ZC.H+23A757 - A1 64277500           - mov eax,[ZC.H+352764] { (053CB120) }
+ZC.H+23A75C - 8B 90 90020000        - mov edx,[eax+00000290] // 00000BC9 3017 看起来是固定的 CM_SPELL
+ZC.H+23A762 - 8B 45 FC              - mov eax,[ebp-04] // TfrmMain
+ZC.H+23A765 - E8 1E950000           - call ZC.H+243C88
+

@@ -166,7 +166,7 @@ namespace Mir2Assistant
                     // 通过PID获取进程对象
                     var gameProcess = Process.GetProcessById(pid);
                     // 后续绑定DLL等逻辑
-                    AttachToGameProcess(gameProcess, account);
+                    await AttachToGameProcess(gameProcess, account);
                 }
                 else
                 {
@@ -224,7 +224,7 @@ namespace Mir2Assistant
             StartGameProcess(account);
         }
 
-        private void AttachToGameProcess(Process process, GameAccountModel account)
+        private async Task AttachToGameProcess(Process process, GameAccountModel account)
         {
             try
             {
@@ -251,7 +251,7 @@ namespace Mir2Assistant
                         gameInstance.AccountInfo = account;
                         
                         Log.Debug("加载DLL到游戏进程");
-                        DllInject.loadDll(gameInstance);
+                        await DllInject.loadDll(gameInstance);
 
                  
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
@@ -263,17 +263,15 @@ namespace Mir2Assistant
                             gameInstance.AssistantForm.WindowState = FormWindowState.Minimized;
                         }
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
-                         Task.Run(async () =>
-                        {
-                            await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
-                            SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                            await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
+                
+                        await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
+                        SendMirCall.Send(gameInstance!, 9099, new nint[] { });
+                        await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
 
-                            if (gameInstance.CharacterStatus.CurrentHP == 0)
-                            {
-                                RestartGameProcess(account);
-                            }
-                        });
+                        if (gameInstance.CharacterStatus.CurrentHP == 0)
+                        {
+                            RestartGameProcess(account);
+                        }
                         
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {
@@ -900,9 +898,10 @@ namespace Mir2Assistant
                         }
                         await NpcFunction.autoReplaceEquipment(instance.Value);
                         // 找红药
+                        GoRunFunction.TryHealPeople(instance.Value);
                         if (CharacterStatus.CurrentHP <= 15)
                         {
-                           NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
+                            NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
                         }
                     }
                 }

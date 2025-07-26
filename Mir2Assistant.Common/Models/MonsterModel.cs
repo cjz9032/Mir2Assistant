@@ -38,6 +38,13 @@ namespace Mir2Assistant.Common.Models
 
         public int X { get; set; }
         public int Y { get; set; }
+
+
+        public int CurrentHP { get; set; }
+        public int MaxHP { get; set; }
+        public int CurrentMP { get; set; }
+        public int MaxMP { get; set; }
+        public byte Level { get; set; }
         public string? Name { get; set; }
         /// <summary>
         /// 行会
