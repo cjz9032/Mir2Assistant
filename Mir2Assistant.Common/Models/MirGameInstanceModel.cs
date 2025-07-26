@@ -91,6 +91,7 @@ public class MirGameInstanceModel
         spellLastTime = 0;
         eatItemLastTime = 0;
         MirThreadId = 0;
+        memoryUtils?.Dispose();
     }
 
     // 直接用属性pid来判断, 快但是可能不准, 后面需要确认是不是及时更新的, 及时就没问题
