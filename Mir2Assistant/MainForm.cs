@@ -495,7 +495,7 @@ namespace Mir2Assistant
 
             var task  = (npc: !isLeftAlive ? "TODO????" : "边界村小店老板", x: !isLeftAlive ? 649 : 295, y: !isLeftAlive ? 602 : 608);
             // 目前只有
-            if (instanceValue.AccountInfo.role == RoleType.taoist)
+            if (instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 9)
             {
                 var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
                 var exitsQuan = 0;
