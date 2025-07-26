@@ -141,7 +141,7 @@ namespace Mir2Assistant
         {
             try
             {
-                string arguments = $"{encodeArg}";
+                string arguments = $"{account.encodeArg}";
                 // 使用 -PassThru 获取进程对象，并输出PID
                 string psCommand = $"cd '{gameDirectory}'; $p=Start-Process -FilePath './{gamePath}' -ArgumentList '{arguments}' -NoNewWindow -PassThru; $p.Id";
 
