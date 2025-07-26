@@ -286,7 +286,7 @@ namespace Mir2Assistant
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         // 如果是主控，显示辅助窗口
-                        if (!account.IsMainControl)
+                        if (account.IsMainControl)
                         {
                             gameInstance.AssistantForm.Show();
                         }
