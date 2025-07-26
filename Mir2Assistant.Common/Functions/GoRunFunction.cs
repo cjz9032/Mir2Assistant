@@ -653,6 +653,7 @@ public static class GoRunFunction
                 var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
                 if (otherPeople != null)
                 {
+                    Log.Information($"发现活人{otherPeople.Name} 停下");
                     await Task.Delay(1000);
                     continue;
                 }
