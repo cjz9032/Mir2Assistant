@@ -411,8 +411,9 @@ namespace Mir2Assistant
             Log.Information("重启所有游戏任务");
             // 重新开始所有任务
             // processTasks();
-               autoAtBackground();
-                autoForeGround();
+            autoAtBackground();
+            autoForeGround();
+            autoAtBackgroundFast();
         }
         private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
@@ -844,17 +845,13 @@ namespace Mir2Assistant
 
         private async void autoAtBackground(){
             while(true){
-                await Task.Delay(10_000);
+                await Task.Delay(15_000);
 
                 // 其他中断并行需要考虑 
                 var instances = GameState.GameInstances.ToList();
-                foreach (var instance in instances)
+                instances.ForEach(async instance =>
                 {
                     // todo ref方法 避免重复调用
-                    CharacterStatusFunction.GetInfo(instance.Value);
-                    CharacterStatusFunction.GetUsedItemInfo(instance.Value);
-                    ItemFunction.ReadBag(instance.Value);
-
                     var CharacterStatus = instance.Value.CharacterStatus;
                     // 死亡
                     if (CharacterStatus.CurrentHP <= 0)
@@ -869,7 +866,7 @@ namespace Mir2Assistant
                         //{
                         //    RestartGameProcess(instance.Value.AccountInfo!);
                         //}
-                        continue;
+                        return;
                     }
                     if (CharacterStatus.CurrentHP > 0)
                     {
@@ -897,25 +894,41 @@ namespace Mir2Assistant
                             }
                         }
                         await NpcFunction.autoReplaceEquipment(instance.Value);
-                        // 找红药
-                        GoRunFunction.TryHealPeople(instance.Value);
-                        if (CharacterStatus.CurrentHP <= 15)
-                        {
-                            NpcFunction.EatIndexItem(instance.Value, "金创药(小量)");
-                        }
                     }
-                }
-                await Task.Delay(10_000);
+                });
+            }
+        }
+        
+          private async void autoAtBackgroundFast(){
+            // 其他中断并行需要考虑 
+            while (true)
+            {
+                var instances = GameState.GameInstances.ToList();
+                instances.ForEach(instance =>
+                {
+                    CharacterStatusFunction.GetInfo(instance.Value);
+                    CharacterStatusFunction.GetUsedItemInfo(instance.Value);
+                    MonsterFunction.ReadMonster(instance.Value);
+                    ItemFunction.ReadBag(instance.Value);
+                    ItemFunction.ReadDrops(instance.Value);
+
+                    if (instance.Value.CharacterStatus.CurrentHP > 0)
+                    {
+                        GoRunFunction.TryEatDrug(instance.Value);
+                        GoRunFunction.TryHealPeople(instance.Value);
+                    }
+                });
+                await Task.Delay(200);
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Log.Information("应用程序正在关闭");
-            
+
             // 注销热键
             HotKeyUtils.UnregisterHotKey(Handle, 200);
-            
+
             // 同步关闭所有资源
             foreach (var gameInstance in GameState.GameInstances.Values)
             {
@@ -929,7 +942,7 @@ namespace Mir2Assistant
 
             Log.Information("应用程序已关闭");
             Log.CloseAndFlush();
-            
+
             // 强制退出进程
             Process.GetCurrentProcess().Kill();
         }

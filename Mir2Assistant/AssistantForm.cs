@@ -107,7 +107,7 @@ namespace Mir2Assistant
                 {
                     while (gameInstance.LibIpdl > 0)
                     {
-                        Task.Delay(100).Wait();
+                        Task.Delay(500).Wait();
                         if (cancellationTokenSource.Token.IsCancellationRequested)
                         {
                             cancellationTokenSource.Token.ThrowIfCancellationRequested();

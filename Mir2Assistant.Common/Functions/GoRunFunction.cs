@@ -1027,7 +1027,7 @@ public static class GoRunFunction
         return true;
     }
 
-    public static async Task TryHealPeople(MirGameInstanceModel GameInstance)
+    public static void TryHealPeople(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfHeal(GameInstance))
         {
@@ -1041,7 +1041,7 @@ public static class GoRunFunction
 
         var people = GameInstance.Monsters.Where(o => !o.Value.isDead && actNames.Contains(o.Value.Name)
         // 低血量
-        && (o.Value.CurrentHP < o.Value.MaxHP * 0.8 || o.Value.CurrentHP < 10)
+        && ((o.Value.CurrentHP < o.Value.MaxHP * 0.8) || o.Value.CurrentHP < 10)
         // 距离足够
         && (Math.Abs(GameInstance.CharacterStatus.X - o.Value.X) < 8
         && Math.Abs(GameInstance.CharacterStatus.Y - o.Value.Y) < 8)
@@ -1056,7 +1056,77 @@ public static class GoRunFunction
             return;
         }
         sendSpell(GameInstance, 2, people.Value.X, people.Value.Y, people.Key);
-        await Task.Delay(100);
+    }
+
+    public static int findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
+    {
+        var bagItems2 = GameInstance.Items;
+        var idx = bagItems2.FindIndex(o => o.Name == name);
+        if (idx >= 0)
+        {
+            return idx + 6;
+        }
+        else
+        {
+            var quickItems = GameInstance.QuickItems;
+            var idx2 = quickItems.FindIndex(o => o.Name == name);
+            if (idx2 >= 0)
+            {
+                return idx2;
+            }
+        }
+        return -1;
+    }
+
+    public static void TryEatDrug(MirGameInstanceModel GameInstance)
+    {
+        // todo 解包再吃
+        //  for low hp
+        if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.5)) // 0.5避免浪费治疗
+        {
+            // 找红药 金创药(小量) 金创药(中量) 强效金创药 太阳水
+            var items = new List<string> { "金创药(小量)", "金创药(中量)", "强效金创药", "太阳水" };
+            int resIdx = -1;
+            foreach (var item in items)
+            {
+                var idx = findIdxInAllItems(GameInstance, item);
+                if (idx >= 0)
+                {
+                    resIdx = idx;
+                    break;
+                }
+            }
+
+            if (resIdx == -1)
+            {
+                return;
+            }
+
+            NpcFunction.EatIndexItem(GameInstance, resIdx);
+        }
+
+        // for low mp
+        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.5)
+        {
+            // 找蓝药 太阳水
+            var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
+            int resIdx = -1;
+            foreach (var item in items)
+            {
+                var idx = findIdxInAllItems(GameInstance, item);
+                if (idx >= 0)
+                {
+                    resIdx = idx;
+                    break;
+                }
+            }
+            if (resIdx == -1)
+            {
+                return;
+            }
+            NpcFunction.EatIndexItem(GameInstance, resIdx);
+            await Task.Delay(100);
+        }
     }
 }
 

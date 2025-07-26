@@ -191,24 +191,15 @@ namespace Mir2Assistant.Common.Functions
         /// <param name="gameInstance"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public static void EatIndexItem(MirGameInstanceModel gameInstance, string itemName)
+        public static void EatIndexItem(MirGameInstanceModel gameInstance, int idx)
         {
-            ItemFunction.ReadBag(gameInstance);
-            var bagItems2 = gameInstance.Items;
-            var idx = bagItems2.FindIndex(o => o.Name == itemName);
-            if (idx >= 0)
+            gameInstance.eatItemLastTime = Environment.TickCount;
+            if (gameInstance.eatItemLastTime + 500 > Environment.TickCount)
             {
-                SendMirCall.Send(gameInstance, 3019, new nint[] { idx + 6 });
+                return;
             }
-            else
-            {
-                var quickItems = gameInstance.QuickItems;
-                var idx2 = quickItems.FindIndex(o => o.Name == itemName);
-                if (idx2 >= 0)
-                {
-                    SendMirCall.Send(gameInstance, 3019, new nint[] { idx2 });
-                }
-            }
+            gameInstance.eatItemLastTime = Environment.TickCount;
+            SendMirCall.Send(gameInstance, 3019, new nint[] { idx });
         }
 
         /// <summary>
