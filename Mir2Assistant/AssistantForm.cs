@@ -51,9 +51,6 @@ namespace Mir2Assistant
             
             //SendMirCall.Send(gameInstance!, 1999, new nint[] { });
 
-            gameInstance!.MemoryUtils = new MemoryUtils(gameInstance);
-          
-
             //加载tab页
             string currentDirectory = Directory.GetCurrentDirectory();
             string[] dllFiles = Directory.GetFiles(currentDirectory, "*.dll");
@@ -184,7 +181,7 @@ namespace Mir2Assistant
                 // 清理游戏实例相关资源
                 if (gameInstance != null)
                 {
-                    gameInstance.MemoryUtils?.Dispose();
+                    gameInstance.memoryUtils?.Dispose();
                     gameInstance.AssistantForm = null;
                 }
             }

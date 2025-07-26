@@ -18,7 +18,7 @@ public class MirGameInstanceModel
     public Form AssistantForm { get; set; }
 
     public CharacterStatusModel CharacterStatus { get; set; } = new CharacterStatusModel();
-    public MemoryUtils MemoryUtils { get; set; }
+    public MemoryUtils memoryUtils { get; set; }
 
     public GameAccountModel AccountInfo { get; set; }
 
@@ -94,7 +94,7 @@ public class MirGameInstanceModel
     }
 
     // 直接用属性pid来判断, 快但是可能不准, 后面需要确认是不是及时更新的, 及时就没问题
-    public bool IsAttached => MirPid != 0;
+    public bool IsAttached => MirPid != 0 && memoryUtils != null;
 
     public void RefreshAll()
     {

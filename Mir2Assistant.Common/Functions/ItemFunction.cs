@@ -15,7 +15,7 @@ namespace Mir2Assistant.Common.Functions
                 //    return;
                 //}
                 gameInstance.IsReadingItems = true;
-                var memoryUtils = gameInstance!.MemoryUtils!;
+                var memoryUtils = gameInstance!.memoryUtils!;
                 int itemSize = 0x80; // 每个item占80字节
 
                 for (int i = 0; i < targetItems.Count; i++)
@@ -60,7 +60,7 @@ namespace Mir2Assistant.Common.Functions
         {   
             // drops
             // -- looks +8
-            var memoryUtils = gameInstance!.MemoryUtils!;
+            var memoryUtils = gameInstance!.memoryUtils!;
             var dropsAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x7524D0));
             var count = memoryUtils.ReadToInt(dropsAddr + 0x8);
             var dropsArrayAddr = memoryUtils.ReadToInt(dropsAddr + 0x4);

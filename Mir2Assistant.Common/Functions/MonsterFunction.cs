@@ -30,7 +30,7 @@ public static class MonsterFunction
             }
             gameInstance.IsReadingMonsters = true;
             //var Monsters = new List<MonsterModel>();
-            var memoryUtils = gameInstance!.MemoryUtils!;
+            var memoryUtils = gameInstance!.memoryUtils!;
             var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["怪物数组"], 0x34C8));
             var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
             var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
@@ -102,7 +102,7 @@ public static class MonsterFunction
     /// </summary>
     public static void LockMonster(MirGameInstanceModel gameInstance, int monsterAddr)
     {
-        var memoryUtils = gameInstance!.MemoryUtils!;
+        var memoryUtils = gameInstance!.memoryUtils!;
         memoryUtils.WriteInt(GameState.MirConfig["存怪参数"], monsterAddr);
     }
 
@@ -114,12 +114,12 @@ public static class MonsterFunction
     /// <param name="monsterAddr"></param>
     public static void SlayingMonster(MirGameInstanceModel gameInstance, int monsterAddr)
     {
-        var memoryUtils = gameInstance!.MemoryUtils!;
+        var memoryUtils = gameInstance!.memoryUtils!;
         memoryUtils.WriteInt(GameState.MirConfig["打怪基址"], monsterAddr);
     }
     public static void SlayingMonsterCancel(MirGameInstanceModel gameInstance)
     {
-        var memoryUtils = gameInstance!.MemoryUtils!;
+        var memoryUtils = gameInstance!.memoryUtils!;
         memoryUtils.WriteInt(GameState.MirConfig["打怪基址"], 0);
     }
 }

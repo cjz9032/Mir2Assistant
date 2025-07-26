@@ -59,11 +59,13 @@ namespace Mir2Assistant
                 .WriteTo.File(Path.Combine(Directory.GetCurrentDirectory(), "logs\\app_.log"), rollingInterval: RollingInterval.Day)
                 .WriteTo.Debug()
                 .CreateLogger();
-                
+
             Log.Information("应用程序启动");
             HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // 注册热键
             Log.Debug("已注册热键: Delete");
             RefreshDataGrid();
+            // todo 目前还好, 就是自动的runner对所有生效
+            autoAtBackgroundFast();
         }
 
         private void LoadAccountList()
@@ -269,6 +271,7 @@ namespace Mir2Assistant
                         gameInstance.MirBaseAddress = process.MainModule!.BaseAddress;
                         gameInstance.mirVer = process.MainModule?.FileVersionInfo?.FileVersion;
                         gameInstance.MirThreadId = (uint)process.Threads[0].Id;
+                        gameInstance.memoryUtils = new MemoryUtils(gameInstance);
                                                 
                         Log.Debug("加载DLL到游戏进程");
                         DllInject.loadDll(gameInstance);
@@ -281,20 +284,17 @@ namespace Mir2Assistant
                       
 
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
-                        gameInstance.AssistantForm.Show();
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
-                               // 如果是主控，显示辅助窗口
+                        // 如果是主控，显示辅助窗口
                         if (!account.IsMainControl)
                         {
-                            gameInstance.AssistantForm.WindowState = FormWindowState.Minimized;
+                            gameInstance.AssistantForm.Show();
                         }
                         Log.Information("辅助窗口已显示，账号: {Account}", account.Account);
                 
                         await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                         await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
-                        // TODO 临时搞一把 还是要后台
-                        gameInstance.RefreshAll();
                         if (gameInstance.CharacterStatus.CurrentHP == 0)
                         {
                             RestartGameProcess(account);
@@ -440,7 +440,6 @@ namespace Mir2Assistant
             // processTasks();
             autoAtBackground();
             autoForeGround();
-            autoAtBackgroundFast();
         }
         private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {

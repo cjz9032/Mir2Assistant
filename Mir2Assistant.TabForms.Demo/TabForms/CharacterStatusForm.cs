@@ -106,7 +106,7 @@ namespace Mir2Assistant.TabForms.Demo
                 SendMirCall.Send(GameInstance!, 3022, data);
                 await Task.Delay(200);
                 // var addr = GameInstance!.MemoryUtils!.GetMemoryAddress(item.addr);
-                GameInstance!.MemoryUtils!.WriteByte(item.addr, 0);
+                GameInstance!.memoryUtils!.WriteByte(item.addr, 0);
                 
                 await Task.Delay(700);
             }

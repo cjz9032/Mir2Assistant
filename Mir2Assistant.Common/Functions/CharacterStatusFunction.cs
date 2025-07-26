@@ -12,14 +12,14 @@ public static class CharacterStatusFunction
 {
     public static void GetUsedItemInfo(MirGameInstanceModel gameInstance)
     {
-        var bagBaseAddr = gameInstance!.MemoryUtils!.ReadToInt(0x00679940);
+        var bagBaseAddr = gameInstance!.memoryUtils!.ReadToInt(0x00679940);
         ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
     }
 
     public static void GetInfo(MirGameInstanceModel gameInstance)
     {
         var status = gameInstance.CharacterStatus!;
-        var memoryUtils = gameInstance.MemoryUtils!;
+        var memoryUtils = gameInstance.memoryUtils!;
 
 
         status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x34, 0));
@@ -39,7 +39,7 @@ public static class CharacterStatusFunction
     public static void FastUpdateXY(MirGameInstanceModel gameInstance)
     {
         var status = gameInstance.CharacterStatus!;
-        var memoryUtils = gameInstance.MemoryUtils!;
+        var memoryUtils = gameInstance.memoryUtils!;
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
         status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
     }

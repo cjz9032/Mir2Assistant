@@ -22,7 +22,7 @@ public static class SkillFunction
         Task.Run(() =>
         {
             gameInstance.Skills.Clear();
-            var memoryUtils = gameInstance!.MemoryUtils!;
+            var memoryUtils = gameInstance!.memoryUtils!;
             var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, 0);
             while (memoryUtils.ReadToInt(addr) != 0)
             {

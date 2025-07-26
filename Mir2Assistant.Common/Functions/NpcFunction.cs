@@ -46,7 +46,7 @@ namespace Mir2Assistant.Common.Functions
             gameInstance.TalkCmds.Clear();
             act();
 
-            var memoryUtil = gameInstance!.MemoryUtils!;
+            var memoryUtil = gameInstance!.memoryUtils!;
             var base2 = memoryUtil.GetMemoryAddress(GameState.MirConfig["对话框基址"], 0);
             var prevAddr2 = memoryUtil.GetMemoryAddress(base2) + 0xC40;
             var prevAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
@@ -159,7 +159,7 @@ namespace Mir2Assistant.Common.Functions
             // 盲选
             for (int i = 0; i < count; i++)
             {
-                var memoryUtils = gameInstance!.MemoryUtils!;
+                var memoryUtils = gameInstance!.memoryUtils!;
                 var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
                 memoryUtils.WriteInt(addr, i);
                 await Task.Delay(300);
@@ -230,7 +230,7 @@ namespace Mir2Assistant.Common.Functions
                     item.Id
                 );
                 SendMirCall.Send(gameInstance!, 3022, data);
-                gameInstance!.MemoryUtils!.WriteByte(item.addr, 0);
+                gameInstance!.memoryUtils!.WriteByte(item.addr, 0);
                 await Task.Delay(500);
                 return itemCopy;
             }
@@ -410,7 +410,7 @@ namespace Mir2Assistant.Common.Functions
                     return;
                 }
 
-                var memoryUtils = gameInstance.MemoryUtils!;
+                var memoryUtils = gameInstance.memoryUtils!;
 
               
 

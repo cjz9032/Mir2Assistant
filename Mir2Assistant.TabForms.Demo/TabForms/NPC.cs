@@ -78,7 +78,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var memoryUtils = GameInstance!.MemoryUtils!;
+            var memoryUtils = GameInstance!.memoryUtils!;
 
 
             var scrollOffset = listBox1.TopIndex;
