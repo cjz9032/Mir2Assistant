@@ -505,6 +505,8 @@ namespace Mir2Assistant
             }
             // 买衣服和武器
             await buyBasicWeaponClothes(instanceValue, _cancellationToken);
+            // trigger takeon 
+            await NpcFunction.autoReplaceEquipment(instanceValue);
             // 修衣服和武器
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
         }
@@ -895,74 +897,7 @@ namespace Mir2Assistant
                                 }
                             }
                         }
-                        // 替换装备, 如果失败就不做 
-                        // todo 后续修理要避免冲突
-                        var bagItems = instance.Value.Items;
-                        foreach (var itemWithIndex in CharacterStatus.useItems.Select((item, index) => new { item, index }))
-                        {
-                            var item = itemWithIndex.item;
-                            var index = itemWithIndex.index;
-                            // TODO 装备评分
-                            // 先非常简略从背包找乌木剑, 并且手上是木剑, 后面再优化
-                            if (item.Name == "木剑")
-                            {
-                                var final = bagItems.Where(o => o.Name == "乌木剑" && !o.IsLowDurability).FirstOrDefault();
-                                if (final != null)
-                                {
-                                    nint toIndex = index;
-                                    nint bagGridIndex = final.Index;
-                                    SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
-                                    await Task.Delay(800);
-                                    ItemFunction.ReadBag(instance.Value);
-                                }
-                            }
-                            if (item.IsEmpty)
-                            {
-                                // 从bags里找装备, 要符合条件
-                                // 1.index->stdmode
-                                // 2.not IsLowDurability
-                                // 3.能携带, 目前只看等级, reqType  // todo 更多类型,以及携带策略可能要搭配
-                                // 4.TODO 负重腕力等, 先不管
-                                // 5. 排序等级第一名, 剩余持久度第一名
-                                var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
-                                // && !o.IsLowDurability
-                                && o.reqType == 0
-                                && o.reqPoints <= CharacterStatus.Level
-                                ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
-                                if (final != null)
-                                {
-                                    // 装回检查的位置
-                                    nint toIndex = index;
-                                    nint bagGridIndex = final.Index;
-                                    SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
-                                    await Task.Delay(800);
-                                    ItemFunction.ReadBag(instance.Value);
-                                }
-                            }
-                            else
-                            {
-                                // 如果发现比身上更NB的,需要比较
-                                // 目前只比较req 0(等级) 和 reqp 
-                                var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
-                                && o.reqType == 0
-                                && o.reqPoints <= CharacterStatus.Level
-                                && o.reqPoints > item.reqPoints
-                                ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
-
-                                if (final != null)
-                                {
-                                    // 装回检查的位置
-                                    nint toIndex = index;
-                                    nint bagGridIndex = final.Index;
-                                    SendMirCall.Send(instance.Value, 3021, new nint[] { bagGridIndex, toIndex });
-                                    await Task.Delay(800);
-                                    ItemFunction.ReadBag(instance.Value);
-
-                                }
-
-                            }
-                        }
-
+                        await NpcFunction.autoReplaceEquipment(instance.Value);
                         // 找红药
                         if (CharacterStatus.CurrentHP <= 15)
                         {

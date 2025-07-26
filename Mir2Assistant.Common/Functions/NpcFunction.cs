@@ -301,7 +301,7 @@ namespace Mir2Assistant.Common.Functions
         public async static Task<bool> CheckExistsInBags(MirGameInstanceModel gameInstance, string name)
         {
             var item = gameInstance.Items.Where(o => o.Name == name).FirstOrDefault();
-            
+
             return item != null && !item.IsEmpty;
         }
         /// <summary>
@@ -338,7 +338,7 @@ namespace Mir2Assistant.Common.Functions
                 }
             }
         }
-        
+
         public async static Task BuyEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
         {
             var need = await CheckNeedBuy(gameInstance, position);
@@ -410,28 +410,29 @@ namespace Mir2Assistant.Common.Functions
                 //itemNames = new List<string>{"木剑" , "青铜剑" ,"青铜斧", "降魔"};
 
 
-                // 只检测最高的
                 if (itemNames.Count == 0)
                 {
                     return;
                 }
 
-            
-
-
-                var exists = await CheckExistsInBags(gameInstance, itemNames.Last());
-                if (exists)
-                {
-                    return;
-                }
                 var memoryUtils = gameInstance.MemoryUtils!;
+
+              
 
                 itemNames.Reverse();
                 var menuListLen = 0;
                 // 从高到低找 , 找不到就用前面的
                 for (int i = 0; i < itemNames.Count; i++)
                 {
-                    nint[] data = MemoryUtils.PackStringsToData(itemNames[i]);
+
+                    // 已经检测过存在了, 只看是否为空先
+                    var name = itemNames[i];
+                    var exists = await CheckExistsInBags(gameInstance, name);
+                    if (exists)
+                    {
+                        continue;
+                    }
+                    nint[] data = MemoryUtils.PackStringsToData(name);
                     SendMirCall.Send(gameInstance, 3005, data);
                     await Task.Delay(800);
                     // 判断是否存在
@@ -452,6 +453,76 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(300);
                 SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
                 await Task.Delay(500);
+            }
+        }
+
+        public async static Task autoReplaceEquipment(MirGameInstanceModel instance)
+        {
+            var CharacterStatus = instance.CharacterStatus;
+            var bagItems = instance.Items;
+            foreach (var itemWithIndex in CharacterStatus.useItems.Select((item, index) => new { item, index }))
+            {
+                var item = itemWithIndex.item;
+                var index = itemWithIndex.index;
+                // TODO 装备评分
+                // 先非常简略从背包找乌木剑, 并且手上是木剑, 后面再优化
+                if (item.Name == "木剑")
+                {
+                    var final = bagItems.Where(o => o.Name == "乌木剑" && !o.IsLowDurability).FirstOrDefault();
+                    if (final != null)
+                    {
+                        nint toIndex = index;
+                        nint bagGridIndex = final.Index;
+                        SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
+                        await Task.Delay(800);
+                        ItemFunction.ReadBag(instance);
+                    }
+                }
+                if (item.IsEmpty)
+                {
+                    // 从bags里找装备, 要符合条件
+                    // 1.index->stdmode
+                    // 2.not IsLowDurability
+                    // 3.能携带, 目前只看等级, reqType  // todo 更多类型,以及携带策略可能要搭配
+                    // 4.TODO 负重腕力等, 先不管
+                    // 5. 排序等级第一名, 剩余持久度第一名
+                    var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
+                    // && !o.IsLowDurability
+                    && o.reqType == 0
+                    && o.reqPoints <= CharacterStatus.Level
+                    ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
+                    if (final != null)
+                    {
+                        // 装回检查的位置
+                        nint toIndex = index;
+                        nint bagGridIndex = final.Index;
+                        SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
+                        await Task.Delay(800);
+                        ItemFunction.ReadBag(instance);
+                    }
+                }
+                else
+                {
+                    // TODO 如果发现比身上更NB的,需要比较按职业
+                    // 目前只比较req 0(等级) 和 reqp 
+                    var final = bagItems.Where(o => o.stdModeToUseItemIndex.Contains((byte)index)
+                    && o.reqType == 0
+                    && o.reqPoints <= CharacterStatus.Level
+                    && o.reqPoints > item.reqPoints
+                    ).OrderByDescending(o => o.reqPoints).ThenByDescending(o => o.Duration).FirstOrDefault();
+
+                    if (final != null)
+                    {
+                        // 装回检查的位置
+                        nint toIndex = index;
+                        nint bagGridIndex = final.Index;
+                        SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
+                        await Task.Delay(800);
+                        ItemFunction.ReadBag(instance);
+
+                    }
+
+                }
             }
         }
     }
