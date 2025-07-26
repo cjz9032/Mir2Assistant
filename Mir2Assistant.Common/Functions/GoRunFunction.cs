@@ -650,25 +650,18 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
-                    // todo 如果距离超过1 就需要寻路 应该是检测障碍, 先不做
-                    // if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
-                    // {
-                    //     // 暂时就给1了
-                    //     await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
-                    // }
-                    // 攻击
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
                     while (true)
                     {
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
-                        // 注意判断距离 可能会跑
-                        if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
-                        {
-                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
-                        }
+                        // 注意判断距离 可能会跑 测距
+                        // if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 2)
+                        // {
+                        //     MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                        //     await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
+                        // }
                         await Task.Delay(200);
                         if (ani.isDead || monTried > 150)
                         {
