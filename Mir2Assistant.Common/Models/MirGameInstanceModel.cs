@@ -6,6 +6,7 @@ namespace Mir2Assistant.Common.Models;
 
 public class MirGameInstanceModel
 {
+    public bool IsBotRunning { get; set; }
     public int MirPid { get; set; } //游戏pid
     public int spellLastTime { get; set; } //技能 cd
     public int eatItemLastTime { get; set; } //吃物品 cd
@@ -86,7 +87,8 @@ public class MirGameInstanceModel
         TalkCmds.Clear();
         MapObstacles.Clear();
         CharacterStatus = new CharacterStatusModel();
-        AccountInfo = new GameAccountModel();
+        // 别销毁
+        //AccountInfo = new GameAccountModel();
         MirPid = 0;
         spellLastTime = 0;
         eatItemLastTime = 0;

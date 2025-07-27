@@ -575,6 +575,9 @@ public static class GoRunFunction
 
     public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
     {
+        if(instanceValue.CharacterStatus!.CurrentHP == 0){
+            return false;
+        }
         var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
@@ -776,6 +779,14 @@ public static class GoRunFunction
           int retries = 0
         )
     {
+        if (cancellationToken.IsCancellationRequested)
+        {
+            return false;
+        }
+        if (GameInstance.CharacterStatus!.CurrentHP == 0)
+        {
+            return false;
+        }
         CharacterStatusFunction.GetInfo(GameInstance!);
         MonsterFunction.ReadMonster(GameInstance!);
 
@@ -833,6 +844,14 @@ public static class GoRunFunction
             {
                 return false;
             }
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return false;
+            }
+            if (GameInstance.CharacterStatus!.CurrentHP == 0)
+            {
+                return false;
+            }
             // todo 法师暂时不要砍了 要配合2边一起改
             if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
             {
@@ -872,6 +891,9 @@ public static class GoRunFunction
             var maxed = 9;
             while (true)
             {
+                if(GameInstance.CharacterStatus!.CurrentHP == 0){
+                    return false;
+                }
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return false;
@@ -1080,7 +1102,7 @@ public static class GoRunFunction
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
         .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
-        .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.8))
+        .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.7))
         .FirstOrDefault();
 
         if (people == null)
@@ -1115,7 +1137,7 @@ public static class GoRunFunction
     {
         // todo 解包再吃
         //  for low hp
-        if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.5)) // 0.5避免浪费治疗
+        if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4)) // 0.5避免浪费治疗
         {
             // 找红药 金创药(小量) 金创药(中量) 强效金创药 太阳水
             var items = new List<string> { "金创药(小量)", "金创药(中量)", "强效金创药", "太阳水" };
@@ -1139,7 +1161,7 @@ public static class GoRunFunction
         }
 
         // for low mp
-        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 1.2)
+        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.6 || GameInstance.CharacterStatus.CurrentMP < 10)
         {
             // 找蓝药 太阳水
             var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };

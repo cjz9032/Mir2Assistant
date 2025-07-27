@@ -181,7 +181,7 @@ namespace Mir2Assistant.Common.Functions
             for (int i = 0; i < count; i++)
             {
                 SendMirCall.Send(gameInstance, 3010, data);
-                await Task.Delay(300);
+                await Task.Delay(800);
             }
         }
 
@@ -193,7 +193,7 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public static void EatIndexItem(MirGameInstanceModel gameInstance, int idx)
         {
-            if (gameInstance.eatItemLastTime + 800 > Environment.TickCount)
+            if (gameInstance.eatItemLastTime + 3000 > Environment.TickCount)
             {
                 return;
             }
