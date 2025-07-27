@@ -625,11 +625,11 @@ namespace Mir2Assistant
                 }
                 try
                 {
-                    if(!instance.IsAttached){
+                    instance.IsBotRunning = true;
+                    if (!instance.IsAttached){
                         Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
                         return;
                     }
-                    instance.IsBotRunning = true;
                     Log.Information("开始处理实例 {Account} 的任务", instance.AccountInfo?.Account);
                     // 查看当前出生点
                     var instanceValue = instance;
@@ -924,8 +924,8 @@ namespace Mir2Assistant
                 finally
                 {
                     Log.Information("完成处理实例 {Account} 的任务", instance.AccountInfo?.Account);
-                    instance.IsBotRunning = false;
                     await Task.Delay(3000);
+                    instance.IsBotRunning = false;
                     processTasks();
                 }
             });
