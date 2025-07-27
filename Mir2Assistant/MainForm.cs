@@ -66,14 +66,14 @@ namespace Mir2Assistant
             // todo 目前还好, 就是自动的runner对所有生效
             autoAtBackgroundFast();
             autoAtBackground();
-            RefreshDataGrid();
-            //Task.Run(async () => {
-            //    while (true)
-            //    {
-            //        this.Invoke(new Action(() => RefreshDataGrid()));
-            //        await Task.Delay(30_000);
-            //    }
-            //});
+            // RefreshDataGrid();
+            Task.Run(async () => {
+               while (true)
+               {
+                   this.Invoke(new Action(() => RefreshDataGrid()));
+                   await Task.Delay(30_000);
+               }
+            });
           
         }
 
@@ -293,8 +293,8 @@ namespace Mir2Assistant
                         // 如果是主控，显示辅助窗口
                         if (account.IsMainControl)
                         {
-                            gameInstance.AssistantForm.Show();
-                            gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
+                            // gameInstance.AssistantForm.Show();
+                            // gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
                         }
                 
                         await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
