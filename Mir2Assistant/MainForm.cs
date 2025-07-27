@@ -66,13 +66,14 @@ namespace Mir2Assistant
             // todo 目前还好, 就是自动的runner对所有生效
             autoAtBackgroundFast();
             autoAtBackground();
-            Task.Run(async () => {
-                while (true)
-                {
-                    this.Invoke(new Action(() => RefreshDataGrid()));
-                    await Task.Delay(30_000);
-                }
-            });
+            RefreshDataGrid();
+            //Task.Run(async () => {
+            //    while (true)
+            //    {
+            //        this.Invoke(new Action(() => RefreshDataGrid()));
+            //        await Task.Delay(30_000);
+            //    }
+            //});
           
         }
 
@@ -885,7 +886,7 @@ namespace Mir2Assistant
                         // 道士 544, 560
                         // 武士 107, 316
                         // 魔法 314, 474
-                        if (CharacterStatus.Level >= 3)
+                        if (CharacterStatus.Level >= 1)
                         {
                             // todo 跨地图
                             // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 282, 636, "", 10);
