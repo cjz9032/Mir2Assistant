@@ -961,7 +961,7 @@ namespace Mir2Assistant
                                 return;
                             }
                             Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
-                            instance.RefreshAll();
+                            // instance.RefreshAll();
                             // todo ref方法 避免重复调用
                             var CharacterStatus = instance.CharacterStatus;
                             // 死亡 判断有没怪物
@@ -1030,10 +1030,14 @@ namespace Mir2Assistant
             {
         
                 var instances = GameState.GameInstances;
-                instances.ForEach(instance =>
+                instances.ForEach(async instance =>
                 {
                     try 
                     {
+                        // 添加随机延迟 避免冲突
+                        var rnd = new Random();
+                        var delay = rnd.Next(0, 300);
+                        await Task.Delay(delay);
                         if (!instance.IsAttached)
                         {
                             return;
