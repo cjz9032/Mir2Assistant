@@ -293,8 +293,8 @@ namespace Mir2Assistant
                         // 如果是主控，显示辅助窗口
                         if (account.IsMainControl)
                         {
-                            // gameInstance.AssistantForm.Show();
-                            // gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
+                            gameInstance.AssistantForm.Show();
+                            gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
                         }
                 
                         await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
@@ -961,7 +961,7 @@ namespace Mir2Assistant
                                 return;
                             }
                             Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
-                            // instance.RefreshAll();
+                            instance.RefreshAll();
                             // todo ref方法 避免重复调用
                             var CharacterStatus = instance.CharacterStatus;
                             // 死亡 判断有没怪物
