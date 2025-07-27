@@ -4,6 +4,27 @@
 #include "MinHook.h"
 #include <Windows.h>
 #include "login.h"
+#include <random>
+#include <string>
+
+// 生成随机字符串的函数
+std::wstring GenerateRandomString(int length) {
+    const wchar_t charset[] = L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const int charset_size = sizeof(charset) / sizeof(charset[0]) - 1;
+    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, charset_size - 1);
+    
+    std::wstring result;
+    result.reserve(length);
+    
+    for (int i = 0; i < length; ++i) {
+        result += charset[dis(gen)];
+    }
+    
+    return result;
+}
 
 typedef void (*OriginalFuncType)(void);
 OriginalFuncType originalFunc1 = NULL;
@@ -19,6 +40,7 @@ OriginalFuncType originalFunc8 = NULL;
 OriginalFuncType originalFunc9 = NULL;
 OriginalFuncType originalFunc10 = NULL;
 OriginalFuncType originalFunc11 = NULL;
+OriginalFuncType originalFunc12 = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -195,6 +217,31 @@ __declspec(naked) void HookFunction7()
 // 00650312        mov         edx,654720;'物品被卖出。'
 // 0065034C        mov         edx,654760;'金币不足。'
 // 0065015B        mov         edx,65466C;'你不能修理这个物品'
+
+// 随机字符串生成
+DelphiString g_BiosString = { -1, 30 };  // 初始化基本结构
+
+void InitializeBiosString() {
+    std::wstring randomStr = GenerateRandomString(30);  // 生成30个字符
+    g_BiosString.length = 30;
+    wcscpy_s(g_BiosString.data, randomStr.c_str());
+}
+
+// BIOS信息伪造
+// ZC.H+243135 - 8D 45 9C              - lea eax,[ebp-64]
+// ZC.H+243138 - E8 532AFFFF           - call ZC.H+235B90
+// ZC.H+24313D - 8B 45 9C              - mov eax,[ebp-64]
+// ZC.H+243140 - 8D 55 F0              - lea edx,[ebp-10]
+__declspec(naked) void BiosFake()
+{
+    __asm {
+        lea eax, g_BiosString
+        add eax, 8  // 跳过 refCount(4字节) 和 length(4字节)，直接指向 data
+        jmp originalFunc12
+    }
+}
+
+
 __declspec(naked) void SkipPopup()
 {
     __asm {
@@ -300,6 +347,15 @@ bool InstallHooks()
         }
     }
 
+    // 12 BIOS信息伪造
+    DWORD targetAddress12 = 0x243140 + (DWORD)GetModuleHandle(L"ZC.H");
+    if (MH_CreateHook((LPVOID)targetAddress12, BiosFake, (LPVOID*)&originalFunc12) != MH_OK)
+    {
+        printf("hook 12 fail\n");
+        return false;
+    }
+    
+
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {
         printf("enable all hooks fail\n");
@@ -325,14 +381,15 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
+        InitializeBiosString();  // 初始化随机字符串
         InstallHooks();
-        break;  // 添加 break
+        break;
     case DLL_THREAD_ATTACH:
-        break;  // 添加 break
+        break;
     case DLL_THREAD_DETACH:
-        break;  // 添加 break
+        break;
     case DLL_PROCESS_DETACH:
-        UninitHook();  // 移到这里
+        UninitHook();
         break;
     }
     return TRUE;

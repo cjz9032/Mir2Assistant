@@ -1,0 +1,42 @@
+ZC.H+235BC5          - 0019F764,ZC.H+235D6A,0019F75C,035F062F,...
+ZC.H+24313D          - 0019F770,ZC.H+243248,0019F864,0019F86C,...
+ZC.H+2421BC          - 0019FCE4,ZC.H+2421EC,0019FCA4,028E50B0,...
+ZC.H+13BE29          - ZC.H+139E1C,ZC.H+13BB87,02983488,0019FCDC,...
+ZC.H+13B399          - ZC.H+139902,0019FE4C,ZC.H+13BB22,00000401,...
+ZC.H+13B944          - 0019FE30,ZC.H+13B94E,0019FD00,035F062F,...
+
+䠸䅁䉈䅚††††††1.70MAG B460M MORTAR (MS-7C82)07C8210_KA1C156308
+
+
+前2层
+ZC.H+243135 - 8D 45 9C              - lea eax,[ebp-64]
+ZC.H+243138 - E8 532AFFFF           - call ZC.H+235B90
+ZC.H+24313D - 8B 45 9C              - mov eax,[ebp-64]
+ZC.H+243140 - 8D 55 F0              - lea edx,[ebp-10]
+
+
+GetIdeSerialNumber
+    goto 00634F0E '\\.\PhysicalDrive0'
+    goto 00634F39 '\\.\PhysicalDrive0'
+stack
+
+
+function GetHWID(): string;
+var
+  SMBios: TSMBios;
+begin
+  Result := GetIdeSerialNumber(0);
+
+
+procedure TfrmMain.SendRunLogin;
+var
+  sSendMsg: string;
+  HardwareHeader: THardwareHeader;
+
+begin
+{$I '..\Common\Macros\VMPB.inc'}
+  if g_bLoginKey^ then
+  begin
+    HardwareHeader.dwMagicCode := $13F13F13;
+    try
+      Src := Trim(uSMBIOS.GetHWID());
