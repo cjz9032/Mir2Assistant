@@ -672,9 +672,9 @@ public static class GoRunFunction
                 var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
                 var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
                 var huorend = 0;
-                if (otherPeople != null)
+                if (otherPeople != null && otherPeople.CurrentHP > 0)
                 {
-                    instanceValue.GameInfo($"发现活人{otherPeople.Name} 停下");
+                    instanceValue.GameInfo($"发现活人{otherPeople.Name}  hp {otherPeople.CurrentHP} level {otherPeople.Level} 停下");
                     await Task.Delay(1000);
                     huorend++;
                     if(huorend > 15){
@@ -1084,11 +1084,8 @@ public static class GoRunFunction
     public static bool CapbilityOfHeal(MirGameInstanceModel GameInstance)
     {
         // role
-        if (GameInstance.AccountInfo.role != RoleType.taoist)
-        {
-            return false;
-        }
-        if (GameInstance.CharacterStatus!.Level < 7)
+        if (GameInstance.AccountInfo.role != RoleType.taoist
+        || GameInstance.CharacterStatus!.Level < 7)
         {
             return false;
         }
@@ -1107,18 +1104,21 @@ public static class GoRunFunction
         // 组队成员
         var instances = GameState.GameInstances;
 
-        var actNames = instances.Select(o => o.AccountInfo.CharacterName).ToList();
-
         // 添加别的客户端的怪物信息 -- todo 远程机器信息 开socket连接
         var allMonsInClients = new List<MonsterModel>();
         foreach (var instance in instances)
         {
-            allMonsInClients.AddRange(instance.Monsters.Values);
+            // 只取这个实例里对应自己账号的玩家信息和宝宝信息
+            var selfMonsters = instance.Monsters.Values.Where(m => 
+                (m.TypeStr == "玩家" && m.Name == instance.AccountInfo.CharacterName) ||  // 玩家自己
+                (m.TypeStr == "(怪)" && m.Name.Contains(instance.AccountInfo.CharacterName))  // 玩家的宝宝
+            );
+            allMonsInClients.AddRange(selfMonsters);
         }
 
         var people = allMonsInClients.Where(o =>
             o.CurrentHP > 0 &&
-            !o.isDead && actNames.Contains(o.Name)
+            !o.isDead
             // 低血量
             && ((o.CurrentHP < o.MaxHP * 0.8) || o.CurrentHP < 10)
             // 距离足够

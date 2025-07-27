@@ -48,14 +48,19 @@ public static class MonsterFunction
                     monster = new MonsterModel();
                     isNew = true;
                 }
+                // name为空说明无效
+                var myName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0));
+                if (string.IsNullOrEmpty(myName))
+                {
+                    // new回被过滤, 旧也会因旧id销毁
+                    continue;
+                }
+
                 monster.UpdateId = gameInstance.MonstersUpdateId;
                 monster.Id = id;
                 monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr + 0x18); // todo confirm
                 monster.Addr = monsterAddr;
-                if (string.IsNullOrEmpty(monster.Name))
-                {
-                    monster.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0));
-                }
+                monster.Name = myName;
 
                 // todo side effect
                 // memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
