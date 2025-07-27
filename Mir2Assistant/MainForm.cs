@@ -907,7 +907,7 @@ namespace Mir2Assistant
                                     var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
 
-                                    return meats.Count > 32 && !isLow && !isLowHpMP;
+                                    return meats.Count > 32 || isLow || isLowHpMP;
                                 });
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }
