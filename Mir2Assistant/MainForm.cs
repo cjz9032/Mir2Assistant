@@ -948,7 +948,7 @@ namespace Mir2Assistant
                 try 
                 {
                     Log.Debug("开始后台自动处理");
-                    await Task.Delay(15_000);
+                    await Task.Delay(20_000);
                     var instances = GameState.GameInstances;
 
                     instances.ForEach(async instance =>
@@ -970,7 +970,7 @@ namespace Mir2Assistant
                                 // 复活 重启
                                 // 尝试小退
                                 await GoRunFunction.RestartByToSelectScene(instance);
-                                await Task.Delay(3000);
+                                await Task.Delay(2000);
                                 CharacterStatusFunction.GetInfo(instance);
                                 // check hp -- 其实还不起作用
                                 if (CharacterStatus.CurrentHP == 0)
