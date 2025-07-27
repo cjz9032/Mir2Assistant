@@ -683,7 +683,7 @@ public static class GoRunFunction
                     continue;
                 }
                 // todo 法师暂时不要砍了 要配合2边一起改
-                if (instanceValue.AccountInfo.role == RoleType.mage)
+                if (instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus!.Level < 11)
                 {
                     break;
                 }
