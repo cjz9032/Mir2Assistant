@@ -1071,7 +1071,7 @@ public static class GoRunFunction
         {
             return false;
         }
-        if (GameInstance.spellLastTime + 1100 > Environment.TickCount)
+        if (GameInstance.spellLastTime + 1500 > Environment.TickCount)
         {
             return false;
         }
@@ -1096,7 +1096,7 @@ public static class GoRunFunction
     {
         if (!CapbilityOfHeal(GameInstance))
         {
-            GameInstance.GameDebug("角色无法治疗他人，跳过治疗检查");
+            // GameInstance.GameDebug("角色无法治疗他人，跳过治疗检查");
             return;
         }
         GameInstance.GameDebug("开始检查需要治疗的目标");
@@ -1120,7 +1120,7 @@ public static class GoRunFunction
             o.CurrentHP > 0 &&
             !o.isDead
             // 低血量
-            && ((o.CurrentHP < o.MaxHP * 0.8) || o.CurrentHP < 10)
+            && ((o.CurrentHP < o.MaxHP * 0.7) || o.CurrentHP < 10)
             // 距离足够
             && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
             && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
@@ -1167,7 +1167,7 @@ public static class GoRunFunction
         var maxHp = GameInstance.CharacterStatus.MaxHP;
         var mp = GameInstance.CharacterStatus.CurrentMP;
         var maxMp = GameInstance.CharacterStatus.MaxMP;
-        GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
+        // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
         if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4)) // 0.5避免浪费治疗
