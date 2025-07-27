@@ -105,7 +105,7 @@ namespace Mir2Assistant.Common.Models
                 {
                     return result;
                 }
-                return new byte[255];
+                return [];
             }
         }
 
