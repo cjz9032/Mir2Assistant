@@ -1030,14 +1030,10 @@ namespace Mir2Assistant
             {
         
                 var instances = GameState.GameInstances;
-                instances.ForEach(async instance =>
+                instances.ForEach(instance =>
                 {
                     try 
                     {
-                        // 添加随机延迟 避免冲突
-                        var rnd = new Random();
-                        var delay = rnd.Next(0, 300);
-                        await Task.Delay(delay);
                         if (!instance.IsAttached)
                         {
                             return;

@@ -58,6 +58,10 @@ namespace Mir2Assistant.Common.Functions
         }
         public static void ReadDrops(MirGameInstanceModel gameInstance)
         {   
+            if (gameInstance.isRefreshing)
+            {
+                return;
+            }
             // drops
             // -- looks +8
             var memoryUtils = gameInstance!.memoryUtils!;
@@ -98,6 +102,10 @@ namespace Mir2Assistant.Common.Functions
 
         public static void ReadBag(MirGameInstanceModel gameInstance)
         {
+            if (gameInstance.isRefreshing)
+            {
+                return;
+            }
             // var sw = Stopwatch.StartNew();
             ReadItems(gameInstance, 0x007531E8, gameInstance.Items);
             ReadItems(gameInstance, 0x007531E8 - 0x80 * 6, gameInstance.QuickItems);

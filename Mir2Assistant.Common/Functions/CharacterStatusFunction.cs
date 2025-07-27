@@ -12,12 +12,20 @@ public static class CharacterStatusFunction
 {
     public static void GetUsedItemInfo(MirGameInstanceModel gameInstance)
     {
+        if (gameInstance.isRefreshing)
+        {
+            return;
+        }
         var bagBaseAddr = gameInstance!.memoryUtils!.ReadToInt(0x00679940);
         ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
     }
 
     public static void GetInfo(MirGameInstanceModel gameInstance)
     {
+        if (gameInstance.isRefreshing)
+        {
+            return;
+        }
         var status = gameInstance.CharacterStatus!;
         var memoryUtils = gameInstance.memoryUtils!;
 
