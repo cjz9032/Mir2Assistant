@@ -613,9 +613,18 @@ public static class GoRunFunction
                 .MinBy(x => x.dis)
                 .i;
         }
+        // 巡逻太多次了 有问题
+        var patrolTried = 0;
         while (true)
         {
-
+            instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
+            await Task.Delay(100);
+            patrolTried++;
+            if (patrolTried > 200)
+            {
+                instanceValue.GameWarning("巡逻攻击失败，巡逻点 {CurP}", curP);
+                return false;
+            }
             // 不寻路模式, 其实就是只打怪, 需要抽象
 
             // 主从模式
@@ -665,9 +674,17 @@ public static class GoRunFunction
                 }
             }
 
+            var monsterTried = 0;
             // 无怪退出
             while (true)
             {
+                await Task.Delay(100);
+                monsterTried++;
+                if (monsterTried > 100)
+                {
+                    instanceValue.GameWarning("怪物攻击失败，巡逻点 {CurP}", curP);
+                    return false;
+                }
                 // 发现活人先停下 并且不是自己人
                 var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
                 var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
@@ -677,7 +694,8 @@ public static class GoRunFunction
                     instanceValue.GameInfo($"发现活人{otherPeople.Name}  hp {otherPeople.CurrentHP} level {otherPeople.Level} 停下");
                     await Task.Delay(1000);
                     huorend++;
-                    if(huorend > 15){
+                    if (huorend > 15)
+                    {
                         break;
                     }
                     continue;
@@ -699,8 +717,8 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
-                    instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}", 
-                ani.Name, ani.X, ani.Y, 
+                    instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
+                ani.Name, ani.X, ani.Y,
                 Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
