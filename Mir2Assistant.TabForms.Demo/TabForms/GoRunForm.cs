@@ -79,7 +79,7 @@ namespace Mir2Assistant.TabForms.Demo
 
         private CancellationTokenSource? _cancellationTokenSource;
 
-        private void button10_Click(object sender, EventArgs e)
+        private void buttonSeek_Click(object sender, EventArgs e)
         {
             if (_cancellationTokenSource != null)
             {
@@ -92,7 +92,7 @@ namespace Mir2Assistant.TabForms.Demo
             Task.Run(async () =>{
                 try
                 {
-                    bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), "", 0);
+                    bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), "", 2);
                     if (pathFound)
                     {
                         Log.Information("寻路任务成功完成。");

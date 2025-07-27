@@ -47,7 +47,7 @@
             label3 = new Label();
             textBox2 = new TextBox();
             label2 = new Label();
-            button10 = new Button();
+            buttonSeek = new Button();
             textBox1 = new TextBox();
             groupBox2 = new GroupBox();
             button11 = new Button();
@@ -238,15 +238,15 @@
             label2.TabIndex = 5;
             label2.Text = "x";
             // 
-            // button10
+            // buttonSeek
             // 
-            button10.Location = new Point(165, 21);
-            button10.Name = "button10";
-            button10.Size = new Size(61, 23);
-            button10.TabIndex = 7;
-            button10.Text = "寻路";
-            button10.UseVisualStyleBackColor = true;
-            button10.Click += button10_Click;
+            buttonSeek.Location = new Point(165, 21);
+            buttonSeek.Name = "buttonSeek";
+            buttonSeek.Size = new Size(61, 23);
+            buttonSeek.TabIndex = 7;
+            buttonSeek.Text = "寻路";
+            buttonSeek.UseVisualStyleBackColor = true;
+            buttonSeek.Click += buttonSeek_Click;
             // 
             // textBox1
             // 
@@ -259,7 +259,7 @@
             // groupBox2
             // 
             groupBox2.Controls.Add(textBox1);
-            groupBox2.Controls.Add(button10);
+            groupBox2.Controls.Add(buttonSeek);
             groupBox2.Controls.Add(label2);
             groupBox2.Controls.Add(textBox2);
             groupBox2.Controls.Add(label3);
@@ -348,7 +348,7 @@
         private Label label3;
         private TextBox textBox2;
         private Label label2;
-        private Button button10;
+        private Button buttonSeek;
         private TextBox textBox1;
         private GroupBox groupBox2;
         private Button button11;

@@ -189,7 +189,7 @@ public static class GoRunFunction
         // 检查起点和终点是否为障碍物
         if (blurRange > 0)
         {
-            List<(int X, int Y, double Distance)> candidatePoints = new List<(int X, int Y, double Distance)>();
+            List<(int X, int Y)> candidatePoints = new List<(int X, int Y)>();
 
             // 以target为中心，在range范围内选取n*n的范围
             for (int y = targetY - blurRange; y <= targetY + blurRange; y++)
@@ -202,17 +202,17 @@ public static class GoRunFunction
                         double distToStart = Math.Sqrt(Math.Pow(x - myX, 2) + Math.Pow(y - myY, 2));
                         double distToTarget = Math.Sqrt(Math.Pow(x - targetX, 2) + Math.Pow(y - targetY, 2));
                         // 综合距离评分：起点距离权重0.7，终点距离权重0.3
-                        double score = nearBlur ?
-                            (99 * distToStart + 0.3 * distToTarget) :  // 近距离优先
-                            (0.3 * distToStart + 99 * distToTarget);   // 远距离优先
+                        //double score = nearBlur ?
+                        //    (99 * distToStart + 0.3 * distToTarget) :  // 近距离优先
+                        //    (0.3 * distToStart + 99 * distToTarget);   // 远距离优先
 
-                        candidatePoints.Add((x, y, score));
+                        candidatePoints.Add((x, y));
                     }
                 }
             }
 
             // 根据综合距离评分排序
-            candidatePoints = candidatePoints.OrderBy(p => p.Distance).ToList();
+            //candidatePoints = candidatePoints.OrderBy(p => p.Distance).ToList();
 
             targetX = -1;
             targetY = -1;
@@ -221,11 +221,11 @@ public static class GoRunFunction
             {
                 // 从前3个点中随机选择一个（如果不足3个则在现有点中随机选择）
                 var random = new Random();
-                var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
-                var selectedPoint = topPoints[random.Next(topPoints.Count)];
+                //var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
+                var selectedPoint = candidatePoints[random.Next(candidatePoints.Count)];
                 targetX = selectedPoint.X;
                 targetY = selectedPoint.Y;
-                gameInstance.GameDebug($"从{topPoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY}), 距离评分: {selectedPoint.Distance:F2}");
+                gameInstance.GameDebug($"从{candidatePoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY})");
             }
 
             if (targetX == -1)
@@ -623,6 +623,10 @@ public static class GoRunFunction
             var (px, py) = (0, 0);
             if (!skipTempCheckMon)
             {
+                if (checker(instanceValue!))
+                {
+                    break;
+                }
                 // 从是跟随
                 if (instanceValue.AccountInfo.IsMainControl)
                 {
@@ -667,10 +671,15 @@ public static class GoRunFunction
                 // 发现活人先停下 并且不是自己人
                 var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
                 var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
+                var huorend = 0;
                 if (otherPeople != null)
                 {
                     instanceValue.GameInfo($"发现活人{otherPeople.Name} 停下");
                     await Task.Delay(1000);
+                    huorend++;
+                    if(huorend > 15){
+                        break;
+                    }
                     continue;
                 }
                 // todo 法师暂时不要砍了 要配合2边一起改
@@ -717,13 +726,13 @@ public static class GoRunFunction
                 {
                     break;
                 }
-                if (px == 0 && py == 0)
-                {
-                    if (checker(instanceValue!))
-                    {
-                        break;
-                    }
+                // if (px == 0 && py == 0)
+                // {
 
+                // }
+                if (checker(instanceValue!))
+                {
+                    break;
                 }
             }
 
@@ -797,6 +806,7 @@ public static class GoRunFunction
         if (GameInstance.CharacterStatus!.CurrentHP == 0)
         {
             GameInstance.GameWarning("角色已死亡，无法执行寻路");
+            await Task.Delay(5_000);
             return false;
         }
         CharacterStatusFunction.GetInfo(GameInstance!);
