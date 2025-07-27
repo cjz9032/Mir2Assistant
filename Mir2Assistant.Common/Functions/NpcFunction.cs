@@ -90,6 +90,7 @@ namespace Mir2Assistant.Common.Functions
 
         public static async Task<string> ClickNPC(MirGameInstanceModel gameInstance, string NpcName)
         {
+            gameInstance.GameDebug("尝试点击NPC: {Name}", NpcName);
             MonsterModel? npc = null;
             if (!await TaskWrapper.Wait(() =>
             {
@@ -97,8 +98,10 @@ namespace Mir2Assistant.Common.Functions
                 return npc != null;
             }))
             {
+                gameInstance.GameWarning("未找到NPC: {Name}", NpcName);
                 return "";
             }
+            gameInstance.GameDebug("找到NPC: {Name}, 位置: ({X}, {Y})", NpcName, npc.X, npc.Y);
             return await ClickNPC(gameInstance, npc!);
         }
 
@@ -109,6 +112,7 @@ namespace Mir2Assistant.Common.Functions
         /// <param name="cmd"></param>
         public static async Task<string> Talk2(MirGameInstanceModel gameInstance, string cmd)
         {
+            gameInstance.GameDebug("执行NPC对话命令: {Command}", cmd);
             return await Talk(gameInstance, () =>
             {
                 nint[] data = MemoryUtils.PackStringsToData(cmd);
@@ -150,7 +154,7 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public async static Task BuyLZ(MirGameInstanceModel gameInstance, string itemName, int count = 2)
         {
-
+            gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", itemName, count);
             nint[] data = MemoryUtils.PackStringsToData(itemName);
             await Talk2(gameInstance!, "@buy");
             await Task.Delay(500);
@@ -159,6 +163,7 @@ namespace Mir2Assistant.Common.Functions
             // 盲选
             for (int i = 0; i < count; i++)
             {
+                gameInstance.GameDebug("执行第 {Index} 次购买", i + 1);
                 var memoryUtils = gameInstance!.memoryUtils!;
                 var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
                 memoryUtils.WriteInt(addr, i);
@@ -195,8 +200,10 @@ namespace Mir2Assistant.Common.Functions
         {
             if (gameInstance.eatItemLastTime + 3000 > Environment.TickCount)
             {
+                gameInstance.GameDebug("物品使用冷却中，跳过使用物品: {Index}", idx);
                 return;
             }
+            gameInstance.GameDebug("使用物品，索引: {Index}", idx);
             gameInstance.eatItemLastTime = Environment.TickCount;
             SendMirCall.Send(gameInstance, 3019, new nint[] { idx });
         }
@@ -212,6 +219,8 @@ namespace Mir2Assistant.Common.Functions
             var item = gameInstance.CharacterStatus.useItems[(int)pos];
             if (!item.IsEmpty)
             {
+                gameInstance.GameDebug("准备脱下装备: {Name}, 位置: {Position}, 耐久: {Duration}/{MaxDuration}", 
+                    item.Name, pos, item.Duration, item.MaxDuration);
                 var itemCopy = new ItemModel
                 {
                     Id = item.Id,
@@ -311,7 +320,7 @@ namespace Mir2Assistant.Common.Functions
                 return;
             }
 
-            Log.Information($"修理{npcName}的{position}装备");
+            gameInstance.GameInfo($"修理{npcName}的{position}装备");
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
             if (pathFound)
             {
@@ -337,7 +346,7 @@ namespace Mir2Assistant.Common.Functions
                 return;
             }
 
-            Log.Information($"购买{npcName}的{position}装备");
+            gameInstance.GameInfo($"购买{npcName}的{position}装备");
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
             if (pathFound)
             {
@@ -451,7 +460,7 @@ namespace Mir2Assistant.Common.Functions
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string npcName, int x, int y, string itemName, int count)
         {
-            Log.Information($"购买药品 {itemName} {count}个");
+            gameInstance.GameInfo($"购买药品 {itemName} {count}个");
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
             if (pathFound)
             {
@@ -466,6 +475,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance)
         {
+            instance.GameDebug("开始检查装备更换");
             var CharacterStatus = instance.CharacterStatus;
             var bagItems = instance.Items;
             foreach (var itemWithIndex in CharacterStatus.useItems.Select((item, index) => new { item, index }))
@@ -474,6 +484,15 @@ namespace Mir2Assistant.Common.Functions
                 var index = itemWithIndex.index;
                 // TODO 装备评分
                 // 先非常简略从背包找乌木剑, 并且手上是木剑, 后面再优化
+                if (!item.IsEmpty)
+                {
+                    instance.GameDebug("检查装备位置 {Index}: {Name}, 耐久: {Duration}/{MaxDuration}", 
+                        index, item.Name, item.Duration, item.MaxDuration);
+                }
+                else
+                {
+                    instance.GameDebug("检查空装备位置 {Index}", index);
+                }
                 if (item.Name == "木剑")
                 {
                     var final = bagItems.Where(o => o.Name == "乌木剑" && !o.IsLowDurability).FirstOrDefault();
@@ -521,6 +540,7 @@ namespace Mir2Assistant.Common.Functions
 
                     if (final != null)
                     {
+                        instance.GameInfo("找到更好的装备: {Name}, 准备更换到位置 {Index}", final.Name, index);
                         // 装回检查的位置
                         nint toIndex = index;
                         nint bagGridIndex = final.Index;

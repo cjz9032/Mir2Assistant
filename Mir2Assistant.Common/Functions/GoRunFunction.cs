@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Serilog; // 新增Serilog引用
 using System.Diagnostics; // 新增Stopwatch引用
+using Mir2Assistant.Common.Utils;
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -29,6 +30,7 @@ public static class GoRunFunction
     /// <param name="UpdateMsg"></param>
     public static void GoRun(MirGameInstanceModel gameInstance, int x, int y, byte direct, byte type)
     {
+        gameInstance.GameDebug("执行移动，目标: ({X}, {Y}), 方向: {Direct}, 类型: {Type}", x, y, direct, type);
         int dir = 0;
         switch (direct)
         {
@@ -125,6 +127,7 @@ public static class GoRunFunction
 
     public static void GoRunAlgorithm(MirGameInstanceModel gameInstance, int x, int y, byte dir, byte steps)
     {
+        gameInstance.GameDebug("执行寻路算法移动，目标: ({X}, {Y}), 方向: {Dir}, 步数: {Steps}", x, y, dir, steps);
         int typePara = 0;
         switch (steps)
         {
@@ -222,20 +225,20 @@ public static class GoRunFunction
                 var selectedPoint = topPoints[random.Next(topPoints.Count)];
                 targetX = selectedPoint.X;
                 targetY = selectedPoint.Y;
-                Log.Debug($"从{topPoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY}), 距离评分: {selectedPoint.Distance:F2}");
+                gameInstance.GameDebug($"从{topPoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY}), 距离评分: {selectedPoint.Distance:F2}");
             }
 
             if (targetX == -1)
             {
                 sw.Stop();
-                Log.Debug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
+                gameInstance.GameDebug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
                 return new List<(byte dir, byte steps)>();
             }
         }
         else if (data[targetY * width + targetX] == 1)
         {
             sw.Stop();
-            Log.Debug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
+            gameInstance.GameDebug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
             return new List<(byte dir, byte steps)>();
         }
 
@@ -252,7 +255,7 @@ public static class GoRunFunction
         // 优化路径 TODO 暂时先不用 费血
         path = OptimizePath(path);
         sw.Stop();
-        Log.Debug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
+        gameInstance.GameDebug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
         return path.Select(p => (p.dir, p.steps)).ToList();
     }
 
@@ -575,7 +578,9 @@ public static class GoRunFunction
 
     public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
     {
+        instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
         if(instanceValue.CharacterStatus!.CurrentHP == 0){
+            instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
             return false;
         }
         var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
@@ -664,7 +669,7 @@ public static class GoRunFunction
                 var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
                 if (otherPeople != null)
                 {
-                    Log.Information($"发现活人{otherPeople.Name} 停下");
+                    instanceValue.GameInfo($"发现活人{otherPeople.Name} 停下");
                     await Task.Delay(1000);
                     continue;
                 }
@@ -685,6 +690,9 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
+                    instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}", 
+                ani.Name, ani.X, ani.Y, 
+                Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
                     while (true)
@@ -728,6 +736,7 @@ public static class GoRunFunction
             .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
             foreach (var drop in drops)
             {
+                instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 999);
                 if (pathFound2)
                 {
@@ -741,6 +750,7 @@ public static class GoRunFunction
             .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
             foreach (var body in bodys)
             {
+                instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
                 bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 999);
                 if (pathFound2)
                 {
@@ -781,10 +791,12 @@ public static class GoRunFunction
     {
         if (cancellationToken.IsCancellationRequested)
         {
+            GameInstance.GameDebug("寻路被取消");
             return false;
         }
         if (GameInstance.CharacterStatus!.CurrentHP == 0)
         {
+            GameInstance.GameWarning("角色已死亡，无法执行寻路");
             return false;
         }
         CharacterStatusFunction.GetInfo(GameInstance!);
@@ -811,7 +823,7 @@ public static class GoRunFunction
         }
 
         stopwatchTotal.Stop();
-        Log.Debug($"寻路: {stopwatchTotal.ElapsedMilliseconds} 毫秒");
+        GameInstance.GameDebug("寻路: {Time} 毫秒", stopwatchTotal.ElapsedMilliseconds);
         if (goNodes.Count == 0)
         {
             // 加个重试次数3次
@@ -819,10 +831,11 @@ public static class GoRunFunction
 
             if (retries < 3)
             {
+                GameInstance.GameWarning("寻路未找到路径，准备第 {Retry} 次重试", retries + 1);
                 return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur, attacksThan, retries + 1);
             }
 
-            Log.Warning($"寻路最终未找到，已重试{retries}次");
+            GameInstance.GameWarning("寻路最终未找到路径，已重试 {Retries} 次", retries);
             return false;
         }
 
@@ -943,7 +956,7 @@ public static class GoRunFunction
 
                         if (jumpPath.Count > 0)
                         {
-                            Log.Debug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
+                            GameInstance.GameDebug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
 
                             // 先走到跳跃点
                             foreach (var pathNode in jumpPath)
@@ -976,7 +989,7 @@ public static class GoRunFunction
                                 // 移除跳过的路径点和对应的位置信息
                                 goNodes.RemoveRange(0, jumpSteps + 1);
                                 nodePositions.RemoveRange(0, jumpSteps + 1);
-                                Log.Debug($"成功跳过{jumpSteps}步");
+                                GameInstance.GameDebug($"成功跳过{jumpSteps}步");
                                 tried = 0;
                                 break;
                             }
@@ -990,7 +1003,7 @@ public static class GoRunFunction
                     if (!isJumpSuccess)
                     {
                         // 失败了怎么办, 只能放弃先了
-                        Log.Warning($"寻路最终未找到 -- 跳点 再次尝试 NB");
+                        GameInstance.GameWarning($"寻路最终未找到 -- 跳点 再次尝试 NB");
                         return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange + 1, nearBlur);
                         // return false;
                     }
@@ -1076,8 +1089,10 @@ public static class GoRunFunction
     {
         if (!CapbilityOfHeal(GameInstance))
         {
+            GameInstance.GameDebug("角色无法治疗他人，跳过治疗检查");
             return;
         }
+        GameInstance.GameDebug("开始检查需要治疗的目标");
         // pick the needed people
         // 组队成员
         var instances = GameState.GameInstances;
@@ -1107,8 +1122,11 @@ public static class GoRunFunction
 
         if (people == null)
         {
+            GameInstance.GameDebug("未找到需要治疗的目标");
             return;
         }
+
+        GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, 2, people.X, people.Y, people.Id);
     }
 
@@ -1135,6 +1153,11 @@ public static class GoRunFunction
 
     public static void TryEatDrug(MirGameInstanceModel GameInstance)
     {
+        var hp = GameInstance.CharacterStatus.CurrentHP;
+        var maxHp = GameInstance.CharacterStatus.MaxHP;
+        var mp = GameInstance.CharacterStatus.CurrentMP;
+        var maxMp = GameInstance.CharacterStatus.MaxMP;
+        GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
         if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4)) // 0.5避免浪费治疗
