@@ -10,9 +10,9 @@ namespace Mir2Assistant.Common.Functions;
 
 public static class CharacterStatusFunction
 {
-    public static void GetUsedItemInfo(MirGameInstanceModel gameInstance)
+    public static void GetUsedItemInfo(MirGameInstanceModel gameInstance, bool force = false)
     {
-        if (gameInstance.isRefreshing)
+        if (gameInstance.isRefreshing && !force)
         {
             return;
         }
@@ -20,9 +20,9 @@ public static class CharacterStatusFunction
         ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
     }
 
-    public static void GetInfo(MirGameInstanceModel gameInstance)
+    public static void GetInfo(MirGameInstanceModel gameInstance, bool force = false)
     {
-        if (gameInstance.isRefreshing)
+        if (gameInstance.isRefreshing && !force)
         {
             return;
         }

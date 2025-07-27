@@ -108,11 +108,11 @@ public class MirGameInstanceModel
             return;
         }
         isRefreshing = true;
-        CharacterStatusFunction.GetInfo(this);
-        CharacterStatusFunction.GetUsedItemInfo(this);
-        MonsterFunction.ReadMonster(this);
-        ItemFunction.ReadBag(this);
-        ItemFunction.ReadDrops(this);
+        CharacterStatusFunction.GetInfo(this, true);
+        CharacterStatusFunction.GetUsedItemInfo(this, true);
+        MonsterFunction.ReadMonster(this, true);
+        ItemFunction.ReadBag(this, true);
+        ItemFunction.ReadDrops(this, true);
         isRefreshing = false;
     }
 }

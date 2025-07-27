@@ -56,9 +56,9 @@ namespace Mir2Assistant.Common.Functions
                 gameInstance.IsReadingItems = false;
             });
         }
-        public static void ReadDrops(MirGameInstanceModel gameInstance)
+        public static void ReadDrops(MirGameInstanceModel gameInstance, bool force = false)
         {   
-            if (gameInstance.isRefreshing)
+            if (gameInstance.isRefreshing && !force)
             {
                 return;
             }
@@ -100,9 +100,9 @@ namespace Mir2Assistant.Common.Functions
 
         }
 
-        public static void ReadBag(MirGameInstanceModel gameInstance)
+        public static void ReadBag(MirGameInstanceModel gameInstance, bool force = false)
         {
-            if (gameInstance.isRefreshing)
+            if (gameInstance.isRefreshing && !force)
             {
                 return;
             }

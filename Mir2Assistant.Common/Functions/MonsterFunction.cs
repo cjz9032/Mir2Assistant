@@ -20,9 +20,9 @@ public static class MonsterFunction
     /// <summary>
     /// 读怪
     /// </summary>
-    public static void ReadMonster(MirGameInstanceModel gameInstance)
+    public static void ReadMonster(MirGameInstanceModel gameInstance, bool force = false)
     {
-        if (gameInstance.isRefreshing)
+        if (gameInstance.isRefreshing && !force)
         {
             return;
         }
