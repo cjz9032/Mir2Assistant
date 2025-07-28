@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using Mir2Assistant.Common;
+using Mir2Assistant.Common.Constants;
 
 namespace Mir2Assistant
 {
@@ -501,9 +502,9 @@ namespace Mir2Assistant
             // 目前只有
             if (instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 9)
             {
-                var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
+                var items = GameConstants.Items.MegaPotions;
                 var exitsQuan = 0;
-                items.ForEach(async item =>
+                items.ForEach(item =>
                 {
                     var bags = GoRunFunction.findIdxInAllItems(instanceValue!, item);
                     if (bags != null)
@@ -512,9 +513,9 @@ namespace Mir2Assistant
                     }
                 });
 
-                if(exitsQuan < 16){
+                if(exitsQuan < GameConstants.Items.buyCount){
                     await NpcFunction.BuyDrugs(instanceValue!, task.npc, task.x, task.y, 
-                     "魔法药(小量)", 16 - exitsQuan
+                    GameConstants.Items.MegaPotions[0] , GameConstants.Items.buyCount - exitsQuan
                     );
                 }
             }
@@ -900,14 +901,19 @@ namespace Mir2Assistant
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
                                 {
                                     // go home
-                                    var meats = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
+                                    // 排除药品, 
+                                    // todo 扔掉红
+                                    var miscs = instanceValue.Items.Where(o => !o.IsEmpty
+                                    && (!GameConstants.Items.MegaPotions.Contains(o.Name))
+                                    && (!GameConstants.Items.HealPotions.Contains(o.Name))
+                                    && (!GameConstants.Items.SuperPotions.Contains(o.Name))
+                                    ).ToList();
                                     // 或者衣服武器破了 // todo 其他再看
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
                                     var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
-
-                                    return meats.Count > 32 || isLow || isLowHpMP;
+                                    return miscs.Count > 32 || isLow || isLowHpMP;
                                 });
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }

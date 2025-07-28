@@ -11,6 +11,7 @@ using System.Xml.Linq;
 using Serilog; // 新增Serilog引用
 using System.Diagnostics; // 新增Stopwatch引用
 using Mir2Assistant.Common.Utils;
+using Mir2Assistant.Common.Constants;
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -1136,7 +1137,7 @@ public static class GoRunFunction
 
         var people = allMonsInClients.Where(o =>
             // not in cd
-            !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + 3000 &&
+            !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + GameConstants.Skills.HealPeopleCD &&
             // 活着
             o.CurrentHP > 0 &&
             !o.isDead
@@ -1158,7 +1159,7 @@ public static class GoRunFunction
         }
 
         GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
-        sendSpell(GameInstance, 2, people.X, people.Y, people.Id);
+        sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
     }
 
@@ -1192,34 +1193,36 @@ public static class GoRunFunction
         // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
-        if ((GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4)) // 0.5避免浪费治疗
+        if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4) // 0.5避免浪费治疗
         {
-            // 找红药 金创药(小量) 金创药(中量) 强效金创药 太阳水
-            var items = new List<string> { "金创药(小量)", "金创药(中量)", "强效金创药", "太阳水" };
-            int resIdx = -1;
-            foreach (var item in items)
-            {
-                var idx = findIdxInAllItems(GameInstance, item);
-                if (idx != null)
+
+                var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
+                var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.HealPotions;
+                int resIdx = -1;
+                foreach (var item in items)
                 {
-                    resIdx = idx[0];
-                    break;
+                    var idx = findIdxInAllItems(GameInstance, item);
+                    if (idx != null)
+                    {
+                        resIdx = idx[0];
+                        break;
+                    }
                 }
-            }
 
-            if (resIdx == -1)
-            {
-                return;
-            }
+                if (resIdx == -1)
+                {
+                    return;
+                }
 
-            NpcFunction.EatIndexItem(GameInstance, resIdx);
+                NpcFunction.EatIndexItem(GameInstance, resIdx);
         }
 
         // for low mp
         if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.6 || GameInstance.CharacterStatus.CurrentMP < 10)
         {
             // 找蓝药 太阳水
-            var items = new List<string> { "魔法药(小量)", "魔法药(中量)", "强效魔法药", "太阳水" };
+            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
+            var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.MegaPotions;
             int resIdx = -1;
             foreach (var item in items)
             {
