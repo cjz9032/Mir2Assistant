@@ -16,6 +16,17 @@ namespace Mir2Assistant.Common.Functions
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SendMessage(nint hwnd, uint msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
 
+        [DllImport("kernel32.dll")]
+        static extern IntPtr OpenThread(int dwDesiredAccess, bool bInheritHandle, uint dwThreadId);
+
+        [DllImport("kernel32.dll")]
+        static extern uint SuspendThread(IntPtr hThread);
+
+        [DllImport("kernel32.dll")]
+        static extern int CloseHandle(IntPtr hObject);
+
+        const int THREAD_SUSPEND_RESUME = 0x0002;
+
         [StructLayout(LayoutKind.Sequential)]
         struct COPYDATASTRUCT
         {
@@ -30,91 +41,113 @@ namespace Mir2Assistant.Common.Functions
             public uint Msg;
             public IntPtr WParam;
             public COPYDATASTRUCT LParam;
+            public CancellationToken CancellationToken;
+            public int ThreadId;
         }
 
         private static void SendMessageThreadProc(object state)
         {
             var parameters = (SendMessageParams)state;
+            parameters.ThreadId = Thread.CurrentThread.ManagedThreadId;
+            
+            if (parameters.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
             SendMessage(parameters.Hwnd, parameters.Msg, parameters.WParam, ref parameters.LParam);
         }
 
         private static void SendMessageWithTimeout(nint hwnd, uint msg, IntPtr wParam, ref COPYDATASTRUCT lParam)
         {
-            var parameters = new SendMessageParams
+            using (var cts = new CancellationTokenSource())
             {
-                Hwnd = hwnd,
-                Msg = msg,
-                WParam = wParam,
-                LParam = lParam
-            };
+                var parameters = new SendMessageParams
+                {
+                    Hwnd = hwnd,
+                    Msg = msg,
+                    WParam = wParam,
+                    LParam = lParam,
+                    CancellationToken = cts.Token
+                };
 
-            var thread = new Thread(SendMessageThreadProc);
-            thread.Start(parameters);
+                var thread = new Thread(SendMessageThreadProc);
+                thread.Start(parameters);
 
-            // 如果3秒后线程还在运行，强制结束它
-            if (!thread.Join(1000))
-            {
-                thread.Abort(); // 强制终止线程
-                throw new TimeoutException("SendMessage operation timed out");
+                if (!thread.Join(1000))
+                {
+                    cts.Cancel();
+                    
+                    // 获取线程句柄并挂起它
+                    IntPtr threadHandle = OpenThread(THREAD_SUSPEND_RESUME, false, (uint)parameters.ThreadId);
+                    if (threadHandle != IntPtr.Zero)
+                    {
+                        try
+                        {
+                            SuspendThread(threadHandle);
+                        }
+                        finally
+                        {
+                            CloseHandle(threadHandle);
+                        }
+                    }
+                    
+                    throw new TimeoutException("SendMessage operation timed out");
+                }
+
+                // 更新原始的lParam，以防消息处理修改了它
+                lParam = parameters.LParam;
             }
-
-            // 更新原始的lParam，以防消息处理修改了它
-            lParam = parameters.LParam;
         }
 
         public static void Send(MirGameInstanceModel gameInstance, nint code, byte[] data)
         {
-            lock (gameInstance)
+            int size = data.Length * sizeof(byte);
+            IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
+
+            COPYDATASTRUCT cds;
+            cds.dwData = (uint)code; // 自定义数据，可以是任何值
+            cds.cbData = size;
+            cds.lpData = unmanagedPointer;
+
+            try
             {
-                int size = data.Length * sizeof(byte);
-                IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
-
-                COPYDATASTRUCT cds;
-                cds.dwData = (uint)code; // 自定义数据，可以是任何值
-                cds.cbData = size;
-                cds.lpData = unmanagedPointer;
-
-                try
-                {
-                    Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-                    SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
-                }
-                catch (TimeoutException)
-                {
-                    // 如果发送超时，这里可以处理，比如重试或者记录日志
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedPointer);
-                }
+                Marshal.Copy(data, 0, unmanagedPointer, data.Length);
+                SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("ca");
+                // 如果发送超时，这里可以处理，比如重试或者记录日志
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(unmanagedPointer);
             }
         }
 
         public static void Send(MirGameInstanceModel gameInstance, nint code, nint[] data)
         {
-            lock (gameInstance)
+            int size = data.Length * sizeof(int);
+            IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
+
+            COPYDATASTRUCT cds;
+            cds.dwData = (uint)code; // 自定义数据，可以是任何值
+            cds.cbData = size;
+            cds.lpData = unmanagedPointer;
+
+            try
             {
-                int size = data.Length * sizeof(int);
-                IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
-
-                COPYDATASTRUCT cds;
-                cds.dwData = (uint)code; // 自定义数据，可以是任何值
-                cds.cbData = size;
-                cds.lpData = unmanagedPointer;
-
-                try
-                {
-                    Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-                    SendMessageWithTimeout(gameInstance.MirHwnd, 0x4A, 20250129, ref cds);
-                }
-                catch (TimeoutException)
-                {
-                    // 如果发送超时，这里可以处理，比如重试或者记录日志
-                }
-                finally
-                {
-                    Marshal.FreeHGlobal(unmanagedPointer);
-                }
+                Marshal.Copy(data, 0, unmanagedPointer, data.Length);
+                SendMessageWithTimeout(gameInstance.MirHwnd, 0x4A, 20250129, ref cds);
+            }
+            catch (TimeoutException)
+            {
+                Console.WriteLine("ca");
+                // 如果发送超时，这里可以处理，比如重试或者记录日志
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(unmanagedPointer);
             }
         }
 
