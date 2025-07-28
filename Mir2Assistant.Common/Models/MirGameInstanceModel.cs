@@ -80,10 +80,24 @@ public class MirGameInstanceModel
     public void Clear()
     {
         Monsters.Clear();
-        DropsItems.Clear();
+        // 不销毁
+        foreach (var item in DropsItems)
+        {
+            item.Value.IsEmpty = true;
+            item.Value.Name = "";
+        }
+        foreach (var item in QuickItems)
+        {
+            item.IsEmpty = true;
+            item.Name = "";
+        }
+        foreach (var item in Items)
+        {
+            item.IsEmpty = true;
+            item.Name = "";
+        }
+
         Skills.Clear();
-        QuickItems.Clear();
-        Items.Clear();
         TalkCmds.Clear();
         MapObstacles.Clear();
         CharacterStatus = new CharacterStatusModel();
