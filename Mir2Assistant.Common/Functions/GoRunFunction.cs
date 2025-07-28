@@ -732,8 +732,21 @@ public static class GoRunFunction
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
+                            instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
+                            if (ani3 == null)
+                            {
+                                break;
+                            }
+                            ani = ani3;
                         }
                         await Task.Delay(200);
+                        // todo 优化
+                        instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani2);
+                        if (ani2 == null)
+                        {
+                            break;
+                        }
+                        ani = ani2;
                         if (ani.isDead || monTried > 150)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
@@ -815,7 +828,7 @@ public static class GoRunFunction
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
           bool nearBlur = true,
-          int attacksThan = 10,
+          int attacksThan = 3,
           int retries = 0
         )
     {
