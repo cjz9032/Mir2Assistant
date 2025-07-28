@@ -99,31 +99,29 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
-        public static void Send(MirGameInstanceModel gameInstance, nint code, byte[] data)
-        {
-            int size = data.Length * sizeof(byte);
-            IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
+        // public static void Send(MirGameInstanceModel gameInstance, nint code, byte[] data)
+        // {
+        //     int size = data.Length * sizeof(byte);
+        //     IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
 
-            COPYDATASTRUCT cds;
-            cds.dwData = (uint)code; // 自定义数据，可以是任何值
-            cds.cbData = size;
-            cds.lpData = unmanagedPointer;
+        //     COPYDATASTRUCT cds;
+        //     cds.dwData = (uint)code; // 自定义数据，可以是任何值
+        //     cds.cbData = size;
+        //     cds.lpData = unmanagedPointer;
 
-            try
-            {
-                Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-                SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
-            }
-            catch (TimeoutException)
-            {
-                Console.WriteLine("ca");
-                // 如果发送超时，这里可以处理，比如重试或者记录日志
-            }
-            finally
-            {
-                Marshal.FreeHGlobal(unmanagedPointer);
-            }
-        }
+        //     try
+        //     {
+        //         Marshal.Copy(data, 0, unmanagedPointer, data.Length);
+        //         SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
+        //     }
+        //     catch (TimeoutException)
+        //     {
+        //     }
+        //     finally
+        //     {
+        //         Marshal.FreeHGlobal(unmanagedPointer);
+        //     }
+        // }
 
         public static void Send(MirGameInstanceModel gameInstance, nint code, nint[] data)
         {
@@ -142,7 +140,7 @@ namespace Mir2Assistant.Common.Functions
             }
             catch (TimeoutException)
             {
-                Console.WriteLine("ca");
+                gameInstance.GameDebug($"发送消息超时 code {code} 数据 {string.Join(",", data)}");
                 // 如果发送超时，这里可以处理，比如重试或者记录日志
             }
             finally
