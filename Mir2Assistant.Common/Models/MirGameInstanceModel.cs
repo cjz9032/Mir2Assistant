@@ -10,6 +10,7 @@ public class MirGameInstanceModel
     public int MirPid { get; set; } //游戏pid
     public int spellLastTime { get; set; } //技能 cd
     public int eatItemLastTime { get; set; } //吃物品 cd
+    public LimitedDictionary<int, int> healCD { get; set; } = new LimitedDictionary<int, int>();
     public uint MirThreadId { get; set; }//游戏主线程ID
     public IntPtr MirHwnd { get; set; }//游戏主窗体句柄
     public nint MirBaseAddress { get; set; }

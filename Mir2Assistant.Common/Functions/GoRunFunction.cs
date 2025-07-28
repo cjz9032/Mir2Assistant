@@ -1089,7 +1089,7 @@ public static class GoRunFunction
         {
             return false;
         }
-        if (GameInstance.spellLastTime + 1500 > Environment.TickCount)
+        if (GameInstance.spellLastTime + 1200 > Environment.TickCount)
         {
             return false;
         }
@@ -1135,6 +1135,9 @@ public static class GoRunFunction
         }
 
         var people = allMonsInClients.Where(o =>
+            // not in cd
+            !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + 3000 &&
+            // 活着
             o.CurrentHP > 0 &&
             !o.isDead
             // 低血量
@@ -1156,6 +1159,7 @@ public static class GoRunFunction
 
         GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, 2, people.X, people.Y, people.Id);
+        GameInstance.healCD[people.Id] = Environment.TickCount;
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
