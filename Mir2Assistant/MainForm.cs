@@ -500,7 +500,7 @@ namespace Mir2Assistant
 
             var task  = (npc: !isLeftAlive ? "TODO????" : "边界村小店老板", x: !isLeftAlive ? 649 : 290, y: !isLeftAlive ? 602 : 611);
             // 目前只有
-            if (instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 9)
+            if (instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 6)
             {
                 var items = GameConstants.Items.MegaPotions;
                 var exitsQuan = 0;
@@ -912,7 +912,8 @@ namespace Mir2Assistant
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
                                     var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
-                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                    // 7级以下不配
+                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 6 && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     return miscs.Count > 32 || isLow || isLowHpMP;
                                 });
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
