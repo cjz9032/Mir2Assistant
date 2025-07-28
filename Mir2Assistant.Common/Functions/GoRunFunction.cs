@@ -1048,13 +1048,13 @@ public static class GoRunFunction
                     {
                         // 失败了怎么办, 只能放弃先了
                         GameInstance.GameWarning($"寻路最终未找到 -- 跳点 再次尝试 NB");
-                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange + 1, nearBlur);
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange + 1, nearBlur, attacksThan, retries + 1);
                         // return false;
                     }
                     else
                     {
                         // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
-                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur);
+                        return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur, attacksThan, retries + 1);
                     }
                 }
 

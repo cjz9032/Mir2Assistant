@@ -92,7 +92,7 @@ namespace Mir2Assistant.TabForms.Demo
             Task.Run(async () =>{
                 try
                 {
-                    bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), "", 2);
+                    bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, GameInstance!, int.Parse(textBox1.Text), int.Parse(textBox2.Text), "", 2, true, 20);
                     if (pathFound)
                     {
                         Log.Information("寻路任务成功完成。");
