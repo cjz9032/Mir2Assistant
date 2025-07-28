@@ -642,7 +642,7 @@ namespace Mir2Assistant
                     var portalEndX = isLeftAlive ? 300 : 620;
                     var portalStartY = 550;
                     var portalEndY = 620;
-                    if (CharacterStatus.Level > 10)
+                    if (CharacterStatus.Level > 13)
                     {
                         portalStartX = 50;
                         portalEndX = 250;
@@ -1044,7 +1044,7 @@ namespace Mir2Assistant
                         {
                             return;
                         }
-                        Log.Debug("快速刷新实例 {Account} 状态", instance.AccountInfo?.Account);
+                        // Log.Debug("快速刷新实例 {Account} 状态", instance.AccountInfo?.Account);
                         instance.RefreshAll();
 
                         if (instance.CharacterStatus.CurrentHP > 0)
