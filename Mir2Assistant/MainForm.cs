@@ -104,7 +104,7 @@ namespace Mir2Assistant
             catch (Exception ex)
             {
                 Log.Error(ex, "加载账号列表失败");
-                MessageBox.Show($"加载账号列表失败: {ex.Message}");
+                // MessageBox.Show($"加载账号列表失败: {ex.Message}");
             }
         }
 
@@ -123,7 +123,7 @@ namespace Mir2Assistant
             catch (Exception ex)
             {
                Log.Error(ex, "保存账号列表失败");
-               MessageBox.Show($"保存账号列表失败: {ex.Message}");
+            //    MessageBox.Show($"保存账号列表失败: {ex.Message}");
             }
         }
 
@@ -205,14 +205,14 @@ namespace Mir2Assistant
                 else
                 {
                     gameInstance.GameWarning("未能获取到新进程PID，账号: {Account}", account.Account);
-                    MessageBox.Show("无法获取新进程PID，请手动启动游戏。");
+                    // MessageBox.Show("无法获取新进程PID，请手动启动游戏。");
                 }
 
             }
             catch (Exception ex)
             {
                 gameInstance.GameError("启动游戏进程失败: {Error}", ex.Message);
-                MessageBox.Show($"启动游戏失败: {ex.Message}");
+                // MessageBox.Show($"启动游戏失败: {ex.Message}");
             }
         }
 
@@ -340,7 +340,7 @@ namespace Mir2Assistant
             {
                 var gameInstance = GameState.GameInstances.First(o => o.AccountInfo.Account == account.Account);
                 gameInstance.GameError("绑定游戏进程失败: {Error}", ex.Message);
-                MessageBox.Show($"绑定游戏进程失败: {ex.Message}");
+                // MessageBox.Show($"绑定游戏进程失败: {ex.Message}");
             }
         }
 

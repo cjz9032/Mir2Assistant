@@ -5,17 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mir2Assistant.Common.Functions
 {
     public class SendMirCall
     {
-
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool SendMessage(nint hwnd, uint msg, IntPtr wParam, ref COPYDATASTRUCT lParam);
-
 
         [StructLayout(LayoutKind.Sequential)]
         struct COPYDATASTRUCT
@@ -23,6 +22,44 @@ namespace Mir2Assistant.Common.Functions
             public uint dwData;
             public int cbData;
             public IntPtr lpData;
+        }
+
+        private class SendMessageParams
+        {
+            public nint Hwnd;
+            public uint Msg;
+            public IntPtr WParam;
+            public COPYDATASTRUCT LParam;
+        }
+
+        private static void SendMessageThreadProc(object state)
+        {
+            var parameters = (SendMessageParams)state;
+            SendMessage(parameters.Hwnd, parameters.Msg, parameters.WParam, ref parameters.LParam);
+        }
+
+        private static void SendMessageWithTimeout(nint hwnd, uint msg, IntPtr wParam, ref COPYDATASTRUCT lParam)
+        {
+            var parameters = new SendMessageParams
+            {
+                Hwnd = hwnd,
+                Msg = msg,
+                WParam = wParam,
+                LParam = lParam
+            };
+
+            var thread = new Thread(SendMessageThreadProc);
+            thread.Start(parameters);
+
+            // 如果3秒后线程还在运行，强制结束它
+            if (!thread.Join(1000))
+            {
+                thread.Abort(); // 强制终止线程
+                throw new TimeoutException("SendMessage operation timed out");
+            }
+
+            // 更新原始的lParam，以防消息处理修改了它
+            lParam = parameters.LParam;
         }
 
         public static void Send(MirGameInstanceModel gameInstance, nint code, byte[] data)
@@ -40,7 +77,11 @@ namespace Mir2Assistant.Common.Functions
                 try
                 {
                     Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-                    SendMessage(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
+                    SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
+                }
+                catch (TimeoutException)
+                {
+                    // 如果发送超时，这里可以处理，比如重试或者记录日志
                 }
                 finally
                 {
@@ -64,7 +105,11 @@ namespace Mir2Assistant.Common.Functions
                 try
                 {
                     Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-                    SendMessage(gameInstance.MirHwnd, 0x4A, 20250129, ref cds);
+                    SendMessageWithTimeout(gameInstance.MirHwnd, 0x4A, 20250129, ref cds);
+                }
+                catch (TimeoutException)
+                {
+                    // 如果发送超时，这里可以处理，比如重试或者记录日志
                 }
                 finally
                 {
@@ -81,6 +126,5 @@ namespace Mir2Assistant.Common.Functions
                            .Select(i => (nint)BitConverter.ToInt32(bytes, i * 4))
                            .ToArray();
         }
-
     }
 }
