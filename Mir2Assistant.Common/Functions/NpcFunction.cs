@@ -136,17 +136,6 @@ namespace Mir2Assistant.Common.Functions
         // }
 
         /// <summary>
-        /// 等NPC出现
-        /// </summary>
-        /// <param name="gameInstance"></param>
-        /// <param name="text"></param>
-        /// <returns></returns>
-        public static async Task<bool> WaitNPC(MirGameInstanceModel gameInstance, string npcName, int timeout = 50)
-        {
-            return await TaskWrapper.Wait(() => gameInstance.Monsters.Values.Any(o => o.TypeStr == "NPC" && o.Name == npcName), timeout);
-        }
-
-        /// <summary>
         /// 盲选蜡烛
         /// </summary>
         /// <param name="gameInstance"></param>

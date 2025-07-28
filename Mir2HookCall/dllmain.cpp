@@ -186,7 +186,7 @@ __declspec(naked) void HookFunction6()
         mov     eax, g_BaseAddr
         add     eax, 0x279B3C
         mov     ecx, [eax]
-        mov     dword ptr [ecx], 90
+        mov     dword ptr [ecx], 95
 
         mov     eax, g_BaseAddr
         add     eax, 0x279B78
