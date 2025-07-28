@@ -760,7 +760,9 @@ public static class GoRunFunction
             // 没怪了 可以捡取东西 或者挖肉
             // 捡取
             // 按距离, 且没捡取过
-            var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id))
+            var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id)
+            && (instanceValue.AccountInfo.role != RoleType.blade ||  GameConstants.Items.MegaPotions.Contains(o.Value.Name))
+            )
             .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
             foreach (var drop in drops)
             {
