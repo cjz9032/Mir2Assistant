@@ -787,7 +787,7 @@ public static class GoRunFunction
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 999);
+                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
                 if (pathFound2)
                 {
                     ItemFunction.Pickup(instanceValue!);
@@ -801,7 +801,7 @@ public static class GoRunFunction
             foreach (var body in bodys)
             {
                 instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 999);
+                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 1);
                 if (pathFound2)
                 {
                     // 要持续屠宰, 直到尸体消失, 最大尝试 30次
