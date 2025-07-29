@@ -619,7 +619,7 @@ namespace Mir2Assistant
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
             await NpcFunction.autoReplaceEquipment(instanceValue);
             // save
-            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => o.IsGodly).ToArray());
+            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && !o.IsGodly).ToArray());
             await buyDrugs(instanceValue, _cancellationToken);
 
             
@@ -956,7 +956,7 @@ namespace Mir2Assistant
                                     // go home
                                     // 排除药品, 
                                     // todo 扔掉红
-                                    var miscs = instanceValue.Items.ToList();
+                                    var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
                                     // 或者衣服武器破了 // todo 其他再看
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
