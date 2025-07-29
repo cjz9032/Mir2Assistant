@@ -619,7 +619,7 @@ namespace Mir2Assistant
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
             await NpcFunction.autoReplaceEquipment(instanceValue);
             // save
-            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && !o.IsGodly).ToArray());
+            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && o.IsGodly).ToArray());
             await buyDrugs(instanceValue, _cancellationToken);
 
             
