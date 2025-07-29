@@ -246,10 +246,21 @@ namespace Mir2Assistant
             if (gameInstance.MirPid != 0)
             {
                 var account = gameInstance.AccountInfo;
-                var process = Process.GetProcessById(gameInstance.MirPid);
+                Process process = null;
 
                 try
                 {
+                    // 先尝试获取进程
+                    try
+                    {
+                        process = Process.GetProcessById(gameInstance.MirPid);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // 进程已经不存在了，直接清理资源
+                        gameInstance.GameWarning("游戏进程已不存在，PID: {ProcessId}", gameInstance.MirPid);
+                    }
+
                     beforeClose(gameInstance);
                 }
                 catch (Exception ex)
@@ -259,9 +270,16 @@ namespace Mir2Assistant
                 finally
                 {
                     gameInstance.Clear();
-                    if (process.HasExited)
+                    if (process != null && !process.HasExited)
                     {
-                        process.Kill();
+                        try
+                        {
+                            process.Kill();
+                        }
+                        catch (Exception ex)
+                        {
+                            gameInstance.GameError("强制结束进程失败: {Error}", ex.Message);
+                        }
                     }
                     gameInstance.MirPid = 0;
                     gameInstance.GameInfo("游戏进程已关闭，账号: {Account}", account.Account);
