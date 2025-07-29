@@ -170,7 +170,7 @@ namespace Mir2Assistant
             }
         }
 
-        private async void StartGameProcess(MirGameInstanceModel gameInstance)
+        private async Task StartGameProcess(MirGameInstanceModel gameInstance)
         {
             var account = gameInstance.AccountInfo;
             try
