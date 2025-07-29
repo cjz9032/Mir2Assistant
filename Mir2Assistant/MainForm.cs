@@ -221,10 +221,11 @@ namespace Mir2Assistant
             if (gameInstance.MirPid != 0)
             {
                 var account = gameInstance.AccountInfo;
+                Process process = null;
                 try
                 {
                     gameInstance.GameInfo("准备关闭游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, gameInstance.MirPid);
-                    Process process = Process.GetProcessById(gameInstance.MirPid);
+                    process = Process.GetProcessById(gameInstance.MirPid);
                     
                     // 如果有关联的辅助窗口，先解除挂钩并关闭
                     if (GameState.GameInstances.Any(o => o.MirPid == gameInstance.MirPid))
@@ -259,7 +260,10 @@ namespace Mir2Assistant
                 finally
                 {
                     gameInstance.Clear();
-                    process.Kill();
+                    if (process != null && !process.HasExited)
+                    {
+                        process.Kill();
+                    }
                     gameInstance.MirPid = 0;
                     gameInstance.GameInfo("游戏进程已关闭，账号: {Account}", account.Account);
                 }
