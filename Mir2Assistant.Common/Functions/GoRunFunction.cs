@@ -708,6 +708,7 @@ public static class GoRunFunction
                 }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 allowMonsters.Contains(o.Name) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
                 (px == 0 ? true : Math.Max(Math.Abs(o.X - px), Math.Abs(o.Y - py)) < 16)
@@ -749,6 +750,7 @@ public static class GoRunFunction
                         ani = ani2;
                         if (ani.isDead || monTried > 150)
                         {
+                            instanceValue.attackedMonsterIds.Add(ani.Id);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             break;
                         }

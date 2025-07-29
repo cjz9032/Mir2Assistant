@@ -33,7 +33,10 @@ public class MirGameInstanceModel
     // drops
     public ConcurrentDictionary<int, DropItemModel> DropsItems { get; set; } = new ConcurrentDictionary<int, DropItemModel>();
     // 捡取过的ItemID名单, 高性能检索
-    public HashSet<int> pickupItemIds { get; set; } = new HashSet<int>();
+    public LimitedHashSet<int> pickupItemIds { get; set; } = new LimitedHashSet<int>(1000);
+
+    // 攻击过的怪物ID名单, 高性能检索
+    public LimitedHashSet<int> attackedMonsterIds { get; set; } = new LimitedHashSet<int>(100);
 
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;
