@@ -37,7 +37,6 @@ public static class MonsterFunction
         var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["怪物数组"], 0x34C8));
         var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
         var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
-        byte flag = 0;
         ++gameInstance.MonstersUpdateId;
 
         for (int i = 0; i < monsterCount; i++)
@@ -82,13 +81,6 @@ public static class MonsterFunction
 
             monster.Level = memoryUtils.ReadToInt8(monsterAddr + 0x3C);
 
-            monster.Flag = flag;
-
-            if (monster.Name == gameInstance.CharacterStatus!.Name)
-            {
-                monster.Flag = 1;
-                flag = 2;
-            }
             if (isNew)
             {
                 gameInstance.Monsters.TryAdd(id, monster);

@@ -231,20 +231,37 @@ namespace Mir2Assistant
                     {
                         gameInstance.GameDebug("解除DLL挂钩并关闭辅助窗口");
                         DllInject.Unhook(gameInstance);
-                        if (gameInstance.AssistantForm != null)
+                        if (gameInstance.AssistantForm != null && gameInstance.AssistantForm.IsHandleCreated && !gameInstance.AssistantForm.IsDisposed)
                         {
-                            gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                            try 
+                            {
+                                if (gameInstance.AssistantForm.InvokeRequired)
+                                {
+                                    gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                                }
+                                else
+                                {
+                                    gameInstance.AssistantForm.Close();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                gameInstance.GameWarning("关闭辅助窗口失败: {Error}", ex.Message);
+                            }
                         }
-                        gameInstance.Clear();
                     }
                     
-                    process.Kill();
-                    gameInstance.MirPid = 0;
-                    gameInstance.GameInfo("游戏进程已关闭，账号: {Account}", account.Account);
                 }
                 catch (Exception ex)
                 {
-                    gameInstance.GameError("关闭游戏进程失败: {Error}", ex.Message);
+                    gameInstance.GameError("关闭游戏资源失败: {Error}", ex.Message);
+                }
+                finally
+                {
+                    gameInstance.Clear();
+                    process.Kill();
+                    gameInstance.MirPid = 0;
+                    gameInstance.GameInfo("游戏进程已关闭，账号: {Account}", account.Account);
                 }
             }
         }

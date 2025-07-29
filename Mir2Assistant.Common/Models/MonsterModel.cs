@@ -14,10 +14,6 @@ namespace Mir2Assistant.Common.Models
         public int Id;
         public int Addr { get; set; }
         public short? Type { get; set; }
-        /// <summary>
-        /// 0尸体，1自己，2正常
-        /// </summary>
-        public byte Flag { get; set; }
         public bool isDead { get; set; }
         public bool isButched { get; set; }
         public short Appr { get; set; }
@@ -29,6 +25,7 @@ namespace Mir2Assistant.Common.Models
                 {
                     0x32 => "NPC",
                     0x00 => "玩家",
+                    0x01 => "玩家", // 挂机的
                     0x2d => "守卫",
                     0x0c => "卫士",
                     _ => "(怪)",
