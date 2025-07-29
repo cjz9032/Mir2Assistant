@@ -617,6 +617,9 @@ namespace Mir2Assistant
             await NpcFunction.autoReplaceEquipment(instanceValue);
             // 修衣服和武器
             await repairBasicWeaponClothes(instanceValue, _cancellationToken);
+            await NpcFunction.autoReplaceEquipment(instanceValue);
+            // save
+            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => o.IsGodly).ToArray());
             await buyDrugs(instanceValue, _cancellationToken);
 
             

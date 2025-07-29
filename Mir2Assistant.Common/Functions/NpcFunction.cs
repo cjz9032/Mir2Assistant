@@ -462,6 +462,34 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
+        
+        public async static Task SaveItem(MirGameInstanceModel gameInstance, string npcName, int x, int y, ItemModel[] items)
+        {
+            gameInstance.GameInfo($"保存物品 远程执行");
+            // bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            // if (pathFound)
+            // {
+            //     await ClickNPC(gameInstance!, npcName);
+            // }
+                await Talk2(gameInstance!, "@storage");
+
+                foreach (var item in items)
+                {
+                    var data = Common.Utils.StringUtils.GenerateMixedData(
+                        item.Name,
+                        item.Id
+                    );
+
+                    SendMirCall.Send(gameInstance!, 3015, data);
+                    await Task.Delay(200);
+                }
+
+                await Task.Delay(500);
+                SendMirCall.Send(gameInstance!, 9010, new nint[] { 1 });
+
+        }
+
+
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance)
         {
             instance.GameDebug("开始检查装备更换");
