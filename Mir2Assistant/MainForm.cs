@@ -218,7 +218,7 @@ namespace Mir2Assistant
 
         private void beforeClose(MirGameInstanceModel gameInstance){
              // 如果有关联的辅助窗口，先解除挂钩并关闭
-            gameInstance.GameInfo("准备关闭游戏资源，账号: {Account}, PID: {ProcessId}", account.Account, gameInstance.MirPid);
+            gameInstance.GameInfo("准备关闭游戏资源，账号: {Account}, PID: {ProcessId}", gameInstance.AccountInfo.Account, gameInstance.MirPid);
             gameInstance.GameDebug("解除DLL挂钩并关闭辅助窗口");
             DllInject.Unhook(gameInstance);
             if (gameInstance.AssistantForm != null && gameInstance.AssistantForm.IsHandleCreated && !gameInstance.AssistantForm.IsDisposed)
