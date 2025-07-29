@@ -216,42 +216,41 @@ namespace Mir2Assistant
             }
         }
 
+        private void beforeClose(MirGameInstanceModel gameInstance){
+             // 如果有关联的辅助窗口，先解除挂钩并关闭
+            gameInstance.GameInfo("准备关闭游戏资源，账号: {Account}, PID: {ProcessId}", account.Account, gameInstance.MirPid);
+            gameInstance.GameDebug("解除DLL挂钩并关闭辅助窗口");
+            DllInject.Unhook(gameInstance);
+            if (gameInstance.AssistantForm != null && gameInstance.AssistantForm.IsHandleCreated && !gameInstance.AssistantForm.IsDisposed)
+            {
+                try 
+                {
+                    if (gameInstance.AssistantForm.InvokeRequired)
+                    {
+                        gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
+                    }
+                    else
+                    {
+                        gameInstance.AssistantForm.Close();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    gameInstance.GameWarning("关闭辅助窗口失败: {Error}", ex.Message);
+                }
+            }
+        }
+
         private void KillGameProcess(MirGameInstanceModel gameInstance)
         {
             if (gameInstance.MirPid != 0)
             {
                 var account = gameInstance.AccountInfo;
-                Process process = null;
+                var process = Process.GetProcessById(gameInstance.MirPid);
+
                 try
                 {
-                    gameInstance.GameInfo("准备关闭游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, gameInstance.MirPid);
-                    process = Process.GetProcessById(gameInstance.MirPid);
-                    
-                    // 如果有关联的辅助窗口，先解除挂钩并关闭
-                    if (GameState.GameInstances.Any(o => o.MirPid == gameInstance.MirPid))
-                    {
-                        gameInstance.GameDebug("解除DLL挂钩并关闭辅助窗口");
-                        DllInject.Unhook(gameInstance);
-                        if (gameInstance.AssistantForm != null && gameInstance.AssistantForm.IsHandleCreated && !gameInstance.AssistantForm.IsDisposed)
-                        {
-                            try 
-                            {
-                                if (gameInstance.AssistantForm.InvokeRequired)
-                                {
-                                    gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
-                                }
-                                else
-                                {
-                                    gameInstance.AssistantForm.Close();
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                gameInstance.GameWarning("关闭辅助窗口失败: {Error}", ex.Message);
-                            }
-                        }
-                    }
-                    
+                    beforeClose(gameInstance);
                 }
                 catch (Exception ex)
                 {
@@ -260,7 +259,7 @@ namespace Mir2Assistant
                 finally
                 {
                     gameInstance.Clear();
-                    if (process != null && !process.HasExited)
+                    if (process.HasExited)
                     {
                         process.Kill();
                     }
@@ -343,16 +342,16 @@ namespace Mir2Assistant
                         {
                             try
                             {
-                                if (GameState.GameInstances.Any(o => o.MirPid == process.Id) && gameInstance.AssistantForm != null)
+                                var gameInstance = GameState.GameInstances.First(o => o.MirPid == process.Id);
+                                if (gameInstance != null)
                                 {
-                                    if (!gameInstance.AssistantForm.IsDisposed)
-                                    {
-                                        gameInstance.AssistantForm.Invoke(new Action(() => gameInstance.AssistantForm.Close()));
-                                    }
+                                    beforeClose(gameInstance);
                                     gameInstance.Clear();
                                 }
                             }
-                            catch { }
+                            catch { 
+                                    gameInstance.Clear();
+                            }
                         };
                     }
                 }
@@ -1094,11 +1093,7 @@ namespace Mir2Assistant
             // 同步关闭所有资源
             foreach (var gameInstance in GameState.GameInstances)
             {
-                DllInject.Unhook(gameInstance);
-                if (gameInstance.AssistantForm != null && !gameInstance.AssistantForm.IsDisposed)
-                {
-                    gameInstance.AssistantForm.Close();
-                }
+                beforeClose(gameInstance);
             }
             GameState.GameInstances.Clear();
 

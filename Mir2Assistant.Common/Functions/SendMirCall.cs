@@ -99,30 +99,6 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
-        // public static void Send(MirGameInstanceModel gameInstance, nint code, byte[] data)
-        // {
-        //     int size = data.Length * sizeof(byte);
-        //     IntPtr unmanagedPointer = Marshal.AllocHGlobal(size);
-
-        //     COPYDATASTRUCT cds;
-        //     cds.dwData = (uint)code; // 自定义数据，可以是任何值
-        //     cds.cbData = size;
-        //     cds.lpData = unmanagedPointer;
-
-        //     try
-        //     {
-        //         Marshal.Copy(data, 0, unmanagedPointer, data.Length);
-        //         SendMessageWithTimeout(gameInstance.MirHwnd, 0x4a, 20250129, ref cds);
-        //     }
-        //     catch (TimeoutException)
-        //     {
-        //     }
-        //     finally
-        //     {
-        //         Marshal.FreeHGlobal(unmanagedPointer);
-        //     }
-        // }
-
         public static void Send(MirGameInstanceModel gameInstance, nint code, nint[] data)
         {
             int size = data.Length * sizeof(int);
@@ -149,13 +125,5 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
-        public static nint[] String2NIntArray(string p)
-        {
-            var l0 = p.Length % 4 + 4;
-            var bytes = Encoding.GetEncoding("gb2312").GetBytes(p + new string('\0', l0));
-            return Enumerable.Range(0, bytes.Length / 4)
-                           .Select(i => (nint)BitConverter.ToInt32(bytes, i * 4))
-                           .ToArray();
-        }
     }
 }
