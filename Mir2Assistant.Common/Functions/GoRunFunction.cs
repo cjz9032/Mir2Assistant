@@ -1135,7 +1135,7 @@ public static class GoRunFunction
             // GameInstance.GameDebug("角色无法治疗他人，跳过治疗检查");
             return;
         }
-        GameInstance.GameDebug("开始检查需要治疗的目标");
+        // GameInstance.GameDebug("开始检查需要治疗的目标");
         // pick the needed people
         // 组队成员
         var instances = GameState.GameInstances;
@@ -1171,7 +1171,7 @@ public static class GoRunFunction
 
         if (people == null)
         {
-            GameInstance.GameDebug("未找到需要治疗的目标");
+            // GameInstance.GameDebug("未找到需要治疗的目标");
             return;
         }
 

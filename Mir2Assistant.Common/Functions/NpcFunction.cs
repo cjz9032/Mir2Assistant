@@ -475,12 +475,12 @@ namespace Mir2Assistant.Common.Functions
                 // 先非常简略从背包找乌木剑, 并且手上是木剑, 后面再优化
                 if (!item.IsEmpty)
                 {
-                    instance.GameDebug("检查装备位置 {Index}: {Name}, 耐久: {Duration}/{MaxDuration}", 
-                        index, item.Name, item.Duration, item.MaxDuration);
+                    // instance.GameDebug("检查装备位置 {Index}: {Name}, 耐久: {Duration}/{MaxDuration}", 
+                    //     index, item.Name, item.Duration, item.MaxDuration);
                 }
                 else
                 {
-                    instance.GameDebug("检查空装备位置 {Index}", index);
+                    // instance.GameDebug("检查空装备位置 {Index}", index);
                 }
                 if (item.Name == "木剑")
                 {
