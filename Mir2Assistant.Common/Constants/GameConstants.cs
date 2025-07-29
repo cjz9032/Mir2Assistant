@@ -19,6 +19,16 @@ public static class GameConstants
             "强效魔法药",
         };
 
+        public static readonly List<string> binItems =
+        new List<string>
+        {
+            "木剑",
+            "布衣(男)",
+            "布衣(女)",
+            "匕首",
+        };
+
+
 
         public static readonly List<string> HealPotions =
         new List<string>

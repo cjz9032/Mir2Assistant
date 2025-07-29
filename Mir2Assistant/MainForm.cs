@@ -170,7 +170,7 @@ namespace Mir2Assistant
             }
         }
 
-        private async Task StartGameProcess(MirGameInstanceModel gameInstance)
+        private async Task<bool> StartGameProcess(MirGameInstanceModel gameInstance)
         {
             var account = gameInstance.AccountInfo;
             try
@@ -200,7 +200,7 @@ namespace Mir2Assistant
                     // 通过PID获取进程对象
                     var gameProcess = Process.GetProcessById(pid);
                     // 后续绑定DLL等逻辑
-                    await AttachToGameProcess(gameProcess, account);
+                    return await AttachToGameProcess(gameProcess, account);
                 }
                 else
                 {
@@ -214,6 +214,7 @@ namespace Mir2Assistant
                 gameInstance.GameError("启动游戏进程失败: {Error}", ex.Message);
                 // MessageBox.Show($"启动游戏失败: {ex.Message}");
             }
+            return false;
         }
 
         private void beforeClose(MirGameInstanceModel gameInstance){
@@ -281,7 +282,6 @@ namespace Mir2Assistant
                             gameInstance.GameError("强制结束进程失败: {Error}", ex.Message);
                         }
                     }
-                    gameInstance.MirPid = 0;
                     gameInstance.GameInfo("游戏进程已关闭，账号: {Account}", account.Account);
                 }
             }
@@ -296,11 +296,15 @@ namespace Mir2Assistant
             gameInstance.isRestarting = true;
             gameInstance.GameInfo("重启游戏进程，账号: {Account}", gameInstance.AccountInfo.Account);
             KillGameProcess(gameInstance);
-            await StartGameProcess(gameInstance);
+            var isSuccess = await StartGameProcess(gameInstance);
             gameInstance.isRestarting = false;
+            if(!isSuccess){
+                gameInstance.GameWarning("重启游戏进程失败，账号: {Account}", gameInstance.AccountInfo.Account);
+                RestartGameProcess(gameInstance);
+            }
         }
 
-        private async Task AttachToGameProcess(Process process, GameAccountModel account)
+        private async Task<bool> AttachToGameProcess(Process process, GameAccountModel account)
         {
             try
             {
@@ -308,10 +312,10 @@ namespace Mir2Assistant
                 {
                     var pid = process.Id;
                     var hwnd = process.MainWindowHandle;
-                    
+
                     var gameInstance = GameState.GameInstances.First(o => o.AccountInfo.Account == account.Account);
                     gameInstance.GameInfo("准备绑定游戏进程，账号: {Account}, PID: {ProcessId}", account.Account, pid);
-                    
+
                     if (!GameState.GameInstances.Any(o => o.MirPid == pid))
                     {
                         var rect = WindowUtils.GetClientRect(hwnd);
@@ -322,16 +326,16 @@ namespace Mir2Assistant
                         gameInstance.mirVer = process.MainModule?.FileVersionInfo?.FileVersion;
                         gameInstance.MirThreadId = (uint)process.Threads[0].Id;
                         gameInstance.memoryUtils = new MemoryUtils(gameInstance);
-                                                
+
                         gameInstance.GameDebug("加载DLL到游戏进程");
                         DllInject.loadDll(gameInstance);
                         // 不知道加载多久 随便写个
-                        await Task.Delay(Environment.ProcessorCount <= 4 ? 10_000 : 5000);
+                        await Task.Delay(100);
                         // todo 挪走到外面
                         nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
                         // auto login 
                         SendMirCall.Send(gameInstance, 9003, data);
-                      
+
 
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
@@ -367,26 +371,25 @@ namespace Mir2Assistant
                             }
                         };
 
-                        await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
+                        await Task.Delay(8000);
                         // todo 挪走到外面
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                        await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
-                        if (gameInstance.CharacterStatus.CurrentHP == 0)
-                        {
-                            gameInstance.GameWarning("角色已死亡，准备重启游戏进程");
-                            RestartGameProcess(gameInstance);
-                            /// 后续没意义了
-                            return;
-                        }
-                        
-                      
+                        await Task.Delay(5000);
+                        return gameInstance.CharacterStatus.CurrentHP > 0;
+                    }else{
+                        return false;
                     }
+                }
+                else
+                {
+                    return false;
                 }
             }
             catch (Exception ex)
             {
                 var gameInstance = GameState.GameInstances.First(o => o.AccountInfo.Account == account.Account);
                 gameInstance.GameError("绑定游戏进程失败: {Error}", ex.Message);
+                return false;
                 // MessageBox.Show($"绑定游戏进程失败: {ex.Message}");
             }
         }
@@ -1042,7 +1045,7 @@ namespace Mir2Assistant
                                     if (instance.AccountInfo.IsMainControl)
                                     {
                                         // GameInstances 除了自己
-                                        var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.CharacterStatus.Name).ToList();
+                                        var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.AccountInfo.CharacterName).ToList();
                                         foreach (var member in members)
                                         {
                                             nint[] data = StringUtils.GenerateCompactStringData(member);

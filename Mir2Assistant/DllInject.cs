@@ -77,7 +77,7 @@ namespace Mir2Assistant
 
         public static void Unhook(MirGameInstanceModel gi)
         {
-            SendMirCall.Send(gi, 9002, new nint[] { });
+            //SendMirCall.Send(gi, 9002, new nint[] { });
             if (gi.HookHandle != null && gi.HookHandle != IntPtr.Zero)
             {
                 UnhookWindowsHookEx(gi.HookHandle!.Value);

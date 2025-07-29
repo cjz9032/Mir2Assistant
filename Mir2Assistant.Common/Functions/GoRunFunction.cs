@@ -677,6 +677,7 @@ public static class GoRunFunction
 
             var monsterTried = 0;
             // 无怪退出
+            var firstMonPos = (0, 0);
             while (true)
             {
                 await Task.Delay(100);
@@ -711,7 +712,7 @@ public static class GoRunFunction
                 !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 allowMonsters.Contains(o.Name) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
-                (px == 0 ? true : Math.Max(Math.Abs(o.X - px), Math.Abs(o.Y - py)) < 16)
+                (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
                 .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
@@ -719,6 +720,9 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
+                    if(firstMonPos.Item1 == 0){
+                        firstMonPos = (ani.X, ani.Y);
+                    }
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
                 ani.Name, ani.X, ani.Y,
                 Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
@@ -775,8 +779,9 @@ public static class GoRunFunction
             // 没怪了 可以捡取东西 或者挖肉
             // 捡取
             // 按距离, 且没捡取过
-            var drops = instanceValue.DropsItems.Where(o => !instanceValue.pickupItemIds.Contains(o.Value.Id)
-            && (instanceValue.AccountInfo.role != RoleType.blade ||  GameConstants.Items.MegaPotions.Contains(o.Value.Name))
+            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || ( !instanceValue.pickupItemIds.Contains(o.Value.Id)
+            && !GameConstants.Items.binItems.Contains(o.Value.Name)
+            && (instanceValue.AccountInfo.role != RoleType.blade || GameConstants.Items.MegaPotions.Contains(o.Value.Name)))
             )
             .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
             foreach (var drop in drops)
@@ -903,10 +908,6 @@ public static class GoRunFunction
             {
                 return false;
             }
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return false;
-            }
             if (GameInstance.CharacterStatus!.CurrentHP == 0)
             {
                 return false;
@@ -914,16 +915,11 @@ public static class GoRunFunction
             // todo 法师暂时不要砍了 要配合2边一起改
             if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
             {
-                // 
                 // 攻击怪物, 太多了 过不去
                 var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon).ToList();
                 if (monsters.Count > attacksThan)
                 {
                     // 算出怪物中间点 取整
-                    // var midX = (int)Math.Round(monsters.Average(o => o.Value.X));
-                    // var midY = (int)Math.Round(monsters.Average(o => o.Value.Y));
-                    // var midPoint = (midX, midY);
-                    // 给个中间点
                     await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
                     {
                         // 重读怪物
