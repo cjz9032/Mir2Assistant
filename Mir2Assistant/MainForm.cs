@@ -287,11 +287,17 @@ namespace Mir2Assistant
             }
         }
 
-        private void RestartGameProcess(MirGameInstanceModel gameInstance)
+        async private void RestartGameProcess(MirGameInstanceModel gameInstance)
         {
+            if (gameInstance.isRestarting)
+            {
+                return;
+            }
+            gameInstance.isRestarting = true;
             gameInstance.GameInfo("重启游戏进程，账号: {Account}", gameInstance.AccountInfo.Account);
             KillGameProcess(gameInstance);
-            StartGameProcess(gameInstance);
+            await StartGameProcess(gameInstance);
+            gameInstance.isRestarting = false;
         }
 
         private async Task AttachToGameProcess(Process process, GameAccountModel account)
@@ -335,19 +341,7 @@ namespace Mir2Assistant
                             gameInstance.AssistantForm.Show();
                             gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
                         }
-                
-                        await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
-                        // todo 挪走到外面
-                        SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                        await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
-                        if (gameInstance.CharacterStatus.CurrentHP == 0)
-                        {
-                            gameInstance.GameWarning("角色已死亡，准备重启游戏进程");
-                            RestartGameProcess(gameInstance);
-                            /// 后续没意义了
-                            return;
-                        }
-                        
+
                         gameInstance.AssistantForm.Disposed += (sender, args) =>
                         {
                             gameInstance.GameDebug("辅助窗口已关闭，移除游戏实例，PID: {ProcessId}", gameInstance.MirPid);
@@ -367,10 +361,25 @@ namespace Mir2Assistant
                                     gameInstance.Clear();
                                 }
                             }
-                            catch { 
-                                    gameInstance.Clear();
+                            catch
+                            {
+                                gameInstance.Clear();
                             }
                         };
+
+                        await Task.Delay( Environment.ProcessorCount <=4 ?  13_000 : 10000);
+                        // todo 挪走到外面
+                        SendMirCall.Send(gameInstance!, 9099, new nint[] { });
+                        await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
+                        if (gameInstance.CharacterStatus.CurrentHP == 0)
+                        {
+                            gameInstance.GameWarning("角色已死亡，准备重启游戏进程");
+                            RestartGameProcess(gameInstance);
+                            /// 后续没意义了
+                            return;
+                        }
+                        
+                      
                     }
                 }
             }

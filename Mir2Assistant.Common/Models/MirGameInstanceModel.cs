@@ -40,6 +40,7 @@ public class MirGameInstanceModel
 
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;
+    public bool isRestarting = false;
 
     /// <summary>
     /// 技能
