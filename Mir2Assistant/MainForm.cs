@@ -953,18 +953,14 @@ namespace Mir2Assistant
                                     // go home
                                     // 排除药品, 
                                     // todo 扔掉红
-                                    var miscs = instanceValue.Items.Where(o => !o.IsEmpty
-                                    && (!GameConstants.Items.MegaPotions.Contains(o.Name))
-                                    && (!GameConstants.Items.HealPotions.Contains(o.Name))
-                                    && (!GameConstants.Items.SuperPotions.Contains(o.Name))
-                                    ).ToList();
+                                    var miscs = instanceValue.Items.ToList();
                                     // 或者衣服武器破了 // todo 其他再看
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
                                     var isLow = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
                                     // 7级以下不配
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 6 && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
-                                    return miscs.Count > 32 || isLow || isLowHpMP;
+                                    return miscs.Count > 36 || isLow || isLowHpMP;
                                 });
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }

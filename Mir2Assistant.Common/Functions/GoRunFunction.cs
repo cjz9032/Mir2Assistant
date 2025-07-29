@@ -716,7 +716,7 @@ public static class GoRunFunction
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
                 .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
-                .ThenBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y).Count())
                 .FirstOrDefault();
                 if (ani != null)
                 {
@@ -783,7 +783,7 @@ public static class GoRunFunction
             && !GameConstants.Items.binItems.Contains(o.Value.Name)
             && (instanceValue.AccountInfo.role != RoleType.blade || GameConstants.Items.MegaPotions.Contains(o.Value.Name)))
             )
-            .OrderBy(o => Math.Max(Math.Abs(o.Value.X - CharacterStatus.X), Math.Abs(o.Value.Y - CharacterStatus.Y)));
+            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y).Count());    
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
@@ -830,6 +830,20 @@ public static class GoRunFunction
         }
         return true;
 
+    }
+    
+    public static  List<(byte dir, byte steps)> measureGenGoPath (MirGameInstanceModel GameInstance, int tx, int ty){
+        var goNodes = new List<(byte dir, byte steps)>();
+        try
+        {
+            var monsPos = GetMonsPos(GameInstance!);
+            goNodes = genGoPath(GameInstance!, tx, ty, monsPos).Select(o => (o.dir, o.steps)).ToList();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "寻路测距异常");
+        }
+        return goNodes;
     }
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
@@ -946,7 +960,8 @@ public static class GoRunFunction
             var maxed = 9;
             while (true)
             {
-                if(GameInstance.CharacterStatus!.CurrentHP == 0){
+                if (GameInstance.CharacterStatus!.CurrentHP == 0)
+                {
                     return false;
                 }
                 if (cancellationToken.IsCancellationRequested)
