@@ -842,7 +842,8 @@ public static class GoRunFunction
                 return 0;
             }
             var monsPos = GetMonsPos(GameInstance!);
-            return genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Count();
+            var res = genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Count()
+            return res == 0 ? 999 : res;
         }
         catch (Exception ex)
         {
