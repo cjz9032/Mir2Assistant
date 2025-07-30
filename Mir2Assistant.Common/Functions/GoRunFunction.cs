@@ -577,7 +577,7 @@ public static class GoRunFunction
         return monsPos;
     }
 
-    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
+    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker, bool paolu = false)
     {
         instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
         if(instanceValue.CharacterStatus!.CurrentHP == 0){
@@ -705,7 +705,14 @@ public static class GoRunFunction
                 // todo 法师暂时不要砍了 要配合2边一起改
                 if (instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus!.Level < 11)
                 {
+                    await Task.Delay(100);
                     break;
+                }
+                // 检测距离
+                if (!paolu && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                {
+                    // 跟随
+                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
                 }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
@@ -872,7 +879,7 @@ public static class GoRunFunction
                             return true;
                         }
                         return false;
-                    });
+                    }, true);
                 }
             }
     }
