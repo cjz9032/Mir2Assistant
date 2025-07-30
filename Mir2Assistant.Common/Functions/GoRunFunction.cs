@@ -653,7 +653,7 @@ public static class GoRunFunction
                         (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                     }
                 }
-                bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5);
+                bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5, true, 10);
             }
 
 
@@ -671,7 +671,7 @@ public static class GoRunFunction
                 if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                 {
                     // 跟随
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
+                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
                 }
             }
 
@@ -712,7 +712,7 @@ public static class GoRunFunction
                 if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                 {
                     // 跟随
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
+                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
                 }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
