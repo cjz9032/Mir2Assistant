@@ -716,7 +716,7 @@ public static class GoRunFunction
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
                 .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
-                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y).Count())
+                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
                 .FirstOrDefault();
                 if (ani != null)
                 {
@@ -832,18 +832,48 @@ public static class GoRunFunction
 
     }
     
-    public static  List<(byte dir, byte steps)> measureGenGoPath (MirGameInstanceModel GameInstance, int tx, int ty){
-        var goNodes = new List<(byte dir, byte steps)>();
+    public static int measureGenGoPath (MirGameInstanceModel GameInstance, int tx, int ty){
         try
         {
+            // 身边不用寻
+            int myX = GameInstance!.CharacterStatus!.X;
+            int myY = GameInstance!.CharacterStatus!.Y;
+            if(Math.Abs(tx - myX) < 2 && Math.Abs(ty - myY) < 2){
+                return 0;
+            }
             var monsPos = GetMonsPos(GameInstance!);
-            goNodes = genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Select(o => (o.dir, o.steps)).ToList();
+            return genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Count();
         }
         catch (Exception ex)
         {
             Log.Error(ex, "寻路测距异常");
         }
-        return goNodes;
+        return 999;
+    }
+
+    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
+          // todo 法师暂时不要砍了 要配合2边一起改
+            if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
+            {
+                // 攻击怪物, 太多了 过不去
+                var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon).ToList();
+                if (monsters.Count > attacksThan)
+                {
+                    // 算出怪物中间点 取整
+                    await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
+                    {
+                        // 重读怪物
+                        MonsterFunction.ReadMonster(instanceValue!);
+                        var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon).Count();
+                        // 怪物死了剩余一半就可以通过
+                        if (existsCount <= monsters.Count / 2)
+                        {
+                            return true;
+                        }
+                        return false;
+                    });
+                }
+            }
     }
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
@@ -889,8 +919,11 @@ public static class GoRunFunction
 
         stopwatchTotal.Stop();
         GameInstance.GameDebug("寻路: {Time} 毫秒", stopwatchTotal.ElapsedMilliseconds);
+
+
         if (goNodes.Count == 0)
         {
+            await cleanMobs(GameInstance, attacksThan, cancellationToken);
             // 加个重试次数3次
             await Task.Delay(300);
 
@@ -926,28 +959,7 @@ public static class GoRunFunction
             {
                 return false;
             }
-            // todo 法师暂时不要砍了 要配合2边一起改
-            if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
-            {
-                // 攻击怪物, 太多了 过不去
-                var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon).ToList();
-                if (monsters.Count > attacksThan)
-                {
-                    // 算出怪物中间点 取整
-                    await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
-                    {
-                        // 重读怪物
-                        MonsterFunction.ReadMonster(instanceValue!);
-                        var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon).Count();
-                        // 怪物死了剩余一半就可以通过
-                        if (existsCount <= monsters.Count / 2)
-                        {
-                            return true;
-                        }
-                        return false;
-                    });
-                }
-            }
+            await cleanMobs(GameInstance, attacksThan, cancellationToken);
 
             var node = goNodes[0];
             var oldX = GameInstance!.CharacterStatus!.X;
