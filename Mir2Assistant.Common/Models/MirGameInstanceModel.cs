@@ -41,6 +41,8 @@ public class MirGameInstanceModel
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;
     public bool isRestarting = false;
+    public int sameHPtimes = 0;
+    public int lastHP = 0;
 
     /// <summary>
     /// 技能
@@ -112,6 +114,8 @@ public class MirGameInstanceModel
         spellLastTime = 0;
         eatItemLastTime = 0;
         MirThreadId = 0;
+        sameHPtimes = 0;
+        lastHP = 0;
         memoryUtils?.Dispose();
     }
 

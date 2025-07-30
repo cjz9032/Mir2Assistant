@@ -1037,6 +1037,21 @@ namespace Mir2Assistant
                             }
                             if (CharacterStatus.CurrentHP > 0)
                             {
+                                if (CharacterStatus.CurrentHP == instance.lastHP)
+                                {
+                                    instance.sameHPtimes++;
+                                    if (instance.sameHPtimes > 20)
+                                    {
+                                        // 掉线
+                                        RestartGameProcess(instance);
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    instance.sameHPtimes = 0;
+                                }
+                                instance.lastHP = CharacterStatus.CurrentHP;
 
                                 // 组队
                                 if (CharacterStatus.groupMemCount < GameState.GameInstances.Count)
