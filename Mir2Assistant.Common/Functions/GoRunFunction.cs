@@ -783,7 +783,7 @@ public static class GoRunFunction
             && !GameConstants.Items.binItems.Contains(o.Value.Name)
             && (instanceValue.AccountInfo.role != RoleType.blade || GameConstants.Items.MegaPotions.Contains(o.Value.Name)))
             )
-            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y).Count());    
+            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));    
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
