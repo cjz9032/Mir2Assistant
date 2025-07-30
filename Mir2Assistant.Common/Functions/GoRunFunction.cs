@@ -837,7 +837,7 @@ public static class GoRunFunction
         try
         {
             var monsPos = GetMonsPos(GameInstance!);
-            goNodes = genGoPath(GameInstance!, tx, ty, monsPos).Select(o => (o.dir, o.steps)).ToList();
+            goNodes = genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Select(o => (o.dir, o.steps)).ToList();
         }
         catch (Exception ex)
         {

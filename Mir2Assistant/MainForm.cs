@@ -592,7 +592,7 @@ namespace Mir2Assistant
                     Array.Resize(ref data, data.Length + 1);
                     data[data.Length - 1] = meat.Id;
                     SendMirCall.Send(instanceValue!, 3011, data);
-                    await Task.Delay(400);
+                    await Task.Delay(500);
                 }
 
                 await Task.Delay(500);
@@ -631,7 +631,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找助手，位置: {Position}", isLeftAlive ? "左边" : "右边");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "", 6,true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "助手小敏" : "助手阿妍");
@@ -645,7 +645,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找屠夫，位置: {Position}", isLeftAlive ? "左边" : "右边");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "", 6, true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -658,7 +658,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找武器商人，位置: {Position}", isLeftAlive ? "左边" : "右边");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "", 6,true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "精武馆老板" : "边界村铁匠铺");
