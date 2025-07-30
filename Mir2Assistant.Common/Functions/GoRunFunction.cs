@@ -879,7 +879,7 @@ public static class GoRunFunction
                             return true;
                         }
                         return false;
-                    }, true);
+                    });
                 }
             }
     }
