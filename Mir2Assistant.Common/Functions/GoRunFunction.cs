@@ -709,7 +709,7 @@ public static class GoRunFunction
                     break;
                 }
                 // 检测距离
-                if (!paolu && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                if (!instanceValue.AccountInfo.IsMainControl && !paolu && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                 {
                     // 跟随
                     await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true);
