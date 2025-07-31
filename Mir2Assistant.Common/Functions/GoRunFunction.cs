@@ -816,7 +816,7 @@ public static class GoRunFunction
                     while (tried < 20)
                     {
                         SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                        await Task.Delay(600);
+                        await Task.Delay(500);
                         MonsterFunction.ReadMonster(instanceValue!);
                         if (body.isButched)
                         {
