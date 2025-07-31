@@ -374,7 +374,9 @@ namespace Mir2Assistant
                         await Task.Delay(8000);
                         // todo 挪走到外面
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                        await Task.Delay(5000);
+                        await Task.Delay(6000);
+                        SendMirCall.Send(gameInstance!, 9100, new nint[] { });
+                        await Task.Delay(3000);
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{
                         return false;
@@ -473,7 +475,7 @@ namespace Mir2Assistant
             foreach (var account in accountList)
             {
                 RestartGameProcess(GameState.GameInstances.FirstOrDefault(g => g.AccountInfo?.Account == account.Account)!);
-                await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 7000);
+                await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 15000);
                 }
              
                 // sllep 

@@ -1119,7 +1119,9 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 9098, new nint[] { });
         await Task.Delay(5000);
         SendMirCall.Send(gameInstance, 9099, new nint[] { });
-        await Task.Delay(5000);
+        await Task.Delay(6000);
+        SendMirCall.Send(gameInstance, 9100, new nint[] { });
+        await Task.Delay(3000);
     }
 
     /// <summary>

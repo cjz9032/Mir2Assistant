@@ -211,6 +211,29 @@ void startButton(){
 	}
 }
 
+void okButton(){
+	_asm { 
+		pushad
+		pushfd
+		push 100
+		
+		mov ebx, 0x74350C
+		mov ebx, [ebx]
+		add ebx, 8FC
+		mov ebx,[ebx]
+		mov ecx, 100
+		mov edx, ebx
+		
+		mov eax, dword ptr ds : [0x74350C]
+		mov esi, 0x0059B340
+		call esi	
+		
+		popfd
+		popad
+	}
+}
+
+
 void any_call(int* data) {
 	void (*func)() = reinterpret_cast<void(*)()>(data);
 	func();
@@ -253,6 +276,8 @@ void Sys::process(int code, int* data)
 	case 9099:
 		startButton();
 		break;
+	case 9100:
+		okButton();
 	case 9999: //执行任务ASM代码
 		any_call(data);
 		break;
