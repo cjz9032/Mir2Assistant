@@ -278,6 +278,7 @@ void Sys::process(int code, int* data)
 		break;
 	case 9100:
 		okButton();
+		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);
 		break;
