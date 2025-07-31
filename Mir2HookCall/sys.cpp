@@ -219,7 +219,7 @@ void okButton(){
 		
 		mov ebx, 0x74350C
 		mov ebx, [ebx]
-		add ebx, 8FC
+		add ebx, 0x8FC
 		mov ebx,[ebx]
 		mov ecx, 100
 		mov edx, ebx
