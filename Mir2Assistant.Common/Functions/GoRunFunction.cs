@@ -790,7 +790,7 @@ public static class GoRunFunction
             // 按距离, 且没捡取过
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || ( !instanceValue.pickupItemIds.Contains(o.Value.Id)
             && !GameConstants.Items.binItems.Contains(o.Value.Name)
-            && (instanceValue.AccountInfo.role != RoleType.blade || GameConstants.Items.MegaPotions.Contains(o.Value.Name)))
+            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && instanceValue.AccountInfo.role != RoleType.taoist)))
             )
             .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));    
             foreach (var drop in drops)
