@@ -26,6 +26,7 @@ public static class GameConstants
             "布衣(男)",
             "布衣(女)",
             "匕首",
+            "六角戒指",
         };
 
 
