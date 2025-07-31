@@ -128,7 +128,7 @@ public static class GoRunFunction
 
     public static void GoRunAlgorithm(MirGameInstanceModel gameInstance, int x, int y, byte dir, byte steps)
     {
-        gameInstance.GameDebug("执行寻路算法移动，目标: ({X}, {Y}), 方向: {Dir}, 步数: {Steps}", x, y, dir, steps);
+        // gameInstance.GameDebug("执行寻路算法移动，目标: ({X}, {Y}), 方向: {Dir}, 步数: {Steps}", x, y, dir, steps);
         int typePara = 0;
         switch (steps)
         {
@@ -671,6 +671,7 @@ public static class GoRunFunction
                 if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                 {
                     // 跟随
+                    Log.Information("跟随 in start: {X}, {Y}", px, py);
                     await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
                 }
             }
@@ -709,9 +710,10 @@ public static class GoRunFunction
                     break;
                 }
                 // 检测距离
-                if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                 {
                     // 跟随
+                    Log.Information("跟随 in monster: {X}, {Y}", px, py);
                     await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
                 }
                 // 查看存活怪物 并且小于距离10个格子
