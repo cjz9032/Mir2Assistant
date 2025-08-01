@@ -9,51 +9,23 @@ namespace Mir2Assistant.Examples
     {
         public static void Run()
         {
-            // 创建示例数据
-            var connections = new List<MapConnection>
+            var service = new MapPathFindingService();
+
+            // 示例：从比奇省到沃玛森林
+            var fromMapId = "0";  // 比奇省
+            var toMapId = "1";    // 沃玛森林
+
+            var path = service.FindPath(fromMapId, toMapId);
+            if (path == null)
             {
-                new MapConnection 
-                { 
-                    From = new MapPosition { MapId = "0101", X = 10, Y = 22 },
-                    To = new MapPosition { MapId = "0", X = 287, Y = 296 }
-                },
-                new MapConnection 
-                { 
-                    From = new MapPosition { MapId = "0101", X = 18, Y = 14 },
-                    To = new MapPosition { MapId = "0", X = 290, Y = 293 }
-                },
-                new MapConnection 
-                { 
-                    From = new MapPosition { MapId = "0101", X = 3, Y = 19 },
-                    To = new MapPosition { MapId = "0100", X = 11, Y = 13 }
-                },
-                new MapConnection 
-                { 
-                    From = new MapPosition { MapId = "0100", X = 11, Y = 14 },
-                    To = new MapPosition { MapId = "0101", X = 3, Y = 20 }
-                }
-            };
-
-            // 创建寻路服务
-            var pathFinder = new MapPathFindingService(connections);
-
-            // 测试寻路
-            var start = new MapPosition { MapId = "0100", X = 5, Y = 5 };
-            var target = new MapPosition { MapId = "0", X = 288, Y = 295 };
-
-            var path = pathFinder.FindNearestPath(start, target);
-
-            if (path != null)
-            {
-                Console.WriteLine("找到路径:");
-                foreach (var connection in path)
-                {
-                    Console.WriteLine(connection);
-                }
+                Console.WriteLine($"未找到从 {service.GetMapName(fromMapId)} 到 {service.GetMapName(toMapId)} 的路径");
+                return;
             }
-            else
+
+            Console.WriteLine($"从 {service.GetMapName(fromMapId)} 到 {service.GetMapName(toMapId)} 的路径：");
+            foreach (var conn in path)
             {
-                Console.WriteLine("未找到路径");
+                Console.WriteLine($"  {service.GetMapName(conn.From.MapId)} ({conn.From.X}, {conn.From.Y}) -> {service.GetMapName(conn.To.MapId)} ({conn.To.X}, {conn.To.Y})");
             }
         }
     }

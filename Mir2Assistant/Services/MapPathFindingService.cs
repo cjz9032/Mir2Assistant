@@ -1,142 +1,111 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Mir2Assistant.Generated;
 using Mir2Assistant.Models.MapPathFinding;
 
 namespace Mir2Assistant.Services
 {
     public class MapPathFindingService
     {
-        // 存储所有地图ID到索引的映射
-        private readonly Dictionary<string, int> _mapToIndex;
-        private readonly string[] _indexToMap;
-        
-        // 存储所有预计算的路径
-        private readonly List<MapConnection>[,] _paths;
-        
-        // 原始连接信息，用于查找具体的传送点
-        private readonly Dictionary<string, List<MapConnection>> _adjacencyList;
+        private readonly Dictionary<string, List<MapConnection>> _pathCache = new();
 
-        public MapPathFindingService(IEnumerable<MapConnection> connections)
+        public MapPathFindingService()
         {
-            var mapIds = new HashSet<string>();
-            _adjacencyList = new Dictionary<string, List<MapConnection>>();
-
-            // 收集所有地图ID并构建邻接表
-            foreach (var conn in connections)
-            {
-                mapIds.Add(conn.From.MapId);
-                mapIds.Add(conn.To.MapId);
-                
-                if (!_adjacencyList.ContainsKey(conn.From.MapId))
-                {
-                    _adjacencyList[conn.From.MapId] = new List<MapConnection>();
-                }
-                _adjacencyList[conn.From.MapId].Add(conn);
-            }
-
-            // 构建地图ID和索引的映射
-            _indexToMap = mapIds.ToArray();
-            _mapToIndex = new Dictionary<string, int>();
-            for (int i = 0; i < _indexToMap.Length; i++)
-            {
-                _mapToIndex[_indexToMap[i]] = i;
-            }
-
-            // 初始化路径数组
-            int n = _indexToMap.Length;
-            _paths = new List<MapConnection>[n, n];
-
-            // Floyd-Warshall 算法预处理
-            InitializeFloydWarshall(connections);
+            // 无需初始化 - 图结构已硬编码
         }
 
-        private void InitializeFloydWarshall(IEnumerable<MapConnection> connections)
+        public string GetMapName(string mapId)
         {
-            int n = _indexToMap.Length;
-
-            // 初始化路径数组
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    _paths[i, j] = new List<MapConnection>();
-                }
-            }
-
-            // 设置直接连接
-            foreach (var conn in connections)
-            {
-                int from = _mapToIndex[conn.From.MapId];
-                int to = _mapToIndex[conn.To.MapId];
-                _paths[from, to] = new List<MapConnection> { conn };
-            }
-
-            // Floyd-Warshall 算法
-            for (int k = 0; k < n; k++)
-            {
-                for (int i = 0; i < n; i++)
-                {
-                    for (int j = 0; j < n; j++)
-                    {
-                        // 如果通过k能找到一条路径
-                        if (i != j && _paths[i, k].Count > 0 && _paths[k, j].Count > 0)
-                        {
-                            // 如果还没有路径，或者新路径更短
-                            if (_paths[i, j].Count == 0 || 
-                                _paths[i, k].Count + _paths[k, j].Count < _paths[i, j].Count)
-                            {
-                                _paths[i, j] = _paths[i, k].Concat(_paths[k, j]).ToList();
-                            }
-                        }
-                    }
-                }
-            }
+            return MapData.MapNames.TryGetValue(mapId, out var name) ? name : mapId;
         }
 
-        // 新增：只用地图ID的简单路径查找
-        public List<MapConnection> FindPath(string fromMapId, string toMapId)
+        public List<MapConnection>? FindPath(string fromMapId, string toMapId)
         {
-            // 如果是同一地图，返回空路径
-            if (fromMapId == toMapId)
+            var cacheKey = $"{fromMapId}->{toMapId}";
+            
+            // 检查缓存
+            if (_pathCache.TryGetValue(cacheKey, out var cachedPath))
             {
-                return new List<MapConnection>();
+                return cachedPath;
             }
 
-            // 如果地图ID不存在，返回null
-            if (!_mapToIndex.ContainsKey(fromMapId) || !_mapToIndex.ContainsKey(toMapId))
+            // 转换为索引
+            var fromIndex = MapData.GetMapIndex(fromMapId);
+            var toIndex = MapData.GetMapIndex(toMapId);
+            
+            if (fromIndex == -1 || toIndex == -1)
             {
                 return null;
             }
 
-            // 直接返回预计算的路径
-            int fromIndex = _mapToIndex[fromMapId];
-            int toIndex = _mapToIndex[toMapId];
-            var path = _paths[fromIndex, toIndex];
+            // 快速 BFS 寻路
+            var path = FindPathInternal(fromIndex, toIndex);
             
-            return path.Count > 0 ? new List<MapConnection>(path) : null;
+            // 缓存结果
+            _pathCache[cacheKey] = path;
+            
+            return path;
         }
 
-        // 原有的FindPath方法改名为FindPathWithPosition，并调用新的FindPath方法
-        private List<MapConnection> FindPathWithPosition(MapPosition start, MapPosition target)
+        private List<MapConnection>? FindPathInternal(int fromIndex, int toIndex)
         {
-            return FindPath(start.MapId, target.MapId);
-        }
-
-        public List<MapConnection> FindNearestPath(MapPosition start, MapPosition target)
-        {
-            var path = FindPath(start.MapId, target.MapId);
-            if (path == null || !path.Any())
+            if (fromIndex == toIndex)
             {
-                return path;
+                return new List<MapConnection>();
             }
 
-            // 更新第一个连接点的起始坐标为实际起始位置
-            var firstConnection = path[0];
-            firstConnection.From.X = start.X;
-            firstConnection.From.Y = start.Y;
+            var visited = new HashSet<int>();
+            var queue = new Queue<(int index, List<(int fromIdx, int[] connData)> path)>();
+            queue.Enqueue((fromIndex, new List<(int, int[])>()));
+            visited.Add(fromIndex);
 
-            return path;
+            while (queue.Count > 0)
+            {
+                var (currentIndex, currentPath) = queue.Dequeue();
+
+                if (currentIndex == toIndex)
+                {
+                    // 转换路径为 MapConnection
+                    var result = new List<MapConnection>(currentPath.Count);
+                    foreach (var (fromIdx, connData) in currentPath)
+                    {
+                        result.Add(new MapConnection
+                        {
+                            From = new MapPosition 
+                            { 
+                                MapId = MapData.GetMapId(fromIdx), 
+                                X = connData[1], 
+                                Y = connData[2] 
+                            },
+                            To = new MapPosition 
+                            { 
+                                MapId = MapData.GetMapId(connData[0]), 
+                                X = connData[3], 
+                                Y = connData[4] 
+                            }
+                        });
+                    }
+                    return result;
+                }
+
+                var connections = MapData.GetConnections(currentIndex);
+                foreach (var conn in connections)
+                {
+                    var nextIndex = conn[0]; // toIndex
+                    if (!visited.Contains(nextIndex))
+                    {
+                        var newPath = new List<(int, int[])>(currentPath) { (currentIndex, conn) };
+                        queue.Enqueue((nextIndex, newPath));
+                        visited.Add(nextIndex);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public List<MapConnection>? FindNearestPath(string fromMapId, string toMapId)
+        {
+            return FindPath(fromMapId, toMapId);
         }
     }
 } 
