@@ -53,23 +53,38 @@ namespace Mir2Assistant.Services
                 return new List<MapConnection>();
             }
 
-            // BFS 算法保证找到最短路径（按传送次数计算）
-            // 原理：按层级遍历，第一次到达目标的路径必然是跳数最少的
+            // 优化：使用更高效的数据结构减少内存分配
             var visited = new HashSet<int>();
-            var queue = new Queue<(int index, List<(int fromIdx, int[] connData)> path)>();
-            queue.Enqueue((fromIndex, new List<(int, int[])>()));
+            var parent = new Dictionary<int, (int parentIndex, int[] connData)>();
+            var queue = new Queue<int>();
+            
+            queue.Enqueue(fromIndex);
             visited.Add(fromIndex);
 
             while (queue.Count > 0)
             {
-                var (currentIndex, currentPath) = queue.Dequeue();
+                var currentIndex = queue.Dequeue();
 
                 // 第一次到达目标 = 最短路径
                 if (currentIndex == toIndex)
                 {
-                    // 转换路径为 MapConnection
-                    var result = new List<MapConnection>(currentPath.Count);
-                    foreach (var (fromIdx, connData) in currentPath)
+                    // 回溯构建路径
+                    var path = new List<(int fromIdx, int[] connData)>();
+                    var current = toIndex;
+                    
+                    while (parent.ContainsKey(current))
+                    {
+                        var (parentIdx, connData) = parent[current];
+                        path.Add((parentIdx, connData));
+                        current = parentIdx;
+                    }
+                    
+                    // 反转路径（因为是从目标回溯到起点）
+                    path.Reverse();
+                    
+                    // 转换为 MapConnection
+                    var result = new List<MapConnection>(path.Count);
+                    foreach (var (fromIdx, connData) in path)
                     {
                         result.Add(new MapConnection
                         {
@@ -97,9 +112,9 @@ namespace Mir2Assistant.Services
                     var nextIndex = conn[0]; // toIndex
                     if (!visited.Contains(nextIndex))
                     {
-                        var newPath = new List<(int, int[])>(currentPath) { (currentIndex, conn) };
-                        queue.Enqueue((nextIndex, newPath));
-                        visited.Add(nextIndex); // 标记已访问，确保每个节点只被最短路径访问
+                        parent[nextIndex] = (currentIndex, conn);
+                        queue.Enqueue(nextIndex);
+                        visited.Add(nextIndex);
                     }
                 }
             }

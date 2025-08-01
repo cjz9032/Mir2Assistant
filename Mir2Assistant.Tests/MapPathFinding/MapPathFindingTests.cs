@@ -178,5 +178,82 @@ namespace Mir2Assistant.Tests.MapPathFinding
             batchStopwatch.Stop();
             System.Console.WriteLine($"批量测试 {testCount} 次: 总耗时 {batchStopwatch.ElapsedTicks} ticks, 平均 {(double)batchStopwatch.ElapsedTicks / testCount:F1} ticks/次");
         }
+
+        [Fact]
+        public void DetailedPerformanceTest()
+        {
+            System.Console.WriteLine("\n=== 详细性能测试 ===");
+            
+            var testCases = new[]
+            {
+                ("0", "3", "比奇省->盟重省"),
+                ("0", "1", "比奇省->沃玛森林"), 
+                ("0", "11", "比奇省->白日门"),
+                ("3", "5", "盟重省->苍月岛"),
+                ("1", "11", "沃玛森林->白日门")
+            };
+
+            foreach (var (from, to, desc) in testCases)
+            {
+                System.Console.WriteLine($"\n{desc} ({from}->{to}):");
+                
+                // 预热
+                _pathFinder.FindPath(from, to);
+                
+                // 测试多次无缓存查询（清除缓存）
+                var times = new List<long>();
+                for (int i = 0; i < 10; i++)
+                {
+                    // 创建新的服务实例来避免缓存
+                    var freshService = new MapPathFindingService();
+                    
+                    var sw = Stopwatch.StartNew();
+                    var path = freshService.FindPath(from, to);
+                    sw.Stop();
+                    
+                    times.Add(sw.ElapsedTicks);
+                    if (i == 0 && path != null)
+                    {
+                        System.Console.WriteLine($"  路径长度: {path.Count} 步");
+                    }
+                }
+                
+                var avgTicks = times.Average();
+                var minTicks = times.Min();
+                var maxTicks = times.Max();
+                
+                System.Console.WriteLine($"  无缓存查询 (10次):");
+                System.Console.WriteLine($"    平均: {avgTicks:F1} ticks ({avgTicks / 10000:F2}ms)");
+                System.Console.WriteLine($"    最快: {minTicks} ticks ({minTicks / 10000.0:F2}ms)");
+                System.Console.WriteLine($"    最慢: {maxTicks} ticks ({maxTicks / 10000.0:F2}ms)");
+                
+                // 测试缓存性能
+                var cachedTimes = new List<long>();
+                for (int i = 0; i < 100; i++)
+                {
+                    var sw = Stopwatch.StartNew();
+                    _pathFinder.FindPath(from, to);
+                    sw.Stop();
+                    cachedTimes.Add(sw.ElapsedTicks);
+                }
+                
+                var avgCachedTicks = cachedTimes.Average();
+                System.Console.WriteLine($"  缓存查询 (100次): 平均 {avgCachedTicks:F1} ticks ({avgCachedTicks / 10000:F2}ms)");
+            }
+            
+            // 极限性能测试
+            System.Console.WriteLine($"\n=== 极限性能测试 ===");
+            var extremeStopwatch = Stopwatch.StartNew();
+            int extremeCount = 1000;
+            
+            for (int i = 0; i < extremeCount; i++)
+            {
+                _pathFinder.FindPath("0", "3");
+            }
+            
+            extremeStopwatch.Stop();
+            var avgExtremeTicks = (double)extremeStopwatch.ElapsedTicks / extremeCount;
+            System.Console.WriteLine($"缓存查询 {extremeCount} 次: 平均 {avgExtremeTicks:F1} ticks ({avgExtremeTicks / 10000:F2}ms)");
+        }
     }
 } 

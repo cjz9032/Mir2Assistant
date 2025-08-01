@@ -693,7 +693,7 @@ namespace Mir2Assistant.Generated
             ["T339"] = 339,
         };
 
-        // 索引到地图ID的映射
+        // 索引到地图ID的映射 - 使用数组提高访问速度
         private static readonly string[] _indexToMapId = new string[]
         {
             "0",
@@ -1038,10 +1038,10 @@ namespace Mir2Assistant.Generated
             "T339",
         };
 
-        // 邻接表 - 每个地图的连接用整数数组: [toIndex, fromX, fromY, toX, toY]
-        private static readonly Dictionary<int, int[][]> _adjacencyList = new()
+        // 邻接表 - 使用数组提高访问速度: [toIndex, fromX, fromY, toX, toY]
+        private static readonly int[][][] _adjacencyList = new int[][][]
         {
-            [0] = new int[][]
+            new int[][] // Index 0: 0
             {
                 new int[] { 27, 346, 186, 11, 41 },
                 new int[] { 27, 347, 186, 12, 42 },
@@ -1142,180 +1142,196 @@ namespace Mir2Assistant.Generated
                 new int[] { 187, 664, 213, 24, 181 },
                 new int[] { 339, 428, 474, 23, 24 },
             },
-            [1] = new int[][]
+            new int[][] // Index 1: 0100
             {
                 new int[] { 2, 11, 14, 3, 20 },
             },
-            [2] = new int[][]
+            new int[][] // Index 2: 0101
             {
                 new int[] { 0, 10, 22, 287, 296 },
                 new int[] { 0, 18, 14, 290, 293 },
                 new int[] { 1, 3, 19, 11, 13 },
             },
-            [3] = new int[][]
+            new int[][] // Index 3: 0102
             {
                 new int[] { 0, 3, 8, 308, 265 },
             },
-            [4] = new int[][]
+            new int[][] // Index 4: 0103
             {
                 new int[] { 0, 4, 13, 334, 300 },
                 new int[] { 0, 5, 13, 334, 301 },
                 new int[] { 0, 16, 25, 345, 310 },
                 new int[] { 0, 17, 25, 344, 309 },
             },
-            [5] = new int[][]
+            new int[][] // Index 5: 0104
             {
                 new int[] { 0, 4, 11, 323, 248 },
             },
-            [6] = new int[][]
+            new int[][] // Index 6: 0105
             {
                 new int[] { 0, 9, 25, 295, 286 },
                 new int[] { 0, 9, 24, 296, 285 },
                 new int[] { 0, 21, 12, 306, 276 },
                 new int[] { 0, 21, 13, 306, 277 },
             },
-            [7] = new int[][]
+            new int[][] // Index 7: 0106
             {
                 new int[] { 0, 9, 25, 307, 312 },
                 new int[] { 0, 9, 24, 308, 311 },
                 new int[] { 0, 21, 13, 318, 302 },
                 new int[] { 0, 21, 12, 318, 303 },
             },
-            [8] = new int[][]
+            new int[][] // Index 8: 0107
             {
                 new int[] { 0, 10, 13, 354, 320 },
             },
-            [9] = new int[][]
+            new int[][] // Index 9: 0108
             {
                 new int[] { 0, 10, 13, 326, 289 },
                 new int[] { 10, 4, 15, 7, 6 },
             },
-            [10] = new int[][]
+            new int[][] // Index 10: 0109
             {
                 new int[] { 9, 8, 6, 4, 14 },
             },
-            [11] = new int[][]
+            new int[][] // Index 11: 0110
             {
                 new int[] { 0, 12, 15, 396, 230 },
                 new int[] { 0, 11, 16, 397, 230 },
             },
-            [12] = new int[][]
+            new int[][] // Index 12: 0111
             {
                 new int[] { 0, 12, 15, 400, 226 },
                 new int[] { 0, 11, 16, 401, 226 },
             },
-            [13] = new int[][]
+            new int[][] // Index 13: 0112
             {
                 new int[] { 0, 11, 16, 404, 222 },
                 new int[] { 0, 12, 15, 404, 222 },
             },
-            [14] = new int[][]
+            new int[][] // Index 14: 0113
             {
                 new int[] { 0, 13, 16, 544, 561 },
             },
-            [16] = new int[][]
+            new int[][] // Index 15: 01132
+            {
+
+            },
+            new int[][] // Index 16: 0114
             {
                 new int[] { 0, 15, 17, 107, 317 },
             },
-            [19] = new int[][]
+            new int[][] // Index 17: 01141
+            {
+
+            },
+            new int[][] // Index 18: 01142
+            {
+
+            },
+            new int[][] // Index 19: 0115
             {
                 new int[] { 0, 17, 21, 315, 475 },
             },
-            [21] = new int[][]
+            new int[][] // Index 20: 01152
+            {
+
+            },
+            new int[][] // Index 21: 0116
             {
                 new int[] { 77, 9, 23, 522, 474 },
                 new int[] { 77, 10, 24, 522, 475 },
             },
-            [22] = new int[][]
+            new int[][] // Index 22: 0117
             {
                 new int[] { 77, 10, 17, 505, 498 },
             },
-            [23] = new int[][]
+            new int[][] // Index 23: 0118
             {
                 new int[] { 24, 8, 12, 4, 8 },
                 new int[] { 24, 9, 11, 5, 8 },
                 new int[] { 0, 2, 14, 649, 617 },
             },
-            [24] = new int[][]
+            new int[][] // Index 24: 0119
             {
                 new int[] { 23, 4, 7, 8, 11 },
                 new int[] { 23, 5, 7, 7, 12 },
             },
-            [25] = new int[][]
+            new int[][] // Index 25: 0120
             {
                 new int[] { 77, 14, 15, 517, 492 },
             },
-            [26] = new int[][]
+            new int[][] // Index 26: 0121
             {
                 new int[] { 0, 2, 16, 308, 615 },
             },
-            [27] = new int[][]
+            new int[][] // Index 27: 0122
             {
                 new int[] { 0, 11, 42, 346, 187 },
                 new int[] { 0, 13, 44, 347, 187 },
             },
-            [28] = new int[][]
+            new int[][] // Index 28: 0123
             {
                 new int[] { 0, 12, 18, 270, 257 },
                 new int[] { 75, 12, 18, 204, 385 },
             },
-            [29] = new int[][]
+            new int[][] // Index 29: 0124
             {
                 new int[] { 0, 6, 13, 282, 268 },
             },
-            [30] = new int[][]
+            new int[][] // Index 30: 0125
             {
                 new int[] { 0, 7, 17, 295, 251 },
                 new int[] { 0, 8, 17, 296, 252 },
                 new int[] { 31, 4, 10, 3, 9 },
             },
-            [31] = new int[][]
+            new int[][] // Index 31: 0126
             {
                 new int[] { 30, 3, 10, 5, 11 },
             },
-            [32] = new int[][]
+            new int[][] // Index 32: 0127
             {
                 new int[] { 0, 14, 17, 311, 601 },
             },
-            [33] = new int[][]
+            new int[][] // Index 33: 0128
             {
                 new int[] { 0, 6, 9, 278, 240 },
             },
-            [34] = new int[][]
+            new int[][] // Index 34: 0129
             {
                 new int[] { 0, 2, 7, 284, 237 },
             },
-            [35] = new int[][]
+            new int[][] // Index 35: 0130
             {
                 new int[] { 0, 8, 12, 267, 630 },
             },
-            [36] = new int[][]
+            new int[][] // Index 36: 0131
             {
                 new int[] { 0, 4, 16, 271, 622 },
             },
-            [37] = new int[][]
+            new int[][] // Index 37: 0132
             {
                 new int[] { 0, 14, 16, 283, 637 },
                 new int[] { 0, 15, 15, 283, 636 },
                 new int[] { 0, 16, 14, 284, 636 },
             },
-            [38] = new int[][]
+            new int[][] // Index 38: 0133
             {
                 new int[] { 0, 2, 8, 629, 646 },
             },
-            [39] = new int[][]
+            new int[][] // Index 39: 0134
             {
                 new int[] { 0, 6, 13, 623, 640 },
             },
-            [40] = new int[][]
+            new int[][] // Index 40: 0135
             {
                 new int[] { 0, 9, 10, 625, 621 },
             },
-            [41] = new int[][]
+            new int[][] // Index 41: 0136
             {
                 new int[] { 0, 2, 20, 294, 650 },
             },
-            [42] = new int[][]
+            new int[][] // Index 42: 0137
             {
                 new int[] { 0, 18, 23, 416, 245 },
                 new int[] { 0, 19, 22, 417, 244 },
@@ -1323,123 +1339,123 @@ namespace Mir2Assistant.Generated
                 new int[] { 44, 14, 16, 18, 21 },
                 new int[] { 44, 13, 17, 17, 22 },
             },
-            [43] = new int[][]
+            new int[][] // Index 43: 0138
             {
                 new int[] { 0, 4, 10, 273, 637 },
             },
-            [44] = new int[][]
+            new int[][] // Index 44: 0139
             {
                 new int[] { 42, 17, 20, 13, 15 },
                 new int[] { 42, 16, 21, 12, 16 },
             },
-            [45] = new int[][]
+            new int[][] // Index 45: 0140
             {
                 new int[] { 0, 2, 11, 306, 628 },
             },
-            [46] = new int[][]
+            new int[][] // Index 46: 0141
             {
                 new int[] { 0, 2, 12, 302, 623 },
                 new int[] { 0, 17, 27, 311, 632 },
             },
-            [47] = new int[][]
+            new int[][] // Index 47: 0142
             {
                 new int[] { 77, 9, 10, 512, 462 },
             },
-            [48] = new int[][]
+            new int[][] // Index 48: 0143
             {
                 new int[] { 78, 16, 20, 277, 320 },
             },
-            [49] = new int[][]
+            new int[][] // Index 49: 0144
             {
                 new int[] { 78, 9, 20, 256, 336 },
                 new int[] { 78, 16, 18, 257, 335 },
             },
-            [50] = new int[][]
+            new int[][] // Index 50: 0145
             {
                 new int[] { 78, 5, 16, 304, 369 },
                 new int[] { 78, 6, 17, 305, 370 },
                 new int[] { 51, 8, 2, 7, 7 },
                 new int[] { 51, 9, 3, 8, 8 },
             },
-            [51] = new int[][]
+            new int[][] // Index 51: 0146
             {
                 new int[] { 50, 6, 8, 8, 3 },
                 new int[] { 50, 7, 8, 9, 4 },
             },
-            [52] = new int[][]
+            new int[][] // Index 52: 0147
             {
                 new int[] { 78, 2, 16, 392, 330 },
             },
-            [53] = new int[][]
+            new int[][] // Index 53: 0148
             {
                 new int[] { 78, 10, 15, 291, 368 },
             },
-            [54] = new int[][]
+            new int[][] // Index 54: 0149
             {
                 new int[] { 78, 2, 10, 310, 293 },
                 new int[] { 78, 17, 26, 320, 303 },
             },
-            [55] = new int[][]
+            new int[][] // Index 55: 0150
             {
                 new int[] { 78, 15, 20, 631, 275 },
                 new int[] { 78, 16, 19, 632, 274 },
                 new int[] { 78, 8, 23, 624, 271 },
             },
-            [56] = new int[][]
+            new int[][] // Index 56: 0151
             {
                 new int[] { 78, 7, 23, 627, 321 },
                 new int[] { 78, 18, 11, 635, 313 },
                 new int[] { 78, 6, 23, 627, 321 },
             },
-            [57] = new int[][]
+            new int[][] // Index 57: 0152
             {
                 new int[] { 78, 10, 16, 638, 243 },
             },
-            [58] = new int[][]
+            new int[][] // Index 58: 0153
             {
                 new int[] { 78, 6, 22, 638, 334 },
                 new int[] { 78, 18, 10, 646, 326 },
             },
-            [59] = new int[][]
+            new int[][] // Index 59: 0154
             {
                 new int[] { 78, 6, 22, 677, 294 },
                 new int[] { 78, 17, 11, 684, 286 },
             },
-            [60] = new int[][]
+            new int[][] // Index 60: 0155
             {
                 new int[] { 78, 6, 22, 665, 283 },
                 new int[] { 78, 18, 10, 673, 275 },
             },
-            [61] = new int[][]
+            new int[][] // Index 61: 0156
             {
                 new int[] { 78, 10, 16, 601, 283 },
             },
-            [62] = new int[][]
+            new int[][] // Index 62: 0157
             {
                 new int[] { 78, 8, 26, 861, 175 },
                 new int[] { 78, 9, 27, 862, 175 },
                 new int[] { 201, 20, 15, 166, 216 },
                 new int[] { 201, 20, 5, 166, 216 },
             },
-            [63] = new int[][]
+            new int[][] // Index 63: 0158
             {
                 new int[] { 78, 7, 28, 291, 303 },
                 new int[] { 78, 22, 13, 301, 294 },
             },
-            [64] = new int[][]
+            new int[][] // Index 64: 0159
             {
                 new int[] { 78, 4, 16, 329, 315 },
             },
-            [65] = new int[][]
+            new int[][] // Index 65: 0160
             {
                 new int[] { 78, 2, 15, 268, 352 },
             },
-            [66] = new int[][]
+            new int[][] // Index 66: 0161
             {
                 new int[] { 78, 6, 16, 409, 322 },
                 new int[] { 78, 7, 17, 410, 323 },
             },
-            [67] = new int[][]
+            new int[][] // Index 67: 1
             {
                 new int[] { 0, 559, 554, 324, 35 },
                 new int[] { 0, 559, 555, 324, 36 },
@@ -1480,35 +1496,35 @@ namespace Mir2Assistant.Generated
                 new int[] { 333, 215, 312, 81, 14 },
                 new int[] { 338, 320, 56, 49, 31 },
             },
-            [68] = new int[][]
+            new int[][] // Index 68: 1001
             {
                 new int[] { 75, 5, 18, 224, 301 },
             },
-            [69] = new int[][]
+            new int[][] // Index 69: 1002
             {
                 new int[] { 75, 9, 18, 227, 269 },
             },
-            [70] = new int[][]
+            new int[][] // Index 70: 1003
             {
                 new int[] { 75, 7, 12, 206, 319 },
             },
-            [71] = new int[][]
+            new int[][] // Index 71: 1004
             {
                 new int[] { 75, 12, 16, 209, 273 },
             },
-            [72] = new int[][]
+            new int[][] // Index 72: 1005
             {
                 new int[] { 75, 12, 16, 146, 325 },
             },
-            [73] = new int[][]
+            new int[][] // Index 73: 1006
             {
                 new int[] { 75, 8, 16, 179, 296 },
             },
-            [74] = new int[][]
+            new int[][] // Index 74: 1007
             {
                 new int[] { 75, 5, 18, 175, 363 },
             },
-            [75] = new int[][]
+            new int[][] // Index 75: 11
             {
                 new int[] { 67, 47, 482, 44, 35 },
                 new int[] { 67, 48, 481, 45, 34 },
@@ -1531,7 +1547,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 28, 204, 385, 13, 17 },
                 new int[] { 334, 343, 325, 22, 24 },
             },
-            [76] = new int[][]
+            new int[][] // Index 76: 12
             {
                 new int[] { 75, 323, 476, 348, 242 },
                 new int[] { 75, 324, 475, 349, 241 },
@@ -1543,7 +1559,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 145, 15, 294, 52, 286 },
                 new int[] { 146, 320, 119, 288, 287 },
             },
-            [77] = new int[][]
+            new int[][] // Index 77: 2
             {
                 new int[] { 0, 413, 564, 670, 83 },
                 new int[] { 0, 413, 565, 670, 84 },
@@ -1600,7 +1616,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 78, 562, 76, 517, 776 },
                 new int[] { 78, 562, 77, 517, 777 },
             },
-            [78] = new int[][]
+            new int[][] // Index 78: 3
             {
                 new int[] { 77, 272, 751, 295, 59 },
                 new int[] { 77, 272, 752, 295, 60 },
@@ -1677,7 +1693,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 244, 305, 324, 28, 21 },
                 new int[] { 224, 139, 85, 207, 236 },
             },
-            [79] = new int[][]
+            new int[][] // Index 79: 4
             {
                 new int[] { 67, 445, 193, 47, 170 },
                 new int[] { 67, 446, 192, 47, 169 },
@@ -1706,7 +1722,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 67, 449, 189, 51, 165 },
                 new int[] { 332, 205, 218, 14, 16 },
             },
-            [80] = new int[][]
+            new int[][] // Index 80: 5
             {
                 new int[] { 123, 127, 301, 11, 13 },
                 new int[] { 124, 158, 336, 8, 13 },
@@ -1723,7 +1739,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 179, 655, 458, 34, 38 },
                 new int[] { 179, 655, 459, 34, 39 },
             },
-            [81] = new int[][]
+            new int[][] // Index 81: B101
             {
                 new int[] { 82, 9, 11, 9, 11 },
                 new int[] { 83, 4, 11, 9, 11 },
@@ -1760,72 +1776,208 @@ namespace Mir2Assistant.Generated
                 new int[] { 114, 9, 7, 9, 11 },
                 new int[] { 115, 11, 14, 9, 11 },
             },
-            [116] = new int[][]
+            new int[][] // Index 82: B102
+            {
+
+            },
+            new int[][] // Index 83: B103
+            {
+
+            },
+            new int[][] // Index 84: B104
+            {
+
+            },
+            new int[][] // Index 85: B105
+            {
+
+            },
+            new int[][] // Index 86: B106
+            {
+
+            },
+            new int[][] // Index 87: B107
+            {
+
+            },
+            new int[][] // Index 88: B108
+            {
+
+            },
+            new int[][] // Index 89: B109
+            {
+
+            },
+            new int[][] // Index 90: B110
+            {
+
+            },
+            new int[][] // Index 91: B111
+            {
+
+            },
+            new int[][] // Index 92: B112
+            {
+
+            },
+            new int[][] // Index 93: B113
+            {
+
+            },
+            new int[][] // Index 94: B114
+            {
+
+            },
+            new int[][] // Index 95: B115
+            {
+
+            },
+            new int[][] // Index 96: B116
+            {
+
+            },
+            new int[][] // Index 97: B117
+            {
+
+            },
+            new int[][] // Index 98: B118
+            {
+
+            },
+            new int[][] // Index 99: B119
+            {
+
+            },
+            new int[][] // Index 100: B120
+            {
+
+            },
+            new int[][] // Index 101: B121
+            {
+
+            },
+            new int[][] // Index 102: B122
+            {
+
+            },
+            new int[][] // Index 103: B123
+            {
+
+            },
+            new int[][] // Index 104: B124
+            {
+
+            },
+            new int[][] // Index 105: B125
+            {
+
+            },
+            new int[][] // Index 106: B126
+            {
+
+            },
+            new int[][] // Index 107: B127
+            {
+
+            },
+            new int[][] // Index 108: B128
+            {
+
+            },
+            new int[][] // Index 109: B129
+            {
+
+            },
+            new int[][] // Index 110: B130
+            {
+
+            },
+            new int[][] // Index 111: B131
+            {
+
+            },
+            new int[][] // Index 112: B132
+            {
+
+            },
+            new int[][] // Index 113: B133
+            {
+
+            },
+            new int[][] // Index 114: B134
+            {
+
+            },
+            new int[][] // Index 115: B135
+            {
+
+            },
+            new int[][] // Index 116: B341
             {
                 new int[] { 79, 26, 30, 219, 196 },
                 new int[] { 79, 25, 31, 218, 197 },
                 new int[] { 320, 11, 29, 288, 284 },
             },
-            [117] = new int[][]
+            new int[][] // Index 117: B342
             {
                 new int[] { 79, 18, 13, 221, 234 },
                 new int[] { 79, 10, 21, 217, 238 },
             },
-            [118] = new int[][]
+            new int[][] // Index 118: B343
             {
                 new int[] { 79, 18, 13, 233, 250 },
                 new int[] { 79, 10, 21, 226, 252 },
             },
-            [119] = new int[][]
+            new int[][] // Index 119: B344
             {
                 new int[] { 79, 6, 11, 233, 234 },
                 new int[] { 79, 13, 18, 238, 238 },
             },
-            [120] = new int[][]
+            new int[][] // Index 120: B345
             {
                 new int[] { 79, 13, 19, 258, 204 },
                 new int[] { 79, 5, 11, 251, 199 },
             },
-            [121] = new int[][]
+            new int[][] // Index 121: B346
             {
                 new int[] { 79, 5, 18, 192, 218 },
             },
-            [122] = new int[][]
+            new int[][] // Index 122: B347
             {
                 new int[] { 79, 14, 15, 236, 181 },
             },
-            [123] = new int[][]
+            new int[][] // Index 123: B351
             {
                 new int[] { 80, 11, 13, 127, 301 },
                 new int[] { 80, 11, 14, 127, 301 },
                 new int[] { 80, 11, 15, 127, 301 },
             },
-            [124] = new int[][]
+            new int[][] // Index 124: B352
             {
                 new int[] { 80, 8, 13, 158, 336 },
                 new int[] { 80, 7, 13, 158, 336 },
                 new int[] { 80, 8, 14, 158, 336 },
             },
-            [125] = new int[][]
+            new int[][] // Index 125: B353
             {
                 new int[] { 80, 8, 21, 146, 324 },
             },
-            [126] = new int[][]
+            new int[][] // Index 126: B354
             {
                 new int[] { 80, 11, 19, 125, 324 },
                 new int[] { 80, 12, 19, 126, 324 },
             },
-            [127] = new int[][]
+            new int[][] // Index 127: B355
             {
                 new int[] { 80, 9, 16, 152, 294 },
                 new int[] { 80, 9, 17, 152, 294 },
                 new int[] { 80, 10, 16, 152, 294 },
             },
-            [128] = new int[][]
+            new int[][] // Index 128: B356
             {
                 new int[] { 80, 10, 19, 167, 314 },
             },
-            [129] = new int[][]
+            new int[][] // Index 129: D001
             {
                 new int[] { 0, 149, 364, 147, 34 },
                 new int[] { 0, 150, 364, 147, 34 },
@@ -1834,7 +1986,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 130, 381, 23, 324, 16 },
                 new int[] { 130, 350, 356, 367, 351 },
             },
-            [130] = new int[][]
+            new int[][] // Index 130: D002
             {
                 new int[] { 129, 34, 322, 30, 329 },
                 new int[] { 129, 324, 15, 381, 24 },
@@ -1843,66 +1995,90 @@ namespace Mir2Assistant.Generated
                 new int[] { 282, 225, 175, 8, 28 },
                 new int[] { 131, 117, 95, 106, 83 },
             },
-            [131] = new int[][]
+            new int[][] // Index 131: D003
             {
                 new int[] { 130, 106, 82, 117, 96 },
                 new int[] { 284, 78, 229, 9, 14 },
                 new int[] { 286, 290, 293, 14, 10 },
             },
-            [132] = new int[][]
+            new int[][] // Index 132: D011
             {
                 new int[] { 0, 155, 368, 42, 109 },
                 new int[] { 0, 155, 367, 42, 108 },
                 new int[] { 133, 330, 115, 337, 105 },
                 new int[] { 133, 127, 201, 77, 198 },
             },
-            [133] = new int[][]
+            new int[][] // Index 133: D012
             {
                 new int[] { 132, 337, 104, 330, 116 },
                 new int[] { 132, 77, 197, 127, 202 },
                 new int[] { 283, 189, 144, 5, 10 },
                 new int[] { 285, 377, 64, 35, 82 },
             },
-            [134] = new int[][]
+            new int[][] // Index 134: D021
             {
                 new int[] { 67, 77, 75, 85, 278 },
                 new int[] { 67, 77, 76, 85, 279 },
                 new int[] { 135, 26, 27, 338, 356 },
                 new int[] { 135, 26, 26, 339, 355 },
             },
-            [135] = new int[][]
+            new int[][] // Index 135: D022
             {
                 new int[] { 134, 338, 355, 25, 26 },
                 new int[] { 134, 338, 354, 25, 25 },
                 new int[] { 136, 251, 207, 198, 195 },
                 new int[] { 136, 251, 206, 199, 194 },
             },
-            [136] = new int[][]
+            new int[][] // Index 136: D023
             {
                 new int[] { 135, 198, 194, 250, 206 },
                 new int[] { 135, 198, 193, 250, 205 },
                 new int[] { 137, 52, 366, 16, 19 },
             },
-            [137] = new int[][]
+            new int[][] // Index 137: D024
             {
                 new int[] { 136, 16, 18, 51, 365 },
             },
-            [144] = new int[][]
+            new int[][] // Index 138: D032
+            {
+
+            },
+            new int[][] // Index 139: D033
+            {
+
+            },
+            new int[][] // Index 140: D042
+            {
+
+            },
+            new int[][] // Index 141: D043
+            {
+
+            },
+            new int[][] // Index 142: D052
+            {
+
+            },
+            new int[][] // Index 143: D053
+            {
+
+            },
+            new int[][] // Index 144: D10011
             {
                 new int[] { 76, 270, 385, 90, 14 },
                 new int[] { 147, 123, 24, 62, 288 },
             },
-            [145] = new int[][]
+            new int[][] // Index 145: D10012
             {
                 new int[] { 76, 53, 287, 16, 295 },
                 new int[] { 147, 290, 76, 215, 268 },
             },
-            [146] = new int[][]
+            new int[][] // Index 146: D10013
             {
                 new int[] { 76, 289, 288, 321, 120 },
                 new int[] { 147, 148, 12, 122, 188 },
             },
-            [147] = new int[][]
+            new int[][] // Index 147: D1002
             {
                 new int[] { 144, 61, 289, 122, 25 },
                 new int[] { 145, 214, 269, 289, 77 },
@@ -1910,85 +2086,89 @@ namespace Mir2Assistant.Generated
                 new int[] { 148, 13, 26, 289, 150 },
                 new int[] { 149, 289, 138, 10, 155 },
             },
-            [148] = new int[][]
+            new int[][] // Index 148: D10031
             {
                 new int[] { 147, 290, 151, 14, 27 },
                 new int[] { 150, 149, 103, 120, 37 },
             },
-            [149] = new int[][]
+            new int[][] // Index 149: D10032
             {
                 new int[] { 147, 9, 156, 288, 139 },
                 new int[] { 150, 201, 148, 171, 88 },
             },
-            [150] = new int[][]
+            new int[][] // Index 150: D1004
             {
                 new int[] { 149, 170, 89, 200, 149 },
                 new int[] { 148, 121, 38, 150, 104 },
                 new int[] { 152, 217, 133, 97, 184 },
                 new int[] { 151, 146, 110, 48, 188 },
             },
-            [151] = new int[][]
+            new int[][] // Index 151: D10051
             {
                 new int[] { 150, 47, 189, 145, 111 },
                 new int[] { 155, 178, 53, 20, 25 },
                 new int[] { 153, 11, 27, 40, 90 },
             },
-            [152] = new int[][]
+            new int[][] // Index 152: D10052
             {
                 new int[] { 150, 98, 185, 216, 132 },
                 new int[] { 156, 140, 23, 12, 24 },
                 new int[] { 154, 183, 178, 79, 13 },
             },
-            [153] = new int[][]
+            new int[][] // Index 153: D10053
             {
                 new int[] { 151, 41, 91, 11, 27 },
                 new int[] { 165, 41, 91, 38, 26 },
             },
-            [154] = new int[][]
+            new int[][] // Index 154: D10054
             {
                 new int[] { 152, 78, 12, 183, 178 },
                 new int[] { 160, 79, 20, 288, 284 },
             },
-            [155] = new int[][]
+            new int[][] // Index 155: D10061
             {
                 new int[] { 151, 21, 26, 179, 54 },
             },
-            [156] = new int[][]
+            new int[][] // Index 156: D10062
             {
                 new int[] { 152, 11, 25, 139, 24 },
             },
-            [157] = new int[][]
+            new int[][] // Index 157: D2000
             {
                 new int[] { 79, 179, 109, 56, 66 },
                 new int[] { 79, 24, 182, 140, 67 },
                 new int[] { 158, 76, 15, 258, 270 },
             },
-            [158] = new int[][]
+            new int[][] // Index 158: D2001
             {
                 new int[] { 159, 18, 97, 33, 39 },
                 new int[] { 157, 258, 270, 76, 15 },
             },
-            [159] = new int[][]
+            new int[][] // Index 159: D2002
             {
                 new int[] { 161, 29, 11, 77, 77 },
                 new int[] { 158, 33, 39, 18, 97 },
             },
-            [161] = new int[][]
+            new int[][] // Index 160: D2003
+            {
+
+            },
+            new int[][] // Index 161: D2004
             {
                 new int[] { 162, 19, 16, 85, 88 },
                 new int[] { 159, 77, 77, 29, 11 },
             },
-            [162] = new int[][]
+            new int[][] // Index 162: D2005
             {
                 new int[] { 163, 18, 21, 74, 81 },
                 new int[] { 161, 85, 88, 19, 16 },
             },
-            [163] = new int[][]
+            new int[][] // Index 163: D2006
             {
                 new int[] { 164, 15, 21, 183, 180 },
                 new int[] { 162, 74, 81, 18, 21 },
             },
-            [164] = new int[][]
+            new int[][] // Index 164: D2007
             {
                 new int[] { 154, 38, 26, 10, 44 },
                 new int[] { 163, 183, 180, 15, 21 },
@@ -1996,17 +2176,17 @@ namespace Mir2Assistant.Generated
                 new int[] { 154, 20, 86, 10, 44 },
                 new int[] { 154, 35, 59, 10, 44 },
             },
-            [165] = new int[][]
+            new int[][] // Index 165: D2008
             {
                 new int[] { 166, 26, 23, 85, 88 },
                 new int[] { 164, 84, 85, 20, 86 },
             },
-            [166] = new int[][]
+            new int[][] // Index 166: D2009
             {
                 new int[] { 167, 18, 21, 286, 281 },
                 new int[] { 165, 85, 88, 26, 23 },
             },
-            [167] = new int[][]
+            new int[][] // Index 167: D2010
             {
                 new int[] { 168, 170, 36, 86, 91 },
                 new int[] { 166, 286, 281, 18, 21 },
@@ -2014,21 +2194,21 @@ namespace Mir2Assistant.Generated
                 new int[] { 153, 67, 53, 89, 19 },
                 new int[] { 153, 60, 150, 89, 19 },
             },
-            [168] = new int[][]
+            new int[][] // Index 168: D2011
             {
                 new int[] { 169, 19, 20, 84, 85 },
                 new int[] { 165, 86, 91, 26, 23 },
             },
-            [169] = new int[][]
+            new int[][] // Index 169: D2012
             {
                 new int[] { 170, 18, 21, 82, 83 },
                 new int[] { 168, 84, 85, 19, 20 },
             },
-            [170] = new int[][]
+            new int[][] // Index 170: D2013
             {
                 new int[] { 169, 82, 83, 18, 21 },
             },
-            [171] = new int[][]
+            new int[][] // Index 171: D2051
             {
                 new int[] { 80, 107, 182, 527, 610 },
                 new int[] { 80, 108, 183, 527, 611 },
@@ -2037,13 +2217,13 @@ namespace Mir2Assistant.Generated
                 new int[] { 173, 49, 24, 192, 279 },
                 new int[] { 173, 50, 25, 193, 280 },
             },
-            [172] = new int[][]
+            new int[][] // Index 172: D2052
             {
                 new int[] { 173, 92, 76, 36, 226 },
                 new int[] { 173, 92, 75, 36, 226 },
                 new int[] { 173, 93, 75, 36, 225 },
             },
-            [173] = new int[][]
+            new int[][] // Index 173: D2053
             {
                 new int[] { 171, 193, 279, 50, 24 },
                 new int[] { 171, 192, 279, 49, 24 },
@@ -2051,88 +2231,92 @@ namespace Mir2Assistant.Generated
                 new int[] { 172, 36, 225, 92, 75 },
                 new int[] { 172, 36, 226, 92, 75 },
             },
-            [174] = new int[][]
+            new int[][] // Index 174: D2061
             {
                 new int[] { 80, 18, 176, 549, 127 },
                 new int[] { 80, 17, 175, 549, 127 },
                 new int[] { 175, 153, 186, 33, 15 },
             },
-            [175] = new int[][]
+            new int[][] // Index 175: D2062
             {
                 new int[] { 174, 33, 15, 153, 186 },
                 new int[] { 176, 137, 187, 89, 164 },
                 new int[] { 176, 136, 188, 89, 164 },
             },
-            [176] = new int[][]
+            new int[][] // Index 176: D2063
             {
                 new int[] { 175, 88, 164, 136, 187 },
                 new int[] { 175, 87, 164, 136, 187 },
                 new int[] { 177, 50, 85, 13, 30 },
                 new int[] { 177, 49, 86, 13, 30 },
             },
-            [177] = new int[][]
+            new int[][] // Index 177: D2064
             {
                 new int[] { 176, 13, 29, 49, 85 },
                 new int[] { 176, 12, 30, 49, 85 },
                 new int[] { 178, 9, 183, 155, 161 },
                 new int[] { 178, 10, 184, 155, 161 },
             },
-            [179] = new int[][]
+            new int[][] // Index 178: D2067
+            {
+
+            },
+            new int[][] // Index 179: D2070
             {
                 new int[] { 80, 35, 39, 656, 459 },
                 new int[] { 80, 34, 40, 656, 460 },
                 new int[] { 180, 32, 19, 220, 225 },
                 new int[] { 180, 32, 19, 221, 225 },
             },
-            [180] = new int[][]
+            new int[][] // Index 180: D2071
             {
                 new int[] { 179, 219, 225, 31, 19 },
                 new int[] { 179, 220, 226, 32, 20 },
                 new int[] { 181, 111, 114, 151, 120 },
                 new int[] { 181, 112, 113, 151, 119 },
             },
-            [181] = new int[][]
+            new int[][] // Index 181: D2072
             {
                 new int[] { 180, 152, 120, 112, 114 },
                 new int[] { 180, 151, 121, 112, 114 },
                 new int[] { 182, 236, 241, 155, 157 },
                 new int[] { 182, 236, 240, 156, 156 },
             },
-            [182] = new int[][]
+            new int[][] // Index 182: D2073
             {
                 new int[] { 181, 155, 156, 236, 240 },
                 new int[] { 181, 155, 155, 235, 239 },
                 new int[] { 183, 371, 377, 38, 109 },
                 new int[] { 183, 371, 376, 39, 110 },
             },
-            [183] = new int[][]
+            new int[][] // Index 183: D2075
             {
                 new int[] { 182, 38, 110, 371, 377 },
                 new int[] { 182, 38, 111, 371, 376 },
                 new int[] { 184, 125, 62, 94, 130 },
                 new int[] { 184, 126, 62, 95, 129 },
             },
-            [184] = new int[][]
+            new int[][] // Index 184: D2076
             {
                 new int[] { 183, 94, 130, 125, 62 },
                 new int[] { 183, 95, 129, 126, 62 },
                 new int[] { 185, 22, 29, 160, 164 },
                 new int[] { 185, 22, 29, 161, 163 },
             },
-            [185] = new int[][]
+            new int[][] // Index 185: D2078
             {
                 new int[] { 184, 161, 165, 22, 29 },
                 new int[] { 184, 161, 164, 22, 29 },
                 new int[] { 186, 255, 256, 13, 13 },
                 new int[] { 186, 255, 255, 12, 12 },
             },
-            [186] = new int[][]
+            new int[][] // Index 186: D2079
             {
                 new int[] { 185, 13, 13, 255, 256 },
                 new int[] { 185, 12, 13, 255, 255 },
                 new int[] { 185, 12, 12, 255, 255 },
             },
-            [187] = new int[][]
+            new int[][] // Index 187: D401
             {
                 new int[] { 0, 24, 182, 664, 214 },
                 new int[] { 193, 76, 15, 59, 8 },
@@ -2142,7 +2326,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 149, 88, 14, 14 },
                 new int[] { 322, 148, 89, 14, 14 },
             },
-            [188] = new int[][]
+            new int[][] // Index 188: D402
             {
                 new int[] { 322, 137, 107, 15, 14 },
                 new int[] { 195, 8, 147, 85, 10 },
@@ -2152,7 +2336,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 137, 107, 14, 14 },
                 new int[] { 322, 137, 108, 14, 14 },
             },
-            [189] = new int[][]
+            new int[][] // Index 189: D403
             {
                 new int[] { 196, 10, 106, 70, 20 },
                 new int[] { 194, 121, 191, 55, 24 },
@@ -2161,18 +2345,18 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 107, 183, 14, 14 },
                 new int[] { 322, 106, 183, 14, 14 },
             },
-            [190] = new int[][]
+            new int[][] // Index 190: D404
             {
                 new int[] { 194, 129, 42, 52, 53 },
                 new int[] { 198, 9, 152, 89, 17 },
                 new int[] { 289, 152, 19, 68, 55 },
             },
-            [191] = new int[][]
+            new int[][] // Index 191: D405
             {
                 new int[] { 198, 166, 138, 7, 55 },
                 new int[] { 197, 11, 148, 83, 17 },
             },
-            [192] = new int[][]
+            new int[][] // Index 192: D406
             {
                 new int[] { 197, 186, 119, 9, 85 },
                 new int[] { 193, 23, 15, 94, 48 },
@@ -2181,37 +2365,37 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 61, 132, 14, 14 },
                 new int[] { 322, 61, 133, 14, 14 },
             },
-            [193] = new int[][]
+            new int[][] // Index 193: D411
             {
                 new int[] { 187, 60, 7, 77, 14 },
                 new int[] { 192, 95, 49, 24, 16 },
             },
-            [194] = new int[][]
+            new int[][] // Index 194: D412
             {
                 new int[] { 189, 54, 23, 120, 190 },
                 new int[] { 190, 53, 52, 130, 42 },
             },
-            [195] = new int[][]
+            new int[][] // Index 195: D413
             {
                 new int[] { 187, 10, 7, 179, 108 },
                 new int[] { 188, 86, 9, 9, 146 },
             },
-            [196] = new int[][]
+            new int[][] // Index 196: D414
             {
                 new int[] { 188, 14, 79, 194, 82 },
                 new int[] { 189, 71, 19, 11, 105 },
             },
-            [197] = new int[][]
+            new int[][] // Index 197: D415
             {
                 new int[] { 191, 84, 16, 12, 147 },
                 new int[] { 192, 8, 86, 185, 120 },
             },
-            [198] = new int[][]
+            new int[][] // Index 198: D416
             {
                 new int[] { 190, 90, 16, 10, 151 },
                 new int[] { 191, 6, 54, 165, 137 },
             },
-            [199] = new int[][]
+            new int[][] // Index 199: D421
             {
                 new int[] { 77, 30, 375, 564, 171 },
                 new int[] { 200, 361, 19, 22, 41 },
@@ -2220,7 +2404,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 142, 347, 14, 14 },
                 new int[] { 322, 141, 347, 14, 14 },
             },
-            [200] = new int[][]
+            new int[][] // Index 200: D422
             {
                 new int[] { 199, 22, 42, 361, 20 },
                 new int[] { 290, 331, 383, 135, 19 },
@@ -2229,7 +2413,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 322, 240, 69, 14, 14 },
                 new int[] { 322, 239, 69, 14, 14 },
             },
-            [201] = new int[][]
+            new int[][] // Index 201: D501
             {
                 new int[] { 62, 165, 217, 19, 16 },
                 new int[] { 220, 326, 97, 20, 11 },
@@ -2237,29 +2421,29 @@ namespace Mir2Assistant.Generated
                 new int[] { 62, 165, 217, 19, 16 },
                 new int[] { 202, 350, 170, 166, 216 },
             },
-            [202] = new int[][]
+            new int[][] // Index 202: D502
             {
                 new int[] { 222, 326, 97, 20, 11 },
                 new int[] { 221, 302, 74, 29, 21 },
                 new int[] { 201, 165, 217, 350, 171 },
                 new int[] { 203, 112, 231, 166, 216 },
             },
-            [203] = new int[][]
+            new int[][] // Index 203: D503
             {
                 new int[] { 202, 165, 217, 112, 232 },
                 new int[] { 204, 295, 146, 166, 216 },
             },
-            [204] = new int[][]
+            new int[][] // Index 204: D504
             {
                 new int[] { 203, 165, 217, 295, 147 },
                 new int[] { 205, 51, 173, 96, 101 },
             },
-            [205] = new int[][]
+            new int[][] // Index 205: D505
             {
                 new int[] { 204, 95, 102, 52, 174 },
                 new int[] { 206, 123, 10, 8, 16 },
             },
-            [206] = new int[][]
+            new int[][] // Index 206: D5061
             {
                 new int[] { 205, 7, 17, 122, 11 },
                 new int[] { 211, 7, 10, 91, 43 },
@@ -2310,7 +2494,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 207, 83, 77, 65, 39 },
                 new int[] { 212, 90, 70, 8, 44 },
             },
-            [207] = new int[][]
+            new int[][] // Index 207: D5062
             {
                 new int[] { 209, 7, 10, 89, 75 },
                 new int[] { 209, 14, 16, 34, 39 },
@@ -2361,7 +2545,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 214, 83, 77, 65, 71 },
                 new int[] { 210, 90, 70, 9, 77 },
             },
-            [208] = new int[][]
+            new int[][] // Index 208: D5063
             {
                 new int[] { 207, 7, 10, 90, 16 },
                 new int[] { 207, 14, 16, 34, 71 },
@@ -2412,7 +2596,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 212, 83, 77, 65, 11 },
                 new int[] { 208, 90, 70, 8, 16 },
             },
-            [209] = new int[][]
+            new int[][] // Index 209: D5064
             {
                 new int[] { 214, 7, 10, 91, 43 },
                 new int[] { 214, 14, 16, 34, 11 },
@@ -2463,7 +2647,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 210, 83, 77, 65, 39 },
                 new int[] { 206, 90, 70, 8, 44 },
             },
-            [210] = new int[][]
+            new int[][] // Index 210: D5065
             {
                 new int[] { 212, 7, 10, 89, 75 },
                 new int[] { 212, 14, 16, 34, 39 },
@@ -2514,7 +2698,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 208, 83, 77, 65, 71 },
                 new int[] { 213, 90, 70, 9, 77 },
             },
-            [211] = new int[][]
+            new int[][] // Index 211: D5066
             {
                 new int[] { 210, 7, 10, 90, 16 },
                 new int[] { 210, 14, 16, 34, 71 },
@@ -2565,7 +2749,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 206, 83, 77, 65, 11 },
                 new int[] { 211, 90, 70, 8, 16 },
             },
-            [212] = new int[][]
+            new int[][] // Index 212: D5067
             {
                 new int[] { 208, 7, 10, 91, 43 },
                 new int[] { 208, 14, 16, 34, 11 },
@@ -2616,7 +2800,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 213, 83, 77, 65, 39 },
                 new int[] { 209, 90, 70, 8, 44 },
             },
-            [213] = new int[][]
+            new int[][] // Index 213: D5068
             {
                 new int[] { 206, 7, 10, 89, 75 },
                 new int[] { 206, 14, 16, 34, 39 },
@@ -2667,7 +2851,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 207, 90, 70, 9, 77 },
                 new int[] { 213, 92, 44, 34, 44 },
             },
-            [214] = new int[][]
+            new int[][] // Index 214: D5069
             {
                 new int[] { 213, 7, 10, 90, 16 },
                 new int[] { 213, 14, 16, 34, 71 },
@@ -2720,110 +2904,110 @@ namespace Mir2Assistant.Generated
                 new int[] { 215, 90, 76, 7, 9 },
                 new int[] { 213, 89, 75, 34, 44 },
             },
-            [215] = new int[][]
+            new int[][] // Index 215: D5071
             {
                 new int[] { 214, 7, 9, 89, 75 },
                 new int[] { 216, 39, 43, 7, 51 },
             },
-            [216] = new int[][]
+            new int[][] // Index 216: D5072
             {
                 new int[] { 215, 6, 50, 38, 42 },
                 new int[] { 217, 90, 20, 10, 69 },
             },
-            [217] = new int[][]
+            new int[][] // Index 217: D5073
             {
                 new int[] { 216, 9, 70, 89, 21 },
                 new int[] { 218, 60, 9, 47, 90 },
             },
-            [218] = new int[][]
+            new int[][] // Index 218: D5074
             {
                 new int[] { 223, 77, 15, 14, 31 },
                 new int[] { 217, 48, 91, 59, 10 },
             },
-            [219] = new int[][]
+            new int[][] // Index 219: D511
             {
                 new int[] { 201, 29, 22, 303, 75 },
             },
-            [220] = new int[][]
+            new int[][] // Index 220: D512
             {
                 new int[] { 201, 19, 11, 325, 96 },
             },
-            [221] = new int[][]
+            new int[][] // Index 221: D513
             {
                 new int[] { 202, 29, 22, 303, 75 },
             },
-            [222] = new int[][]
+            new int[][] // Index 222: D514
             {
                 new int[] { 202, 19, 11, 325, 96 },
             },
-            [223] = new int[][]
+            new int[][] // Index 223: D515
             {
                 new int[] { 218, 13, 32, 76, 16 },
             },
-            [224] = new int[][]
+            new int[][] // Index 224: D601
             {
                 new int[] { 78, 208, 238, 140, 87 },
                 new int[] { 230, 52, 14, 17, 27 },
                 new int[] { 233, 149, 55, 29, 28 },
                 new int[] { 294, 9, 197, 13, 64 },
             },
-            [225] = new int[][]
+            new int[][] // Index 225: D602
             {
                 new int[] { 234, 177, 33, 33, 40 },
                 new int[] { 230, 110, 86, 31, 9 },
                 new int[] { 228, 45, 22, 172, 61 },
             },
-            [226] = new int[][]
+            new int[][] // Index 226: D603
             {
                 new int[] { 231, 41, 194, 19, 23 },
                 new int[] { 233, 81, 81, 29, 16 },
                 new int[] { 234, 185, 82, 55, 38 },
             },
-            [227] = new int[][]
+            new int[][] // Index 227: D604
             {
                 new int[] { 234, 155, 36, 33, 70 },
                 new int[] { 231, 149, 132, 18, 32 },
             },
-            [228] = new int[][]
+            new int[][] // Index 228: D605
             {
                 new int[] { 232, 42, 124, 15, 33 },
                 new int[] { 231, 42, 19, 31, 31 },
                 new int[] { 225, 173, 60, 46, 23 },
             },
-            [229] = new int[][]
+            new int[][] // Index 229: D606
             {
                 new int[] { 242, 193, 124, 14, 20 },
                 new int[] { 241, 9, 25, 159, 171 },
             },
-            [230] = new int[][]
+            new int[][] // Index 230: D607
             {
                 new int[] { 224, 16, 29, 52, 15 },
                 new int[] { 225, 31, 8, 110, 87 },
             },
-            [231] = new int[][]
+            new int[][] // Index 231: D608
             {
                 new int[] { 228, 32, 32, 43, 20 },
                 new int[] { 226, 18, 22, 40, 195 },
                 new int[] { 227, 17, 33, 149, 133 },
             },
-            [232] = new int[][]
+            new int[][] // Index 232: D609
             {
                 new int[] { 228, 14, 34, 43, 125 },
                 new int[] { 235, 22, 13, 200, 52 },
             },
-            [233] = new int[][]
+            new int[][] // Index 233: D610
             {
                 new int[] { 224, 30, 30, 150, 56 },
                 new int[] { 226, 30, 15, 81, 82 },
             },
-            [234] = new int[][]
+            new int[][] // Index 234: D611
             {
                 new int[] { 225, 32, 40, 177, 34 },
                 new int[] { 227, 32, 71, 155, 37 },
                 new int[] { 226, 55, 37, 186, 81 },
                 new int[] { 235, 59, 70, 12, 16 },
             },
-            [235] = new int[][]
+            new int[][] // Index 235: D612
             {
                 new int[] { 232, 199, 51, 22, 14 },
                 new int[] { 234, 11, 15, 58, 69 },
@@ -2831,39 +3015,43 @@ namespace Mir2Assistant.Generated
                 new int[] { 236, 202, 187, 9, 51 },
                 new int[] { 239, 283, 232, 25, 17 },
             },
-            [236] = new int[][]
+            new int[][] // Index 236: D613
             {
                 new int[] { 235, 8, 50, 203, 188 },
                 new int[] { 241, 12, 13, 150, 66 },
             },
-            [237] = new int[][]
+            new int[][] // Index 237: D614
             {
                 new int[] { 235, 69, 65, 10, 183 },
                 new int[] { 238, 13, 19, 63, 83 },
             },
-            [238] = new int[][]
+            new int[][] // Index 238: D615
             {
                 new int[] { 237, 64, 82, 14, 20 },
                 new int[] { 241, 88, 75, 14, 84 },
             },
-            [239] = new int[][]
+            new int[][] // Index 239: D616
             {
                 new int[] { 235, 26, 16, 284, 233 },
                 new int[] { 240, 86, 17, 44, 43 },
             },
-            [240] = new int[][]
+            new int[][] // Index 240: D617
             {
                 new int[] { 239, 43, 42, 85, 18 },
                 new int[] { 241, 90, 11, 52, 22 },
             },
-            [241] = new int[][]
+            new int[][] // Index 241: D618
             {
                 new int[] { 236, 149, 65, 13, 14 },
                 new int[] { 238, 13, 83, 87, 76 },
                 new int[] { 240, 53, 21, 89, 12 },
                 new int[] { 229, 160, 170, 10, 26 },
             },
-            [243] = new int[][]
+            new int[][] // Index 242: D619
+            {
+
+            },
+            new int[][] // Index 243: D701
             {
                 new int[] { 78, 27, 23, 563, 286 },
                 new int[] { 78, 171, 132, 660, 276 },
@@ -2872,43 +3060,43 @@ namespace Mir2Assistant.Generated
                 new int[] { 295, 172, 79, 12, 18 },
                 new int[] { 327, 101, 160, 33, 8 },
             },
-            [244] = new int[][]
+            new int[][] // Index 244: D710
             {
                 new int[] { 78, 27, 22, 304, 325 },
                 new int[] { 245, 25, 21, 205, 198 },
             },
-            [245] = new int[][]
+            new int[][] // Index 245: D711
             {
                 new int[] { 244, 205, 197, 26, 20 },
                 new int[] { 246, 364, 229, 364, 226 },
             },
-            [246] = new int[][]
+            new int[][] // Index 246: D712
             {
                 new int[] { 245, 363, 227, 363, 230 },
                 new int[] { 247, 31, 193, 31, 191 },
                 new int[] { 297, 206, 223, 59, 83 },
             },
-            [247] = new int[][]
+            new int[][] // Index 247: D713
             {
                 new int[] { 246, 30, 192, 30, 194 },
                 new int[] { 248, 350, 244, 382, 190 },
             },
-            [248] = new int[][]
+            new int[][] // Index 248: D714
             {
                 new int[] { 247, 381, 191, 349, 245 },
                 new int[] { 249, 16, 200, 29, 344 },
             },
-            [249] = new int[][]
+            new int[][] // Index 249: D715
             {
                 new int[] { 248, 28, 345, 16, 201 },
                 new int[] { 251, 83, 81, 25, 13 },
             },
-            [250] = new int[][]
+            new int[][] // Index 250: D716
             {
                 new int[] { 280, 25, 26, 26, 74 },
                 new int[] { 276, 37, 16, 13, 37 },
             },
-            [251] = new int[][]
+            new int[][] // Index 251: D71601
             {
                 new int[] { 249, 25, 12, 84, 80 },
                 new int[] { 252, 17, 12, 36, 34 },
@@ -2916,315 +3104,359 @@ namespace Mir2Assistant.Generated
                 new int[] { 265, 13, 37, 36, 17 },
                 new int[] { 271, 37, 16, 14, 36 },
             },
-            [252] = new int[][]
+            new int[][] // Index 252: D71602
             {
                 new int[] { 271, 17, 12, 36, 34 },
                 new int[] { 265, 37, 35, 18, 13 },
                 new int[] { 261, 13, 37, 36, 17 },
                 new int[] { 265, 37, 16, 14, 36 },
             },
-            [253] = new int[][]
+            new int[][] // Index 253: D71603
             {
                 new int[] { 265, 17, 12, 36, 34 },
                 new int[] { 261, 37, 35, 18, 13 },
                 new int[] { 263, 13, 37, 36, 17 },
                 new int[] { 261, 37, 16, 14, 36 },
             },
-            [254] = new int[][]
+            new int[][] // Index 254: D71604
             {
                 new int[] { 261, 17, 12, 36, 34 },
                 new int[] { 263, 37, 35, 18, 13 },
                 new int[] { 275, 13, 37, 36, 17 },
                 new int[] { 263, 37, 16, 14, 36 },
             },
-            [255] = new int[][]
+            new int[][] // Index 255: D71605
             {
                 new int[] { 263, 17, 12, 36, 34 },
                 new int[] { 275, 37, 35, 18, 13 },
                 new int[] { 273, 13, 37, 36, 17 },
                 new int[] { 275, 37, 16, 14, 36 },
             },
-            [256] = new int[][]
+            new int[][] // Index 256: D71606
             {
                 new int[] { 275, 17, 12, 36, 34 },
                 new int[] { 273, 37, 35, 18, 13 },
                 new int[] { 262, 13, 37, 36, 17 },
                 new int[] { 276, 37, 16, 14, 36 },
             },
-            [257] = new int[][]
+            new int[][] // Index 257: D71607
             {
                 new int[] { 273, 17, 12, 36, 34 },
                 new int[] { 262, 37, 35, 18, 13 },
                 new int[] { 260, 13, 37, 36, 17 },
                 new int[] { 262, 37, 16, 14, 36 },
             },
-            [258] = new int[][]
+            new int[][] // Index 258: D71608
             {
                 new int[] { 262, 17, 12, 36, 34 },
                 new int[] { 260, 37, 35, 18, 13 },
                 new int[] { 255, 13, 37, 36, 17 },
                 new int[] { 260, 37, 16, 14, 36 },
             },
-            [259] = new int[][]
+            new int[][] // Index 259: D71609
             {
                 new int[] { 260, 17, 12, 36, 34 },
                 new int[] { 255, 37, 35, 18, 13 },
                 new int[] { 271, 13, 37, 36, 17 },
                 new int[] { 255, 37, 16, 14, 36 },
             },
-            [260] = new int[][]
+            new int[][] // Index 260: D71610
             {
                 new int[] { 255, 17, 12, 36, 34 },
                 new int[] { 269, 37, 35, 18, 13 },
                 new int[] { 256, 13, 37, 36, 17 },
                 new int[] { 269, 37, 16, 14, 36 },
             },
-            [261] = new int[][]
+            new int[][] // Index 261: D71611
             {
                 new int[] { 269, 17, 12, 36, 34 },
                 new int[] { 256, 37, 35, 18, 13 },
                 new int[] { 266, 13, 37, 36, 17 },
                 new int[] { 256, 37, 16, 14, 36 },
             },
-            [262] = new int[][]
+            new int[][] // Index 262: D71612
             {
                 new int[] { 256, 17, 12, 36, 34 },
                 new int[] { 266, 37, 35, 18, 13 },
                 new int[] { 250, 13, 37, 36, 17 },
                 new int[] { 266, 37, 16, 14, 36 },
             },
-            [263] = new int[][]
+            new int[][] // Index 263: D71613
             {
                 new int[] { 266, 17, 12, 36, 34 },
                 new int[] { 252, 37, 35, 18, 13 },
                 new int[] { 269, 13, 37, 36, 17 },
                 new int[] { 252, 37, 16, 14, 36 },
             },
-            [264] = new int[][]
+            new int[][] // Index 264: D71614
             {
                 new int[] { 272, 17, 12, 36, 34 },
                 new int[] { 264, 37, 35, 18, 13 },
                 new int[] { 272, 13, 37, 36, 17 },
                 new int[] { 264, 37, 16, 14, 36 },
             },
-            [265] = new int[][]
+            new int[][] // Index 265: D71615
             {
                 new int[] { 264, 17, 12, 36, 34 },
                 new int[] { 257, 37, 35, 18, 13 },
                 new int[] { 264, 13, 37, 36, 17 },
                 new int[] { 257, 37, 16, 14, 36 },
             },
-            [266] = new int[][]
+            new int[][] // Index 266: D71616
             {
                 new int[] { 257, 17, 12, 36, 34 },
                 new int[] { 254, 37, 35, 18, 13 },
                 new int[] { 257, 13, 37, 36, 17 },
                 new int[] { 277, 37, 16, 14, 36 },
             },
-            [267] = new int[][]
+            new int[][] // Index 267: D71617
             {
                 new int[] { 254, 17, 12, 36, 34 },
                 new int[] { 268, 37, 35, 18, 13 },
                 new int[] { 254, 13, 37, 36, 17 },
                 new int[] { 268, 37, 16, 14, 36 },
             },
-            [268] = new int[][]
+            new int[][] // Index 268: D71618
             {
                 new int[] { 268, 17, 12, 36, 34 },
                 new int[] { 274, 37, 35, 18, 13 },
                 new int[] { 268, 13, 37, 36, 17 },
                 new int[] { 274, 37, 16, 14, 36 },
             },
-            [269] = new int[][]
+            new int[][] // Index 269: D71619
             {
                 new int[] { 274, 17, 12, 36, 34 },
                 new int[] { 267, 37, 35, 18, 13 },
                 new int[] { 274, 13, 37, 36, 17 },
                 new int[] { 267, 37, 16, 14, 36 },
             },
-            [270] = new int[][]
+            new int[][] // Index 270: D71620
             {
                 new int[] { 267, 17, 12, 36, 34 },
                 new int[] { 258, 37, 35, 18, 13 },
                 new int[] { 267, 13, 37, 36, 17 },
                 new int[] { 258, 37, 16, 14, 36 },
             },
-            [271] = new int[][]
+            new int[][] // Index 271: D71621
             {
                 new int[] { 258, 17, 12, 36, 34 },
                 new int[] { 258, 13, 37, 36, 17 },
                 new int[] { 253, 37, 16, 14, 36 },
                 new int[] { 278, 37, 35, 18, 13 },
             },
-            [272] = new int[][]
+            new int[][] // Index 272: D71622
             {
                 new int[] { 253, 17, 12, 36, 34 },
                 new int[] { 251, 37, 35, 18, 13 },
                 new int[] { 253, 13, 37, 36, 17 },
                 new int[] { 251, 37, 16, 14, 36 },
             },
-            [273] = new int[][]
+            new int[][] // Index 273: D71623
             {
                 new int[] { 251, 17, 12, 36, 34 },
                 new int[] { 251, 13, 37, 36, 17 },
                 new int[] { 259, 37, 16, 14, 36 },
                 new int[] { 279, 37, 35, 18, 13 },
             },
-            [274] = new int[][]
+            new int[][] // Index 274: D71624
             {
                 new int[] { 259, 17, 12, 36, 34 },
                 new int[] { 270, 37, 35, 18, 13 },
                 new int[] { 259, 13, 37, 36, 17 },
                 new int[] { 270, 37, 16, 14, 36 },
             },
-            [275] = new int[][]
+            new int[][] // Index 275: D71625
             {
                 new int[] { 273, 17, 12, 36, 34 },
                 new int[] { 274, 37, 35, 18, 13 },
                 new int[] { 274, 37, 16, 14, 36 },
                 new int[] { 253, 13, 37, 36, 17 },
             },
-            [276] = new int[][]
+            new int[][] // Index 276: D71650
             {
                 new int[] { 250, 13, 37, 36, 17 },
             },
-            [277] = new int[][]
+            new int[][] // Index 277: D71651
             {
                 new int[] { 260, 13, 37, 36, 17 },
             },
-            [278] = new int[][]
+            new int[][] // Index 278: D71652
             {
                 new int[] { 252, 17, 12, 36, 34 },
             },
-            [279] = new int[][]
+            new int[][] // Index 279: D71653
             {
                 new int[] { 253, 17, 12, 36, 34 },
             },
-            [280] = new int[][]
+            new int[][] // Index 280: D717
             {
                 new int[] { 323, 80, 28, 162, 169 },
                 new int[] { 250, 25, 75, 24, 27 },
             },
-            [281] = new int[][]
+            new int[][] // Index 281: DM001
             {
                 new int[] { 130, 6, 10, 191, 232 },
             },
-            [282] = new int[][]
+            new int[][] // Index 282: DM002
             {
                 new int[] { 130, 7, 28, 225, 176 },
             },
-            [283] = new int[][]
+            new int[][] // Index 283: DM011
             {
                 new int[] { 133, 6, 10, 189, 145 },
             },
-            [284] = new int[][]
+            new int[][] // Index 284: E001
             {
                 new int[] { 131, 8, 13, 77, 230 },
                 new int[] { 285, 85, 15, 85, 10 },
             },
-            [285] = new int[][]
+            new int[][] // Index 285: E002
             {
                 new int[] { 284, 84, 9, 84, 16 },
                 new int[] { 133, 36, 81, 378, 65 },
             },
-            [286] = new int[][]
+            new int[][] // Index 286: E401
             {
                 new int[] { 131, 15, 9, 291, 294 },
                 new int[] { 287, 61, 84, 13, 73 },
             },
-            [287] = new int[][]
+            new int[][] // Index 287: E402
             {
                 new int[] { 286, 14, 72, 62, 85 },
                 new int[] { 288, 69, 14, 44, 78 },
             },
-            [288] = new int[][]
+            new int[][] // Index 288: E403
             {
                 new int[] { 287, 45, 77, 70, 15 },
                 new int[] { 289, 90, 68, 46, 11 },
             },
-            [289] = new int[][]
+            new int[][] // Index 289: E404
             {
                 new int[] { 288, 45, 10, 89, 69 },
                 new int[] { 190, 69, 56, 151, 20 },
             },
-            [290] = new int[][]
+            new int[][] // Index 290: E601
             {
                 new int[] { 200, 134, 20, 330, 382 },
                 new int[] { 291, 13, 50, 73, 66 },
             },
-            [291] = new int[][]
+            new int[][] // Index 291: E602
             {
                 new int[] { 290, 72, 65, 12, 51 },
                 new int[] { 292, 10, 9, 25, 27 },
             },
-            [292] = new int[][]
+            new int[][] // Index 292: E603
             {
                 new int[] { 291, 26, 26, 11, 10 },
                 new int[] { 292, 107, 184, 110, 182 },
                 new int[] { 292, 110, 182, 107, 184 },
                 new int[] { 293, 10, 69, 91, 45 },
             },
-            [293] = new int[][]
+            new int[][] // Index 293: E604
             {
                 new int[] { 292, 90, 44, 9, 70 },
                 new int[] { 294, 10, 9, 12, 11 },
             },
-            [294] = new int[][]
+            new int[][] // Index 294: E605
             {
                 new int[] { 293, 13, 10, 11, 10 },
                 new int[] { 224, 13, 63, 10, 198 },
             },
-            [295] = new int[][]
+            new int[][] // Index 295: E701
             {
                 new int[] { 243, 12, 17, 173, 78 },
                 new int[] { 296, 89, 84, 59, 69 },
             },
-            [296] = new int[][]
+            new int[][] // Index 296: E702
             {
                 new int[] { 295, 60, 68, 88, 83 },
                 new int[] { 297, 64, 94, 48, 46 },
             },
-            [297] = new int[][]
+            new int[][] // Index 297: E703
             {
                 new int[] { 296, 49, 45, 65, 93 },
                 new int[] { 246, 58, 84, 206, 224 },
             },
-            [309] = new int[][]
+            new int[][] // Index 298: F001
+            {
+
+            },
+            new int[][] // Index 299: F002
+            {
+
+            },
+            new int[][] // Index 300: F003
+            {
+
+            },
+            new int[][] // Index 301: F004
+            {
+
+            },
+            new int[][] // Index 302: F005
+            {
+
+            },
+            new int[][] // Index 303: F006
+            {
+
+            },
+            new int[][] // Index 304: F007
+            {
+
+            },
+            new int[][] // Index 305: F008
+            {
+
+            },
+            new int[][] // Index 306: F009
+            {
+
+            },
+            new int[][] // Index 307: F010
+            {
+
+            },
+            new int[][] // Index 308: G002
+            {
+
+            },
+            new int[][] // Index 309: H001
             {
                 new int[] { 310, 10, 9, 205, 198 },
             },
-            [310] = new int[][]
+            new int[][] // Index 310: H002
             {
                 new int[] { 309, 205, 197, 11, 10 },
                 new int[] { 311, 364, 229, 16, 19 },
             },
-            [311] = new int[][]
+            new int[][] // Index 311: H003
             {
                 new int[] { 310, 16, 18, 363, 230 },
             },
-            [312] = new int[][]
+            new int[][] // Index 312: H004
             {
                 new int[] { 311, 9, 25, 87, 81 },
                 new int[] { 313, 193, 124, 195, 278 },
             },
-            [313] = new int[][]
+            new int[][] // Index 313: H005
             {
                 new int[] { 312, 192, 279, 192, 123 },
                 new int[] { 314, 36, 225, 26, 74 },
                 new int[] { 311, 12, 154, 16, 19 },
                 new int[] { 311, 11, 155, 16, 19 },
             },
-            [314] = new int[][]
+            new int[][] // Index 314: H006
             {
                 new int[] { 313, 25, 75, 38, 227 },
                 new int[] { 315, 83, 25, 161, 172 },
             },
-            [315] = new int[][]
+            new int[][] // Index 315: H007
             {
                 new int[] { 314, 95, 102, 26, 74 },
                 new int[] { 329, 123, 10, 8, 12 },
             },
-            [316] = new int[][]
+            new int[][] // Index 316: H008
             {
                 new int[] { 337, 83, 82, 13, 30 },
                 new int[] { 337, 82, 83, 13, 30 },
@@ -3232,30 +3464,42 @@ namespace Mir2Assistant.Generated
                 new int[] { 337, 80, 85, 13, 30 },
                 new int[] { 317, 21, 25, 289, 150 },
             },
-            [317] = new int[][]
+            new int[][] // Index 317: H009
             {
                 new int[] { 316, 290, 151, 22, 25 },
                 new int[] { 316, 290, 151, 21, 26 },
                 new int[] { 318, 149, 103, 155, 157 },
             },
-            [318] = new int[][]
+            new int[][] // Index 318: H010
             {
                 new int[] { 317, 155, 156, 151, 105 },
             },
-            [320] = new int[][]
+            new int[][] // Index 319: M001
+            {
+
+            },
+            new int[][] // Index 320: M100
             {
                 new int[] { 321, 29, 81, 12, 43 },
                 new int[] { 116, 288, 284, 11, 29 },
                 new int[] { 321, 29, 81, 12, 41 },
                 new int[] { 116, 288, 284, 11, 29 },
             },
-            [321] = new int[][]
+            new int[][] // Index 321: M101
             {
                 new int[] { 320, 11, 42, 29, 81 },
                 new int[] { 320, 12, 43, 29, 81 },
                 new int[] { 320, 13, 44, 29, 81 },
             },
-            [324] = new int[][]
+            new int[][] // Index 322: Q004
+            {
+
+            },
+            new int[][] // Index 323: R001
+            {
+
+            },
+            new int[][] // Index 324: T1061
             {
                 new int[] { 330, 7, 10, 25, 30 },
                 new int[] { 330, 8, 9, 25, 30 },
@@ -3270,15 +3514,23 @@ namespace Mir2Assistant.Generated
                 new int[] { 331, 12, 31, 26, 16 },
                 new int[] { 331, 13, 31, 26, 16 },
             },
-            [327] = new int[][]
+            new int[][] // Index 325: T118
+            {
+
+            },
+            new int[][] // Index 326: T1341
+            {
+
+            },
+            new int[][] // Index 327: T1342
             {
                 new int[] { 328, 5, 36, 33, 8 },
             },
-            [328] = new int[][]
+            new int[][] // Index 328: T1343
             {
                 new int[] { 28, 5, 36, 7, 5 },
             },
-            [329] = new int[][]
+            new int[][] // Index 329: T2061
             {
                 new int[] { 330, 8, 10, 25, 30 },
                 new int[] { 330, 8, 9, 25, 30 },
@@ -3293,7 +3545,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 329, 12, 31, 26, 16 },
                 new int[] { 329, 13, 31, 26, 16 },
             },
-            [330] = new int[][]
+            new int[][] // Index 330: T2062
             {
                 new int[] { 329, 8, 10, 25, 30 },
                 new int[] { 329, 7, 10, 25, 30 },
@@ -3308,7 +3560,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 329, 12, 31, 26, 16 },
                 new int[] { 329, 13, 31, 26, 16 },
             },
-            [331] = new int[][]
+            new int[][] // Index 331: T2063
             {
                 new int[] { 335, 8, 10, 25, 30 },
                 new int[] { 335, 8, 9, 25, 30 },
@@ -3323,7 +3575,19 @@ namespace Mir2Assistant.Generated
                 new int[] { 330, 12, 31, 26, 16 },
                 new int[] { 330, 13, 31, 26, 16 },
             },
-            [335] = new int[][]
+            new int[][] // Index 332: T218
+            {
+
+            },
+            new int[][] // Index 333: T219
+            {
+
+            },
+            new int[][] // Index 334: T232
+            {
+
+            },
+            new int[][] // Index 335: T3061
             {
                 new int[] { 330, 7, 10, 25, 30 },
                 new int[] { 330, 8, 9, 25, 30 },
@@ -3338,7 +3602,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 336, 12, 31, 26, 16 },
                 new int[] { 336, 13, 31, 26, 16 },
             },
-            [336] = new int[][]
+            new int[][] // Index 336: T3062
             {
                 new int[] { 329, 7, 10, 25, 30 },
                 new int[] { 329, 8, 9, 25, 30 },
@@ -3353,7 +3617,7 @@ namespace Mir2Assistant.Generated
                 new int[] { 335, 12, 31, 26, 16 },
                 new int[] { 335, 13, 31, 26, 16 },
             },
-            [337] = new int[][]
+            new int[][] // Index 337: T3063
             {
                 new int[] { 336, 7, 10, 25, 30 },
                 new int[] { 336, 8, 9, 25, 30 },
@@ -3368,10 +3632,24 @@ namespace Mir2Assistant.Generated
                 new int[] { 316, 12, 31, 82, 81 },
                 new int[] { 316, 13, 31, 82, 81 },
             },
+            new int[][] // Index 338: T315
+            {
+
+            },
+            new int[][] // Index 339: T339
+            {
+
+            },
         };
 
         public static int GetMapIndex(string mapId) => _mapIdToIndex.TryGetValue(mapId, out var index) ? index : -1;
+        
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static string GetMapId(int index) => index >= 0 && index < _indexToMapId.Length ? _indexToMapId[index] : "";
-        public static int[][] GetConnections(int mapIndex) => _adjacencyList.TryGetValue(mapIndex, out var conns) ? conns : new int[0][];
+        
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static int[][] GetConnections(int mapIndex) => mapIndex >= 0 && mapIndex < _adjacencyList.Length ? _adjacencyList[mapIndex] : new int[0][];
+        
+        public static int MapCount => _indexToMapId.Length;
     }
 }

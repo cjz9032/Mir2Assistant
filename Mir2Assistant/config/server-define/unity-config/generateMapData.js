@@ -43,9 +43,20 @@ mapEntry.list.forEach(map => {
     });
 });
 
+// 构建邻接表数组
+const maxIndex = indexToMapId.length;
+const adjacencyList = new Array(maxIndex);
+for (let i = 0; i < maxIndex; i++) {
+    adjacencyList[i] = [];
+}
+
+connections.forEach(conn => {
+    adjacencyList[conn.fromIndex].push([conn.toIndex, conn.fromX, conn.fromY, conn.toX, conn.toY]);
+});
+
 console.log(`收集完成！共 ${indexToMapId.length} 个地图，${connections.length} 个连接`);
 
-// 生成 C# 代码 - 只预计算图结构，不预计算路径
+// 生成 C# 代码 - 使用数组而不是字典，提高访问速度
 const code = `using System.Collections.Generic;
 using Mir2Assistant.Models.MapPathFinding;
 
@@ -64,30 +75,30 @@ ${Object.entries(mapNames).map(([id, name]) => `            ["${id}"] = "${name}
 ${Object.entries(mapIdToIndex).map(([mapId, index]) => `            ["${mapId}"] = ${index},`).join('\n')}
         };
 
-        // 索引到地图ID的映射
+        // 索引到地图ID的映射 - 使用数组提高访问速度
         private static readonly string[] _indexToMapId = new string[]
         {
 ${indexToMapId.map(mapId => `            "${mapId}",`).join('\n')}
         };
 
-        // 邻接表 - 每个地图的连接用整数数组: [toIndex, fromX, fromY, toX, toY]
-        private static readonly Dictionary<int, int[][]> _adjacencyList = new()
+        // 邻接表 - 使用数组提高访问速度: [toIndex, fromX, fromY, toX, toY]
+        private static readonly int[][][] _adjacencyList = new int[][][]
         {
-${Object.entries(
-    connections.reduce((acc, conn) => {
-        if (!acc[conn.fromIndex]) acc[conn.fromIndex] = [];
-        acc[conn.fromIndex].push([conn.toIndex, conn.fromX, conn.fromY, conn.toX, conn.toY]);
-        return acc;
-    }, {})
-).map(([fromIndex, conns]) => `            [${fromIndex}] = new int[][]
+${adjacencyList.map((conns, index) => `            new int[][] // Index ${index}: ${indexToMapId[index]}
             {
 ${conns.map(conn => `                new int[] { ${conn.join(', ')} },`).join('\n')}
             },`).join('\n')}
         };
 
         public static int GetMapIndex(string mapId) => _mapIdToIndex.TryGetValue(mapId, out var index) ? index : -1;
+        
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static string GetMapId(int index) => index >= 0 && index < _indexToMapId.Length ? _indexToMapId[index] : "";
-        public static int[][] GetConnections(int mapIndex) => _adjacencyList.TryGetValue(mapIndex, out var conns) ? conns : new int[0][];
+        
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        public static int[][] GetConnections(int mapIndex) => mapIndex >= 0 && mapIndex < _adjacencyList.Length ? _adjacencyList[mapIndex] : new int[0][];
+        
+        public static int MapCount => _indexToMapId.Length;
     }
 }`;
 
@@ -99,4 +110,4 @@ if (!fs.existsSync(outputDir)) {
 
 // 写入文件
 fs.writeFileSync(path.join(outputDir, 'MapData.cs'), code);
-console.log(`生成完成！紧凑的图结构已生成 - 启动极快，按需计算路径！`); 
+console.log(`生成完成！超高性能图结构已生成 - 使用数组访问，内联方法优化！`); 
