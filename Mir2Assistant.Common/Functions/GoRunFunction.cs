@@ -917,7 +917,8 @@ public static class GoRunFunction
                     {
                         // 重读怪物
                         MonsterFunction.ReadMonster(instanceValue!);
-                        var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon).Count();
+                        var temp = new string []{ "鸡", "鹿", "羊"};
+                        var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).Count();
                         // 怪物死了剩余一半就可以通过
                         if (existsCount <= monsters.Count / 2)
                         {
