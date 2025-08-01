@@ -650,8 +650,7 @@ public static class GoRunFunction
                 else
                 {
                     // 从是跟随
-                    var instances = GameState.GameInstances;
-                    var mainInstance = instances.FirstOrDefault(o => o.AccountInfo.IsMainControl)!;
+                    var mainInstance = GameState.GameInstances[0];
                     if (mainInstance.IsAttached)
                     {
                         (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
@@ -665,14 +664,13 @@ public static class GoRunFunction
             if (!instanceValue.AccountInfo!.IsMainControl && !skipTempCheckMon)
             {
                 // 从是跟随 -- 这是重复代码 先放着
-                var instances = GameState.GameInstances;
-                var mainInstance = instances.FirstOrDefault(o => o.AccountInfo.IsMainControl)!;
+                var mainInstance = GameState.GameInstances[0];
                 if (mainInstance.IsAttached)
                 {
                     (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                 }
                 // 检测距离
-                if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                 {
                     // 跟随
                     Log.Information("跟随 in start: {X}, {Y}", px, py);
@@ -714,11 +712,18 @@ public static class GoRunFunction
                     break;
                 }
                 // 检测距离
-                if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon && Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon)
                 {
-                    // 跟随
-                    Log.Information("跟随 in monster: {X}, {Y}", px, py);
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
+                    var mainInstance = GameState.GameInstances[0];
+                    if (mainInstance.IsAttached)
+                    {
+                        (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
+                    }
+                    if(Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                    {
+                        Log.Information("跟随 in monster: {X}, {Y}", px, py);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
+                    }
                 }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
