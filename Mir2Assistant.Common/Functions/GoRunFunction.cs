@@ -905,29 +905,28 @@ public static class GoRunFunction
     }
 
     public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
-          // todo 法师暂时不要砍了 要配合2边一起改
-            if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
+        // todo 法师暂时不要砍了 要配合2边一起改
+        if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
+        {
+            var temp = new string []{ "鸡", "鹿", "羊"};
+            // 攻击怪物, 太多了 过不去
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
+            if (monsters.Count > attacksThan)
             {
-                // 攻击怪物, 太多了 过不去
-                var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon).ToList();
-                if (monsters.Count > attacksThan)
+                // 算出怪物中间点 取整
+                await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
                 {
-                    // 算出怪物中间点 取整
-                    await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
+                    // 重读怪物
+                    var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).Count();
+                    // 怪物死了剩余一半就可以通过
+                    if (existsCount <= monsters.Count / 2)
                     {
-                        // 重读怪物
-                        MonsterFunction.ReadMonster(instanceValue!);
-                        var temp = new string []{ "鸡", "鹿", "羊"};
-                        var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).Count();
-                        // 怪物死了剩余一半就可以通过
-                        if (existsCount <= monsters.Count / 2)
-                        {
-                            return true;
-                        }
-                        return false;
-                    });
-                }
+                        return true;
+                    }
+                    return false;
+                });
             }
+        }
     }
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
