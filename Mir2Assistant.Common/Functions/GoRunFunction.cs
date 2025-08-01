@@ -730,7 +730,7 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
-                    if(firstMonPos.Item1 == 0){
+                    if (firstMonPos.Item1 == 0) {
                         firstMonPos = (ani.X, ani.Y);
                     }
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
@@ -785,50 +785,83 @@ public static class GoRunFunction
             }
 
 
-
+            var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
+            var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
+            var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
             // 没怪了 可以捡取东西 或者挖肉
             // 捡取
             // 按距离, 且没捡取过
-            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || ( !instanceValue.pickupItemIds.Contains(o.Value.Id)
+            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
             && !GameConstants.Items.binItems.Contains(o.Value.Name)
-            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && instanceValue.AccountInfo.role != RoleType.taoist)))
-            )
-            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));    
+            // 药
+            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
+            && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
+                    instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
+                    : true
+                ): true)
+            ))
+            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
                 if (pathFound2)
                 {
+                    var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
+                    // 极品满就扔东西 -- todo 还有 自定义极品
+                    if (drop.Value.IsGodly && miscs2.Count() == 40)
+                    {
+                        // 扔东西
+                        // 挑选一个扔, 一般扔药
+                        var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
+                            GameConstants.Items.MegaPotions.Contains(o.Name)
+                        );
+                        if (needDropItem != null)
+                        {
+                            NpcFunction.EatIndexItem(instanceValue!, needDropItem.Index, true);
+                            await Task.Delay(200);
+                        }
+                        // 否则就随便找个装备 同样要排除自定义极品
+                        // if (needDropItem != null)
+                        // {
+                        //     // await ItemFunction.Drop(instanceValue!, needDropItem.Index);
+                        // }
+                    }
+
                     ItemFunction.Pickup(instanceValue!);
                     // 加捡取过的名单,
                     instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
             }
+
             // 屠挖肉
-            var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-            .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
-            foreach (var body in bodys)
+            if (miscs.Count() < 32)
             {
-                instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 1);
-                if (pathFound2)
+                 var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+                foreach (var body in bodys)
                 {
-                    // 要持续屠宰, 直到尸体消失, 最大尝试 30次
-                    var tried = 0;
-                    while (tried < 20)
+                    instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
+                    bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 1);
+                    if (pathFound2)
                     {
-                        SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                        await Task.Delay(500);
-                        MonsterFunction.ReadMonster(instanceValue!);
-                        if (body.isButched)
+                        // 要持续屠宰, 直到尸体消失, 最大尝试 30次
+                        var tried = 0;
+                        while (tried < 20)
                         {
-                            break;
+                            SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
+                            await Task.Delay(500);
+                            MonsterFunction.ReadMonster(instanceValue!);
+                            if (body.isButched)
+                            {
+                                break;
+                            }
+                            tried++;
                         }
-                        tried++;
                     }
                 }
             }
+         
             // checker 满足条件就跳出循环, checker是参数
             if (checker(instanceValue!))
             {
@@ -907,6 +940,12 @@ public static class GoRunFunction
         }
         CharacterStatusFunction.GetInfo(GameInstance!);
         MonsterFunction.ReadMonster(GameInstance!);
+        // 起点等于终点 结束
+        if (GameInstance.CharacterStatus.X == tx && GameInstance.CharacterStatus.Y == ty && replaceMap == "")
+        {
+            return true;
+        }
+
 
         var stopwatchTotal = new System.Diagnostics.Stopwatch();
         stopwatchTotal.Start();

@@ -40,6 +40,8 @@ OriginalFuncType originalFunc8 = NULL;
 OriginalFuncType originalFunc9 = NULL;
 OriginalFuncType originalFunc10 = NULL;
 OriginalFuncType originalFunc11 = NULL;
+OriginalFuncType originalFunc111 = NULL;
+OriginalFuncType originalFunc112 = NULL;
 OriginalFuncType originalFunc12 = NULL;
 
 __declspec(naked) void HookFunction()
@@ -334,6 +336,8 @@ bool InstallHooks()
         {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
         {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
         {L"ZC.H", 0x24BF87, SkipPopup, (void**)&originalFunc11, "skip_popup4"}  // hook在这里
+        {L"ZC.H", 0x250334, SkipPopup, (void**)&originalFunc111, "skip_popup5"}  // hook在这里
+        {L"ZC.H", 0x2501C2, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子

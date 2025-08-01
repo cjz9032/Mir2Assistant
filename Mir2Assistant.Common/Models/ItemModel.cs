@@ -130,7 +130,7 @@ namespace Mir2Assistant.Common.Models
             Index = idx;
         }
     }
-    public class DropItemModel : ItemModel
+    public class DropItemModel
     {
         public int Id { get; set; }
         public int UpdateId { get; set; }

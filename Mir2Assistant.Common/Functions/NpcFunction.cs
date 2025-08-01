@@ -185,9 +185,9 @@ namespace Mir2Assistant.Common.Functions
         /// <param name="gameInstance"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public static void EatIndexItem(MirGameInstanceModel gameInstance, int idx)
+        public static void EatIndexItem(MirGameInstanceModel gameInstance, int idx, bool force = false)
         {
-            if (gameInstance.eatItemLastTime + 3000 > Environment.TickCount)
+            if (!force && gameInstance.eatItemLastTime + 3000 > Environment.TickCount)
             {
                 gameInstance.GameDebug("物品使用冷却中，跳过使用物品: {Index}", idx);
                 return;
