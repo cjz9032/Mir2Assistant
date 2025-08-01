@@ -587,7 +587,11 @@ public static class GoRunFunction
         var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
-        var allowButch = new string[] { "鸡", "鹿", "蝎子", "蜘蛛", "洞蛆", "羊" };
+        // 等级高了不打鸡鹿
+        if(instanceValue.CharacterStatus!.Level > 10){
+            allowMonsters = allowMonsters.Skip(2).ToArray();
+        }
+        var allowButch = new string[] { "鹿",  "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
         // >=5级 排除掉鹿先 但是少肉
         // if (instanceValue.CharacterStatus!.Level >= 5)
         // {
