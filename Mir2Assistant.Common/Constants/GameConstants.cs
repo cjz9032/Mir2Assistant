@@ -22,6 +22,8 @@ public static class GameConstants
         public static readonly List<string> binItems =
         new List<string>
         {
+            "鸡肉",
+            "食人树叶",
             "木剑",
             "布衣(男)",
             "布衣(女)",
