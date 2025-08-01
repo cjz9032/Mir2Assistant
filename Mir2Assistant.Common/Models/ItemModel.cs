@@ -138,6 +138,8 @@ namespace Mir2Assistant.Common.Models
         public bool IsGodly { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
+        public bool IsEmpty { get; set; }
+
         // public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
     }
 }

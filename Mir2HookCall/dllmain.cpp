@@ -335,8 +335,8 @@ bool InstallHooks()
         {L"ZC.H", 0x250317, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
         {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
         {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
-        {L"ZC.H", 0x24BF87, SkipPopup, (void**)&originalFunc11, "skip_popup4"}  // hook在这里
-        {L"ZC.H", 0x250334, SkipPopup, (void**)&originalFunc111, "skip_popup5"}  // hook在这里
+        {L"ZC.H", 0x24BF87, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
+        {L"ZC.H", 0x250334, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
         {L"ZC.H", 0x2501C2, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
     };
 
