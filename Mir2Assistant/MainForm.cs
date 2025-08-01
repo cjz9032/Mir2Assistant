@@ -573,14 +573,15 @@ namespace Mir2Assistant
             }
            
         }
-        private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool keepMeat = true)
+        private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             ItemFunction.ReadBag(instanceValue);
 
             var meats = instanceValue.Items.Where(o => o.Name == "肉");
             var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
-            var expressMeats = meats.Skip(1).ToList();
-            var expressChickens = chickens.Skip(1).ToList();
+            var keepOneMeat = instanceValue.CharacterStatus!.Level < 7;
+            var expressMeats = keepOneMeat ? meats.Skip(1).ToList() : meats.ToList();
+            var expressChickens = keepOneMeat ? chickens.Skip(1).ToList() : chickens.ToList();
             var allMeats = expressMeats.Concat(expressChickens).ToList();
             if (allMeats.Count > 0)
             {
