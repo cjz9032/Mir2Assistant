@@ -31,6 +31,7 @@ public static class GameConstants
             "匕首",
             "青铜剑",
             "铁剑",
+            "古铜戒指",
             "六角戒指",
             "玻璃戒指",
             "金项链",
