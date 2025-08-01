@@ -813,7 +813,7 @@ public static class GoRunFunction
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
+                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 5);
                 if (pathFound2)
                 {
                     var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
