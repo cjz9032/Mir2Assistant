@@ -29,6 +29,7 @@ public static class GameConstants
             "布衣(女)",
             "匕首",
             "青铜剑",
+            "铁剑",
             "六角戒指",
             "玻璃戒指",
             "金项链",
