@@ -53,6 +53,8 @@ namespace Mir2Assistant.Services
                 return new List<MapConnection>();
             }
 
+            // BFS 算法保证找到最短路径（按传送次数计算）
+            // 原理：按层级遍历，第一次到达目标的路径必然是跳数最少的
             var visited = new HashSet<int>();
             var queue = new Queue<(int index, List<(int fromIdx, int[] connData)> path)>();
             queue.Enqueue((fromIndex, new List<(int, int[])>()));
@@ -62,6 +64,7 @@ namespace Mir2Assistant.Services
             {
                 var (currentIndex, currentPath) = queue.Dequeue();
 
+                // 第一次到达目标 = 最短路径
                 if (currentIndex == toIndex)
                 {
                     // 转换路径为 MapConnection
@@ -87,6 +90,7 @@ namespace Mir2Assistant.Services
                     return result;
                 }
 
+                // 扩展当前节点的所有邻居
                 var connections = MapData.GetConnections(currentIndex);
                 foreach (var conn in connections)
                 {
@@ -95,12 +99,12 @@ namespace Mir2Assistant.Services
                     {
                         var newPath = new List<(int, int[])>(currentPath) { (currentIndex, conn) };
                         queue.Enqueue((nextIndex, newPath));
-                        visited.Add(nextIndex);
+                        visited.Add(nextIndex); // 标记已访问，确保每个节点只被最短路径访问
                     }
                 }
             }
 
-            return null;
+            return null; // 无路径
         }
 
         public List<MapConnection>? FindNearestPath(string fromMapId, string toMapId)
