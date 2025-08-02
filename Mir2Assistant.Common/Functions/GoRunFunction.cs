@@ -495,7 +495,8 @@ public static class GoRunFunction
         var CharacterStatus = instanceValue.CharacterStatus!;
         if (!forceSkip)
         {
-            // 查找离我最近的巡逻点
+            // 查找离我最近的巡逻点 
+            // todo 远图要找洞口点
             curP = patrolPairs
                 .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - CharacterStatus.X), Math.Abs(p.Item2 - CharacterStatus.Y))))
                 .MinBy(x => x.dis)
@@ -809,7 +810,7 @@ public static class GoRunFunction
 
     public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (attacksThan > 0 && GameInstance.AccountInfo.role != RoleType.mage)
+        if (GameInstance.AccountInfo.role != RoleType.mage)
         {
             var temp = new string []{ "鸡", "鹿", "羊"};
             // 攻击怪物, 太多了 过不去
