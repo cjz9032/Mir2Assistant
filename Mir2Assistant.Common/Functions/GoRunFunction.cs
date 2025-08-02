@@ -496,9 +496,21 @@ public static class GoRunFunction
         if (!forceSkip)
         {
             // 查找离我最近的巡逻点 
-            // todo 远图要找洞口点
+            // todo 不是当前地图要找洞口点, 没别的需求是别的点 
+            var finalMyX = CharacterStatus.X;
+            var finalMyY = CharacterStatus.Y;
+            if (CharacterStatus.MapId != mapId)
+            {
+                var connectionsPath = mapConnectionService.FindPath(CharacterStatus.MapId, mapId);
+                if (connectionsPath != null)
+                {
+                    var last = connectionsPath.Last();
+                    finalMyX = last.To.X;
+                    finalMyY = last.To.Y;
+                }
+            }
             curP = patrolPairs
-                .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - CharacterStatus.X), Math.Abs(p.Item2 - CharacterStatus.Y))))
+                .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - finalMyX), Math.Abs(p.Item2 - finalMyY))))
                 .MinBy(x => x.dis)
                 .i;
         }
