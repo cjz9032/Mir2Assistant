@@ -36,7 +36,8 @@ namespace Mir2Assistant.Common.Functions
                         {
                             item.Name = string.Empty;
                         }
-                        item.IsGodly = memoryUtils.ReadToInt(itemAddr + 0x7C) == 1;
+                        item.GodPts = memoryUtils.ReadToInt(itemAddr + 0x7C);
+                        item.IsGodly = item.GodPts > 0;
                         item.Duration = memoryUtils.ReadToShort(itemAddr + 0x78)/100;
                         item.MaxDuration = memoryUtils.ReadToShort(itemAddr + 0x7A)/100;
                         item.stdMode = memoryUtils.ReadToInt8(itemAddr + 0xF);
@@ -85,7 +86,9 @@ namespace Mir2Assistant.Common.Functions
                 item.Id = id;
                 byte nameLength = memoryUtils.ReadToInt8(itemAddr+0x24);
                 item.Name = memoryUtils.ReadToString(itemAddr + 0x25, nameLength);
-                item.IsGodly = memoryUtils.ReadToInt8(itemAddr + 0x54) == 1;
+                item.GodPts = memoryUtils.ReadToInt8(itemAddr + 0x54);
+                item.IsGodly = item.GodPts > 0;
+
                 item.X = memoryUtils.ReadToShort(itemAddr + 0x4);
                 item.Y = memoryUtils.ReadToShort(itemAddr + 0x6);
                 if (isNew)

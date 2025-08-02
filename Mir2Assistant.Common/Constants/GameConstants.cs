@@ -10,7 +10,8 @@ public static class GameConstants
 
     public static class Items
     {
-        public static readonly int buyCount = 12;
+        public static readonly int megaBuyCount = 12;
+        public static readonly int healBuyCount = 6;
         public static readonly List<string> MegaPotions =
         new List<string>
         {
@@ -18,8 +19,22 @@ public static class GameConstants
             "魔法药(中量)",
             "强效魔法药",
         };
+        public static readonly List<string> HealPotions =
+        new List<string>
+        {
+        "金创药(小量)", "金创药(中量)", "强效金创药",
 
-        public static readonly List<string> binItems =
+        };
+
+
+        public static readonly List<string> SuperPotions =
+      new List<string>
+      {
+    "太阳水",
+            "强效太阳水"
+      };
+        
+           public static readonly List<string> binItems =
         new List<string>
         {
             "肉",
@@ -31,32 +46,26 @@ public static class GameConstants
             "匕首",
             "青铜剑",
             "铁剑",
+            "短剑",
+            "青铜斧",
             "古铜戒指",
             "六角戒指",
+            "牛角戒指",
             "玻璃戒指",
             "金项链",
             "传统项链",
+            "黑檀项链",
+            "黑色水晶项链",
+            "黄色水晶项链",
             "铁手镯",
             "小手镯",
+            "皮质手套",
             "银手镯",
             "传统项链",
-        };
-
-
-
-        public static readonly List<string> HealPotions =
-        new List<string>
-        {
-        "金创药(小量)", "金创药(中量)", "强效金创药",
-
-        };
-
-
-          public static readonly List<string> SuperPotions =
-        new List<string>
-        {
-    "太阳水",
-            "强效太阳水"
+            // lj书
+            "治愈术",
+            "基本剑术",
+            "火球术",
         };
     }
 } 

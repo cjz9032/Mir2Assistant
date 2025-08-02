@@ -75,7 +75,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                 );
 
                 SendMirCall.Send(GameInstance!, 3011, data);
-                await Task.Delay(200);
+                await Task.Delay(500);
             }
 
             await Task.Delay(500);

@@ -417,9 +417,8 @@ public static class GoRunFunction
         if (mapId == "0")
         {
             // 地图优化
-            var isLeftAlive = CharacterStatus.X < 400;
-            portalStartX = isLeftAlive ? 200 : 550;
-            portalEndX = isLeftAlive ? 300 : 620;
+            portalStartX = 200;
+            portalEndX = 300;
             portalStartY = 550;
             portalEndY = 620;
             if (CharacterStatus.Level > 13)
@@ -530,7 +529,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 5, true, 10);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 5, true, 0);
                 }
                 else
                 {
@@ -540,7 +539,7 @@ public static class GoRunFunction
                     {
                         (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                     }
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 5, true, 10);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 5, true, 14);
                 }
             }
 
@@ -559,7 +558,7 @@ public static class GoRunFunction
                 {
                     // 跟随
                     Log.Information("跟随 in start: {X}, {Y}", px, py);
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 10);
+                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                 }
             }
 
@@ -607,7 +606,7 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
                         Log.Information("跟随 in monster: {X}, {Y}", px, py);
-                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 10);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                     }
                 }
                 // 查看存活怪物 并且小于距离10个格子
@@ -700,38 +699,41 @@ public static class GoRunFunction
             && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > 12))
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
             ))
-            .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
+            .OrderBy(o => o.Value.IsGodly ? 0 : 1)
+            .ThenBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 5);
-                if (pathFound2)
+                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
+                if (!pathFound2)
                 {
-                    var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
-                    // 极品满就扔东西 -- todo 还有 自定义极品
-                    if (drop.Value.IsGodly && miscs2.Count() == 40)
-                    {
-                        // 扔东西
-                        // 挑选一个扔, 一般扔药
-                        var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
-                            GameConstants.Items.MegaPotions.Contains(o.Name)
-                        );
-                        if (needDropItem != null)
-                        {
-                            NpcFunction.EatIndexItem(instanceValue!, needDropItem.Index, true);
-                            await Task.Delay(200);
-                        }
-                        // 否则就随便找个装备 同样要排除自定义极品
-                        // if (needDropItem != null)
-                        // {
-                        //     // await ItemFunction.Drop(instanceValue!, needDropItem.Index);
-                        // }
-                    }
-
-                    ItemFunction.Pickup(instanceValue!);
-                    // 加捡取过的名单,
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
                 }
+
+                var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
+                // 极品满就扔东西 -- todo 还有 自定义极品
+                if (drop.Value.IsGodly && miscs2.Count() == 40)
+                {
+                    // 扔东西
+                    // 挑选一个扔, 一般扔药
+                    var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
+                        GameConstants.Items.MegaPotions.Contains(o.Name)
+                    );
+                    if (needDropItem != null)
+                    {
+                        NpcFunction.EatIndexItem(instanceValue!, needDropItem.Index, true);
+                        await Task.Delay(200);
+                    }
+                    // 否则就随便找个装备 同样要排除自定义极品
+                    // if (needDropItem != null)
+                    // {
+                    //     // await ItemFunction.Drop(instanceValue!, needDropItem.Index);
+                    // }
+                }
+
+                ItemFunction.Pickup(instanceValue!);
+                // 加捡取过的名单,
+                instanceValue.pickupItemIds.Add(drop.Value.Id);
             }
 
             // 屠挖肉
@@ -819,7 +821,7 @@ public static class GoRunFunction
                     // 重读怪物
                     var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).Count();
                     // 怪物死了剩余一半就可以通过
-                    if (existsCount <= monsters.Count / 2)
+                    if (existsCount <= attacksThan / 2)
                     {
                         return true;
                     }

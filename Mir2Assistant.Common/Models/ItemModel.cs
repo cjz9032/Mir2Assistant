@@ -89,6 +89,7 @@ namespace Mir2Assistant.Common.Models
         public string Name { get; set; } = string.Empty;
         public bool IsEmpty { get; set; }
         public bool IsGodly { get; set; }
+        public int GodPts { get; set; }
         public byte stdMode { get; set; }
         public byte reqType { get; set; }
         public byte reqPoints { get; set; }
@@ -136,6 +137,7 @@ namespace Mir2Assistant.Common.Models
         public int UpdateId { get; set; }
         public string Name { get; set; } = string.Empty;
         public bool IsGodly { get; set; }
+        public int GodPts { get; set; }
         public int X { get; set; }
         public int Y { get; set; }
         public bool IsEmpty { get; set; }
