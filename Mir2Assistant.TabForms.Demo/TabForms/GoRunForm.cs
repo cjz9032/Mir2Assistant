@@ -111,6 +111,32 @@ namespace Mir2Assistant.TabForms.Demo
             }, _cancellationTokenSource.Token);
         }
 
+        private void buttonTeleport_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string mapId = textBoxMapId.Text.Trim();
+                if (string.IsNullOrEmpty(mapId))
+                {
+                    return;
+                }
+
+                if (GameInstance == null)
+                {
+                    return;
+                }
+
+                // 这里可以添加转图的具体逻辑
+                GoRunFunction.PerformPathfinding(CancellationToken.None, GameInstance!, 999, 999, mapId, 0, true, 10);
+                
+                Log.Information($"尝试转图到地图ID: {mapId}");
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "转图操作发生错误");
+            }
+        }
+
         private void button11_Click(object sender, EventArgs e)
         {
 

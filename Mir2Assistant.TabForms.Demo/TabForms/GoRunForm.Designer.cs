@@ -49,6 +49,8 @@
             label2 = new Label();
             buttonSeek = new Button();
             textBox1 = new TextBox();
+            buttonTeleport = new Button();
+            textBoxMapId = new TextBox();
             groupBox2 = new GroupBox();
             button11 = new Button();
             buttonGroup = new Button();
@@ -248,6 +250,24 @@
             buttonSeek.UseVisualStyleBackColor = true;
             buttonSeek.Click += buttonSeek_Click;
             // 
+            // buttonTeleport
+            // 
+            buttonTeleport.Location = new Point(165, 51);
+            buttonTeleport.Name = "buttonTeleport";
+            buttonTeleport.Size = new Size(61, 23);
+            buttonTeleport.TabIndex = 8;
+            buttonTeleport.Text = "转图";
+            buttonTeleport.UseVisualStyleBackColor = true;
+            buttonTeleport.Click += buttonTeleport_Click;
+            // 
+            // textBoxMapId
+            // 
+            textBoxMapId.Location = new Point(29, 52);
+            textBoxMapId.Name = "textBoxMapId";
+            textBoxMapId.Size = new Size(49, 23);
+            textBoxMapId.TabIndex = 9;
+            textBoxMapId.Text = "0";
+            // 
             // textBox1
             // 
             textBox1.Location = new Point(29, 22);
@@ -258,6 +278,8 @@
             // 
             // groupBox2
             // 
+            groupBox2.Controls.Add(textBoxMapId);
+            groupBox2.Controls.Add(buttonTeleport);
             groupBox2.Controls.Add(textBox1);
             groupBox2.Controls.Add(buttonSeek);
             groupBox2.Controls.Add(label2);
@@ -265,7 +287,7 @@
             groupBox2.Controls.Add(label3);
             groupBox2.Location = new Point(12, 284);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(242, 67);
+            groupBox2.Size = new Size(242, 97);
             groupBox2.TabIndex = 8;
             groupBox2.TabStop = false;
             // 
@@ -350,6 +372,8 @@
         private Label label2;
         private Button buttonSeek;
         private TextBox textBox1;
+        private Button buttonTeleport;
+        private TextBox textBoxMapId;
         private GroupBox groupBox2;
         private Button button11;
         private Button buttonGroup;   // 新增

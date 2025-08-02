@@ -37,6 +37,7 @@ public static class GameConstants
             "金项链",
             "传统项链",
             "铁手镯",
+            "小手镯",
             "银手镯",
             "传统项链",
         };
