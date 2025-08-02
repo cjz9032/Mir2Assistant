@@ -357,7 +357,7 @@ function main() {
         
         // 根据地图大小调整目标距离
         const mapSize = Math.sqrt(walkablePoints.length);
-        let targetDistance = 20;
+        let targetDistance = 15;
         var minSize = targetDistance*1.5;
         var midSize = targetDistance*3;
         var maxSize = targetDistance*8;

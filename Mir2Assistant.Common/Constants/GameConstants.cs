@@ -10,7 +10,7 @@ public static class GameConstants
 
     public static class Items
     {
-        public static readonly int buyCount = 16;
+        public static readonly int buyCount = 12;
         public static readonly List<string> MegaPotions =
         new List<string>
         {
