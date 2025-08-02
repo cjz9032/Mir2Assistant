@@ -357,17 +357,20 @@ function main() {
         
         // 根据地图大小调整目标距离
         const mapSize = Math.sqrt(walkablePoints.length);
-        let targetDistance = 10;
+        let targetDistance = 20;
+        var minSize = targetDistance*1.5;
+        var midSize = targetDistance*3;
+        var maxSize = targetDistance*8;
         
-        if (mapSize < 15) {
+        if (mapSize < minSize) {
             // 非常小的地图
             targetDistance = Math.max(5, mapSize * 0.4);
-        } else if (mapSize < 30) {
+        } else if (mapSize < midSize) {
             // 小地图
             targetDistance = Math.max(7, mapSize * 0.3);
-        } else if (mapSize > 80) {
+        } else if (mapSize > maxSize) {
             // 大地图，增加间距
-            targetDistance = 15;
+            targetDistance = targetDistance * 1.5;
         }
         
         console.log(`  地图规模: ${mapSize.toFixed(1)}, 目标间距: ${targetDistance.toFixed(1)} 单位`)
