@@ -718,11 +718,11 @@ namespace Mir2Assistant
                         {
                             // 生成点位
                             fixedPoints.Add((x, y));
-                            Log.Debug($"生成巡逻点: ({x}, {y})");
+                            // Log.Debug($"生成巡逻点: ({x}, {y})");
                         }
                     }
 
-                    Log.Information($"共生成 {fixedPoints.Count} 个巡逻点");
+                    Log.Information($"共生成 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
 
                     // 转换为数组
                     var patrolPairs = fixedPoints.ToArray();

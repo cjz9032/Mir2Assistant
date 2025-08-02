@@ -492,7 +492,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance)
         {
-            instance.GameDebug("开始检查装备更换");
+            // instance.GameDebug("开始检查装备更换");
             var CharacterStatus = instance.CharacterStatus;
             var bagItems = instance.Items;
             foreach (var itemWithIndex in CharacterStatus.useItems.Select((item, index) => new { item, index }))
@@ -543,6 +543,7 @@ namespace Mir2Assistant.Common.Functions
                         SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
                         await Task.Delay(800);
                         ItemFunction.ReadBag(instance);
+                        instance.GameInfo("找到更好的装备: {Name}, 准备更换到位置 {Index}", final.Name, index);
                     }
                 }
                 else
