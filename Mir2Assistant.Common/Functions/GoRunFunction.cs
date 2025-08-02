@@ -843,6 +843,22 @@ public static class GoRunFunction
         replaceMap = replaceMap == "" ? GameInstance.CharacterStatus.MapId : replaceMap;
         // 支持跨多图寻路 返回值要改数组,并且后续数组都是先占位
         var connectionsPath = new List<MapConnection>();
+        var originC = new MapConnection()
+        {
+            From = new MapPosition()
+            {
+                // 有点tricky 懒得改类型了
+                X = tx,
+                Y = ty,
+                MapId = GameInstance.CharacterStatus.MapId,
+            },
+            To = new MapPosition()
+            {
+                X = 999,
+                Y = 999,
+                MapId = replaceMap,
+            }
+        };
         var isAcross = replaceMap != GameInstance.CharacterStatus.MapId;
         if (isAcross)
         {
@@ -852,37 +868,28 @@ public static class GoRunFunction
             {
                 return false;
             }
+            // 默认先加到达后的点 可能是NPC 巡逻点等
+            connectionsPath.Add(originC);
         }
         else
         {
             connectionsPath = new List<MapConnection>()
             {
-                new MapConnection()
-                {
-                    From = new MapPosition()
-                    {
-                        // 有点tricky 懒得改类型了
-                        X = tx, Y = ty,
-                        MapId = GameInstance.CharacterStatus.MapId,
-                    },
-                    To = new MapPosition()
-                    {
-                        X = 999,
-                        Y = 999,
-                        MapId = replaceMap,
-                    }
-                }
+               originC,
             };
         }
         // 以下就变for循环结构了, 因为要1->N个地图寻路, 全部可以泛化成A->B
         for (var i = 0; i < connectionsPath.Count; i++)
         {
+            // 所以可得前面的N blur一定是0, 除非count只有一个
+            var localBlurRange = connectionsPath.Count > 1 && i < connectionsPath.Count - 1 ? 0 : blurRange;
+
             var connection = connectionsPath[i];
             // 检查当前是否所在地图 否则说明失效 重新搞
             if (GameInstance.CharacterStatus.MapId != connection.From.MapId)
             {
                 // reset
-                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur, attacksThan, retries + 1);
+                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
             }
 
             var stopwatchTotal = new System.Diagnostics.Stopwatch();
@@ -890,7 +897,7 @@ public static class GoRunFunction
             var goNodes = new List<(byte dir, byte steps, int x, int y)>();
             try
             {
-                goNodes = genGoPath(GameInstance!, connection.From.X, connection.From.Y, blurRange, nearBlur).ToList();
+                goNodes = genGoPath(GameInstance!, connection.From.X, connection.From.Y, localBlurRange, nearBlur).ToList();
             }
             catch (Exception ex)
             {
@@ -919,7 +926,7 @@ public static class GoRunFunction
                 if (retries < 3)
                 {
                     GameInstance.GameWarning("寻路未找到路径，准备第 {Retry} 次重试", retries + 1);
-                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur, attacksThan, retries + 1);
+                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
                 }
 
                 GameInstance.GameWarning("寻路最终未找到路径，已重试 {Retries} 次", retries);
@@ -970,7 +977,7 @@ public static class GoRunFunction
                     if (tried > maxed)
                     {
                         // 如果在模糊范围内也算成功
-                        if (Math.Abs(tx - newX) <= blurRange && Math.Abs(ty - newY) <= blurRange)
+                        if (Math.Abs(tx - newX) <= localBlurRange && Math.Abs(ty - newY) <= localBlurRange)
                         {
                             return true;
                         }
@@ -1049,13 +1056,13 @@ public static class GoRunFunction
                         {
                             // 失败了怎么办, 只能放弃先了
                             GameInstance.GameWarning($"寻路最终未找到 -- 跳点 再次尝试 NB");
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange + 1, nearBlur, attacksThan, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, retries + 1);
                             // return false;
                         }
                         else
                         {
                             // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, blurRange, nearBlur, attacksThan, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
                         }
                     }
 
@@ -1075,7 +1082,7 @@ public static class GoRunFunction
                 }
             }
             // 多图就需要等待
-            if(isAcross)
+            if (isAcross)
             {
                 await Task.Delay(1000);
             }
