@@ -284,9 +284,9 @@ namespace Mir2Assistant.Common.Functions
             ItemFunction.ReadBag(gameInstance);
         }
 
-        public static bool CheckNeedRep(MirGameInstanceModel gameInstance, EquipPosition position)
+        // todo 目前只能城市调用
+        public static bool CheckNeedRep(MirGameInstanceModel gameInstance, ItemModel item)
         {
-            var item = gameInstance.CharacterStatus.useItems[(int)position];
             if (item.IsEmpty)
             {
                 // 空了就不用修了
@@ -404,7 +404,7 @@ namespace Mir2Assistant.Common.Functions
             {
 
                 var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
-                var needRep = CheckNeedRep(gameInstance, (EquipPosition)position);
+                var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
                 if (!needRep)
                 {
                     continue;
@@ -433,9 +433,14 @@ namespace Mir2Assistant.Common.Functions
         public async static Task RepairAllBagsEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             var nearHome = PickNearHomeMap(gameInstance);  
-            // 懒得check是否满耐久了 就2个位置武器和衣服是保留的目前
             foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
             {
+                var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
+                if (!needRep)
+                {
+                    continue;
+                }
+
                 // 找背包内的对应的东西, 目前是1 , 保留多个的能力
                 var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0
                 // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
