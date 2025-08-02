@@ -145,11 +145,11 @@ function generateHangPoints(walkablePoints, targetDistance = 10, mapId = "") {
     return hangPoints;
 }
 
-// 优化挂机点路径，形成更好的循环
+// 优化挂机点路径，确保连线到底不绕路
 function optimizeHangPointsPath(hangPoints) {
     if (hangPoints.length < 3) return hangPoints;
     
-    // 简单的贪心算法优化路径
+    // 使用最近邻算法构建连贯路径
     const optimized = [hangPoints[0]];
     const remaining = [...hangPoints.slice(1)];
     
@@ -158,6 +158,7 @@ function optimizeHangPointsPath(hangPoints) {
         let nearestIndex = 0;
         let nearestDistance = distance(current, remaining[0]);
         
+        // 找到最近的下一个点
         for (let i = 1; i < remaining.length; i++) {
             const dist = distance(current, remaining[i]);
             if (dist < nearestDistance) {
@@ -170,7 +171,50 @@ function optimizeHangPointsPath(hangPoints) {
         remaining.splice(nearestIndex, 1);
     }
     
-    return optimized;
+    // 检查路径是否有明显的交叉或绕路，如果有则尝试2-opt优化
+    return optimizeWith2Opt(optimized);
+}
+
+// 2-opt算法优化路径，减少交叉和绕路
+function optimizeWith2Opt(points) {
+    if (points.length < 4) return points;
+    
+    let improved = true;
+    let route = [...points];
+    let iterations = 0;
+    const maxIterations = Math.min(100, points.length * 2); // 限制迭代次数
+    
+    while (improved && iterations < maxIterations) {
+        improved = false;
+        iterations++;
+        
+        for (let i = 1; i < route.length - 2; i++) {
+            for (let j = i + 1; j < route.length; j++) {
+                // 计算当前路径长度
+                const currentDist = distance(route[i - 1], route[i]) + distance(route[j], route[(j + 1) % route.length]);
+                
+                // 计算交换后的路径长度
+                const newDist = distance(route[i - 1], route[j]) + distance(route[i], route[(j + 1) % route.length]);
+                
+                // 如果交换后路径更短，则进行交换
+                if (newDist < currentDist) {
+                    // 反转i到j之间的路径
+                    const newRoute = [...route];
+                    for (let k = 0; k <= j - i; k++) {
+                        newRoute[i + k] = route[j - k];
+                    }
+                    route = newRoute;
+                    improved = true;
+                }
+            }
+        }
+    }
+    
+    if (iterations > 1) {
+        console.log(`  路径优化：执行了 ${iterations} 次2-opt优化`);
+    }
+    
+    return route;
 }
 
 // 生成C#代码

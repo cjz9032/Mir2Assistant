@@ -927,7 +927,7 @@ namespace Mir2Assistant
                                 var hangMapId = "0";
                                 if (CharacterStatus.Level >= 13)
                                 {
-                                    hangMapId = "E001";
+                                    hangMapId = "D003"; // 会绕路 需要修复
                                 }else if (CharacterStatus.Level >= 20)
                                 {
                                     hangMapId = "D421";

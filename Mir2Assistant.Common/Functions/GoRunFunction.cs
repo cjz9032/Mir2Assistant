@@ -492,6 +492,7 @@ public static class GoRunFunction
         var allowButch = new string[] { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
         // 当前巡回
         var curP = 0;
+        var direction = 1; // 1表示正向(0->N), -1表示反向(N->0)
         var CharacterStatus = instanceValue.CharacterStatus!;
         if (!forceSkip)
         {
@@ -763,8 +764,18 @@ public static class GoRunFunction
             {
                 break;
             }
-            curP++;
-            curP = curP % patrolPairs.Length;
+            // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
+            curP += direction;
+            if (curP >= patrolPairs.Length)
+            {
+                curP = patrolPairs.Length - 2; // 回到倒数第二个点
+                direction = -1; // 改变方向为反向
+            }
+            else if (curP < 0)
+            {
+                curP = 1; // 回到第二个点
+                direction = 1; // 改变方向为正向
+            }
             continue;
         }
         return true;
