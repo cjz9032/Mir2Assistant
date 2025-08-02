@@ -673,7 +673,7 @@ namespace Mir2Assistant
         {
             var instances = GameState.GameInstances;
             Log.Information("开始处理任务，实例数量: {Count}", instances.Count);
-            
+
             instances.ForEach(async instance =>
             {
                 if (instance.IsBotRunning)
@@ -684,52 +684,17 @@ namespace Mir2Assistant
                 try
                 {
                     instance.IsBotRunning = true;
-                    if (!instance.IsAttached){
+                    if (!instance.IsAttached)
+                    {
                         Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
                         return;
                     }
                     Log.Information("开始处理实例 {Account} 的任务", instance.AccountInfo?.Account);
-                    // 查看当前出生点
-                    var instanceValue = instance;
-                    var CharacterStatus = instanceValue.CharacterStatus!;
-                    var isLeftAlive = CharacterStatus.X < 400;
-                    var fixedPoints = new List<(int, int)>();
-                    var patrolSteps = 10;
-                    var portalStartX = isLeftAlive ? 200 : 550;
-                    var portalEndX = isLeftAlive ? 300 : 620;
-                    var portalStartY = 550;
-                    var portalEndY = 620;
-                    if (CharacterStatus.Level > 13)
-                    {
-                        portalStartX = 50;
-                        portalEndX = 250;
-                        portalStartY = 350;
-                        portalEndY = 550;
-                    }
-
-                    // 生成矩形区域内的所有点位
-                    for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
-                    {
-                        // 根据x的奇偶性决定y的遍历方向，形成蛇形路线
-                        var yStart = (x - portalStartX) / patrolSteps % 2 == 0 ? portalStartY : portalEndY;
-                        var yEnd = (x - portalStartX) / patrolSteps % 2 == 0 ? portalEndY : portalStartY;
-                        var yStep = (x - portalStartX) / patrolSteps % 2 == 0 ? patrolSteps : -patrolSteps;
-
-                        for (int y = yStart; yStep > 0 ? y <= yEnd : y >= yEnd; y += yStep)
-                        {
-                            // 生成点位
-                            fixedPoints.Add((x, y));
-                            // Log.Debug($"生成巡逻点: ({x}, {y})");
-                        }
-                    }
-
-                    Log.Information($"共生成 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
-
-                    // 转换为数组
-                    var patrolPairs = fixedPoints.ToArray();
+                    var CharacterStatus = instance.CharacterStatus!;
 
                     if (CharacterStatus.CurrentHP > 0)
                     {
+                        var instanceValue = instance;
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
 
@@ -768,7 +733,7 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
 
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     // 检查背包的肉
                                     var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
@@ -812,7 +777,7 @@ namespace Mir2Assistant
                             {
                                 // 升级到5
                                 // 抽象到巡逻, 然后能退出
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     return instanceValue.CharacterStatus!.Level >= 5;
                                 });
@@ -887,7 +852,7 @@ namespace Mir2Assistant
                             if (act.TaskSub0Step == 2)
                             {
                                 // 再次开始找肉和鸡肉
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
                                     var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
@@ -955,7 +920,7 @@ namespace Mir2Assistant
                             // 目前死循环
                             while (true)
                             {
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     // go home
                                     // 排除药品, 

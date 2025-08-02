@@ -6,6 +6,7 @@ using Mir2Assistant.Common.Utils;
 using Mir2Assistant.Common.Constants;
 using Mir2Assistant.Common.Services;
 using Mir2Assistant.Common.Models.MapPathFinding;
+using Mir2Assistant.Common.Generated; // 新增Generated命名空间引用
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -74,35 +75,37 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
+    public static (int width, int height, byte[] obstacles) retriveMapObstacles(MirGameInstanceModel gameInstance)
+    {
+        var id = gameInstance!.CharacterStatus!.MapId;
+        if (!gameInstance.MapObstacles.TryGetValue(id, out var data))
+        {
+            // 读文件获取
+            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config/server-define/unity-config/mapc-out", id + ".mapc");
+            // binary
+            var bytes = File.ReadAllBytes(configPath);
+            gameInstance.MapObstacles[id] = bytes;
+            data = gameInstance.MapObstacles[id];
+        }
+
+        var obstacles = new byte[data.Length - 8];
+        Array.Copy(data, 8, obstacles, 0, obstacles.Length);
+        // obstacles 前2个int 32是宽高
+        var width = BitConverter.ToInt32(data, 0);
+        var height = BitConverter.ToInt32(data, 4);
+        return (width, height, obstacles);
+    }
+
     public static List<(byte dir, byte steps, int x, int y)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
     int blurRange = 0,
     bool nearBlur = false
     )
     {
-        var monsPos = GetMonsPos(gameInstance!);
         var sw = Stopwatch.StartNew();
-        var id = gameInstance!.CharacterStatus!.MapId;
-        if (!gameInstance.MapObstacles.TryGetValue(id, out var obstacles))
-        {
-            // 读文件获取
-            var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config/server-define/unity-config/mapc-out", id + ".mapc");
-            if (File.Exists(configPath))
-            {
-                // binary
-                var bytes = File.ReadAllBytes(configPath);
-                gameInstance.MapObstacles[id] = bytes;
-                obstacles = gameInstance.MapObstacles[id];
-            }
-        }
-        // obstacles 前2个int 32是宽高
-        var width = BitConverter.ToInt32(obstacles, 0);
-        var height = BitConverter.ToInt32(obstacles, 4);
+        var monsPos = GetMonsPos(gameInstance!);
+        var (width, height, data) = retriveMapObstacles(gameInstance!);
         int myX = gameInstance!.CharacterStatus!.X;
         int myY = gameInstance!.CharacterStatus!.Y;
-        // 提取后续data
-        var data = new byte[obstacles.Length - 8];
-        Array.Copy(obstacles, 8, data, 0, data.Length);
-
         // 添加怪物位置作为障碍点
         foreach (var pos in monsPos)
         {
@@ -402,41 +405,95 @@ public static class GoRunFunction
         }
         return monsPos;
     }
+    
+    public static (int, int)[] GenMobCleanPairs(MirGameInstanceModel instanceValue, string mapId){
+        var CharacterStatus = instanceValue.CharacterStatus!;
+        var patrolSteps = 10;
+        var portalStartX = 0;
+        var portalEndX = 0;
+        var portalStartY = 0;
+        var portalEndY = 0;
+        var fixedPoints = new List<(int, int)>();
+        if (mapId == "0")
+        {
+            // 地图优化
+            var isLeftAlive = CharacterStatus.X < 400;
+            portalStartX = isLeftAlive ? 200 : 550;
+            portalEndX = isLeftAlive ? 300 : 620;
+            portalStartY = 550;
+            portalEndY = 620;
+            if (CharacterStatus.Level > 13)
+            {
+                portalStartX = 50;
+                portalEndX = 250;
+                portalStartY = 350;
+                portalEndY = 550;
+            }
 
-    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, (int, int)[] patrolPairs, Func<MirGameInstanceModel, bool> checker)
+
+            // 生成矩形区域内的所有点位
+            for (int x = portalStartX; x <= portalEndX; x += patrolSteps)
+            {
+                // 根据x的奇偶性决定y的遍历方向，形成蛇形路线
+                var yStart = (x - portalStartX) / patrolSteps % 2 == 0 ? portalStartY : portalEndY;
+                var yEnd = (x - portalStartX) / patrolSteps % 2 == 0 ? portalEndY : portalStartY;
+                var yStep = (x - portalStartX) / patrolSteps % 2 == 0 ? patrolSteps : -patrolSteps;
+
+                for (int y = yStart; yStep > 0 ? y <= yEnd : y >= yEnd; y += yStep)
+                {
+                    // 生成点位
+                    fixedPoints.Add((x, y));
+                    // Log.Debug($"生成巡逻点: ({x}, {y})");
+                }
+            }
+        }
+        else
+        {
+            // 获取该地图数据
+            // var (width, height, obstacles) = retriveMapObstacles(instanceValue!);
+            var hangPoints = HangPointData.GetHangPoints(mapId);
+            foreach (var point in hangPoints)
+            {
+                fixedPoints.Add((point[0], point[1]));
+            }
+        }
+      
+
+        Log.Information($"共生成 地图 {CharacterStatus.MapId} 的 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
+
+        // 转换为数组
+        return fixedPoints.ToArray();
+    }
+
+    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
     {
-        instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
-        if(instanceValue.CharacterStatus!.CurrentHP == 0){
+    
+        if (instanceValue.CharacterStatus!.CurrentHP == 0)
+        {
             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
             return false;
         }
+        if (mapId == "") mapId = instanceValue.CharacterStatus.MapId;
+        var patrolPairs = new (int, int)[] { (0, 0) };
+        if (!forceSkip)
+        {
+            patrolPairs = GenMobCleanPairs(instanceValue, mapId);
+        }
+
+        instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
         var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
                 "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
         // 等级高了不打鸡鹿
-        if(instanceValue.CharacterStatus!.Level > 10){
+        if (instanceValue.CharacterStatus!.Level > 10)
+        {
             allowMonsters = allowMonsters.Skip(2).ToArray();
         }
-        var allowButch = new string[] { "鹿",  "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
-        // >=5级 排除掉鹿先 但是少肉
-        // if (instanceValue.CharacterStatus!.Level >= 5)
-        // {
-        //     allowMonsters = allowMonsters.Where(o => o != "鹿").ToArray();
-        // }
+        var allowButch = new string[] { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
         // 当前巡回
         var curP = 0;
         var CharacterStatus = instanceValue.CharacterStatus!;
-        var (rpx, rpy) = patrolPairs[0];
-        var skipTempCheckMon = rpx == 0;
-        // skipTempCheckMon 也可以用来回复先
-        // todo 需要更多的技能治疗
-        if (instanceValue.CharacterStatus!.CurrentHP < 15 && instanceValue.CharacterStatus!.Level < 7)
-        {
-            skipTempCheckMon = true;
-            await Task.Delay(100);
-            // 回复
-        }
-        if (rpx != 0)
+        if (!forceSkip)
         {
             // 查找离我最近的巡逻点
             curP = patrolPairs
@@ -461,7 +518,7 @@ public static class GoRunFunction
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
-            if (!skipTempCheckMon)
+            if (!forceSkip)
             {
                 if (checker(instanceValue!))
                 {
@@ -472,7 +529,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5, true, 10);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 5, true, 10);
                 }
                 else
                 {
@@ -488,7 +545,7 @@ public static class GoRunFunction
 
 
             // 如果是跟随
-            if (!instanceValue.AccountInfo!.IsMainControl && !skipTempCheckMon)
+            if (!instanceValue.AccountInfo!.IsMainControl && !forceSkip)
             {
                 // 从是跟随 -- 这是重复代码 先放着
                 var mainInstance = GameState.GameInstances[0];
@@ -539,14 +596,14 @@ public static class GoRunFunction
                     break;
                 }
                 // 检测距离
-                if (!instanceValue.AccountInfo.IsMainControl && !skipTempCheckMon)
+                if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
                     var mainInstance = GameState.GameInstances[0];
                     if (mainInstance.IsAttached)
                     {
                         (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                     }
-                    if(Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
                         Log.Information("跟随 in monster: {X}, {Y}", px, py);
                         await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 10);
@@ -566,7 +623,8 @@ public static class GoRunFunction
                 .FirstOrDefault();
                 if (ani != null)
                 {
-                    if (firstMonPos.Item1 == 0) {
+                    if (firstMonPos.Item1 == 0)
+                    {
                         firstMonPos = (ani.X, ani.Y);
                     }
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
@@ -636,7 +694,7 @@ public static class GoRunFunction
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
                     instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
                     : true
-                ): true)
+                ) : true)
             ))
             .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
@@ -675,8 +733,8 @@ public static class GoRunFunction
             // 屠挖肉
             if (miscs.Count() < 32)
             {
-                 var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-                .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+                var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+               .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
                 foreach (var body in bodys)
                 {
                     instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
@@ -699,7 +757,7 @@ public static class GoRunFunction
                     }
                 }
             }
-         
+
             // checker 满足条件就跳出循环, checker是参数
             if (checker(instanceValue!))
             {
@@ -742,8 +800,7 @@ public static class GoRunFunction
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
             {
-                // 算出怪物中间点 取整
-                await NormalAttackPoints(GameInstance, cancellationToken, new (int, int)[] { (0, 0) }, (instanceValue) =>
+                await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
                 {
                     // 重读怪物
                     var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).Count();
