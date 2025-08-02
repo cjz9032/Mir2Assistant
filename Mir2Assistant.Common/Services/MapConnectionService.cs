@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Mir2Assistant.Generated;
-using Mir2Assistant.Models.MapConnectionFinding;
+using Mir2Assistant.Common.Generated;
+using Mir2Assistant.Common.Models.MapPathFinding;
 
-namespace Mir2Assistant.Services
+namespace Mir2Assistant.Common.Services
 {
     public class MapConnectionService
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Mir2Assistant.Models.MapConnectionFinding;
+using Mir2Assistant.Common.Models.MapPathFinding;
 
-namespace Mir2Assistant.Generated
+namespace Mir2Assistant.Common.Generated
 {
     public static class MapData
     {

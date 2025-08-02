@@ -3,15 +3,15 @@ extern alias cqfz;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
-using MapPosition = cqfz::Mir2Assistant.Models.MapPathFinding.MapPosition;
-using MapConnection = cqfz::Mir2Assistant.Models.MapPathFinding.MapConnection;
-using MapPathFindingService = cqfz::Mir2Assistant.Services.MapPathFindingService;
+using MapPosition = cqfz::Mir2Assistant.Models.MapConnectionFinding.MapPosition;
+using MapConnection = cqfz::Mir2Assistant.Models.MapConnectionFinding.MapConnection;
+using MapConnectionService = cqfz::Mir2Assistant.Services.MapConnectionService;
 
-namespace Mir2Assistant.Tests.MapPathFinding
+namespace Mir2Assistant.Tests.MapConnectionFinding
 {
     public class MapPathFindingTests
     {
-        private readonly MapPathFindingService _pathFinder;
+        private readonly MapConnectionService _pathFinder;
         private readonly List<MapConnection> _connections;
 
         public MapPathFindingTests()
@@ -44,7 +44,7 @@ namespace Mir2Assistant.Tests.MapPathFinding
                 }
             };
 
-            _pathFinder = new MapPathFindingService();
+            _pathFinder = new MapConnectionService();
             
             initStopwatch.Stop();
             System.Console.WriteLine($"测试初始化时间: {initStopwatch.ElapsedMilliseconds}ms ({initStopwatch.ElapsedTicks} ticks)");
@@ -205,7 +205,7 @@ namespace Mir2Assistant.Tests.MapPathFinding
                 for (int i = 0; i < 10; i++)
                 {
                     // 创建新的服务实例来避免缓存
-                    var freshService = new MapPathFindingService();
+                    var freshService = new MapConnectionService();
                     
                     var sw = Stopwatch.StartNew();
                     var path = freshService.FindPath(from, to);

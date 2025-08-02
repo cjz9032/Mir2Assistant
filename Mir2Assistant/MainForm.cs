@@ -500,7 +500,7 @@ namespace Mir2Assistant
             // 没买蜡烛先买, 背包蜡烛小于5
             if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
             {
-                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "", 6);
+                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "0", 6);
                 if (pathFound)
                 {
                     await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
@@ -523,7 +523,7 @@ namespace Mir2Assistant
         
             foreach (var task in repairTasks)
             {
-                await NpcFunction.RepairEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
+                await NpcFunction.RepairEquipment(instanceValue!, task.npc, task.pos, task.x, task.y, "0");
             }
         }
 
@@ -540,7 +540,7 @@ namespace Mir2Assistant
         
             foreach (var task in tasks)
             {
-                await NpcFunction.BuyEquipment(instanceValue!, task.npc, task.pos, task.x, task.y);
+                await NpcFunction.BuyEquipment(instanceValue!, task.npc, task.pos, task.x, task.y, "0");
             }
         }
 
@@ -567,7 +567,8 @@ namespace Mir2Assistant
 
                 if(exitsQuan < GameConstants.Items.buyCount){
                     await NpcFunction.BuyDrugs(instanceValue!, task.npc, task.x, task.y, 
-                    GameConstants.Items.MegaPotions[0] , GameConstants.Items.buyCount - exitsQuan
+                    GameConstants.Items.MegaPotions[0] , GameConstants.Items.buyCount - exitsQuan,
+                    instanceValue.CharacterStatus!.MapId
                     );
                 }
             }
@@ -634,7 +635,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找助手，位置: {Position}", isLeftAlive ? "左边" : "右边");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "", 6,true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "0", 6,true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "助手小敏" : "助手阿妍");
@@ -648,7 +649,7 @@ namespace Mir2Assistant
             var CharacterStatus = instanceValue.CharacterStatus!;
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找屠夫，位置: {Position}", isLeftAlive ? "左边" : "右边");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "", 6, true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "0", 6, true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -661,7 +662,7 @@ namespace Mir2Assistant
             var isLeftAlive = CharacterStatus.X < 400;
             instanceValue.GameInfo("寻找武器商人，位置: {Position}", isLeftAlive ? "左边" : "右边");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "", 6,true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "0", 6,true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "精武馆老板" : "边界村铁匠铺");

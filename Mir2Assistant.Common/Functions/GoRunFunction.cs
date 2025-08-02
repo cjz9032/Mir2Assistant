@@ -1,17 +1,10 @@
-﻿using Mir2Assistant.Common.Models;
-using Mir2Assistant.Utils;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿
+using Mir2Assistant.Common.Models;
 using Serilog; // 新增Serilog引用
 using System.Diagnostics; // 新增Stopwatch引用
 using Mir2Assistant.Common.Utils;
 using Mir2Assistant.Common.Constants;
+using Mir2Assistant.Common.Services;
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -19,6 +12,8 @@ namespace Mir2Assistant.Common.Functions;
 /// </summary>
 public static class GoRunFunction
 {
+    public static MapConnectionService mapConnectionService = new MapConnectionService();
+
     /// <summary>
     /// 走路跑路
     /// </summary>
@@ -147,12 +142,12 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
-    public static List<(byte dir, byte steps)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
-    int[][] monsPos,
+    public static List<(byte dir, byte steps, int x, int y)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
     int blurRange = 0,
     bool nearBlur = false
     )
     {
+        var monsPos = GetMonsPos(gameInstance!);
         var sw = Stopwatch.StartNew();
         var id = gameInstance!.CharacterStatus!.MapId;
         if (!gameInstance.MapObstacles.TryGetValue(id, out var obstacles))
@@ -233,14 +228,14 @@ public static class GoRunFunction
             {
                 sw.Stop();
                 gameInstance.GameDebug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
-                return new List<(byte dir, byte steps)>();
+                return new List<(byte dir, byte steps, int x, int y)>();
             }
         }
         else if (data[targetY * width + targetX] == 1)
         {
             sw.Stop();
             gameInstance.GameDebug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
-            return new List<(byte dir, byte steps)>();
+            return new List<(byte dir, byte steps, int x, int y)>();
         }
 
         // 分距离, 100以内直接a星
@@ -257,7 +252,7 @@ public static class GoRunFunction
         path = OptimizePath(path);
         sw.Stop();
         gameInstance.GameDebug($"寻路完成: 起点({myX},{myY}) -> 终点({targetX},{targetY}), 路径长度: {path.Count}, 总耗时(含数据准备): {sw.ElapsedMilliseconds}ms");
-        return path.Select(p => (p.dir, p.steps)).ToList();
+        return path.Select(p => (p.dir, p.steps, p.x, p.y)).ToList();
     }
 
 
@@ -646,6 +641,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5, true, 10);
                 }
                 else
                 {
@@ -655,8 +651,8 @@ public static class GoRunFunction
                     {
                         (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
                     }
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 5, true, 10);
                 }
-                bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 5, true, 10);
             }
 
 
@@ -674,7 +670,7 @@ public static class GoRunFunction
                 {
                     // 跟随
                     Log.Information("跟随 in start: {X}, {Y}", px, py);
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
+                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 10);
                 }
             }
 
@@ -722,7 +718,7 @@ public static class GoRunFunction
                     if(Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
                         Log.Information("跟随 in monster: {X}, {Y}", px, py);
-                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, "", 3, true, 10);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 10);
                     }
                 }
                 // 查看存活怪物 并且小于距离10个格子
@@ -894,7 +890,7 @@ public static class GoRunFunction
                 return 0;
             }
             var monsPos = GetMonsPos(GameInstance!);
-            var res = genGoPath(GameInstance!, tx, ty, monsPos, 1, true).Count();
+            var res = genGoPath(GameInstance!, tx, ty, 1, true).Count();
             return res == 0 ? 999 : res;
         }
         catch (Exception ex)
@@ -954,16 +950,23 @@ public static class GoRunFunction
         {
             return true;
         }
-
+        // 自动更新
+        replaceMap = replaceMap == "" ? GameInstance.CharacterStatus.MapId : replaceMap;
+        // 支持跨多图寻路 返回值要改数组,并且后续数组都是先占位
+        if(replaceMap != GameInstance.CharacterStatus.MapId){
+            // 先占位
+            var connectionsPath = mapConnectionService.FindPath(GameInstance.CharacterStatus.MapId, replaceMap);
+            if(connectionsPath == null){
+                return false;
+            }
+        }
 
         var stopwatchTotal = new System.Diagnostics.Stopwatch();
         stopwatchTotal.Start();
-        var goNodes = new List<(byte dir, byte steps)>();
-        int[][] monsPos = new int[0][];
+        var goNodes = new List<(byte dir, byte steps, int x, int y)>();
         try
         {
-            monsPos = GetMonsPos(GameInstance!);
-            goNodes = genGoPath(GameInstance!, tx, ty, monsPos, blurRange, nearBlur).Select(o => (o.dir, o.steps)).ToList();
+            goNodes = genGoPath(GameInstance!, tx, ty, blurRange, nearBlur).ToList();
         }
         catch (Exception ex)
         {
@@ -977,14 +980,16 @@ public static class GoRunFunction
         }
 
         stopwatchTotal.Stop();
-        GameInstance.GameDebug("寻路: {Time} 毫秒", stopwatchTotal.ElapsedMilliseconds);
+        if(stopwatchTotal.ElapsedMilliseconds > 10) {
+            GameInstance.GameDebug("寻路: {Time} 毫秒", stopwatchTotal.ElapsedMilliseconds);
+        }
 
 
         if (goNodes.Count == 0)
         {
             await cleanMobs(GameInstance, attacksThan, cancellationToken);
             // 加个重试次数3次
-            await Task.Delay(300);
+            await Task.Delay(200);
 
             if (retries < 3)
             {
@@ -996,17 +1001,6 @@ public static class GoRunFunction
             return false;
         }
 
-        // 计算每个节点的实际坐标
-        var nodePositions = new List<(int x, int y)>();
-        int calcX = GameInstance!.CharacterStatus!.X;
-        int calcY = GameInstance!.CharacterStatus!.Y;
-        foreach (var node in goNodes)
-        {
-            var (nextX, nextY) = getNextPostion(calcX, calcY, node.dir, node.steps);
-            nodePositions.Add((nextX, nextY));
-            calcX = nextX;
-            calcY = nextY;
-        }
 
         while (goNodes.Count > 0)
         {
@@ -1063,13 +1057,12 @@ public static class GoRunFunction
                         if (goNodes.Count <= jumpSteps) continue;
 
                         // 获取跳跃目标点的坐标
-                        var jumpPos = nodePositions[jumpSteps];
+                        var jumpPos = goNodes[jumpSteps];
                         MonsterFunction.ReadMonster(GameInstance!);
-                        var jumpPath = new List<(byte dir, byte steps)>();
+                        var jumpPath = new List<(byte dir, byte steps, int x, int y)>();
                         try
                         {
-                            monsPos = GetMonsPos(GameInstance!);
-                            jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y, monsPos).Select(o => (o.dir, o.steps)).ToList();
+                            jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y).ToList();
                         }
                         catch (Exception ex)
                         {
@@ -1116,7 +1109,6 @@ public static class GoRunFunction
                             {
                                 // 移除跳过的路径点和对应的位置信息
                                 goNodes.RemoveRange(0, jumpSteps + 1);
-                                nodePositions.RemoveRange(0, jumpSteps + 1);
                                 GameInstance.GameDebug($"成功跳过{jumpSteps}步");
                                 tried = 0;
                                 break;
@@ -1147,7 +1139,6 @@ public static class GoRunFunction
                     if (nextX == newX && nextY == newY)
                     {
                         goNodes.RemoveAt(0);
-                        nodePositions.RemoveAt(0);
                         break;
                     }
                     else

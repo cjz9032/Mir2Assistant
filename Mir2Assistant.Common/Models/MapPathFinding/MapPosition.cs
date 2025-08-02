@@ -1,6 +1,6 @@
 using System;
 
-namespace Mir2Assistant.Models.MapConnectionFinding
+namespace Mir2Assistant.Common.Models.MapPathFinding
 {
     public class MapPosition
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Mir2Assistant.Models.MapPathFinding;
+using Mir2Assistant.Models.MapConnectionFinding;
 using Mir2Assistant.Services;
 
 namespace Mir2Assistant.Examples
@@ -14,7 +14,7 @@ namespace Mir2Assistant.Examples
             
             // 测试初始化时间
             var initStopwatch = Stopwatch.StartNew();
-            var service = new MapPathFindingService();
+            var service = new MapConnectionService();
             initStopwatch.Stop();
             Console.WriteLine($"初始化时间: {initStopwatch.ElapsedMilliseconds}ms ({initStopwatch.ElapsedTicks} ticks)");
 

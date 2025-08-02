@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Mir2Assistant.Models.MapPathFinding;
+using Mir2Assistant.Models.MapConnectionFinding;
 
 namespace Mir2Assistant.Services
 {

@@ -301,7 +301,7 @@ namespace Mir2Assistant.Common.Functions
         /// <param name="x">NPC的X坐标</param>
         /// <param name="y">NPC的Y坐标</param>
         /// <returns></returns>
-        public async static Task RepairEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
+        public async static Task RepairEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y, string mapId)
         {
             var needRep = await CheckNeedRep(gameInstance, position);
             if (!needRep)
@@ -310,7 +310,7 @@ namespace Mir2Assistant.Common.Functions
             }
 
             gameInstance.GameInfo($"修理{npcName}的{position}装备");
-            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, mapId, 6);
             if (pathFound)
             {
                 await ClickNPC(gameInstance!, npcName);
@@ -327,7 +327,7 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
-        public async static Task BuyEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y)
+        public async static Task BuyEquipment(MirGameInstanceModel gameInstance, string npcName, EquipPosition position, int x, int y, string mapId)
         {
             var need = await CheckNeedBuy(gameInstance, position);
             if (!need)
@@ -336,7 +336,7 @@ namespace Mir2Assistant.Common.Functions
             }
 
             gameInstance.GameInfo($"购买{npcName}的{position}装备");
-            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, mapId, 6);
             if (pathFound)
             {
                 await ClickNPC(gameInstance!, npcName);
@@ -447,10 +447,10 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
             }
         }
-        public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string npcName, int x, int y, string itemName, int count)
+        public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string npcName, int x, int y, string itemName, int count, string mapId)
         {
             gameInstance.GameInfo($"购买药品 {itemName} {count}个");
-            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, mapId, 6);
             if (pathFound)
             {
                 await ClickNPC(gameInstance!, npcName);
@@ -463,7 +463,7 @@ namespace Mir2Assistant.Common.Functions
         }
 
         
-        public async static Task SaveItem(MirGameInstanceModel gameInstance, string npcName, int x, int y, ItemModel[] items)
+        public async static Task SaveItem(MirGameInstanceModel gameInstance, string npcName, int x, int y, ItemModel[] items, string mapId = "")
         {
             gameInstance.GameInfo($"保存物品 远程执行");
             // bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, "", 6);
