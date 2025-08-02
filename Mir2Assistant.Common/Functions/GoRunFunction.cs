@@ -14,75 +14,6 @@ public static class GoRunFunction
 {
     public static MapConnectionService mapConnectionService = new MapConnectionService();
 
-    /// <summary>
-    /// 走路跑路
-    /// </summary>
-    /// <param name="pid"></param>
-    /// <param name="type">1走路，2跑路，3骑黑马跑</param>
-    /// <param name="x">当前x</param>
-    /// <param name="x">当前y</param>
-    /// <param name="direct">方向，小键盘数字</param>
-    /// <param name="走路参数">搜索 8B00 8B4C24 20获取</param>
-    /// <param name="UpdateMsg"></param>
-    public static void GoRun(MirGameInstanceModel gameInstance, int x, int y, byte direct, byte type)
-    {
-        gameInstance.GameDebug("执行移动，目标: ({X}, {Y}), 方向: {Direct}, 类型: {Type}", x, y, direct, type);
-        int dir = 0;
-        switch (direct)
-        {
-            case 1:
-                dir = 5;
-                x -= type;
-                y += type;
-                break;
-            case 2:
-                dir = 4;
-                y += type;
-                break;
-            case 3:
-                dir = 3;
-                x += type;
-                y += type;
-                break;
-            case 4:
-                dir = 6;
-                x -= type;
-                break;
-            case 6:
-                dir = 2;
-                x += type;
-                break;
-            case 7:
-                dir = 7;
-                x -= type;
-                y -= type;
-                break;
-            case 8:
-                dir = 0;
-                y -= type;
-                break;
-            case 9:
-                dir = 1;
-                x += type;
-                y -= type;
-                break;
-        }
-        int typePara = 0;
-        switch (type)
-        {
-            case 2:
-                typePara = 0xbc5;
-                break;
-            case 3:
-                typePara = 0x0BC1;
-                break;
-            default:
-                typePara = 0xbc3;
-                break;
-        }
-        SendMirCall.Send(gameInstance, 1001, new nint[] { x, y, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
-    }
-
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
     {
 
@@ -240,14 +171,7 @@ public static class GoRunFunction
 
         // 分距离, 100以内直接a星
         List<(byte dir, byte steps, int x, int y)> path = new List<(byte dir, byte steps, int x, int y)>();
-        if (Math.Abs(targetX - myX) + Math.Abs(targetY - myY) <= 999)
-        {
-            path = FindPathCoreSmallWithAStar(width, height, data, myX, myY, targetX, targetY);
-        }
-        else
-        {
-            path = FindPathJPS(width, height, data, myX, myY, targetX, targetY);
-        }
+        path = FindPathCoreSmallWithAStar(width, height, data, myX, myY, targetX, targetY);
         // 优化路径 TODO 暂时先不用 费血
         path = OptimizePath(path);
         sw.Stop();
@@ -346,95 +270,6 @@ public static class GoRunFunction
         return new List<(byte dir, byte steps, int x, int y)>();
     }
 
-    private static List<(byte dir, byte steps, int x, int y)> FindPathJPS(int width, int height, byte[] obstacles, int startX, int startY, int targetX, int targetY)
-    {
-        var openSet = new PriorityQueue<Node, int>();
-        var closedSet = new HashSet<string>();
-        var startNode = new Node(startX, startY);
-        startNode.G = 0;
-        startNode.H = Math.Abs(targetX - startX) + Math.Abs(targetY - startY);
-        openSet.Enqueue(startNode, startNode.F);
-
-        while (openSet.Count > 0)
-        {
-            var current = openSet.Dequeue();
-
-            if (current.X == targetX && current.Y == targetY)
-            {
-                return ReconstructPath(current);
-            }
-
-            var key = $"{current.X},{current.Y}";
-            if (closedSet.Contains(key)) continue;
-            closedSet.Add(key);
-
-            var successors = IdentifySuccessors(current, width, height, obstacles, targetX, targetY);
-            foreach (var successor in successors)
-            {
-                if (!closedSet.Contains($"{successor.X},{successor.Y}"))
-                {
-                    openSet.Enqueue(successor, successor.F);
-                }
-            }
-        }
-
-        return new List<(byte dir, byte steps, int x, int y)>();
-    }
-
-    private static List<Node> IdentifySuccessors(Node node, int width, int height, byte[] obstacles, int targetX, int targetY)
-    {
-        var successors = new List<Node>();
-        var neighbors = GetPrunedNeighbors(node, width, height, obstacles);
-
-        foreach (var neighbor in neighbors)
-        {
-            var jumpPoint = Jump(neighbor.X, neighbor.Y, node.X, node.Y, width, height, obstacles, targetX, targetY);
-            if (jumpPoint != null)
-            {
-                jumpPoint.Parent = node;
-                jumpPoint.G = node.G + GetDistance(node.X, node.Y, jumpPoint.X, jumpPoint.Y);
-                jumpPoint.H = Math.Abs(targetX - jumpPoint.X) + Math.Abs(targetY - jumpPoint.Y);
-                jumpPoint.Direction = GetDirectionFromDelta(jumpPoint.X - node.X, jumpPoint.Y - node.Y);
-                jumpPoint.StepSize = 1;
-                successors.Add(jumpPoint);
-            }
-        }
-
-        return successors;
-    }
-
-    private static List<Node> GetPrunedNeighbors(Node node, int width, int height, byte[] obstacles)
-    {
-        var neighbors = new List<Node>();
-        int[] dx = { 0, 1, 1, 1, 0, -1, -1, -1 };
-        int[] dy = { -1, -1, 0, 1, 1, 1, 0, -1 };
-
-        for (int i = 0; i < 8; i++)
-        {
-            int newX = node.X + dx[i];
-            int newY = node.Y + dy[i];
-
-            if (newX < 0 || newX >= width || newY < 0 || newY >= height) continue;
-            if (obstacles[newY * width + newX] == 1) continue;
-
-            // 对角线移动时需要检查两个相邻格子是否可通行
-            if (i % 2 == 1) // 对角线方向
-            {
-                int x1 = node.X + dx[i - 1];
-                int y1 = node.Y + dy[i - 1];
-                int x2 = node.X + dx[(i + 1) % 8];
-                int y2 = node.Y + dy[(i + 1) % 8];
-
-                if (obstacles[y1 * width + x1] == 1 || obstacles[y2 * width + x2] == 1)
-                    continue;
-            }
-
-            neighbors.Add(new Node(newX, newY));
-        }
-
-        return neighbors;
-    }
-
     private static Node? Jump(int x, int y, int px, int py, int width, int height, byte[] obstacles, int targetX, int targetY)
     {
         if (x < 0 || x >= width || y < 0 || y >= height || obstacles[y * width + x] == 1)
@@ -492,11 +327,6 @@ public static class GoRunFunction
     private static bool IsWalkable(int x, int y, int width, int height, byte[] obstacles)
     {
         return x >= 0 && x < width && y >= 0 && y < height && obstacles[y * width + x] != 1;
-    }
-
-    private static int GetDistance(int x1, int y1, int x2, int y2)
-    {
-        return Math.Max(Math.Abs(x2 - x1), Math.Abs(y2 - y1));
     }
 
     private static List<(byte dir, byte steps, int x, int y)> ReconstructPath(Node node)
