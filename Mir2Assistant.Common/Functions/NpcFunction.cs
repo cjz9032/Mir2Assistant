@@ -355,14 +355,18 @@ namespace Mir2Assistant.Common.Functions
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemNames.Add("轻型盔甲"+ genderStr);
+                                itemNames.Add("轻型盔甲" + genderStr);
+                            }
+                            if (CharacterStatus.Level >= 16)
+                            {
+                                itemNames.Add("中型盔甲"+ genderStr);
                             }
                         }
                         else
                         {
                             if (CharacterStatus.Level >= 11)
                             {
-                                itemNames.Add("轻型盔甲"+ genderStr);
+                                itemNames.Add("轻型盔甲" + genderStr);
                             }
                         }
                         break;
@@ -381,6 +385,25 @@ namespace Mir2Assistant.Common.Functions
                             if (CharacterStatus.Level >= 13)
                             {
                                 itemNames.Add("青铜斧");
+                            }
+                            if (CharacterStatus.Level >= 15)
+                            {
+                                if (gameInstance.AccountInfo.role == RoleType.blade)
+                                {
+                                    itemNames.Add("八荒");
+                                }
+                                else
+                                {
+                                    itemNames.Add("半月");
+                                }
+                            }
+                            if (CharacterStatus.Level >= 19 && gameInstance.AccountInfo.role == RoleType.blade)
+                            {
+                                itemNames.Add("凌风");
+                            }
+                            if (CharacterStatus.Level >= 20 && gameInstance.AccountInfo.role == RoleType.taoist)
+                            {
+                                itemNames.Add("降魔");
                             }
                         }
                         else

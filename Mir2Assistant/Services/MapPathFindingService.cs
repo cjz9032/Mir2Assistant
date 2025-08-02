@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Mir2Assistant.Generated;
+using Mir2Assistant.Common.Generated;
 using Mir2Assistant.Models.MapConnectionFinding;
 
 namespace Mir2Assistant.Services

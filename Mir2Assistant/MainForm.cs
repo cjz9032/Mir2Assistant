@@ -920,6 +920,18 @@ namespace Mir2Assistant
                             // 目前死循环
                             while (true)
                             {
+                                // 挑选挂机点, 
+                                // 13级以前比起
+                                // >=13 自然骷髅
+                                // >=20 毒蛇矿
+                                var hangMapId = "0";
+                                if (CharacterStatus.Level >= 13)
+                                {
+                                    hangMapId = "E001";
+                                }else if (CharacterStatus.Level >= 20)
+                                {
+                                    hangMapId = "D421";
+                                }
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     // go home
@@ -933,7 +945,7 @@ namespace Mir2Assistant
                                     // 7级以下不配
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 6 && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.5 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     return miscs.Count > 36 || isLow || isLowHpMP;
-                                });
+                                }, hangMapId);
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }
                             // act.TaskSub0Step = 6;
