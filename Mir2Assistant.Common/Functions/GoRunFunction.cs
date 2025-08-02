@@ -483,7 +483,7 @@ public static class GoRunFunction
         instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
         var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
                 "森林雪人", "蛤蟆", "蝎子",
-                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅","骷髅战将", "掷斧骷髅", "骷髅战士", "僵尸","山洞蝙蝠"};
+                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
         // 等级高了不打鸡鹿
         if (instanceValue.CharacterStatus!.Level > 10)
         {
@@ -685,6 +685,7 @@ public static class GoRunFunction
             var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
             var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
             var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
+            var superCount = miscs.Count(o => GameConstants.Items.SuperPotions.Contains(o.Name));
             // 没怪了 可以捡取东西 或者挖肉
             // 捡取
             // 按距离, 且没捡取过
@@ -696,6 +697,8 @@ public static class GoRunFunction
                     instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
                     : true
                 ) : true)
+            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > 12))
+            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
             ))
             .OrderBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
