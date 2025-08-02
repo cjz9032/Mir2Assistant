@@ -573,12 +573,14 @@ public static class GoRunFunction
                 Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
+                    // 等待初始到怪面前的时间 根据初始距离推算 200ms 一格, 保持loop delay一致
+                    var INIT_WAIT = Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y));
                     while (true)
                     {
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
-                        if (monTried > 20 && Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                        if (monTried > INIT_WAIT && Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
