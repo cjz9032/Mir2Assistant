@@ -688,7 +688,7 @@ public static class GoRunFunction
                 }
             }
 
-
+            var curinItems = GameConstants.Items.GetBinItems(instanceValue.CharacterStatus!.Level);
             var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
             var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
             var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
@@ -697,7 +697,7 @@ public static class GoRunFunction
             // 捡取
             // 按距离, 且没捡取过
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
-            && !GameConstants.Items.binItems.Contains(o.Value.Name)
+            && !curinItems.Contains(o.Value.Name)
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
@@ -821,7 +821,7 @@ public static class GoRunFunction
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).ToList();
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>

@@ -533,6 +533,10 @@ namespace Mir2Assistant.Common.Functions
                 case EquipPosition.Necklace:
                     if (CharacterStatus.Level >= 3)
                     {
+                        itemNames.Add("金项链");
+                    }
+                    if (CharacterStatus.Level >= 3)
+                    {
                         itemNames.Add("传统项链");
                     }
                     if (CharacterStatus.Level >= 17)
@@ -626,6 +630,10 @@ namespace Mir2Assistant.Common.Functions
                     itemNames.Add("木剑");
                     if (gameInstance.AccountInfo.role != RoleType.mage)
                     {
+                        if (CharacterStatus.Level >= 2)
+                        {
+                            itemNames.Add("匕首");
+                        }
                         if (CharacterStatus.Level >= 5)
                         {
                             itemNames.Add("青铜剑");

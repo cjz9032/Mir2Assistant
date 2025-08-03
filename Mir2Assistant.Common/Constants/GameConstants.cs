@@ -7,7 +7,7 @@ public static class GameConstants
         public const int HealSpellId = 2;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
     }
-    
+
     public static readonly string[] allowM10 = new string[] { "鸡", "鹿", "羊" };
     public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
     public static readonly string[] allow22 = new string[] { "半兽人","森林雪人", "食人花", "毒蜘蛛" };
@@ -57,7 +57,7 @@ public static class GameConstants
             "强效太阳水"
       };
 
-        public static readonly List<string> binItems =
+        private static readonly List<string> binItems =
      new List<string>
      {
             "肉",
@@ -66,29 +66,44 @@ public static class GameConstants
             "木剑",
             "布衣(男)",
             "布衣(女)",
-            "匕首",
-            "青铜剑",
-            "铁剑",
             "短剑",
             "青铜斧",
-            "古铜戒指",
             "六角戒指",
-            "牛角戒指",
             "玻璃戒指",
             "金项链",
-            "传统项链",
             "黑檀项链",
             "黑色水晶项链",
             "黄色水晶项链",
-            "铁手镯",
             "小手镯",
-            "皮质手套",
             "银手镯",
-            "传统项链",
             // lj书
             "治愈术",
             "基本剑术",
             "火球术",
      };
+        // 新手装
+
+        private static readonly List<string> binItemsNoob =
+           new List<string>
+           {
+            "古铜戒指",
+            "牛角戒指",
+            "传统项链",
+            "铁手镯",
+            "皮质手套",
+            "钢手镯",
+            "匕首",
+            "青铜剑",
+            "铁剑",
+           };
+        public static List<string> GetBinItems(int level)
+        {
+            if (level < 10)
+            {
+                return binItems;
+            }
+            return binItems.Concat(binItemsNoob).ToList();
+        }
     }
+    
 } 
