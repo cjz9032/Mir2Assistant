@@ -95,9 +95,9 @@ public static class GoRunFunction
         }
         else
         {
-            // clone
-            (width, height, obstacles) = data;
-            obstacles = (byte[])obstacles.Clone();
+            (width, height, var cachedObstacles) = data;
+            obstacles = new byte[cachedObstacles.Length];
+            Array.Copy(cachedObstacles, 0, obstacles, 0, cachedObstacles.Length);
         }   
 
         // obstacles 前2个int 32是宽高
