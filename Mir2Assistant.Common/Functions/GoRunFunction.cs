@@ -694,8 +694,9 @@ public static class GoRunFunction
 
                                     if (minDangerDistance >= 2 && minDangerDistance <= 3)
                                     {
-                                        // 计算到中心点的距离，优先选择离中心点近的
-                                        var centerDistance = measureGenGoPath(instanceValue!, x, y);
+                                        // 先懒计算
+                                        // var centerDistance = measureGenGoPath(instanceValue!, x, y);
+                                        var centerDistance = Math.Max(Math.Abs(x - CharacterStatus.X), Math.Abs(y - CharacterStatus.Y));
                                         if (centerDistance < 10)
                                         {
                                             escapePoints.Add((x, y, centerDistance));
@@ -706,19 +707,29 @@ public static class GoRunFunction
                         }
 
                         // 按优先级排序：优先2格距离的，然后按到中心点距离排序
-                        var bestEscapePoint = escapePoints
-                            .OrderByDescending(ep => dangerPoints.Select(dp =>
-                                Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
-                            ).Min())
-                            .ThenBy(ep => ep.distance)
-                            .FirstOrDefault();
+                        var bestEscapePoint = (0, 0, 0);
+                        var allEscapePoints = escapePoints
+                              .OrderByDescending(ep => dangerPoints.Select(dp =>
+                                  Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
+                              ).Min())
+                              .ThenBy(ep => ep.distance);
+                        foreach (var ep in allEscapePoints)
+                        {
+                            // measure
+                            var centerDistance = measureGenGoPath(instanceValue!, ep.x, ep.y);
+                            if (centerDistance < 10)
+                            {
+                                bestEscapePoint = ep;
+                                break;
+                            }
+                        }
 
                         escapeStopwatch.Stop();
 
                         if (bestEscapePoint != default)
                         {
-                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.x}, {bestEscapePoint.y}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
-                            await PerformPathfinding(_cancellationToken, instanceValue!, bestEscapePoint.x, bestEscapePoint.y, "", 0, true, 5);
+                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
+                            await PerformPathfinding(_cancellationToken, instanceValue!, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 5);
                         }
                         else
                         {
