@@ -198,7 +198,6 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
             }
 
-            await RefreshPackages(gameInstance);
         }
 
         /// <summary>
@@ -469,10 +468,10 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
-          public async static Task sellLJEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
+        public async static Task sellLJEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             var nearHome = PickNearHomeMap(gameInstance);
-            // 找到所有的装备除了极品(in case) 先给按装备 NPC分组去卖了, 
+            // 找到所有的装备除了极品 NPC分组去卖了, 
             var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty && !o.IsGodly && o.stdModeToUseItemIndex.Length > 0)
             .GroupBy(o => o.stdModeToUseItemIndex[0]); // 可以只0, 因为是同一个NPC
             foreach (var group in ljequipment)
@@ -519,6 +518,7 @@ namespace Mir2Assistant.Common.Functions
                     await SellItems(gameInstance, lists);
                 }
             }
+            await RefreshPackages(gameInstance);
         }
 
         public static List<string> preferStdEquipment(MirGameInstanceModel gameInstance, EquipPosition position)

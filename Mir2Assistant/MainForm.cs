@@ -606,18 +606,18 @@ namespace Mir2Assistant
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
             // 买所有
+            // 卖所有
+            await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
+            // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);
+            // 保留装可能还在, 所以修背包内的
+            await NpcFunction.RepairAllBagsEquipment(instanceValue, _cancellationToken);
             // 修所有
             await NpcFunction.RepairAllEquipment(instanceValue, _cancellationToken);
             // save, 该带的极品已经带了, 可以存了
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && o.IsGodly).ToArray());
-            await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
-            // 保留装可能还在, 所以修背包内的
-            await NpcFunction.RepairAllBagsEquipment(instanceValue, _cancellationToken);
             // 存完, 然后可以卖多余的装备了, 暂时不考虑其他, 书一般先存, 药直接不会捡取多余的
             await buyDrugs(instanceValue, _cancellationToken);
-
-            
         }
 
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -660,7 +660,7 @@ namespace Mir2Assistant
         private async void processTasks()
         {
             var instances = GameState.GameInstances;
-            Log.Information("开始处理任务，实例数量: {Count}", instances.Count);
+            //Log.Information("开始处理任务，实例数量: {Count}", instances.Count);
 
             instances.ForEach(async instance =>
             {
@@ -674,7 +674,7 @@ namespace Mir2Assistant
                     instance.IsBotRunning = true;
                     if (!instance.IsAttached)
                     {
-                        Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
+                        //Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
                         return;
                     }
                     Log.Information("开始处理实例 {Account} 的任务", instance.AccountInfo?.Account);
@@ -968,7 +968,7 @@ namespace Mir2Assistant
                 finally
                 {
                     Log.Information("完成处理实例 {Account} 的任务", instance.AccountInfo?.Account);
-                    await Task.Delay(3000);
+                    await Task.Delay(10_000);
                     instance.IsBotRunning = false;
                     processTasks();
                 }
@@ -1001,7 +1001,7 @@ namespace Mir2Assistant
                         {
                             if (!instance.IsAttached)
                             {
-                                Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
+                                //Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
                                 return;
                             }
                             Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);

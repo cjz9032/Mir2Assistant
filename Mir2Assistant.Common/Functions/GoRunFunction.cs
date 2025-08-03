@@ -480,14 +480,9 @@ public static class GoRunFunction
         }
 
         instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
-        var allowMonsters = new string[]  {"鸡", "鹿", "羊", "食人花","稻草人", "多钩猫", "钉耙猫", "半兽人", "半兽战士", "半兽勇士",
-                "森林雪人", "蛤蟆", "蝎子",
-                "毒蜘蛛", "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
+
         // 等级高了不打鸡鹿
-        if (instanceValue.CharacterStatus!.Level > 10)
-        {
-            allowMonsters = allowMonsters.Skip(2).ToArray();
-        }
+        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level);
         var allowButch = new string[] { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
         // 当前巡回
         var curP = 0;
@@ -709,7 +704,7 @@ public static class GoRunFunction
                     instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
                     : true
                 ) : true)
-            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > 12))
+            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
             ))
             .OrderBy(o => o.Value.IsGodly ? 0 : 1)
@@ -824,7 +819,7 @@ public static class GoRunFunction
         // todo 法师暂时不要砍了 要配合2边一起改
         if (GameInstance.AccountInfo.role != RoleType.mage)
         {
-            var temp = new string []{ "鸡", "鹿", "羊"};
+            var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
