@@ -1399,7 +1399,7 @@ public static class GoRunFunction
             }
         }
         // 检查完
-        sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, 0, 0, 0);
+        sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(500);
     }
 
