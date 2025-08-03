@@ -80,8 +80,7 @@ public class MirGameInstanceModel
         });
 
     }
-    // 字典, 基于地图ID(string), 值是地图的障碍物
-    public Dictionary<string, byte[]> MapObstacles { get; set; } = new Dictionary<string, byte[]>();
+    public Dictionary<string, (int, int, byte[])> MapBasicInfo { get; set; } = new Dictionary<string, (int, int, byte[])>();
 
     // 需要clear方法, 因为实例还在 但是数据要清空
     public void Clear()
@@ -106,7 +105,7 @@ public class MirGameInstanceModel
 
         Skills.Clear();
         TalkCmds.Clear();
-        MapObstacles.Clear();
+        // MapBasicInfo.Clear(); 保留把, 固定的信息
         CharacterStatus = new CharacterStatusModel();
         // 别销毁
         //AccountInfo = new GameAccountModel();

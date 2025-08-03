@@ -78,21 +78,23 @@ public static class GoRunFunction
     public static (int width, int height, byte[] obstacles) retriveMapObstacles(MirGameInstanceModel gameInstance)
     {
         var id = gameInstance!.CharacterStatus!.MapId;
-        if (!gameInstance.MapObstacles.TryGetValue(id, out var data))
+        var width = 0;
+        var height = 0;
+        var obstacles = new byte[0];
+        if (!gameInstance.MapBasicInfo.TryGetValue(id, out var data))
         {
             // 读文件获取
             var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config/server-define/unity-config/mapc-out", id + ".mapc");
             // binary
             var bytes = File.ReadAllBytes(configPath);
-            gameInstance.MapObstacles[id] = bytes;
-            data = gameInstance.MapObstacles[id];
+            width = BitConverter.ToInt32(bytes, 0);
+            height = BitConverter.ToInt32(bytes, 4);
+            obstacles = new byte[bytes.Length - 8];
+            Array.Copy(bytes, 8, obstacles, 0, obstacles.Length);
+            gameInstance.MapBasicInfo[id] = (width, height, obstacles);
         }
 
-        var obstacles = new byte[data.Length - 8];
-        Array.Copy(data, 8, obstacles, 0, obstacles.Length);
         // obstacles 前2个int 32是宽高
-        var width = BitConverter.ToInt32(data, 0);
-        var height = BitConverter.ToInt32(data, 4);
         return (width, height, obstacles);
     }
     public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize){
