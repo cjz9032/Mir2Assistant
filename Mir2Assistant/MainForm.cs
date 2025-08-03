@@ -1041,7 +1041,7 @@ namespace Mir2Assistant
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
                                 {
                                     instance.sameHPtimes++;
-                                    if (instance.sameHPtimes > 20)
+                                    if (instance.sameHPtimes > 30)
                                     {
                                         // 掉线
                                         RestartGameProcess(instance);
