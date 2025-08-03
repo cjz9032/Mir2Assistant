@@ -677,7 +677,7 @@ public static class GoRunFunction
                         break;
                     }
                     // 一直等到无怪,  TODO 测试主从, 优先测从
-                    await Task.Delay(500);
+                    await Task.Delay(300);
                     // 先查看身边是否有危险, 有就躲避
                     // 危险点
                     var dangerPoints = instanceValue.Monsters.Values.Where(o => o.stdAliveMon).Select(o => (o.X, o.Y));
