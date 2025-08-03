@@ -618,6 +618,9 @@ namespace Mir2Assistant
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && o.IsGodly).ToArray());
             // 存完, 然后可以卖多余的装备了, 暂时不考虑其他, 书一般先存, 药直接不会捡取多余的
             await buyDrugs(instanceValue, _cancellationToken);
+            // 修沪深只有道士
+            await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
+
         }
 
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -979,7 +982,19 @@ namespace Mir2Assistant
                                     && (!isConsumer)
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
-                                    var final = miscs.Count > 36 || realLowEq || isLowHpMP;
+                                    var isLowFushen = false;
+                                    if (instanceValue.AccountInfo.role == RoleType.taoist)
+                                    {
+                                        // 总计只剩50 跑路足够了
+                                        var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+                                        var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+                                        var allFushen = usedFushen.Concat(items).Sum(o => o.Duration);
+                                        if (allFushen < 50)
+                                        {
+                                            isLowFushen = true;
+                                        }
+                                    }
+                                    var final = miscs.Count > 38 || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家

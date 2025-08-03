@@ -164,12 +164,12 @@ namespace Mir2Assistant.Common.Functions
         }
 
         /// <summary>
-        /// 购买药品
+        /// 直买 药和护身符
         /// </summary>
         /// <param name="gameInstance"></param>
         /// <param name="itemName"></param>
         /// <returns></returns>
-        public async static Task BuyDrug(MirGameInstanceModel gameInstance, string itemName, int count = 1)
+        public async static Task BuyImmediate(MirGameInstanceModel gameInstance, string itemName, int count = 1)
         {
             nint[] data = MemoryUtils.PackStringsToData(itemName);
             for (int i = 0; i < count; i++)
@@ -349,6 +349,20 @@ namespace Mir2Assistant.Common.Functions
             return home;
         }
 
+        public static (string map, string npcName, int x, int y) PickMiscNpcByMap(MirGameInstanceModel gameInstance, string mapId)
+        {
+            // 根据当前所在地图, 找到最近的NPC
+            if (mapId == "0")
+            {
+                return ("0", "陈家铺老板", 641, 612);
+            }
+            else
+            {
+                // 其他大图
+                return ("0", "", 0, 0);
+            }
+        }
+
         public static (string map, string npcName, int x, int y) PickDrugNpcByMap(MirGameInstanceModel gameInstance, string mapId)
         {
             // 根据当前所在地图, 找到最近的NPC
@@ -429,9 +443,47 @@ namespace Mir2Assistant.Common.Functions
             }
         }
         
+        public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
+        {
+            var nearHome = PickNearHomeMap(gameInstance);
+            var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
+            // 19级道士才需要
+            if (gameInstance.CharacterStatus.Level < 19 && gameInstance.AccountInfo.role != RoleType.taoist)
+            {
+                return;
+            }
+            // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
+            // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+            var allFushen = items.Sum(o => o.Duration);
+            var BUY_COUNT = 5;
+            // 继续用了, 不然太远了
+            if (allFushen >= 150) {
+                return;
+            }
+            gameInstance.GameInfo($"修理{npcName}的护身符");
+
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                // 背包里可能留了N个/ 先修完再买
+                // 查找
+                await ClickNPC(gameInstance!, npcName);
+                foreach (var item in items)
+                {
+                    await RepairItem(gameInstance, item);
+                }
+
+                await Talk2(gameInstance!, "@buy");
+                await Task.Delay(500);
+                await BuyImmediate(gameInstance!, "护身符", BUY_COUNT - items.Count);
+                await RefreshPackages(gameInstance);
+            }
+        }
+        
         public async static Task RepairAllBagsEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            var nearHome = PickNearHomeMap(gameInstance);  
+            var nearHome = PickNearHomeMap(gameInstance);
             foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
             {
                 var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
@@ -444,7 +496,7 @@ namespace Mir2Assistant.Common.Functions
                 var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0
                 // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
                  && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
-                if(items.Count == 0)
+                if (items.Count == 0)
                 {
                     continue;
                 }
@@ -798,7 +850,7 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
 
                 // 已经检测过存在了, 只看是否为空先
-                await BuyDrug(gameInstance, itemName, count);
+                await BuyImmediate(gameInstance, itemName, count);
             }
         }
 
