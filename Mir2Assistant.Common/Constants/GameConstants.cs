@@ -70,7 +70,6 @@ public static class GameConstants
             "青铜斧",
             "六角戒指",
             "玻璃戒指",
-            "金项链",
             "黑檀项链",
             "黑色水晶项链",
             "黄色水晶项链",
@@ -88,6 +87,7 @@ public static class GameConstants
            {
             "古铜戒指",
             "牛角戒指",
+            "金项链",
             "传统项链",
             "铁手镯",
             "皮质手套",
