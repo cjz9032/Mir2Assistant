@@ -654,9 +654,25 @@ public static class GoRunFunction
                         await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                     }
                 }
-                // todo 法师暂时不要砍了 要配合2边一起改
+                 // 查看存活怪物 并且小于距离10个格子
+                var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                // 暂时取消 看起来没作用
+                // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
+                allowMonsters.Contains(o.Name) &&
+                // 还要看下是不是距离巡逻太远了, 就不要, 
+                (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
+                 && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                // 还要把鹿羊鸡放最后
+                .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
+                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
+                .FirstOrDefault();
+                // 保护消费者
                 if (whoIsConsumer(instanceValue!))
                 {
+                    if (ani != null)
+                    {
+                        break;
+                    }
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(500);
                     // 先查看身边是否有危险, 有就躲避
@@ -739,18 +755,8 @@ public static class GoRunFunction
 
                     continue;
                 }
-                // 查看存活怪物 并且小于距离10个格子
-                var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
-                // 暂时取消 看起来没作用
-                // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
-                allowMonsters.Contains(o.Name) &&
-                // 还要看下是不是距离巡逻太远了, 就不要, 
-                (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
-                 && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-                // 还要把鹿羊鸡放最后
-                .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
-                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
-                .FirstOrDefault();
+                // 保护消费者
+               
                 if (ani != null)
                 {
                     if (firstMonPos.Item1 == 0)
