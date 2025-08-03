@@ -1371,16 +1371,16 @@ public static class GoRunFunction
         // TODO 这个可能不是每次需要 再说, TODO 还有需要召回需求, 进门需求 回家 很多
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
-        await Task.Delay(500);
+        await Task.Delay(1000);
         CharacterStatusFunction.ReadChats(GameInstance, true);
-        if (GameInstance.chats.Contains("下属"))
+        if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
             var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
             // 如果存在 最后状态要恢复回来
             if (lastChatState.Contains("休息"))
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
-                await Task.Delay(500);
+                await Task.Delay(1000);
             }
             // 清理
             CharacterStatusFunction.ClearChats(GameInstance);
