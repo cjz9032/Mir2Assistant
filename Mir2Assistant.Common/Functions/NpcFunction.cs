@@ -596,6 +596,10 @@ namespace Mir2Assistant.Common.Functions
                     }
                     break;
                 case EquipPosition.Helmet:
+                    if (CharacterStatus.Level >= 10)
+                    {
+                        itemNames.Add("青铜头盔");
+                    }
                     if (CharacterStatus.Level >= 14)
                     {
                         itemNames.Add("魔法头盔");
@@ -617,12 +621,35 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("中型盔甲" + genderStr);
                         }
+                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        {
+                            if (CharacterStatus.Level >= 22)
+                            {
+                                itemNames.Add("重盔甲" + genderStr);
+                            }
+                        }
+                        else
+                        {
+                            if (CharacterStatus.Level >= 22)
+                            {
+                                itemNames.Add("灵魂战衣" + genderStr);
+                            }
+                        }
+
                     }
                     else
                     {
                         if (CharacterStatus.Level >= 11)
                         {
                             itemNames.Add("轻型盔甲" + genderStr);
+                        }
+                        if (CharacterStatus.Level >= 20)
+                        {
+                            itemNames.Add("中型盔甲" + genderStr);
+                        }
+                        if (CharacterStatus.Level >= 22)
+                        {
+                            itemNames.Add("魔法长袍" + genderStr);
                         }
                     }
                     break;
@@ -800,7 +827,15 @@ namespace Mir2Assistant.Common.Functions
                 await RefreshPackages(gameInstance);
 
         }
-
+        public static ItemModel? checkReplacementInBag(MirGameInstanceModel instance, EquipPosition position, bool careJPDurability = true)
+        {
+            var CharacterStatus = instance.CharacterStatus;
+            var bagItems = instance.Items;
+            // 直接查就可以 因为是替代品不需要很好, 只要关注是不是极品低耐被过滤
+            var preferItems = preferStdEquipment(instance, position);
+            var final = bagItems.FirstOrDefault(o => !o.IsEmpty && preferItems.Contains(o.Name) && (careJPDurability && o.IsGodly ? !o.IsLowDurability : true));
+            return final;
+        }
         // 从不主动脱下来, 只会被换
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance, bool careJPDurability = true)
         {

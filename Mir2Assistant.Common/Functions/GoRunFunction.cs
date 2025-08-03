@@ -829,6 +829,8 @@ public static class GoRunFunction
             // 按距离, 且没捡取过
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
             && !curinItems.Contains(o.Value.Name)
+            // 普通衣服分类. 超级衣服自然都要了
+            && (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (

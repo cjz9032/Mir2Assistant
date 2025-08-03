@@ -95,6 +95,7 @@ public static class GameConstants
             "匕首",
             "青铜剑",
             "铁剑",
+            "青铜头盔",
            };
         public static List<string> GetBinItems(int level)
         {

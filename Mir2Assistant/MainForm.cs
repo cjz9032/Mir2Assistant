@@ -929,7 +929,6 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D421";
                                 }
-                                var lowTimes = 0;
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
                                     // go home
@@ -937,23 +936,42 @@ namespace Mir2Assistant
                                     // todo 扔掉红
                                     var isConsumer = GoRunFunction.whoIsConsumer(instanceValue!);
                                     var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
-                                    // 或者衣服武器破了 首饰因为总是最后爆 不是很重要
-                                    var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
-                                    var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
-                                    var isLowEq = !isConsumer ? (useWeapon.IsEmpty || (useWeapon.IsGodly && useWeapon.IsLowDurability) || useDress.IsEmpty || (useDress.IsGodly && useDress.IsLowDurability)) : false;
-                                    // 就怕自动替换还没来得及 先尝试替换, 然后下一轮检查再来的时候 仍然是低 那就走
                                     var realLowEq = false;
-                                    if (isLowEq)
-                                    { 
-                                        lowTimes += 1;
-                                        if (lowTimes > 3)
+                                    if (!isConsumer) // 法师?可能不需要JP 所以不太care
+                                    {
+                                        var specificItems = new List<EquipPosition>() { EquipPosition.Weapon, EquipPosition.Dress };
+                                        foreach (var item in specificItems)
                                         {
-                                            realLowEq = true;
+                                            var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                            // 手上不管是JP还是普通, 只要包里还有就可以
+                                            if (useItem.IsEmpty || useItem.IsLowDurability)
+                                            {
+                                                // check 包里有没有就回家, 趁着还没爆, 当然也有可能已经爆了
+                                                var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
+                                                if (replacement == null)
+                                                {
+                                                    Log.Debug("没替换装备了装备{Name}低耐久, 需要替换, 回家", useItem.Name);
+                                                    realLowEq = true;
+                                                    break;
+                                                }
+                                            }
                                         }
-                                        else
+                                        // 其他部分空不要紧, 但是不能爆极品 策略是不一样的的, 而且其他也不容易磨损
+                                        var otherItems = new List<EquipPosition>() { EquipPosition.Helmet, EquipPosition.RingLeft, EquipPosition.RingRight,
+                                        EquipPosition.Necklace, EquipPosition.ArmRingLeft, EquipPosition.ArmRingRight };
+                                        foreach (var item in otherItems)
                                         {
-                                            // 异步也没事, 这样最后要么手上是空的, 要么是低耐久极品没法换下来
-                                            NpcFunction.autoReplaceEquipment(instanceValue);
+                                            var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                            if (useItem.IsGodly && useItem.IsLowDurability)
+                                            {
+                                                var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
+                                                if (replacement == null)
+                                                {
+                                                    Log.Debug("杂货极品{Name}没替换装备了低耐久, 需要替换, 回家", useItem.Name);
+                                                    realLowEq = true;
+                                                    break;
+                                                }
+                                            }
                                         }
                                     }
                                     // 7级以下不配
