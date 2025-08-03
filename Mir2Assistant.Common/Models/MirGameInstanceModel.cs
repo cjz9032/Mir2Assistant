@@ -43,6 +43,7 @@ public class MirGameInstanceModel
     public bool isRestarting = false;
     public int sameHPtimes = 0;
     public int lastHP = 0;
+    public List<string> chats = new List<string>();
 
     /// <summary>
     /// 技能
@@ -105,6 +106,7 @@ public class MirGameInstanceModel
 
         Skills.Clear();
         TalkCmds.Clear();
+        chats.Clear();
         // MapBasicInfo.Clear(); 保留把, 固定的信息
         CharacterStatus = new CharacterStatusModel();
         // 别销毁
@@ -132,6 +134,7 @@ public class MirGameInstanceModel
         isRefreshing = true;
         CharacterStatusFunction.GetInfo(this, true);
         CharacterStatusFunction.GetUsedItemInfo(this, true);
+        CharacterStatusFunction.ReadChats(this, true);
         MonsterFunction.ReadMonster(this, true);
         ItemFunction.ReadBag(this, true);
         ItemFunction.ReadDrops(this, true);

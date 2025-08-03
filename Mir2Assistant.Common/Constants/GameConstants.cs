@@ -5,6 +5,7 @@ public static class GameConstants
     public static class Skills
     {
         public const int HealSpellId = 2;
+        public const int RecallBoneSpellId = 15;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
     }
 

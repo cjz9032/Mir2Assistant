@@ -1350,6 +1350,29 @@ public static class GoRunFunction
         GameInstance.healCD[people.Id] = Environment.TickCount;
     }
 
+    public static void TryRecallMob(MirGameInstanceModel GameInstance)
+    {
+        if (GameInstance.AccountInfo.role != RoleType.taoist
+        || GameInstance.CharacterStatus!.Level < 19)
+        {
+            return;
+        }
+        // 查看是否需要召唤 先用刷屏测试
+        
+        // 查看有没沪深不然浪费魔法
+        var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+        if (item == null)
+        {
+            var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
+            if (useItem == null)
+            {
+                return;
+            }
+        }
+        // 检查完
+        sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, 0, 0, 0);
+    }
+
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
     {
         // TODO 打包这种还没算

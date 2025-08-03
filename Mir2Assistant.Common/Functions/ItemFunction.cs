@@ -103,6 +103,7 @@ namespace Mir2Assistant.Common.Functions
 
         }
 
+   
         public static void ReadBag(MirGameInstanceModel gameInstance, bool force = false)
         {
             if (gameInstance.isRefreshing && !force)

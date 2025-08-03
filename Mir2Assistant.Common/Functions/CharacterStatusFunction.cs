@@ -44,6 +44,36 @@ public static class CharacterStatusFunction
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563C8)) == 1;
     }
 
+    public static void ReadChats(MirGameInstanceModel gameInstance, bool force = false)
+    {   
+        if (gameInstance.isRefreshing && !force)
+        {
+            return;
+        }
+        
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        
+        var chats = new List<string>();
+        var memoryUtils = gameInstance!.memoryUtils!;
+        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x679E18, 0, 0x1C));
+        var count = memoryUtils.ReadToInt(chatAddr + 0x30);
+        var chatArrayAddr = memoryUtils.ReadToInt(chatAddr + 0x2C);
+        int takeCount = Math.Min(count, 100);
+        int startIndex = count - takeCount;
+        
+        for (int i = startIndex; i < count; i++)
+        {
+            var itemAddr = memoryUtils.GetMemoryAddress(memoryUtils.ReadToInt(chatArrayAddr + i * 0x8));
+            var name = memoryUtils.ReadToDelphiUnicode(itemAddr);
+            chats.Add(name);
+        }
+        gameInstance.chats = chats;
+        
+        stopwatch.Stop();
+        Console.WriteLine($"ReadChats 耗时: {stopwatch.ElapsedMilliseconds}ms");
+    }
+
+
     public static void FastUpdateXY(MirGameInstanceModel gameInstance)
     {
         var status = gameInstance.CharacterStatus!;

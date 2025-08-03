@@ -3,9 +3,16 @@
 0064F4E0        mov         edx,654558;'在战斗的时候你不能退出游戏'
 0064F4E5        mov         eax,[007524B8];gvar_007524B8:TDrawScreen
 0064F4EA        call        00567034
+// 首先有2个聊天框是 TStringList, 聊天框和历史记录
+// TStringList有相关方法 
+// 先通过count很容易找到 
+// count +30
+// 对应的 ebx指针
+// Classes TStringList.Get方法 很容易找到 
+// [ebx+2C] + 8*esi
 
-
-
+base: [679e18] + 0 + 1C
+[[base+2C] + 8*esi]  DelphiStr
 
 
 
