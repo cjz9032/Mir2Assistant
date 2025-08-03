@@ -554,7 +554,7 @@ public static class GoRunFunction
             instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
-            if (patrolTried > 200)
+            if (!whoIsConsumer(instanceValue!) && patrolTried > 200)
             {
                 instanceValue.GameWarning("巡逻攻击失败，巡逻点 {CurP}", curP);
                 return false;
@@ -618,7 +618,7 @@ public static class GoRunFunction
                 if (monsterTried > 100)
                 {
                     instanceValue.GameWarning("怪物攻击失败，巡逻点 {CurP}", curP);
-                    return false;
+                    break;
                 }
                 // 发现活人先停下 并且不是自己人
                 var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);

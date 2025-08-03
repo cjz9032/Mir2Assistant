@@ -957,8 +957,12 @@ namespace Mir2Assistant
                                         }
                                     }
                                     // 7级以下不配
-                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (!isConsumer) && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3 && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
-                                    return miscs.Count > 36 || realLowEq || isLowHpMP;
+                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
+                                    && (!isConsumer)
+                                    && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
+                                    && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                    var final = miscs.Count > 36 || realLowEq || isLowHpMP;
+                                    return final;
                                 }, hangMapId);
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                 await NpcFunction.autoReplaceEquipment(instanceValue, false);
