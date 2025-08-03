@@ -1403,12 +1403,17 @@ public static class GoRunFunction
         // 先自动换符咒
         if (useItem == null)
         {
-            nint toIndex = (int)EquipPosition.ArmRingRight;
+            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-            await Task.Delay(800);
+            //SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            var data = StringUtils.GenerateMixedData(
+                   item.Name,
+                   toIndex,
+                   item.Id
+            );
+            SendMirCall.Send(GameInstance!, 3023, data);
+            await Task.Delay(500);
         }
-
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(500);
         // 再自动换回
