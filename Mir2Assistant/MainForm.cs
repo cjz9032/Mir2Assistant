@@ -914,10 +914,18 @@ namespace Mir2Assistant
                                 // >=13 自然骷髅
                                 // >=20 毒蛇矿
                                 var hangMapId = "0";
-                                if (CharacterStatus.Level >= 13)
+                                // 如果有朋友等级太低, 先到5
+                                // 检查朋友的等级
+                                var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level < 5).ToList();
+                                if (friends.Count > 0)
+                                {
+                                    hangMapId = "0";
+                                }
+                                else  if (CharacterStatus.Level >= 13)
                                 {
                                     hangMapId = "D002"; // 会绕路 需要修复
-                                }else if (CharacterStatus.Level >= 20)
+                                }
+                                else if (CharacterStatus.Level >= 20)
                                 {
                                     hangMapId = "D421";
                                 }
