@@ -1352,19 +1352,27 @@ public static class GoRunFunction
 
     // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态
 
-    public static async Task TryRecallMob(MirGameInstanceModel GameInstance)
+    public static async Task TryAliveRecallMob(MirGameInstanceModel GameInstance)
     {
         if (GameInstance.AccountInfo.role != RoleType.taoist
         || GameInstance.CharacterStatus!.Level < 19)
         {
             return;
         }
-        // 查看是否需要召唤 先用刷屏测试
-        // 排除影响
+        // 1. 先检查身边
+        var myname = $"变异骷髅({GameInstance.AccountInfo.CharacterName})";
+        var monster = GameInstance.Monsters.FirstOrDefault(o => !o.Value.isDead && o.Value.Name == myname);
+        if (monster.Value != null)
+        {
+            // GameInstance.GameInfo("身边有召唤兽, 跳过召回");
+            return;
+        }
+        // 2. 再检查命令
+        // TODO 这个可能不是每次需要 再说, TODO 还有需要召回需求, 进门需求 回家 很多
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
         await Task.Delay(500);
-        CharacterStatusFunction.ReadChats(GameInstance);
+        CharacterStatusFunction.ReadChats(GameInstance, true);
         if (GameInstance.chats.Contains("下属"))
         {
             var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
@@ -1392,6 +1400,7 @@ public static class GoRunFunction
         }
         // 检查完
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, 0, 0, 0);
+        await Task.Delay(500);
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)

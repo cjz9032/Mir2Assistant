@@ -1110,6 +1110,7 @@ namespace Mir2Assistant
                                     }
                                 }
                                 await NpcFunction.autoReplaceEquipment(instance);
+                                await GoRunFunction.TryAliveRecallMob(instance);
                             }
                         }
                         catch (Exception ex)
