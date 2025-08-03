@@ -669,7 +669,7 @@ public static class GoRunFunction
                 // 保护消费者
                 if (whoIsConsumer(instanceValue!))
                 {
-                    if (ani != null)
+                    if (ani == null)
                     {
                         break;
                     }
