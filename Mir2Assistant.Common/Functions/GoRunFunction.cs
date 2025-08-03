@@ -644,6 +644,7 @@ public static class GoRunFunction
                     if (dangerPoints.Any(o => Math.Max(Math.Abs(o.Item1 - CharacterStatus.X), Math.Abs(o.Item2 - CharacterStatus.Y)) < 2))
                     {
                         // 进行躲避一次
+                        var escapeStopwatch = System.Diagnostics.Stopwatch.StartNew();
                         // 中心点
                         var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                         // 地图障碍点数据, 作为可选的
@@ -690,14 +691,16 @@ public static class GoRunFunction
                             .ThenBy(ep => ep.distance) 
                             .FirstOrDefault();
                         
+                        escapeStopwatch.Stop();
+                        
                         if (bestEscapePoint != default)
                         {
-                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.x}, {bestEscapePoint.y})");
+                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.x}, {bestEscapePoint.y}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
                             await PerformPathfinding(_cancellationToken, instanceValue!, bestEscapePoint.x, bestEscapePoint.y, "", 0, true, 5);
                         }
                         else
                         {
-                            instanceValue.GameWarning("未找到合适的逃跑点");
+                            instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
                         }
                     }
                     
@@ -907,7 +910,7 @@ public static class GoRunFunction
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
