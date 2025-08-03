@@ -95,6 +95,27 @@ public static class GoRunFunction
         var height = BitConverter.ToInt32(data, 4);
         return (width, height, obstacles);
     }
+    public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize){
+        var localObstacles = new List<(int x, int y)>();
+        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(gameInstance!);
+        for (int y = centerY - halfSize; y <= centerY + halfSize; y++)
+        {
+            for (int x = centerX - halfSize; x <= centerX + halfSize; x++)
+            {
+                // 检查坐标是否在地图范围内
+                if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight)
+                {
+                    // 一维数组索引：y * width + x
+                    int index = y * mapWidth + x;
+                    if (index < mapObstacles.Length && mapObstacles[index] == 1)
+                    {
+                        localObstacles.Add((x, y));
+                    }
+                }
+            }
+        }
+        return localObstacles;
+    }
 
     public static List<(byte dir, byte steps, int x, int y)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
     int blurRange = 0,
@@ -597,12 +618,6 @@ public static class GoRunFunction
                     }
                     continue;
                 }
-                // todo 法师暂时不要砍了 要配合2边一起改
-                if (instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus!.Level < 11)
-                {
-                    await Task.Delay(100);
-                    break;
-                }
                 // 检测距离
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
@@ -617,9 +632,80 @@ public static class GoRunFunction
                         await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                     }
                 }
+                // todo 法师暂时不要砍了 要配合2边一起改
+                if (instanceValue.AccountInfo.role == RoleType.mage)
+                {
+                    // 一直等到无怪,  TODO 测试主从, 优先测从
+                    await Task.Delay(500);
+                    // 先查看身边是否有危险, 有就躲避
+                    // 危险点
+                    var dangerPoints = instanceValue.Monsters.Values.Where(o => o.stdAliveMon).Select(o => (o.X, o.Y));
+                    // 警戒线为2
+                    if (dangerPoints.Any(o => Math.Max(Math.Abs(o.Item1 - CharacterStatus.X), Math.Abs(o.Item2 - CharacterStatus.Y)) < 2))
+                    {
+                        // 进行躲避一次
+                        // 中心点
+                        var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
+                        // 地图障碍点数据, 作为可选的
+                        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue!);
+                        // 以中心点取障碍点
+                        var halfSize = 10;
+                        var localObstacles = getLocalObstacles(instanceValue!, centerPoint.Item1, centerPoint.Item2, halfSize);
+                        // 其他障碍点数据, 比如玩家
+                        var actorObstacles = instanceValue.Monsters.Values.Where(o => !o.isDead).Select(o => (o.X, o.Y));
+                        // 合并地图和人怪的障碍点
+                        var obstacles = localObstacles.Concat(actorObstacles).ToArray();
+                        // 计算逃跑点   且得到测距measture方法中心点最近的地方, 然后远离 dangerPoints 2格到1格的地方, 优先找2格的地方
+                        var escapePoints = new List<(int x, int y, int distance)>();
+                        var obstacleSet = obstacles.ToHashSet();
+                        for (int y = centerPoint.Item2 - halfSize; y <= centerPoint.Item2 + halfSize; y++)
+                        {
+                            for (int x = centerPoint.Item1 - halfSize; x <= centerPoint.Item1 + halfSize; x++)
+                            {
+                                if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !obstacleSet.Contains((x, y)))
+                                {
+                                    // 计算到所有危险点的最小距离
+                                    var minDangerDistance = dangerPoints.Select(dp => 
+                                        Math.Max(Math.Abs(dp.Item1 - x), Math.Abs(dp.Item2 - y))
+                                    ).Min();
+                                    
+                                    if (minDangerDistance >= 2 && minDangerDistance <= 3)
+                                    {
+                                        // 计算到中心点的距离，优先选择离中心点近的
+                                        var centerDistance = measureGenGoPath(instanceValue!, x, y);
+                                        if (centerDistance < 10)
+                                        {
+                                            escapePoints.Add((x, y, centerDistance));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 按优先级排序：优先2格距离的，然后按到中心点距离排序
+                        var bestEscapePoint = escapePoints
+                            .OrderByDescending(ep => dangerPoints.Select(dp => 
+                                Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
+                            ).Min())
+                            .ThenBy(ep => ep.distance) 
+                            .FirstOrDefault();
+                        
+                        if (bestEscapePoint != default)
+                        {
+                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.x}, {bestEscapePoint.y})");
+                            await PerformPathfinding(_cancellationToken, instanceValue!, bestEscapePoint.x, bestEscapePoint.y, "", 0, true, 5);
+                        }
+                        else
+                        {
+                            instanceValue.GameWarning("未找到合适的逃跑点");
+                        }
+                    }
+                    
+                    continue;
+                }
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
-                // 暂时取消
+                // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 allowMonsters.Contains(o.Name) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
