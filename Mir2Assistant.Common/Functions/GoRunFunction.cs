@@ -1405,14 +1405,14 @@ public static class GoRunFunction
         {
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            //SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-            var data = StringUtils.GenerateMixedData(
-                   item.Name,
-                   toIndex,
-                   item.Id
-            );
-            SendMirCall.Send(GameInstance!, 3023, data);
-            await Task.Delay(500);
+            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            // var data = StringUtils.GenerateMixedData(
+            //        item.Name,
+            //        toIndex,
+            //        item.Id
+            // );
+            // SendMirCall.Send(GameInstance!, 3023, data);
+            await Task.Delay(800);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(500);
