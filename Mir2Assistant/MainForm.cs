@@ -940,13 +940,13 @@ namespace Mir2Assistant
                                     // 或者衣服武器破了 首饰因为总是最后爆 不是很重要
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
-                                    var isLowEq = !isConsumer ? (useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability) : false;
+                                    var isLowEq = !isConsumer ? (useWeapon.IsEmpty || (useWeapon.IsGodly && useWeapon.IsLowDurability) || useDress.IsEmpty || (useDress.IsGodly && useDress.IsLowDurability)) : false;
                                     // 就怕自动替换还没来得及 先尝试替换, 然后下一轮检查再来的时候 仍然是低 那就走
                                     var realLowEq = false;
                                     if (isLowEq)
                                     { 
                                         lowTimes += 1;
-                                        if (lowTimes > 2)
+                                        if (lowTimes > 3)
                                         {
                                             realLowEq = true;
                                         }
