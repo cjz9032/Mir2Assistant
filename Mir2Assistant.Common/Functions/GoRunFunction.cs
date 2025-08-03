@@ -1350,7 +1350,9 @@ public static class GoRunFunction
         GameInstance.healCD[people.Id] = Environment.TickCount;
     }
 
-    public static void TryRecallMob(MirGameInstanceModel GameInstance)
+    // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态
+
+    public static async Task TryRecallMob(MirGameInstanceModel GameInstance)
     {
         if (GameInstance.AccountInfo.role != RoleType.taoist
         || GameInstance.CharacterStatus!.Level < 19)
@@ -1358,7 +1360,26 @@ public static class GoRunFunction
             return;
         }
         // 查看是否需要召唤 先用刷屏测试
-        
+        // 排除影响
+        CharacterStatusFunction.ClearChats(GameInstance);
+        CharacterStatusFunction.AddChat(GameInstance, "@rest");
+        await Task.Delay(500);
+        CharacterStatusFunction.ReadChats(GameInstance);
+        if (GameInstance.chats.Contains("下属"))
+        {
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
+            // 如果存在 最后状态要恢复回来
+            if (lastChatState.Contains("休息"))
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+                await Task.Delay(500);
+            }
+            // 清理
+            CharacterStatusFunction.ClearChats(GameInstance);
+            return;
+        }
+        // 否则说明丢了, 需要召唤
+
         // 查看有没沪深不然浪费魔法
         var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
         if (item == null)

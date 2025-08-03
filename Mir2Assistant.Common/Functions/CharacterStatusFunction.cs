@@ -45,14 +45,14 @@ public static class CharacterStatusFunction
     }
 
     public static void ReadChats(MirGameInstanceModel gameInstance, bool force = false)
-    {   
+    {
         if (gameInstance.isRefreshing && !force)
         {
             return;
         }
-        
+
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        
+
         var chats = new List<string>();
         var memoryUtils = gameInstance!.memoryUtils!;
         var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x679E18, 0, 0x1C));
@@ -60,7 +60,7 @@ public static class CharacterStatusFunction
         var chatArrayAddr = memoryUtils.ReadToInt(chatAddr + 0x2C);
         int takeCount = Math.Min(count, 100);
         int startIndex = count - takeCount;
-        
+
         for (int i = startIndex; i < count; i++)
         {
             var itemAddr = memoryUtils.GetMemoryAddress(memoryUtils.ReadToInt(chatArrayAddr + i * 0x8));
@@ -68,7 +68,7 @@ public static class CharacterStatusFunction
             chats.Add(name);
         }
         gameInstance.chats = chats;
-        
+
         stopwatch.Stop();
         Console.WriteLine($"ReadChats 耗时: {stopwatch.ElapsedMilliseconds}ms");
     }
@@ -81,6 +81,21 @@ public static class CharacterStatusFunction
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
         status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
     }
-    
+
+    public static void AddChat(MirGameInstanceModel gameInstance, string chat)
+    {
+        // 考虑到很男识别 就先不要识别什么时候完成, 自行用clear自己识别
+        nint[] data = Utils.StringUtils.GenerateCompactStringData(chat);
+        SendMirCall.Send(gameInstance, 9200, data);
+    }
+
+    public static void ClearChats(MirGameInstanceModel gameInstance)
+    {
+        var memoryUtils = gameInstance.memoryUtils!;
+        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x679E18, 0, 0x1C));
+        memoryUtils.WriteInt(chatAddr + 0x30, 0);
+        gameInstance.chats = new List<string>();
+    }
+
 }
 

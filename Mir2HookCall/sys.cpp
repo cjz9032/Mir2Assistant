@@ -81,6 +81,28 @@ void groupOne(DelphiString* name)
     }
 }
 
+void addChat(DelphiString* chat)
+{
+	auto chatData = chat->data;
+
+	__asm {
+		pushad
+		pushfd
+		// ZC.H+23AC26 - BA 74B06300           - mov edx,ZC.H+23B074 { ("@Rest") }
+		// ZC.H+23AC2B - 8B 45 FC              - mov eax,[ebp-04]
+		// ZC.H+23AC2E - E8 6D880000           - call ZC.H+2434A0
+
+		mov edx, chatData
+		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [eax]
+		mov esi, 0x6434A0
+		call esi
+
+		popfd
+		popad
+	}
+}
+
 void __declspec(naked) override_write_screen_call()
 {
 	_asm {
@@ -278,6 +300,13 @@ void Sys::process(int code, int* data)
 		break;
 	case 9100:
 		okButton();
+		break;
+	case 9200:
+		ProcessWideString(data, [](const wchar_t* str, int length) {
+			DelphiString* chat = CreateDelphiString(str, length);
+			addChat(chat);
+			delete chat;
+		});
 		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);

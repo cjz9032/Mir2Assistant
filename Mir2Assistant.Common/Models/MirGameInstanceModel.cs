@@ -106,7 +106,7 @@ public class MirGameInstanceModel
 
         Skills.Clear();
         TalkCmds.Clear();
-        chats.Clear();
+        chats = new List<string>();
         // MapBasicInfo.Clear(); 保留把, 固定的信息
         CharacterStatus = new CharacterStatusModel();
         // 别销毁
