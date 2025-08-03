@@ -1389,18 +1389,30 @@ public static class GoRunFunction
         // 否则说明丢了, 需要召唤
 
         // 查看有没沪深不然浪费魔法
-        var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
-        if (item == null)
+        ItemModel? item = null;
+        var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
+        if (useItem == null)
         {
-            var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-            if (useItem == null)
+            item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+            if (item == null)
             {
                 return;
             }
         }
         // 检查完
+        // 先自动换符咒
+        if (useItem == null)
+        {
+            nint toIndex = (int)EquipPosition.ArmRingRight;
+            nint bagGridIndex = item!.Index;
+            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            await Task.Delay(800);
+        }
+
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(500);
+        // 再自动换回
+        await NpcFunction.autoReplaceEquipment(GameInstance);
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
