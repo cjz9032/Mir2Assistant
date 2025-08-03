@@ -51,9 +51,10 @@ __declspec(naked) void HookFunction()
 
         cmp eax, 0x1F
         jne call_original
-
-        xor eax, eax
-
+        popfd
+        mov eax, originalFunc1
+        add eax, 6
+        jmp eax
     call_original:
         popfd
         jmp originalFunc1
@@ -275,7 +276,7 @@ bool InstallHooks()
         return false;
     }
 
-
+    // 不倒翁
     DWORD targetAddress1 = 0x1DF76C + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress1, HookFunction, (LPVOID*)&originalFunc1) != MH_OK)
     {
