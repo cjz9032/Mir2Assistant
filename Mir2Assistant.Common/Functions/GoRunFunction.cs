@@ -93,6 +93,9 @@ public static class GoRunFunction
             Array.Copy(bytes, 8, obstacles, 0, obstacles.Length);
             gameInstance.MapBasicInfo[id] = (width, height, obstacles);
         }
+        else{
+            (width, height, obstacles) = data;
+        }   
 
         // obstacles 前2个int 32是宽高
         return (width, height, obstacles);
