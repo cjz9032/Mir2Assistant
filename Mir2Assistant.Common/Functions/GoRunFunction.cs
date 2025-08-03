@@ -821,7 +821,7 @@ public static class GoRunFunction
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && !temp.Contains(o.Value.Name)).ToList();
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
