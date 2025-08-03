@@ -484,10 +484,27 @@ public static class GoRunFunction
         // 转换为数组
         return fixedPoints.ToArray();
     }
+    
+    public static bool whoIsConsumer(MirGameInstanceModel instanceValue){
+        if (instanceValue.AccountInfo.role == RoleType.mage){
+            // 法师永远别砍
+            return true;
+        }
+        // 或者组里有大佬, 且自己很菜
+        var mainInstance = GameState.GameInstances[0];
+        if (mainInstance.IsAttached){
+            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 6) && 
+            // 后期战道可以自己打一点
+            instanceValue.CharacterStatus!.Level < 19){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
     {
-    
+
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
         {
             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
@@ -633,7 +650,7 @@ public static class GoRunFunction
                     }
                 }
                 // todo 法师暂时不要砍了 要配合2边一起改
-                if (instanceValue.AccountInfo.role == RoleType.mage)
+                if (whoIsConsumer(instanceValue!))
                 {
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(500);
@@ -666,10 +683,10 @@ public static class GoRunFunction
                                 if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !obstacleSet.Contains((x, y)))
                                 {
                                     // 计算到所有危险点的最小距离
-                                    var minDangerDistance = dangerPoints.Select(dp => 
+                                    var minDangerDistance = dangerPoints.Select(dp =>
                                         Math.Max(Math.Abs(dp.Item1 - x), Math.Abs(dp.Item2 - y))
                                     ).Min();
-                                    
+
                                     if (minDangerDistance >= 2 && minDangerDistance <= 3)
                                     {
                                         // 计算到中心点的距离，优先选择离中心点近的
@@ -682,17 +699,17 @@ public static class GoRunFunction
                                 }
                             }
                         }
-                        
+
                         // 按优先级排序：优先2格距离的，然后按到中心点距离排序
                         var bestEscapePoint = escapePoints
-                            .OrderByDescending(ep => dangerPoints.Select(dp => 
+                            .OrderByDescending(ep => dangerPoints.Select(dp =>
                                 Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
                             ).Min())
-                            .ThenBy(ep => ep.distance) 
+                            .ThenBy(ep => ep.distance)
                             .FirstOrDefault();
-                        
+
                         escapeStopwatch.Stop();
-                        
+
                         if (bestEscapePoint != default)
                         {
                             instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.x}, {bestEscapePoint.y}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
@@ -703,7 +720,7 @@ public static class GoRunFunction
                             instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
                         }
                     }
-                    
+
                     continue;
                 }
                 // 查看存活怪物 并且小于距离10个格子
@@ -906,7 +923,7 @@ public static class GoRunFunction
 
     public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (GameInstance.AccountInfo.role != RoleType.mage)
+        if (!whoIsConsumer(GameInstance!))  
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
