@@ -935,11 +935,12 @@ namespace Mir2Assistant
                                     // go home
                                     // 排除药品, 
                                     // todo 扔掉红
+                                    var isLowLevel = instanceValue.CharacterStatus!.Level < 6;
                                     var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
                                     // 或者衣服武器破了 首饰因为总是最后爆 不是很重要
                                     var useWeapon = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Weapon];
                                     var useDress = instanceValue.CharacterStatus.useItems[(int)EquipPosition.Dress];
-                                    var isLowEq = useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability;
+                                    var isLowEq = !isLowLevel ? (useWeapon.IsEmpty || useWeapon.IsLowDurability || useDress.IsEmpty || useDress.IsLowDurability) : false;
                                     // 就怕自动替换还没来得及 先尝试替换, 然后下一轮检查再来的时候 仍然是低 那就走
                                     var realLowEq = false;
                                     if (isLowEq)
@@ -956,7 +957,7 @@ namespace Mir2Assistant
                                         }
                                     }
                                     // 7级以下不配
-                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 6 && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3 && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist && (!isLowLevel) && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3 && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     return miscs.Count > 36 || realLowEq || isLowHpMP;
                                 }, hangMapId);
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
