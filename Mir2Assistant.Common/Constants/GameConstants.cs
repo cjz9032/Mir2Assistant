@@ -71,6 +71,8 @@ public static class GameConstants
      new List<string>
      {
             "肉",
+            "护身符",
+            "随机传送卷",
             "鸡肉",
             "食人树叶",
             "木剑",

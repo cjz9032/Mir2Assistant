@@ -382,7 +382,7 @@ namespace Mir2Assistant.Common.Functions
             else
             {
                 // 其他大图
-                return ("0", "", 0, 0);
+                return ("-1", "", 0, 0);
             }
         }
 
@@ -400,7 +400,7 @@ namespace Mir2Assistant.Common.Functions
             else
             {
                 // 其他大图
-                return ("0", "", 0, 0);
+                return ("-1", "", 0, 0);
             }
         }
         public static (string map, string npcName, int x, int y) PickEquipNpcByMap(MirGameInstanceModel gameInstance, EquipPosition position, string mapId)
@@ -447,13 +447,13 @@ namespace Mir2Assistant.Common.Functions
                     // case EquipPosition.RingRight:
                     //     return ("0141", "戒指店老板", 23, 23);
                     default:
-                        return ("0", "", 0, 0);
+                        return ("-1", "", 0, 0);
                 }
             }
             else
             {
                 // 其他大图
-                return ("0", "", 0, 0);
+                return ("-1", "", 0, 0);
             }
         }
 
