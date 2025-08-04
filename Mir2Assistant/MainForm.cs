@@ -611,8 +611,8 @@ namespace Mir2Assistant
             await NpcFunction.RepairAllBagsEquipment(instanceValue, _cancellationToken);
             // 修所有
             await NpcFunction.RepairAllEquipment(instanceValue, _cancellationToken);
-            // save, 该带的极品已经带了, 可以存了
-            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && o.IsGodly).ToArray());
+            // save, 该带的极品已经带了, 可以存了, 书记也存
+            await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && (o.IsGodly || o.stdMode == 4)).ToArray());
             // 存完, 然后可以卖多余的装备了, 暂时不考虑其他, 书一般先存, 药直接不会捡取多余的
             await buyDrugs(instanceValue, _cancellationToken);
             // 修沪深只有道士
