@@ -961,7 +961,7 @@ namespace Mir2Assistant.Common.Functions
                         continue;
                     }
                     // 找顶级的
-                    var mostPreferItem = preferStdEquipment(instance, (EquipPosition)index)?[0];
+                    var mostPreferItem = preferStdEquipment(instance, (EquipPosition)index).FirstOrDefault();
                     if(mostPreferItem == null)
                     {
                         continue;

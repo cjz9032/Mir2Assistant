@@ -674,7 +674,7 @@ namespace Mir2Assistant
                 }
                 try
                 {
-                    instance.IsBotRunning = true;
+                    instance.IsBotRunning = true;   
                     if (!instance.IsAttached)
                     {
                         //Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
@@ -924,13 +924,13 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                else  if (CharacterStatus.Level >= 13)
-                                {
-                                    hangMapId = "D002"; // 会绕路 需要修复
-                                }
-                                else if (CharacterStatus.Level >= 20)
+                                else  if (CharacterStatus.Level >= 20)
                                 {
                                     hangMapId = "D421";
+                                }
+                                else if (CharacterStatus.Level >= 13)
+                                {
+                                    hangMapId = "D002";
                                 }
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
@@ -1117,8 +1117,8 @@ namespace Mir2Assistant
                         {
                             Log.Error(ex, "后台处理出错，账号: {Account}", instance.AccountInfo?.Account);
                             await Task.Delay(3000);
-                            autoAtBackground();
-                            return;
+                            //autoAtBackground();
+                            //return;
                         }
                     });
                 }
