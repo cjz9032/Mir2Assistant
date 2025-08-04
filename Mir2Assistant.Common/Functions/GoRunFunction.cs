@@ -605,7 +605,7 @@ public static class GoRunFunction
             instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
-            if (whoIsConsumer(instanceValue!) != 2 && patrolTried > 200)
+            if (whoIsConsumer(instanceValue!) == 2 && patrolTried > 200)
             {
                 instanceValue.GameWarning("巡逻攻击失败，巡逻点 {CurP}", curP);
                 return false;
@@ -993,7 +993,7 @@ public static class GoRunFunction
 
     public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (whoIsConsumer(GameInstance!) != 2)  
+        if (whoIsConsumer(GameInstance!) == 2)  
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
