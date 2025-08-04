@@ -8,7 +8,7 @@ function loadAllMapData() {
     const allMapData = {};
     
     for (const file of mapFiles) {
-        const mapId = path.basename(file, '.json');
+        const mapId = path.basename(file, '.json').toUpperCase();
         const mapPath = path.join(mapDir, file);
         try {
             const mapData = JSON.parse(fs.readFileSync(mapPath, 'utf8'));

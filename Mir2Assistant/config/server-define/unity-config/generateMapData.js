@@ -14,8 +14,8 @@ const connections = [];
 // 先收集所有唯一的地图ID
 const allMapIds = new Set();
 mapEntry.list.forEach(map => {
-    mapNames[map.id] = map.name;
-    allMapIds.add(map.id);
+    mapNames[map.id.toUpperCase()] = map.name;
+    allMapIds.add(map.id.toUpperCase());
     
     map.pos.forEach(pos => {
         allMapIds.add(pos.from.mid);

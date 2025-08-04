@@ -15609,7 +15609,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 49, 18 },
                 new int[] { 58, 9 }
             },
-            ["d421"] = new int[][]
+            ["D421"] = new int[][]
             {
                 new int[] { 126, 4 },
                 new int[] { 121, 19 },
@@ -15766,7 +15766,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 103, 50 },
                 new int[] { 91, 32 }
             },
-            ["d422"] = new int[][]
+            ["D422"] = new int[][]
             {
                 new int[] { 31, 23 },
                 new int[] { 19, 35 },
@@ -15953,7 +15953,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 45, 5 },
                 new int[] { 33, 26 }
             },
-            ["d501"] = new int[][]
+            ["D501"] = new int[][]
             {
                 new int[] { 190, 62 },
                 new int[] { 215, 67 },
@@ -16061,7 +16061,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 217, 89 },
                 new int[] { 191, 92 }
             },
-            ["d502"] = new int[][]
+            ["D502"] = new int[][]
             {
                 new int[] { 190, 62 },
                 new int[] { 175, 77 },
@@ -16168,7 +16168,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 219, 49 },
                 new int[] { 215, 67 }
             },
-            ["d503"] = new int[][]
+            ["D503"] = new int[][]
             {
                 new int[] { 182, 43 },
                 new int[] { 208, 35 },
@@ -16308,7 +16308,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 187, 74 },
                 new int[] { 206, 67 }
             },
-            ["d504"] = new int[][]
+            ["D504"] = new int[][]
             {
                 new int[] { 182, 43 },
                 new int[] { 208, 35 },
@@ -16965,7 +16965,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 37, 38 },
                 new int[] { 37, 23 }
             },
-            ["d511"] = new int[][]
+            ["D511"] = new int[][]
             {
                 new int[] { 20, 11 },
                 new int[] { 24, 11 },
@@ -16985,7 +16985,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 10, 21 },
                 new int[] { 16, 15 }
             },
-            ["d512"] = new int[][]
+            ["D512"] = new int[][]
             {
                 new int[] { 19, 11 },
                 new int[] { 22, 9 },
@@ -17005,7 +17005,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 10, 21 },
                 new int[] { 16, 15 }
             },
-            ["d513"] = new int[][]
+            ["D513"] = new int[][]
             {
                 new int[] { 20, 11 },
                 new int[] { 24, 11 },
@@ -17025,7 +17025,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 10, 21 },
                 new int[] { 16, 15 }
             },
-            ["d514"] = new int[][]
+            ["D514"] = new int[][]
             {
                 new int[] { 19, 11 },
                 new int[] { 22, 9 },
@@ -17045,7 +17045,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 10, 21 },
                 new int[] { 16, 15 }
             },
-            ["d515"] = new int[][]
+            ["D515"] = new int[][]
             {
                 new int[] { 16, 12 },
                 new int[] { 19, 9 },
@@ -17070,7 +17070,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 23, 20 },
                 new int[] { 18, 20 }
             },
-            ["d601"] = new int[][]
+            ["D601"] = new int[][]
             {
                 new int[] { 30, 22 },
                 new int[] { 52, 14 },
@@ -17175,7 +17175,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 22, 41 },
                 new int[] { 34, 40 }
             },
-            ["d602"] = new int[][]
+            ["D602"] = new int[][]
             {
                 new int[] { 43, 13 },
                 new int[] { 54, 24 },
@@ -17253,7 +17253,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 39, 41 },
                 new int[] { 39, 29 }
             },
-            ["d603"] = new int[][]
+            ["D603"] = new int[][]
             {
                 new int[] { 65, 75 },
                 new int[] { 57, 86 },
@@ -17326,7 +17326,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 81, 81 },
                 new int[] { 69, 90 }
             },
-            ["d604"] = new int[][]
+            ["D604"] = new int[][]
             {
                 new int[] { 23, 29 },
                 new int[] { 14, 38 },
@@ -17372,7 +17372,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 40, 28 },
                 new int[] { 55, 27 }
             },
-            ["d605"] = new int[][]
+            ["D605"] = new int[][]
             {
                 new int[] { 39, 23 },
                 new int[] { 47, 32 },
@@ -17419,7 +17419,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 62, 32 },
                 new int[] { 62, 18 }
             },
-            ["d606"] = new int[][]
+            ["D606"] = new int[][]
             {
                 new int[] { 10, 24 },
                 new int[] { 29, 19 },
@@ -17468,7 +17468,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 9, 47 },
                 new int[] { 22, 34 }
             },
-            ["d607"] = new int[][]
+            ["D607"] = new int[][]
             {
                 new int[] { 17, 10 },
                 new int[] { 14, 14 },
@@ -17492,7 +17492,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 26, 13 },
                 new int[] { 20, 13 }
             },
-            ["d608"] = new int[][]
+            ["D608"] = new int[][]
             {
                 new int[] { 22, 19 },
                 new int[] { 25, 17 },
@@ -17510,7 +17510,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 20, 22 },
                 new int[] { 25, 22 }
             },
-            ["d609"] = new int[][]
+            ["D609"] = new int[][]
             {
                 new int[] { 21, 14 },
                 new int[] { 25, 14 },
@@ -17529,7 +17529,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 17, 18 },
                 new int[] { 22, 18 }
             },
-            ["d610"] = new int[][]
+            ["D610"] = new int[][]
             {
                 new int[] { 19, 16 },
                 new int[] { 18, 19 },
@@ -17548,7 +17548,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 22, 14 },
                 new int[] { 22, 18 }
             },
-            ["d611"] = new int[][]
+            ["D611"] = new int[][]
             {
                 new int[] { 32, 40 },
                 new int[] { 30, 46 },
@@ -18054,7 +18054,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 40, 10 },
                 new int[] { 40, 22 }
             },
-            ["d710"] = new int[][]
+            ["D710"] = new int[][]
             {
                 new int[] { 22, 10 },
                 new int[] { 25, 7 },
@@ -18083,7 +18083,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 19, 13 },
                 new int[] { 25, 13 }
             },
-            ["d711"] = new int[][]
+            ["D711"] = new int[][]
             {
                 new int[] { 146, 32 },
                 new int[] { 158, 20 },
@@ -18295,7 +18295,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 169, 54 },
                 new int[] { 147, 54 }
             },
-            ["d712"] = new int[][]
+            ["D712"] = new int[][]
             {
                 new int[] { 146, 32 },
                 new int[] { 158, 20 },
@@ -18508,7 +18508,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 147, 54 },
                 new int[] { 145, 74 }
             },
-            ["d713"] = new int[][]
+            ["D713"] = new int[][]
             {
                 new int[] { 40, 15 },
                 new int[] { 113, 66 },
@@ -18693,7 +18693,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 79, 99 },
                 new int[] { 91, 88 }
             },
-            ["d714"] = new int[][]
+            ["D714"] = new int[][]
             {
                 new int[] { 160, 26 },
                 new int[] { 162, 52 },
@@ -20542,7 +20542,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 12, 52 },
                 new int[] { 21, 46 }
             },
-            ["f001"] = new int[][]
+            ["F001"] = new int[][]
             {
                 new int[] { 19, 17 },
                 new int[] { 31, 20 },
@@ -20571,7 +20571,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 51, 11 },
                 new int[] { 35, 9 }
             },
-            ["f002"] = new int[][]
+            ["F002"] = new int[][]
             {
                 new int[] { 23, 17 },
                 new int[] { 31, 33 },
@@ -20601,7 +20601,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 8, 55 },
                 new int[] { 15, 43 }
             },
-            ["f003"] = new int[][]
+            ["F003"] = new int[][]
             {
                 new int[] { 16, 19 },
                 new int[] { 28, 31 },
@@ -20627,7 +20627,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 15, 50 },
                 new int[] { 28, 46 }
             },
-            ["f004"] = new int[][]
+            ["F004"] = new int[][]
             {
                 new int[] { 14, 21 },
                 new int[] { 15, 30 },
@@ -20658,7 +20658,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 25, 31 },
                 new int[] { 36, 26 }
             },
-            ["f005"] = new int[][]
+            ["F005"] = new int[][]
             {
                 new int[] { 10, 9 },
                 new int[] { 5, 18 },
@@ -20843,7 +20843,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 60, 41 },
                 new int[] { 44, 49 }
             },
-            ["f008"] = new int[][]
+            ["F008"] = new int[][]
             {
                 new int[] { 133, 15 },
                 new int[] { 118, 27 },
@@ -22128,7 +22128,7 @@ namespace Mir2Assistant.Common.Generated
                 new int[] { 8, 17 },
                 new int[] { 11, 14 }
             },
-            ["r001"] = new int[][]
+            ["R001"] = new int[][]
             {
                 new int[] { 0, 8 },
                 new int[] { 0, 30 },
