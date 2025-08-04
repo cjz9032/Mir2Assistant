@@ -810,7 +810,7 @@ namespace Mir2Assistant.Common.Functions
                         }
                         nint[] data = MemoryUtils.PackStringsToData(name);
                         SendMirCall.Send(gameInstance, 3005, data);
-                        await Task.Delay(800);
+                        await Task.Delay(1000);
                         // 判断是否存在
                         // len [[0x74350C]+0x00000C5C]+08
                         menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(0x74350C, 0x00000C5C, 08)));

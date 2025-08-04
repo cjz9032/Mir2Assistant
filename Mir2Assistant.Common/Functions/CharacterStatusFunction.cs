@@ -91,10 +91,7 @@ public static class CharacterStatusFunction
 
     public static void ClearChats(MirGameInstanceModel gameInstance)
     {
-        var memoryUtils = gameInstance.memoryUtils!;
-        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x679E18, 0, 0x1C));
-        memoryUtils.WriteInt(chatAddr + 0x30, 0);
-        gameInstance.chats = new List<string>();
+        SendMirCall.Send(gameInstance, 9201, new nint[] { 0 });
     }
 
 }

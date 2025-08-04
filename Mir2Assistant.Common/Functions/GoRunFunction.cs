@@ -15,7 +15,7 @@ namespace Mir2Assistant.Common.Functions;
 public static class GoRunFunction
 {
     public static MapConnectionService mapConnectionService = new MapConnectionService();
-
+    
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
     {
 
@@ -91,6 +91,43 @@ public static class GoRunFunction
             height = BitConverter.ToInt32(bytes, 4);
             obstacles = new byte[bytes.Length - 8];
             Array.Copy(bytes, 8, obstacles, 0, obstacles.Length);
+            // 地图0 有个bug 特殊处理几个点
+            if (id == "0")
+            {
+                var bugPoints = new (int, int)[] { 
+                    (266,198),
+                    (267,197),
+                    (268,196),
+                    (265,198),
+                    (266,197),
+                    (267,196),
+
+                    (271,324),
+                    (273,327),
+                    (272,326),
+                    (271,325),
+                    (273,326),
+                    (272,325),
+
+                    (399,333),
+                    (397,334),
+                    (398,333),
+                    (399,332),
+                    (397,335),
+                    (398,334),
+
+                    (418,171),
+                    (418,172),
+                    (417,171),
+                    (417,170),
+                    (416,170),
+                    (419,172)
+                };
+                foreach (var point in bugPoints)
+                {
+                    obstacles[point.Item2 * width + point.Item1] = 1;
+                }
+            }
             gameInstance.MapBasicInfo[id] = (width, height, obstacles);
         }
         else
@@ -501,7 +538,7 @@ public static class GoRunFunction
         // 或者组里有大佬, 且自己很菜
         var mainInstance = GameState.GameInstances[0];
         if (mainInstance.IsAttached){
-            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 6) && 
+            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 1) && 
             // 后期战道可以自己打一点
             instanceValue.CharacterStatus!.Level < 19){
                 return true;
@@ -1272,8 +1309,9 @@ public static class GoRunFunction
 
     public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0)
     {
-        // check mp
-        if (GameInstance.CharacterStatus!.CurrentMP < 10)
+        // check mp -- spell map
+        var cost = GameConstants.MagicSpellMap[spellId];
+        if (GameInstance.CharacterStatus!.CurrentMP < cost + 1)
         {
             return false;
         }

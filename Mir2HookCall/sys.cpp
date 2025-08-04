@@ -103,6 +103,22 @@ void addChat(DelphiString* chat)
 	}
 }
 
+void clearChat(){
+	__asm {
+	pushad
+	pushfd
+		mov eax, 0x679E18
+		mov eax, [eax]
+		mov eax, [eax]
+		add eax, 0x1C
+		mov eax, [eax]
+		mov esi, 0x0043e870
+		call esi
+	popfd
+	popad
+	}
+}
+
 void __declspec(naked) override_write_screen_call()
 {
 	_asm {
@@ -307,6 +323,9 @@ void Sys::process(int code, int* data)
 			addChat(chat);
 			delete chat;
 		});
+		break;
+	case 9201:
+			clearChat();
 		break;
 	case 9999: //执行任务ASM代码
 		any_call(data);

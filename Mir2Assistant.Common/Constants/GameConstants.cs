@@ -9,6 +9,15 @@ public static class GameConstants
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
     }
 
+    public static readonly Dictionary<int, int> MagicSpellMap = new()
+    {
+        { 1, 4 }, { 2, 7 }, { 3, 0 }, { 4, 0 }, { 5, 3 }, { 6, 4 }, { 7, 0 }, { 8, 8 }, { 9, 10 },
+        { 10, 30 }, { 11, 12 }, { 12, 0 }, { 13, 5 }, { 14, 15 }, { 15, 15 }, { 16, 10 }, { 17, 16 },
+        { 18, 5 }, { 19, 10 }, { 20, 3 }, { 21, 10 }, { 22, 20 }, { 23, 15 }, { 24, 35 }, { 25, 0 },
+        { 26, 0 }, { 27, 15 }, { 28, 16 }, { 29, 12 }, { 30, 16 }, { 31, 20 }, { 32, 50 }, { 33, 12 }
+    };
+
+
     public static readonly string[] allowM10 = new string[] { "鸡", "鹿", "羊" };
     public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
     public static readonly string[] allow22 = new string[] { "半兽人","森林雪人", "食人花", "毒蜘蛛" };
