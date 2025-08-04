@@ -921,7 +921,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                else  if (CharacterStatus.Level >= 20)
+                                else  if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D421";
                                 }
