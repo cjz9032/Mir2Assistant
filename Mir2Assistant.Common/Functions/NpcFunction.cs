@@ -583,25 +583,47 @@ namespace Mir2Assistant.Common.Functions
             {
                 // todo 性别
                 case EquipPosition.Necklace:
-                    if (CharacterStatus.Level >= 3)
+                    if (gameInstance.AccountInfo.role != RoleType.mage)
                     {
-                        itemNames.Add("金项链");
-                    }
-                    if (CharacterStatus.Level >= 3)
-                    {
-                        itemNames.Add("传统项链");
-                    }
-                    if (CharacterStatus.Level >= 17)
-                    {
-                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        if (CharacterStatus.Level >= 3)
                         {
-                            itemNames.Add("魔鬼项链");
+                            itemNames.Add("金项链");
                         }
-                        else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                        if (CharacterStatus.Level >= 3)
                         {
-                            itemNames.Add("凤凰明珠");
+                            itemNames.Add("传统项链");
+                        }
+                        if (CharacterStatus.Level >= 17)
+                        {
+                            if (gameInstance.AccountInfo.role == RoleType.blade)
+                            {
+                                itemNames.Add("魔鬼项链");
+                            }
+                            else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                            {
+                                itemNames.Add("凤凰明珠");
+                            }
+                        }
+                        if (CharacterStatus.Level >= 24)
+                        {
+                            if (gameInstance.AccountInfo.role == RoleType.blade)
+                            {
+                                itemNames.Add("蓝翡翠项链");
+                            }
+                            else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                            {
+                                itemNames.Add("竹笛");
+                            }
                         }
                     }
+                    else
+                    {
+                        if (CharacterStatus.Level >= 24)
+                        {
+                            itemNames.Add("放大镜");
+                        }
+                    }
+
                     break;
                 case EquipPosition.ArmRingLeft:
                 case EquipPosition.ArmRingRight:
@@ -644,6 +666,28 @@ namespace Mir2Assistant.Common.Functions
                         if (CharacterStatus.Level >= 16)
                         {
                             itemNames.Add("蓝色水晶戒指");
+                        }
+                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        {
+                            if (CharacterStatus.Level >= 20)
+                            {
+                                itemNames.Add("黑色水晶戒指");
+                            }
+                            if (CharacterStatus.Level >= 25)
+                            {
+                                itemNames.Add("珊瑚戒指");
+                            }
+                        }
+                        else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                        {
+                            if (CharacterStatus.Level >= 20)
+                            {
+                                itemNames.Add("珍珠戒指");
+                            }
+                            if (CharacterStatus.Level >= 23)
+                            {
+                                itemNames.Add("道德戒指");
+                            }
                         }
                     }
                     break;
@@ -769,6 +813,10 @@ namespace Mir2Assistant.Common.Functions
                         if (CharacterStatus.Level >= 15)
                         {
                             itemNames.Add("海魂");
+                        }
+                        if (CharacterStatus.Level >= 20)
+                        {
+                            itemNames.Add("偃月");
                         }
                     }
                     break;
