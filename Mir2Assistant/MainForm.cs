@@ -937,7 +937,7 @@ namespace Mir2Assistant
                                     var isConsumer = GoRunFunction.whoIsConsumer(instanceValue!);
                                     var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
                                     var realLowEq = false;
-                                    if (!isConsumer) // 法师?可能不需要JP 所以不太care
+                                    if (isConsumer != 2)
                                     {
                                         var specificItems = new List<EquipPosition>() { EquipPosition.Weapon, EquipPosition.Dress };
                                         foreach (var item in specificItems)
@@ -976,7 +976,7 @@ namespace Mir2Assistant
                                     }
                                     // 7级以下不配
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
-                                    && (!isConsumer)
+                                    && (isConsumer != 2)
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     var isLowFushen = false;

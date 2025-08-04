@@ -70,6 +70,10 @@ public static class GameConstants
         private static readonly List<string> binItems =
      new List<string>
      {
+            "火球术",
+            "治愈术",
+            "基本剑术",
+            "精神力战法",
             "肉",
             "护身符",
             "随机传送卷",

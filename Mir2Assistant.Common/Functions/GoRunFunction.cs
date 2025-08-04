@@ -530,21 +530,27 @@ public static class GoRunFunction
         return fixedPoints.ToArray();
     }
     
-    public static bool whoIsConsumer(MirGameInstanceModel instanceValue){
-        if (instanceValue.AccountInfo.role == RoleType.mage){
+    // 1为中间态 可打可不打 武器爆了也不管
+        public static byte whoIsConsumer(MirGameInstanceModel instanceValue)
+    {
+        if (instanceValue.AccountInfo.IsMainControl) return 2;
+        if (instanceValue.AccountInfo.role == RoleType.mage)
+        {
             // 法师永远别砍
-            return true;
+            return 0;
         }
         // 或者组里有大佬, 且自己很菜
         var mainInstance = GameState.GameInstances[0];
-        if (mainInstance.IsAttached){
-            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 1) && 
-            // 后期战道可以自己打一点
-            instanceValue.CharacterStatus!.Level < 19){
-                return true;
+        if (mainInstance.IsAttached)
+        {
+            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 1) &&
+                // 后期战道可以自己打一点
+                instanceValue.CharacterStatus!.Level < 19)
+            {
+                return 1;
             }
         }
-        return false;
+        return 0;
     }
 
     public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
@@ -599,7 +605,7 @@ public static class GoRunFunction
             instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
-            if (!whoIsConsumer(instanceValue!) && patrolTried > 200)
+            if (whoIsConsumer(instanceValue!) != 2 && patrolTried > 200)
             {
                 instanceValue.GameWarning("巡逻攻击失败，巡逻点 {CurP}", curP);
                 return false;
@@ -706,8 +712,8 @@ public static class GoRunFunction
                 .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
                 .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
                 .FirstOrDefault();
-                // 保护消费者
-                if (whoIsConsumer(instanceValue!))
+                // 保护消费者法师
+                if (whoIsConsumer(instanceValue!) == 0)  
                 {
                     if (ani == null)
                     {
@@ -987,7 +993,7 @@ public static class GoRunFunction
 
     public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (!whoIsConsumer(GameInstance!))  
+        if (whoIsConsumer(GameInstance!) != 2)  
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
             // 攻击怪物, 太多了 过不去
