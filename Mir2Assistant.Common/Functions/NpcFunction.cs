@@ -356,6 +356,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("0", "陈家铺老板", 641, 612);
             }
+            else if (mapId == "2")
+            {
+                return ("2", "药铺老板", 506, 496);
+            }
             else
             {
                 // 其他大图
@@ -369,6 +373,10 @@ namespace Mir2Assistant.Common.Functions
             if (mapId == "0")
             {
                 return ("0", "边界村小店老板", 290, 611);
+            }
+            if (mapId == "2")
+            {
+                return ("2", "罗家铺子老板", 506, 480);
             }
             else
             {
@@ -401,12 +409,33 @@ namespace Mir2Assistant.Common.Functions
                         return ("0", "", 0, 0);
                 }
             }
+            else if (mapId == "2")
+            {
+                // 固定为左下角 因为只有这全有买卖, 除了蜡烛
+                switch (position)
+                {
+                    case EquipPosition.Weapon:
+                        return ("2", "铁匠", 519, 492);
+                    case EquipPosition.Dress:
+                    case EquipPosition.Helmet:
+                        return ("2", "米家服装老板", 518, 478);
+                    // case EquipPosition.Necklace:
+                    //     return ("0141", "项链店老板", 9, 10);
+                    // case EquipPosition.ArmRingLeft:
+                    // case EquipPosition.ArmRingRight:
+                    //     return ("0141", "手镯店老板", 16, 16);
+                    // case EquipPosition.RingLeft:
+                    // case EquipPosition.RingRight:
+                    //     return ("0141", "戒指店老板", 23, 23);
+                    default:
+                        return ("0", "", 0, 0);
+                }
+            }
             else
             {
                 // 其他大图
                 return ("0", "", 0, 0);
             }
-            // return PickNpcByMap(gameInstance, position, mapId);
         }
 
 
