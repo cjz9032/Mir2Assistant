@@ -495,19 +495,19 @@ namespace Mir2Assistant
             Log.Information("重启所有游戏任务");
             autoForeGround();
         }
-        private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
-        {
-            // 没买蜡烛先买, 背包蜡烛小于5
-            if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
-            {
-                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "0", 6);
-                if (pathFound)
-                {
-                    await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
-                    await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 3);
-                }
-            }
-        }
+        // private async Task BuyLZ(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        // {
+        //     // 没买蜡烛先买, 背包蜡烛小于5
+        //     if (instanceValue.Items.Where(o => o.Name == "蜡烛").Count() < 3)
+        //     {
+        //         bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 640, 613, "0", 6);
+        //         if (pathFound)
+        //         {
+        //             await NpcFunction.ClickNPC(instanceValue!, "陈家铺老板");
+        //             await NpcFunction.BuyLZ(instanceValue!, "蜡烛", 3);
+        //         }
+        //     }
+        // }
 
      
         private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -597,11 +597,8 @@ namespace Mir2Assistant
             }
             // 卖肉
             await sellMeat(instanceValue, _cancellationToken);
-            //if (!isLeftAlive)
-            //{
-            //    // 蜡烛检测
-            //    await BuyLZ(instanceValue, _cancellationToken);
-            //}
+            // 蜡烛检测
+            await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
             // 确保到家了, 到家先把极品穿起来, 这样不会被购买替换了, 然后被维修
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);

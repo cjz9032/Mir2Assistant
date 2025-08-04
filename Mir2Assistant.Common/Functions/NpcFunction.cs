@@ -136,29 +136,48 @@ namespace Mir2Assistant.Common.Functions
         // }
 
         /// <summary>
-        /// 盲选蜡烛
+        /// 火把
         /// </summary>
         /// <param name="gameInstance"></param>
-        /// <param name="itemName"></param>
         /// <returns></returns>
-        public async static Task BuyLZ(MirGameInstanceModel gameInstance, string itemName, int count = 2)
+        public async static Task BuyLZ(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", itemName, count);
-            nint[] data = MemoryUtils.PackStringsToData(itemName);
-            await Talk2(gameInstance!, "@buy");
-            await Task.Delay(500);
-            SendMirCall.Send(gameInstance, 3005, data);
-            await Task.Delay(800);
-            // 盲选
-            for (int i = 0; i < count; i++)
+            gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", "火把", 1);
+            // 查看背包有没火把 没有就买一个
+            if (gameInstance.Items.Where(o => o.Name == "火把").Count() < 1)
             {
-                gameInstance.GameDebug("执行第 {Index} 次购买", i + 1);
-                var memoryUtils = gameInstance!.memoryUtils!;
-                var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
-                memoryUtils.WriteInt(addr, i);
-                await Task.Delay(300);
-                SendMirCall.Send(gameInstance, 3006, new nint[] { i });
-                await Task.Delay(300);
+                // goto npc 
+                var nearHome = PickNearHomeMap(gameInstance);
+                // 目前仅支持2
+                if (nearHome != "2")
+                {
+                    gameInstance.GameWarning("当前地图不支持购买火把");
+                    return;
+                }
+                var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
+                var pathfound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance, x, y, npcMap, 6);
+                if (!pathfound)
+                {
+                    gameInstance.GameWarning("未找到NPC: {Name}", npcName);
+                    return;
+                }
+                await ClickNPC(gameInstance, npcName);
+
+                nint[] data = MemoryUtils.PackStringsToData("火把");
+                await Talk2(gameInstance!, "@buy");
+                await Task.Delay(500);
+                SendMirCall.Send(gameInstance, 3005, data);
+                await Task.Delay(800);
+                // 盲选
+                for (int i = 0; i < 1; i++)
+                {
+                    var memoryUtils = gameInstance!.memoryUtils!;
+                    var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
+                    memoryUtils.WriteInt(addr, i);
+                    await Task.Delay(300);
+                    SendMirCall.Send(gameInstance, 3006, new nint[] { i });
+                    await Task.Delay(300);
+                }
             }
 
         }
@@ -358,7 +377,7 @@ namespace Mir2Assistant.Common.Functions
             }
             else if (mapId == "2")
             {
-                return ("2", "药铺老板", 506, 496);
+                return ("2", "罗家铺子老板", 506, 480);
             }
             else
             {
@@ -376,7 +395,7 @@ namespace Mir2Assistant.Common.Functions
             }
             if (mapId == "2")
             {
-                return ("2", "罗家铺子老板", 506, 480);
+                return ("2", "药铺老板", 506, 496);
             }
             else
             {
@@ -611,6 +630,9 @@ namespace Mir2Assistant.Common.Functions
             switch (position)
             {
                 // todo 性别
+                case EquipPosition.RightHand:
+                    itemNames.Add("火把");
+                    break;
                 case EquipPosition.Necklace:
                     if (gameInstance.AccountInfo.role != RoleType.mage)
                     {
@@ -976,10 +998,6 @@ namespace Mir2Assistant.Common.Functions
             for (int index = 0; index < CharacterStatus.useItems.Count; index++)
             {
                 var useItem = CharacterStatus.useItems[index];
-                if (index == (int)EquipPosition.RightHand)
-                {
-                    continue;
-                }   
                 // 低耐久 极品可被视为无 可以被替换
                 var preferItems = CheckPreferComparedUsed(instance, (EquipPosition)index, careJPDurability);
                 if(preferItems == null)
