@@ -1004,7 +1004,11 @@ public static class GoRunFunction
                         var centerPoint = (ani.X, ani.Y);
                         if (instanceValue.AccountInfo!.role == RoleType.taoist)
                         {
-                            await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 2, cancellationToken: _cancellationToken);
+                            var isEscaped = await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 2, cancellationToken: _cancellationToken);
+                            if (isEscaped)
+                            {
+                                break;
+                            }
                         }
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
