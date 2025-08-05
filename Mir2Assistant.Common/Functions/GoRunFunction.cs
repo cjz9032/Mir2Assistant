@@ -17,7 +17,139 @@ public static class GoRunFunction
     public static MapConnectionService mapConnectionService = new MapConnectionService();
     
     /// <summary>
-    /// 通用躲避方法
+    /// 通用捡取方法
+    /// </summary>
+    /// <param name="instanceValue">游戏实例</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>是否成功捡取到物品</returns>
+    public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default)
+    {
+        if (instanceValue.isPickingWay) return false;
+        instanceValue.isPickingWay = true;
+        var CharacterStatus = instanceValue.CharacterStatus!;
+        var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level);
+        var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
+        var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
+        var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
+        var superCount = miscs.Count(o => GameConstants.Items.SuperPotions.Contains(o.Name));
+        
+        // 筛选可捡取的物品
+        var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
+            && !curinItems.Contains(o.Value.Name)
+            // 普通衣服分类. 超级衣服自然都要了
+            && (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
+            // 药
+            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
+            && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
+                    instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
+                    : true
+                ) : true)
+            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
+            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
+            ))
+            .OrderBy(o => o.Value.IsGodly ? 0 : 1)
+            .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
+            
+        bool pickedAny = false;
+        
+        foreach (var drop in drops)
+        {
+            instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
+            bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
+            
+            var triedGoPick = 0;
+            var maxTriedGoPick = drop.Value.IsGodly ? 9 : 3;
+            while (!pathFound && triedGoPick < maxTriedGoPick)
+            {
+                triedGoPick++;
+                pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1);
+            }
+
+            var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
+            // 极品满就扔东西 -- todo 还有 自定义极品
+            if (drop.Value.IsGodly && miscs2.Count() == 40)
+            {
+                // 扔东西
+                // 挑选一个扔, 一般扔药
+                var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
+                    GameConstants.Items.MegaPotions.Contains(o.Name)
+                );
+                if (needDropItem != null)
+                {
+                    NpcFunction.EatIndexItem(instanceValue, needDropItem.Index, true);
+                    await Task.Delay(200);
+                }
+            }
+
+            ItemFunction.Pickup(instanceValue);
+            // 加捡取过的名单
+            instanceValue.pickupItemIds.Add(drop.Value.Id);
+            pickedAny = true;
+        }
+
+        instanceValue.isPickingWay = false;
+        return pickedAny;
+    }
+
+         /// <summary>
+     /// 通用屠挖肉方法
+     /// </summary>
+     /// <param name="instanceValue">游戏实例</param>
+     /// <param name="maxBagCount">背包物品数量上限，默认32</param>
+     /// <param name="searchRadius">搜索半径，默认13格</param>
+     /// <param name="maxTries">每个尸体最大尝试次数，默认20</param>
+     /// <param name="cancellationToken">取消令牌</param>
+     /// <returns>是否成功屠宰了尸体</returns>
+     public static async Task<bool> PerformButchering(MirGameInstanceModel instanceValue,
+         int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
+     {
+        var allowButch = new List<string> { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
+        if (instanceValue.CharacterStatus!.Level > 13)
+        {
+            allowButch.Add("鸡");
+        }
+
+         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
+         if (miscs.Count() >= maxBagCount)
+         {
+             return false; // 背包太满，不进行屠宰
+         }
+         
+         var CharacterStatus = instanceValue.CharacterStatus!;
+         var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched 
+             && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRadius)
+             .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+             
+         bool butcheredAny = false;
+         
+         foreach (var body in bodys)
+         {
+             instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
+             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1);
+             if (pathFound)
+             {
+                 // 要持续屠宰, 直到尸体消失, 最大尝试次数
+                 var tried = 0;
+                 while (tried < maxTries)
+                 {
+                     SendMirCall.Send(instanceValue, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
+                     await Task.Delay(500);
+                     MonsterFunction.ReadMonster(instanceValue);
+                     if (body.isButched)
+                     {
+                         butcheredAny = true;
+                         break;
+                     }
+                     tried++;
+                 }
+             }
+         }
+         
+         return butcheredAny;
+     }
+
+     /// <summary>
+     /// 通用躲避方法
     /// </summary>
     /// <param name="instanceValue">游戏实例</param>
     /// <param name="centerPoint">中心点坐标</param>
@@ -678,7 +810,6 @@ public static class GoRunFunction
 
         // 等级高了不打鸡鹿
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level);
-        var allowButch = new string[] { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
         // 当前巡回
         var curP = 0;
         var direction = 1; // 1表示正向(0->N), -1表示反向(N->0)
@@ -901,100 +1032,17 @@ public static class GoRunFunction
                 }
             }
 
-            var curinItems = GameConstants.Items.GetBinItems(instanceValue.CharacterStatus!.Level);
-            var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
-            var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
-            var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
-            var superCount = miscs.Count(o => GameConstants.Items.SuperPotions.Contains(o.Name));
-            // 没怪了 可以捡取东西 或者挖肉
-            // 捡取
-            // 按距离, 且没捡取过
-            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
-            && !curinItems.Contains(o.Value.Name)
-            // 普通衣服分类. 超级衣服自然都要了
-            && (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
-            // 药
-            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
-            && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
-                    instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
-                    : true
-                ) : true)
-            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
-            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
-            ))
-            .OrderBy(o => o.Value.IsGodly ? 0 : 1)
-            .ThenBy(o => measureGenGoPath(instanceValue!, o.Value.X, o.Value.Y));
-            foreach (var drop in drops)
-            {
-                instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-                bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
-                var triedGoPick = 0;
-                var maxTriedGoPick = drop.Value.IsGodly ? 9 : 3;
-                while (!pathFound2 && triedGoPick < maxTriedGoPick)
-                {
-                    triedGoPick++;
-                    pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
-                }
-
-                var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
-                // 极品满就扔东西 -- todo 还有 自定义极品
-                if (drop.Value.IsGodly && miscs2.Count() == 40)
-                {
-                    // 扔东西
-                    // 挑选一个扔, 一般扔药
-                    var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
-                        GameConstants.Items.MegaPotions.Contains(o.Name)
-                    );
-                    if (needDropItem != null)
-                    {
-                        NpcFunction.EatIndexItem(instanceValue!, needDropItem.Index, true);
-                        await Task.Delay(200);
-                    }
-                    // 否则就随便找个装备 同样要排除自定义极品
-                    // if (needDropItem != null)
-                    // {
-                    //     // await ItemFunction.Drop(instanceValue!, needDropItem.Index);
-                    // }
-                }
-
-                ItemFunction.Pickup(instanceValue!);
-                // 加捡取过的名单,
-                instanceValue.pickupItemIds.Add(drop.Value.Id);
-            }
-
-            // 屠挖肉
-            if (miscs.Count() < 32)
-            {
-                var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
-               .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
-                foreach (var body in bodys)
-                {
-                    instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-                    bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, body.X, body.Y, "", 2, true, 1);
-                    if (pathFound2)
-                    {
-                        // 要持续屠宰, 直到尸体消失, 最大尝试 30次
-                        var tried = 0;
-                        while (tried < 20)
-                        {
-                            SendMirCall.Send(instanceValue!, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                            await Task.Delay(500);
-                            MonsterFunction.ReadMonster(instanceValue!);
-                            if (body.isButched)
-                            {
-                                break;
-                            }
-                            tried++;
-                        }
-                    }
-                }
-            }
-
+            // 使用通用捡取方法
+            await PerformPickup(instanceValue, _cancellationToken);
             // checker 满足条件就跳出循环, checker是参数
             if (checker(instanceValue!))
             {
                 break;
             }
+            // 使用通用屠挖肉方法
+            await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
+
+         
             // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
             curP += direction;
             if (curP >= patrolPairs.Length)
@@ -1162,6 +1210,7 @@ public static class GoRunFunction
             if (goNodes.Count == 0)
             {
                 await cleanMobs(GameInstance, attacksThan, cancellationToken);
+                await PerformPickup(GameInstance, cancellationToken);
                 // 加个重试次数3次
                 await Task.Delay(200);
 
@@ -1187,6 +1236,7 @@ public static class GoRunFunction
                     return false;
                 }
                 await cleanMobs(GameInstance, attacksThan, cancellationToken);
+                await PerformPickup(GameInstance, cancellationToken);
 
                 var node = goNodes[0];
                 var oldX = GameInstance!.CharacterStatus!.X;
