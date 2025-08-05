@@ -145,7 +145,7 @@ public static class GameConstants
             "金项链",
             "传统项链",
             "铁手镯",
-            "皮质手套",
+            "皮制手套",
             "钢手镯",
             "匕首",
             "青铜剑",
