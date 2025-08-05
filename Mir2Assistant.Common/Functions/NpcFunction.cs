@@ -1002,21 +1002,33 @@ namespace Mir2Assistant.Common.Functions
             {
                 var useItem = CharacterStatus.useItems[index];
                 // 低耐久 极品可被视为无 可以被替换
-                var preferItems = CheckPreferComparedUsed(instance, (EquipPosition)index, careJPDurability);
-                if(preferItems == null)
+                // JP之间不比较
+                if (!useItem.IsEmpty && useItem.IsGodly && (careJPDurability ? !useItem.IsLowDurability : true))
                 {
-                    // 上面是普通购买用的, 背包中可以继续找更JP的, 但是JP之间不比较
-                    if(!useItem.IsEmpty && useItem.IsGodly)
+                    continue;
+                }
+                var preferItems = CheckPreferComparedUsed(instance, (EquipPosition)index, careJPDurability);
+                if (preferItems == null)
+                {
+
+                    // 找顶级的, 因为没得推了
+                    var mostPreferItems = preferStdEquipment(instance, (EquipPosition)index).Take(1).ToList();
+                    if (mostPreferItems.Count == 0)
                     {
                         continue;
                     }
-                    // 找顶级的
-                    var mostPreferItem = preferStdEquipment(instance, (EquipPosition)index).FirstOrDefault();
-                    if(mostPreferItem == null)
+
+                    ItemModel? mostPreferItemInBag = null;
+                    foreach (var mostPreferItem in mostPreferItems)
                     {
-                        continue;
+                        mostPreferItemInBag = bagItems.Where(o => !o.IsEmpty && o.IsGodly && o.Name == mostPreferItem && (careJPDurability ? !o.IsLowDurability : true)).FirstOrDefault();
+                        if (mostPreferItemInBag != null)
+                        {
+                            break;
+                        }
                     }
-                    var mostPreferItemInBag = bagItems.Where(o =>!o.IsEmpty && o.IsGodly && o.Name == mostPreferItem && (careJPDurability ? !o.IsLowDurability : true)).FirstOrDefault();
+
+
                     if (mostPreferItemInBag == null)
                     {
                         continue;
@@ -1024,7 +1036,27 @@ namespace Mir2Assistant.Common.Functions
                     else
                     {
                         // 复用 让下面处理
-                        preferItems = new List<string>(){mostPreferItem};
+                        preferItems = new List<string>() { mostPreferItemInBag.Name };
+                    }
+                }
+                else
+                {
+                    // 未推荐的可能有JP, 找找前3 JP
+                    // 只有2个, 如果有3个就傻了, 因为可能换成非JP
+                    ItemModel? mostPreferItemInBag2 = null;
+                    var mostPreferItems2 = preferStdEquipment(instance, (EquipPosition)index).Take(3).ToList();
+
+                    foreach (var mostPreferItem2 in mostPreferItems2)
+                    {
+                        mostPreferItemInBag2 = bagItems.Where(o => !o.IsEmpty && o.IsGodly && o.Name == mostPreferItem2 && (careJPDurability ? !o.IsLowDurability : true)).FirstOrDefault();
+                        if (mostPreferItemInBag2 != null)
+                        {
+                            break;
+                        }
+                    }
+                    if (mostPreferItemInBag2 != null)
+                    {
+                        preferItems.Add(mostPreferItemInBag2.Name);
                     }
                 }
                 // 从背包里找prefer装备了, 
