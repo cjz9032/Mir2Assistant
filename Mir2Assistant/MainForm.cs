@@ -648,19 +648,6 @@ namespace Mir2Assistant
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
             }
         }
-
-        private static async Task findWeaponNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
-        {
-            var CharacterStatus = instanceValue.CharacterStatus!;
-            var isLeftAlive = CharacterStatus.X < 400;
-
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 635 : 295, !isLeftAlive ? 611 : 613, "0", 6,true, 10);
-            if (pathFound)
-            {
-                await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "精武馆老板" : "边界村铁匠铺");
-            }
-        }
-     
         private async void processTasks()
         {
             var instances = GameState.GameInstances;

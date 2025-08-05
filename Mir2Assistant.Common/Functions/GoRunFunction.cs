@@ -29,15 +29,26 @@ public static class GoRunFunction
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level);
         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
-        var megaCount = miscs.Count(o => GameConstants.Items.MegaPotions.Contains(o.Name));
-        var healCount = miscs.Count(o => GameConstants.Items.HealPotions.Contains(o.Name));
-        var superCount = miscs.Count(o => GameConstants.Items.SuperPotions.Contains(o.Name));
-        
-        // 筛选可捡取的物品
-        var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
+        var megaCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.MegaPotions.Contains(o.Name));
+        var healCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.HealPotions.Contains(o.Name));
+        var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
+        // 法师不捡武器 最简单
+        var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
+        var maxWeapon = instanceValue.AccountInfo.role == RoleType.blade ? 4 : 2;
+
+        var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
+        var maxCloth = instanceValue.AccountInfo.role == RoleType.blade ? 2 : 1;
+
+        var isMage = instanceValue.AccountInfo.role == RoleType.mage;
+        // 武器表
+            // 筛选可捡取的物品
+            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
             && !curinItems.Contains(o.Value.Name)
-            // 普通衣服分类. 超级衣服自然都要了
-            && (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
+            // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
+            &&
+            (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
+            ((clothCount <  maxCloth) ? (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) : false)
+            : true
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
@@ -46,6 +57,13 @@ public static class GoRunFunction
                 ) : true)
             && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
+            &&
+            (
+                // todo 更多属性获取drop更高效
+                GameConstants.Items.weaponList.Contains(o.Value.Name) ? (isMage ? false : (
+                    weaponCount < maxWeapon ? true : false
+                )) : true
+            )
             ))
             .OrderBy(o => o.Value.IsGodly ? 0 : 1)
             .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
