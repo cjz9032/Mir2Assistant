@@ -1386,12 +1386,15 @@ public static class GoRunFunction
         if (people == null)
         {
             // GameInstance.GameDebug("未找到需要治疗的目标");
+            // 道士回调
+            CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
             return;
         }
-
         GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
+        // 道士调整攻速
+        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 2000);
     }
 
     // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态

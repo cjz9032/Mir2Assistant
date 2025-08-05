@@ -94,5 +94,12 @@ public static class CharacterStatusFunction
         SendMirCall.Send(gameInstance, 9201, new nint[] { 0 });
     }
 
+
+    public static void AdjustAttackSpeed(MirGameInstanceModel gameInstance, int attackSpeed)
+    {
+        var memoryUtils = gameInstance.memoryUtils!;
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(0x0067724C, 0, 0) , attackSpeed);
+    }
+
 }
 

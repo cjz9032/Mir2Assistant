@@ -851,6 +851,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             if (CharacterStatus.Level >= 20)
                             {
+                                itemNames.Add("破魂");
                                 itemNames.Add("降魔");
                             }
                         }
