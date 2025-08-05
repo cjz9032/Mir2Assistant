@@ -76,7 +76,7 @@ public static class GoRunFunction
             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
             
             var triedGoPick = 0;
-            var maxTriedGoPick = drop.Value.IsGodly ? 9 : 3;
+            var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
             while (!pathFound && triedGoPick < maxTriedGoPick)
             {
                 triedGoPick++;
@@ -1503,7 +1503,7 @@ public static class GoRunFunction
             // 道士回调
             // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
             // 延迟回调
-            Task.Delay(3000).ContinueWith(t =>
+            Task.Delay(10_000).ContinueWith(t =>
             {
                 var people = allMonsInClients.Where(o =>
                 // not in cd
@@ -1524,7 +1524,7 @@ public static class GoRunFunction
                 // 再次检查
                 if (people == null)
                 {
-                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1400);
+                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1500);
                 }
             });
             return;

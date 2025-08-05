@@ -268,7 +268,7 @@ namespace Mir2Assistant.Common.Functions
                 );
                 SendMirCall.Send(gameInstance!, 3022, data);
                 gameInstance!.memoryUtils!.WriteByte(item.addr, 0);
-                await Task.Delay(500);
+                await Task.Delay(600);
                 return itemCopy;
             }
             return null;
@@ -287,7 +287,7 @@ namespace Mir2Assistant.Common.Functions
             data[data.Length - 1] = item.Id;
 
             SendMirCall.Send(gameInstance!, 3012, data);
-            await Task.Delay(500);
+            await Task.Delay(600);
         }
 
         /// <summary>
@@ -930,7 +930,7 @@ namespace Mir2Assistant.Common.Functions
                     memoryUtils.WriteInt(addr, 0);
                     await Task.Delay(300);
                     SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
-                    await Task.Delay(500);
+                    await Task.Delay(600);
 
                     // trigger takeon 
                     await autoReplaceEquipment(gameInstance, false);
