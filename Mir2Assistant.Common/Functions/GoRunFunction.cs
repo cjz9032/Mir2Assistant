@@ -16,6 +16,108 @@ public static class GoRunFunction
 {
     public static MapConnectionService mapConnectionService = new MapConnectionService();
     
+    /// <summary>
+    /// 通用躲避方法
+    /// </summary>
+    /// <param name="instanceValue">游戏实例</param>
+    /// <param name="centerPoint">中心点坐标</param>
+    /// <param name="dangerDistance">危险距离阈值，默认为2</param>
+    /// <param name="safeDistance">安全距离范围，默认为2-3格</param>
+    /// <param name="searchRadius">搜索半径，默认为10</param>
+    /// <param name="maxMonstersNearby">身边允许的最大怪物数量，超过此数量才躲避，默认为0（即有怪就躲）</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>是否成功躲避</returns>
+    public static async Task<bool> PerformEscape(MirGameInstanceModel instanceValue, (int x, int y) centerPoint, 
+        int dangerDistance = 1, (int min, int max) safeDistance = default, int searchRadius = 10, 
+        int maxMonstersNearby = 0, CancellationToken cancellationToken = default)
+    {
+        if (safeDistance == default) safeDistance = (2, 3);
+        
+        var escapeStopwatch = System.Diagnostics.Stopwatch.StartNew();
+        
+        // 危险点 - 所有活着的怪物
+        var dangerPoints = instanceValue.Monsters.Values.Where(o => o.stdAliveMon).Select(o => (o.X, o.Y));
+        
+        // 检查身边怪物数量是否超过阈值
+        var characterPos = (instanceValue.CharacterStatus!.X, instanceValue.CharacterStatus.Y);
+        var nearbyMonstersCount = dangerPoints.Count(dp => 
+            Math.Max(Math.Abs(dp.Item1 - characterPos.Item1), Math.Abs(dp.Item2 - characterPos.Item2)) <= dangerDistance);
+            
+        if (nearbyMonstersCount <= maxMonstersNearby)
+        {
+            return false; // 身边怪物数量未超过阈值，不需要躲避
+        }
+        
+        instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
+        MonsterFunction.SlayingMonsterCancel(instanceValue!);
+        
+        // 地图障碍点数据
+        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue);
+        var localObstacles = getLocalObstacles(instanceValue, centerPoint.x, centerPoint.y, searchRadius);
+        
+        // 其他障碍点数据，比如玩家和怪物
+        var actorObstacles = instanceValue.Monsters.Values.Where(o => !o.isDead).Select(o => (o.X, o.Y));
+        var obstacles = localObstacles.Concat(actorObstacles).ToHashSet();
+        
+        // 计算逃跑点
+        var escapePoints = new List<(int x, int y, int distance)>();
+        
+        for (int y = centerPoint.y - searchRadius; y <= centerPoint.y + searchRadius; y++)
+        {
+            for (int x = centerPoint.x - searchRadius; x <= centerPoint.x + searchRadius; x++)
+            {
+                if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !obstacles.Contains((x, y)))
+                {
+                    // 计算到所有危险点的最小距离
+                    var minDangerDistance = dangerPoints.Select(dp =>
+                        Math.Max(Math.Abs(dp.Item1 - x), Math.Abs(dp.Item2 - y))
+                    ).Min();
+
+                    if (minDangerDistance >= safeDistance.min && minDangerDistance <= safeDistance.max)
+                    {
+                        var centerDistance = Math.Max(Math.Abs(x - characterPos.Item1), Math.Abs(y - characterPos.Item2));
+                        if (centerDistance < searchRadius)
+                        {
+                            escapePoints.Add((x, y, centerDistance));
+                        }
+                    }
+                }
+            }
+        }
+
+        // 按优先级排序：优先距离危险点更远的，然后按到角色距离排序
+        var bestEscapePoint = (0, 0, 0);
+        var allEscapePoints = escapePoints
+            .OrderByDescending(ep => dangerPoints.Select(dp =>
+                Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
+            ).Min())
+            .ThenBy(ep => ep.distance);
+            
+        foreach (var ep in allEscapePoints)
+        {
+            var pathDistance = measureGenGoPath(instanceValue, ep.x, ep.y);
+            if (pathDistance < searchRadius)
+            {
+                bestEscapePoint = ep;
+                break;
+            }
+        }
+
+        escapeStopwatch.Stop();
+
+        if (bestEscapePoint != default)
+        {
+            instanceValue.GameInfo($"躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
+            await PerformPathfinding(cancellationToken, instanceValue, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 999);
+            return true;
+        }
+        else
+        {
+            instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
+            return false;
+        }
+    }
+    
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
     {
 
@@ -561,13 +663,17 @@ public static class GoRunFunction
             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
             return false;
         }
+        if (checker(instanceValue!))
+        {
+            return true;
+        }
         if (mapId == "") mapId = instanceValue.CharacterStatus.MapId;
         var patrolPairs = new (int, int)[] { (0, 0) };
         if (!forceSkip)
         {
             patrolPairs = GenMobCleanPairs(instanceValue, mapId);
         }
-
+      
         instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
 
         // 等级高了不打鸡鹿
@@ -721,83 +827,10 @@ public static class GoRunFunction
                     }
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
-                    // 先查看身边是否有危险, 有就躲避
-                    // 危险点
-                    var dangerPoints = instanceValue.Monsters.Values.Where(o => o.stdAliveMon).Select(o => (o.X, o.Y));
-                    // 警戒线为2
-                    if (dangerPoints.Any(o => Math.Max(Math.Abs(o.Item1 - CharacterStatus.X), Math.Abs(o.Item2 - CharacterStatus.Y)) < 2))
-                    {
-                        // 进行躲避一次
-                        var escapeStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                        // 中心点
-                        var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
-                        // 地图障碍点数据, 作为可选的
-                        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue!);
-                        // 以中心点取障碍点
-                        var halfSize = 10;
-                        var localObstacles = getLocalObstacles(instanceValue!, centerPoint.Item1, centerPoint.Item2, halfSize);
-                        // 其他障碍点数据, 比如玩家
-                        var actorObstacles = instanceValue.Monsters.Values.Where(o => !o.isDead).Select(o => (o.X, o.Y));
-                        // 合并地图和人怪的障碍点
-                        var obstacles = localObstacles.Concat(actorObstacles).ToArray();
-                        // 计算逃跑点   且得到测距measture方法中心点最近的地方, 然后远离 dangerPoints 2格到1格的地方, 优先找2格的地方
-                        var escapePoints = new List<(int x, int y, int distance)>();
-                        var obstacleSet = obstacles.ToHashSet();
-                        for (int y = centerPoint.Item2 - halfSize; y <= centerPoint.Item2 + halfSize; y++)
-                        {
-                            for (int x = centerPoint.Item1 - halfSize; x <= centerPoint.Item1 + halfSize; x++)
-                            {
-                                if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !obstacleSet.Contains((x, y)))
-                                {
-                                    // 计算到所有危险点的最小距离
-                                    var minDangerDistance = dangerPoints.Select(dp =>
-                                        Math.Max(Math.Abs(dp.Item1 - x), Math.Abs(dp.Item2 - y))
-                                    ).Min();
-
-                                    if (minDangerDistance >= 2 && minDangerDistance <= 3)
-                                    {
-                                        // 先懒计算
-                                        // var centerDistance = measureGenGoPath(instanceValue!, x, y);
-                                        var centerDistance = Math.Max(Math.Abs(x - CharacterStatus.X), Math.Abs(y - CharacterStatus.Y));
-                                        if (centerDistance < 10)
-                                        {
-                                            escapePoints.Add((x, y, centerDistance));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // 按优先级排序：优先2格距离的，然后按到中心点距离排序
-                        var bestEscapePoint = (0, 0, 0);
-                        var allEscapePoints = escapePoints
-                              .OrderByDescending(ep => dangerPoints.Select(dp =>
-                                  Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
-                              ).Min())
-                              .ThenBy(ep => ep.distance);
-                        foreach (var ep in allEscapePoints)
-                        {
-                            // measure
-                            var centerDistance = measureGenGoPath(instanceValue!, ep.x, ep.y);
-                            if (centerDistance < 10)
-                            {
-                                bestEscapePoint = ep;
-                                break;
-                            }
-                        }
-
-                        escapeStopwatch.Stop();
-
-                        if (bestEscapePoint != default)
-                        {
-                            instanceValue.GameInfo($"法师躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
-                            await PerformPathfinding(_cancellationToken, instanceValue!, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 5);
-                        }
-                        else
-                        {
-                            instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
-                        }
-                    }
+                    
+                    // 使用通用躲避方法
+                    var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
+                    await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
 
                     continue;
                 }
@@ -818,6 +851,12 @@ public static class GoRunFunction
                     var INIT_WAIT = Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y));
                     while (true)
                     {
+                        // 检查是否被包围
+                        var centerPoint = (ani.X, ani.Y);
+                        if (instanceValue.AccountInfo!.role == RoleType.taoist)
+                        {
+                            await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 2, cancellationToken: _cancellationToken);
+                        }
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
@@ -889,9 +928,12 @@ public static class GoRunFunction
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
-                if (!pathFound2)
+                var triedGoPick = 0;
+                var maxTriedGoPick = drop.Value.IsGodly ? 9 : 3;
+                while (!pathFound2 && triedGoPick < maxTriedGoPick)
                 {
-                    await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
+                    triedGoPick++;
+                    pathFound2 = await PerformPathfinding(_cancellationToken, instanceValue!, drop.Value.X, drop.Value.Y, "", 0, true, 1);
                 }
 
                 var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
@@ -1410,7 +1452,7 @@ public static class GoRunFunction
                 // 再次检查
                 if (people == null)
                 {
-                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
+                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1400);
                 }
             });
             return;

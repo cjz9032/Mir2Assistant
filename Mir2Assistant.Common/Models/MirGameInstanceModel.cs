@@ -41,6 +41,7 @@ public class MirGameInstanceModel
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;
     public bool isRestarting = false;
+    public bool isHomePreparing = false;
     public int sameHPtimes = 0;
     public int lastHP = 0;
     public List<string> chats = new List<string>();
@@ -118,6 +119,7 @@ public class MirGameInstanceModel
         sameHPtimes = 0;
         lastHP = 0;
         memoryUtils?.Dispose();
+        isHomePreparing = false;
     }
 
     // 直接用属性pid来判断, 快但是可能不准, 后面需要确认是不是及时更新的, 及时就没问题

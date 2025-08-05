@@ -534,13 +534,6 @@ namespace Mir2Assistant.Common.Functions
             var nearHome = PickNearHomeMap(gameInstance);
             foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
             {
-                var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
-                if (!needRep)
-                {
-                    continue;
-                }
-
-                // 找背包内的对应的东西, 目前是1 , 保留多个的能力
                 var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0
                 // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
                  && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
@@ -548,6 +541,15 @@ namespace Mir2Assistant.Common.Functions
                 {
                     continue;
                 }
+
+                var needRep = CheckNeedRep(gameInstance, items[0]);
+                if (!needRep)
+                {
+                    continue;
+                }
+
+                // 找背包内的对应的东西, 目前是1 , 保留多个的能力
+              
                 gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
                 // 找到对应的NPC
                 var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
