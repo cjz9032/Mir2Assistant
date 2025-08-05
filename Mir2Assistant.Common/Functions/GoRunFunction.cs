@@ -199,7 +199,6 @@ public static class GoRunFunction
         }
         
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
-        MonsterFunction.SlayingMonsterCancel(instanceValue!);
         
         // 地图障碍点数据
         var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue);
@@ -258,6 +257,7 @@ public static class GoRunFunction
         if (bestEscapePoint != default)
         {
             instanceValue.GameInfo($"躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
+            MonsterFunction.SlayingMonsterCancel(instanceValue!);
             await PerformPathfinding(cancellationToken, instanceValue, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 999);
             return true;
         }
