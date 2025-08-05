@@ -33,16 +33,13 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             listBox1 = new ListBox();
             bindingSource1 = new BindingSource(components);
             timer1 = new System.Windows.Forms.Timer(components);
+            btnSave = new Button();
+            btnTake = new Button();
+            btnSell = new Button();
+            btnRepair = new Button();
+            btnTakeOn = new Button();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             SuspendLayout();
-            // 
-            // btnSave
-            // 
-            btnSave = new System.Windows.Forms.Button();
-            // 
-            // btnSell
-            // 
-            btnSell = new System.Windows.Forms.Button();
             // 
             // listBox1
             // 
@@ -51,54 +48,60 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             listBox1.ItemHeight = 17;
             listBox1.Location = new Point(1, 30);
             listBox1.Name = "listBox1";
-            listBox1.MultiColumn = false;
-            listBox1.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            listBox1.Size = new System.Drawing.Size(480, 421);
+            listBox1.SelectionMode = SelectionMode.MultiExtended;
+            listBox1.Size = new Size(480, 412);
             listBox1.TabIndex = 0;
-            // 
-            // btnSave
-            // 
-            btnSave.Location = new System.Drawing.Point(1, 3);
-            btnSave.Name = "btnSave";
-            btnSave.Size = new System.Drawing.Size(75, 23);
-            btnSave.TabIndex = 1;
-            btnSave.Text = "存";
-            btnSave.UseVisualStyleBackColor = true;
-            // 
-            // btnSell
-            // 
-            btnSell.Location = new System.Drawing.Point(82, 3);
-            btnSell.Name = "btnSell";
-            btnSell.Size = new System.Drawing.Size(75, 23);
-            btnSell.TabIndex = 2;
-            btnSell.Text = "卖";
-            btnSell.UseVisualStyleBackColor = true;
-            // 
-            // btnRepair
-            // 
-            btnRepair = new System.Windows.Forms.Button();
-            btnRepair.Location = new System.Drawing.Point(163, 3);
-            btnRepair.Name = "btnRepair";
-            btnRepair.Size = new System.Drawing.Size(75, 23);
-            btnRepair.TabIndex = 3;
-            btnRepair.Text = "修";
-            btnRepair.UseVisualStyleBackColor = true;
-            // 
-            // btnTakeOn
-            // 
-            btnTakeOn = new System.Windows.Forms.Button();
-            btnTakeOn.Location = new System.Drawing.Point(244, 3);
-            btnTakeOn.Name = "btnTakeOn";
-            btnTakeOn.Size = new System.Drawing.Size(75, 23);
-            btnTakeOn.TabIndex = 4;
-            btnTakeOn.Text = "穿";
-            btnTakeOn.UseVisualStyleBackColor = true;
             // 
             // timer1
             // 
             timer1.Enabled = true;
             timer1.Interval = 1000;
             timer1.Tick += timer1_Tick;
+            // 
+            // btnSave
+            // 
+            btnSave.Location = new Point(1, 3);
+            btnSave.Name = "btnSave";
+            btnSave.Size = new Size(75, 23);
+            btnSave.TabIndex = 1;
+            btnSave.Text = "存";
+            btnSave.UseVisualStyleBackColor = true;
+            // 
+            // btnTake
+            // 
+            btnTake.Location = new Point(356, 3);
+            btnTake.Name = "btnTake";
+            btnTake.Size = new Size(75, 23);
+            btnTake.TabIndex = 1;
+            btnTake.Text = "取(test)";
+            btnTake.UseVisualStyleBackColor = true;
+            // 
+            // btnSell
+            // 
+            btnSell.Location = new Point(82, 3);
+            btnSell.Name = "btnSell";
+            btnSell.Size = new Size(75, 23);
+            btnSell.TabIndex = 2;
+            btnSell.Text = "卖";
+            btnSell.UseVisualStyleBackColor = true;
+            // 
+            // btnRepair
+            // 
+            btnRepair.Location = new Point(163, 3);
+            btnRepair.Name = "btnRepair";
+            btnRepair.Size = new Size(75, 23);
+            btnRepair.TabIndex = 3;
+            btnRepair.Text = "修";
+            btnRepair.UseVisualStyleBackColor = true;
+            // 
+            // btnTakeOn
+            // 
+            btnTakeOn.Location = new Point(244, 3);
+            btnTakeOn.Name = "btnTakeOn";
+            btnTakeOn.Size = new Size(75, 23);
+            btnTakeOn.TabIndex = 4;
+            btnTakeOn.Text = "穿";
+            btnTakeOn.UseVisualStyleBackColor = true;
             // 
             // BagForm
             // 
@@ -109,6 +112,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             Controls.Add(btnRepair);
             Controls.Add(btnTakeOn);
             Controls.Add(btnSave);
+            Controls.Add(btnTake);
             Controls.Add(listBox1);
             Name = "BagForm";
             Text = "BagForm";
@@ -123,6 +127,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         private BindingSource bindingSource1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btnSave;
+        private System.Windows.Forms.Button btnTake;
         private System.Windows.Forms.Button btnSell;
         private System.Windows.Forms.Button btnRepair;
         private System.Windows.Forms.Button btnTakeOn;

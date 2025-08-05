@@ -62,10 +62,16 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         }
 
+        private async void btnTake_Click(object sender, EventArgs e)
+        {
+            await NpcFunction.Talk2(GameInstance!, "@storage");
+            // SendMirCall.Send(GameInstance!, 9010, new nint[] { 1 });
+        }
+
         private async void btnSell_Click(object sender, EventArgs e)
         {
-          
-            
+
+
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
@@ -134,6 +140,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
             btnSave.Click += btnSave_Click;
+            btnTake.Click += btnTake_Click;
             btnSell.Click += btnSell_Click;
             btnRepair.Click += btnRepair_Click;
             btnTakeOn.Click += btnTakeOn_Click;

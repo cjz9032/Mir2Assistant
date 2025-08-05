@@ -98,7 +98,7 @@ public static class CharacterStatusFunction
     public static void AdjustAttackSpeed(MirGameInstanceModel gameInstance, int attackSpeed)
     {
         var memoryUtils = gameInstance.memoryUtils!;
-        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(0x0067724C, 0, 0) , attackSpeed);
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(0x679B78, 0) , attackSpeed);
     }
 
 }

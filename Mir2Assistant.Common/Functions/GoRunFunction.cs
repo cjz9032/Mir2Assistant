@@ -1050,13 +1050,13 @@ public static class GoRunFunction
                 // 有点tricky 懒得改类型了
                 X = tx,
                 Y = ty,
-                MapId = GameInstance.CharacterStatus.MapId,
+                MapId = replaceMap,
             },
             To = new MapPosition()
             {
                 X = 999,
                 Y = 999,
-                MapId = replaceMap,
+                MapId = "999",
             }
         };
         var isAcross = replaceMap != GameInstance.CharacterStatus.MapId;
@@ -1387,14 +1387,39 @@ public static class GoRunFunction
         {
             // GameInstance.GameDebug("未找到需要治疗的目标");
             // 道士回调
-            CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
+            // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
+            // 延迟回调
+            Task.Delay(3000).ContinueWith(t =>
+            {
+                var people = allMonsInClients.Where(o =>
+                // not in cd
+                !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + GameConstants.Skills.HealPeopleCD &&
+                // 活着
+                o.CurrentHP > 0 &&
+                !o.isDead
+                // 低血量
+                && ((o.CurrentHP < o.MaxHP * 0.7) || o.CurrentHP < 10)
+                // 距离足够
+                && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
+                && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
+                )
+                // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
+                .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
+                .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.7))
+                .FirstOrDefault();
+                // 再次检查
+                if (people == null)
+                {
+                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
+                }
+            });
             return;
         }
         GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
-        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 2000);
+        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
 
     // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态

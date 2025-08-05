@@ -535,19 +535,19 @@ namespace Mir2Assistant
             else
             {
                 // 其他就预备血6
-                var items = GameConstants.Items.HealPotions;
-                var exitsQuan = 0;
-                items.ForEach(item =>
+                var items2 = GameConstants.Items.HealPotions;
+                var exitsQuan2= 0;
+                items2.ForEach(item =>
                     {
                         var bags = GoRunFunction.findIdxInAllItems(instanceValue!, item);
                         if (bags != null)
                         {
-                            exitsQuan += bags.Length;
+                            exitsQuan2 += bags.Length;
                         }
                     });
-                if (exitsQuan < GameConstants.Items.healBuyCount)
+                if (exitsQuan2 < GameConstants.Items.healBuyCount)
                 {
-                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.HealPotions[0], GameConstants.Items.healBuyCount - exitsQuan);
+                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.HealPotions[0], GameConstants.Items.healBuyCount - exitsQuan2);
                 }
             }
            
@@ -685,8 +685,8 @@ namespace Mir2Assistant
                         var instanceValue = instance;
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
-                        // 只有城中才初始准备
-                        if(new string[] {"0","1","2", "3"}.Contains(CharacterStatus.MapId))
+                        // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
+                        if (new string[] { "0", "1", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
                         await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
