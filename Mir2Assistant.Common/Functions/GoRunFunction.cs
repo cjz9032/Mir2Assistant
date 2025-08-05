@@ -46,9 +46,13 @@ public static class GoRunFunction
             && !curinItems.Contains(o.Value.Name)
             // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
             &&
-            (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
-            ((clothCount <  maxCloth) ? (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) : false)
-            : true
+            (
+                (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
+                    ((clothCount <  maxCloth) ?
+                    (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) 
+                    : false)
+                : true
+            )
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
