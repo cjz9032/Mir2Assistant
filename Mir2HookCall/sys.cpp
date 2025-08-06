@@ -6,26 +6,6 @@
 #include "utils.h"        // 添加工具函数头文件
 
 // Define a function type (adjust as needed)
-typedef void (*func_t)();
-// Global variables for trampoline and original function address
-void* trampoline = nullptr;
-func_t original_ptr = nullptr;
-HWND hwnd = nullptr;
-int orgNext = 0;
-
-void send_msg(char* msg, unsigned flag) {
-	if (hwnd != nullptr) {
-		COPYDATASTRUCT cds;
-		cds.dwData = 1; // Custom identifier (can be any value)
-		cds.cbData = strlen(msg) + 1; // Size of the string including null terminator
-		cds.lpData = (void*)msg; // Pointer to the string data
-		// Send the WM_COPYDATA message
-		SendMessage(hwnd, WM_COPYDATA, (WPARAM)flag, (LPARAM)&cds);
-	}
-}
-
-char* msg;
-unsigned flag;
 
 // 切组
 void setGroupState(int state) {
@@ -117,31 +97,6 @@ void clearChat(){
 	}
 }
 
-
-bool hook_address(void* target_address, void* hook_function) {
-	original_ptr = (func_t)target_address;
-	orgNext = ((int)original_ptr) + 8;
-	// Allocate memory for trampoline (size of jump + overwritten bytes)
-	trampoline = VirtualAlloc(nullptr, 13, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-	if (!trampoline) return false;
-
-	// Calculate relative jump addresses
-	DWORD hook_offset = (DWORD)((char*)hook_function - (char*)target_address - 5);
-	DWORD return_offset = (DWORD)((char*)target_address + 5 - ((char*)trampoline + 10));
-
-	// Save original bytes and create jump in trampoline
-	memcpy(trampoline, target_address, 8);
-	*(BYTE*)((char*)trampoline + 8) = 0xE9; // jmp
-	*(DWORD*)((char*)trampoline + 9) = return_offset;
-
-	// Overwrite original function with jump to hook
-	DWORD old_protect;
-	VirtualProtect(target_address, 5, PAGE_EXECUTE_READWRITE, &old_protect);
-	*(BYTE*)target_address = 0xE9; // jmp
-	*(DWORD*)((char*)target_address + 1) = hook_offset;
-	VirtualProtect(target_address, 5, old_protect, &old_protect);
-	return true;
-}
 
 void cancelItemMoving(){
 	__asm {
