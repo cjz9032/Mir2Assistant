@@ -10,6 +10,9 @@
     #define DELPHI_STRINGLIST_CLEAR_CALL 0x43E820
     #define FRMMAIN_ADDR    0x72BF90
     #define FRM_DLG_ADDR    0x72B56C
+    #define TLoginScene_ADDR    0x661C44
+    #define TLoginScene_OK_CALL    0x5C5E74
+
     #define DRAW_SCREEN_ADDR    0x72BF94
     #define MIR_LOGIN_ACT_HOOK    0x1C426D
     #define MIR_LOGIN_PWD_HOOK    0x1C4290
@@ -62,6 +65,9 @@
     #define DELPHI_STRINGLIST_CLEAR_CALL 0x43e870
     #define FRMMAIN_ADDR    0x7524B4
     #define FRM_DLG_ADDR    0x74350C
+    #define TLoginScene_ADDR    0x67A23C
+    #define TLoginScene_OK_CALL    0x56C488
+
     #define DRAW_SCREEN_ADDR    0x679E18
     #define MIR_LOGIN_ACT_HOOK    0x16A881
     #define MIR_LOGIN_PWD_HOOK    0x16A8A4

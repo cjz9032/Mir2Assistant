@@ -13,9 +13,9 @@ void loginFirst()
 		// 0059BE03        mov         eax,[0067A23C];^gvar_007524C0:TLoginScene
 		// 0059BE08        mov         eax,dword ptr [eax]
 		// 0059BE0A        call        0056C488 login ok
-		mov         eax,[0x0067A23C]
+		mov         eax,[TLoginScene_ADDR]
 		mov         eax,dword ptr [eax]
-		mov ebx, 0x0056C488
+		mov ebx, TLoginScene_OK_CALL
 		call ebx 
 
 		popfd
