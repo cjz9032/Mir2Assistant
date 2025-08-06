@@ -17,7 +17,7 @@ popad
 
 
 
-特征 81 B8 ?? ???????? C90B0000
+特征 C90B0000
 procedure TfrmMain.SendSpellMsg(ident, X, Y, dir, target: Integer; bLock: Boolean);
 
     if g_MySelf.RealActionMsg.ident = CM_SPELL then

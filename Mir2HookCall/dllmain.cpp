@@ -64,9 +64,6 @@ __declspec(naked) void HookFunction()
 // 添加线程函数声明
 DWORD WINAPI DelayedStartGameThread(LPVOID lpParam);
 
-// 声明函数在汇编代码之前
-void CreateDelayedStartGame();
-
 __declspec(naked) void HookFunction2()
 {
     __asm {
@@ -74,24 +71,17 @@ __declspec(naked) void HookFunction2()
         pushad
         pushfd
 
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
+
         mov         ebx, g_BaseAddr
-        add         ebx, 0x279EBC
-        mov         eax, [ebx]
-        mov         eax, [eax]
-        
-        mov         ebx, g_BaseAddr
-        add         ebx, 0x3526C0
+        add         ebx, MIR_G_SERVER_NAME
         mov         edx, [ebx]
         
         mov         ebx, g_BaseAddr
-        add         ebx, 0x00242A48
+        add         ebx, MIR_SELECT_SERVER_CALL
         call        ebx
   
- 
-        // 在汇编代码外调用C++函数
-     
-        // call        CreateDelayedStartGame
-
         popfd
         popad
     
@@ -121,29 +111,6 @@ __declspec(naked) void HookFunction4()
     }
 }
 
-// 创建延迟线程的函数
-void CreateDelayedStartGame() {
-    // 创建线程执行延迟操作
-    HANDLE hThread = CreateThread(NULL, 0, DelayedStartGameThread, NULL, 0, NULL);
-    if (hThread) {
-        CloseHandle(hThread);  // 关闭句柄，线程会继续执行
-    }
-}
-
-// 线程函数，执行延迟操作
-DWORD WINAPI DelayedStartGameThread(LPVOID lpParam) {
-    Sleep(7000);
-    
-    // 执行额外操作
-    DWORD extraPtr = *(DWORD*)(g_BaseAddr + 0x27A018);
-    DWORD extraObj = *(DWORD*)(extraPtr);
-    
-    typedef void (*ExtraFunc)(DWORD obj);
-    ExtraFunc extraFunc = (ExtraFunc)(g_BaseAddr + 0x16D10C);
-    extraFunc(extraObj);
-    
-    return 0;
-}
 
 __declspec(naked) void HookFunction5()
 {
@@ -154,9 +121,8 @@ __declspec(naked) void HookFunction5()
 
         call loginFirst
 
-     
-
-        mov esi, 0x0064AAA8
+        mov esi, originalFunc5
+        add esi, 5
         jmp esi
 
         popfd
@@ -174,47 +140,37 @@ void InitBaseAddr() {
 extern "C" DWORD GetActStringDataAddr();
 extern "C" DWORD GetPwdStringDataAddr();
 
-__declspec(naked) void HookFunction6()
-{
-    __asm {
-        // ZC.H+252036 - A1 3C9B6700           - mov eax,[ZC.H+279B3C] { (00677244) } 110 移动速度
-        // ZC.H+25203B - 8B 95 B0FBFFFF        - mov edx,[ebp-00000450]
-        // ZC.H+252041 - 89 10                 - mov [eax],edx
-        // ZC.H+252050 - A1 789B6700           - mov eax,[ZC.H+279B78] { (0067724C) } -- 攻速 1400
-        // ZC.H+252055 - 8B 95 B8FBFFFF        - mov edx,[ebp-00000448]
-        // ZC.H+25205B - 89 10                 - mov [eax],edx
-        pushad
-        pushfd
+// __declspec(naked) void HookFunction6()
+// {
+//     __asm {
+//         pushad
+//         pushfd
 
-        mov     eax, g_BaseAddr
-        add     eax, 0x279B3C
-        mov     ecx, [eax]
-        mov     dword ptr [ecx], 100
+//         mov     eax, g_BaseAddr
+//         add     eax, 0x279B3C
+//         mov     ecx, [eax]
+//         mov     dword ptr [ecx], 100
 
-        mov     eax, g_BaseAddr
-        add     eax, 0x279B78
-        mov     ecx, [eax]
-        mov     dword ptr [ecx], 1500
-        popfd
-        popad
+//         mov     eax, g_BaseAddr
+//         add     eax, 0x279B78
+//         mov     ecx, [eax]
+//         mov     dword ptr [ecx], 1500
+//         popfd
+//         popad
         
-        jmp originalFunc6
-    }
-}
+//         jmp originalFunc6
+//     }
+// }
 
-__declspec(naked) void HookFunction7()
-{
-    __asm {
-        // ZC.H+24A840 - 8A 85 48FEFFFF        - mov al,[ebp-000001B8]
-        // ZC.H+24A846 - A2 EC647500           - mov [ZC.H+3564EC],al { (0) } -->超负重指针
-        // ZC.H+24A84B - 83 3D 64277500 00     - cmp dword ptr [ZC.H+352764],00 { (06D0D6A0),0 }
-
-        mov eax, g_BaseAddr
-        add eax, 0x3564EC        // 使用基址+偏移
-        mov byte ptr [eax], 0x1  // 使用正确的数据大小
-        jmp originalFunc7
-    }
-}
+// __declspec(naked) void HookFunction7()
+// {
+//     __asm {
+//         mov eax, g_BaseAddr
+//         add eax, 0x3564EC        
+//         mov byte ptr [eax], 0x1 
+//         jmp originalFunc7
+//     }
+// }
 
 // 跳过弹窗的hook函数
 // 00650312        mov         edx,654720;'物品被卖出。'
@@ -248,7 +204,7 @@ __declspec(naked) void BiosFake()
 __declspec(naked) void SkipPopup()
 {
     __asm {
-        mov edx, 0x00653107 // 末尾
+        mov edx, MIR_SKP_DLG_END_ADDR
         jmp edx
     }
 }
@@ -277,14 +233,16 @@ bool InstallHooks()
     }
 
     // 不倒翁
-    DWORD targetAddress1 = 0x1DF76C + (DWORD)GetModuleHandle(L"ZC.H");
-    if (MH_CreateHook((LPVOID)targetAddress1, HookFunction, (LPVOID*)&originalFunc1) != MH_OK)
-    {
-        printf("hook 1 fail\n");
-        return false;
+    if (MIR_BU_DAO_HOOK) {
+        DWORD targetAddress1 = MIR_BU_DAO_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+        if (MH_CreateHook((LPVOID)targetAddress1, HookFunction, (LPVOID*)&originalFunc1) != MH_OK)
+        {
+            printf("hook 1 fail\n");
+            return false;
+        }
     }
     // 自动跳
-    DWORD targetAddress2 = 0x24ADB9 + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress2 = MIR_HK2_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress2, HookFunction2, (LPVOID*)&originalFunc2) != MH_OK)
     {
         printf("hook 2 fail\n");
@@ -292,7 +250,7 @@ bool InstallHooks()
     }
 
     // 自动填充账号  
-    DWORD targetAddress3 = 0x16A881 + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress3 = MIR_LOGIN_ACT_HOOK + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress3, HookFunction3, (LPVOID*)&originalFunc3) != MH_OK)
     {
         printf("hook 3 fail\n");
@@ -300,45 +258,53 @@ bool InstallHooks()
     }
 
     // 自动填充密码
-    DWORD targetAddress4 = 0x0016A8A4 + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    DWORD targetAddress4 = MIR_LOGIN_PWD_HOOK + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
     if (MH_CreateHook((LPVOID)targetAddress4, HookFunction4, (LPVOID*)&originalFunc4) != MH_OK)
     {
         printf("hook 4 fail\n");
         return false;
     }
 
-    // 登录锁定
-    DWORD targetAddress5 = 0x24AAA3 + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    // 登录锁定 
+    // 目前 特征相同 
+    // 消息列表找 '这个帐号正在使用，或者是被异常的终止锁定了\请稍后再试。'
+
+    DWORD targetAddress5 = MIR_HK5_ADDR + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
     if (MH_CreateHook((LPVOID)targetAddress5, HookFunction5, (LPVOID*)&originalFunc5) != MH_OK)
     {
         printf("hook 5 fail\n");
         return false;
     }
 
+    // 通过游戏改写了 不需要这里
+    // 0065EC5C 移动
+    // 0065EC64 攻速
+    // 0072F784 超负重
+    // 血量 通过组队找把
     // 6 基础属性变速等
-    DWORD targetAddress6 = 0x2520D2 + (DWORD)GetModuleHandle(L"ZC.H"); // TODO: 替换为你的目标地址
-    if (MH_CreateHook((LPVOID)targetAddress6, HookFunction6, (LPVOID*)&originalFunc6) != MH_OK)
-    {
-        printf("hook 6 fail\n");
-        return false;
-    }
-    // 7 又一些开关, 超负重, 不确定是否有其他
-    DWORD targetAddress7 = 0x24A84B + (DWORD)GetModuleHandle(L"ZC.H");
-    if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
-    {
-        printf("hook 7 fail\n");
-        return false;
-    }
+    // DWORD targetAddress6 = 0x2520D2 + (DWORD)GetModuleHandle(L"ZC.H"); // TODO: 替换为你的目标地址
+    // if (MH_CreateHook((LPVOID)targetAddress6, HookFunction6, (LPVOID*)&originalFunc6) != MH_OK)
+    // {
+    //     printf("hook 6 fail\n");
+    //     return false;
+    // }
+    // // 7 又一些开关, 超负重, 不确定是否有其他
+    // DWORD targetAddress7 = 0x24A84B + (DWORD)GetModuleHandle(L"ZC.H");
+    // if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
+    // {
+    //     printf("hook 7 fail\n");
+    //     return false;
+    // }
 
     // 定义所有要跳过的弹窗
     SkipHookInfo skipHooks[] = {
 
-        {L"ZC.H", 0x250317, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
-        {L"ZC.H", 0x250351, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
-        {L"ZC.H", 0x250160, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
-        {L"ZC.H", 0x24BF87, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
-        {L"ZC.H", 0x250334, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
-        {L"ZC.H", 0x2501C2, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG1_ADDR, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG2_ADDR, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG3_ADDR, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG4_ADDR, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG5_ADDR, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
+        {L"ZC.H", MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子
@@ -353,7 +319,7 @@ bool InstallHooks()
     }
 
     // 12 BIOS信息伪造
-    DWORD targetAddress12 = 0x243140 + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress12 = MIR_HK_BIOS_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
     if (MH_CreateHook((LPVOID)targetAddress12, BiosFake, (LPVOID*)&originalFunc12) != MH_OK)
     {
         printf("hook 12 fail\n");

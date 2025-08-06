@@ -1,4 +1,4 @@
-挖肉 -- 根据ID索引找
+挖肉 -- 直接特征 66 BA C40B           
 SendButchAnimal(g_nMouseCurrX, g_nMouseCurrY, tdir, target.m_nRecogId);
 push tdir
 push monsterId
@@ -19,12 +19,17 @@ ZC.H+23FE55 - 8B 15 48637500        - mov edx,[ZC.H+356348] { (403) } // 鼠标x
 ZC.H+23FE5B - 8B 45 FC              - mov eax,[ebp-04]
 ZC.H+23FE5E - E8 49470000           - call ZC.H+2445AC
 
-// 丢弃
-DBackgroundBackgroundClick_00599CA0
-尝试找最后一个CALL
+// 丢弃 DBackgroundBackgroundClick_00599CA0 尝试找最后一个CALL
 
-捡物CALL
 
+捡物CALL --
+_Unit101.TFrmMain.FormKeyPress 
+00628773        mov         edx,628D3C;'[开启:人物显名]'
+00628778        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+0062877D        call        005C88E0
+00628782>       jmp         00628C0C
+00628787        mov         eax,dword ptr [ebp-4]
+0062878A        call        0062FCB8 -- 这 00643F84
 
 pushad
 pushfd

@@ -1,4 +1,4 @@
-组开关
+组开关 -- 无需特征
 FState.TFrmDlg.DGrpAllowGroupClick_005B71AC
 state: 0x7563C8 随便1/0或者函数内
    
@@ -23,7 +23,7 @@ ZC.H+1B71FC - E8 43ED0800           - call ZC.H+245F44
 
 
 队伍成员地址
-[7563CC]
+[7563CC] -- C 006507FD '该名字不在编组中。' 下一个TStringList
 len +30
 
 被邀请2处. 自动组先
@@ -51,6 +51,7 @@ replaced
 83 F8 06
 74 1D
 
+
 // 自动的 应该是同意了, 不用管
 ZC.H+24F5FE - 6A 00                 - push 00 { 0 }
 ZC.H+24F600 - 6A 00                 - push 00 { 0 }
@@ -61,3 +62,12 @@ ZC.H+24F608 - 33 C9                 - xor ecx,ecx
 ZC.H+24F60A - BA 3C040000           - mov edx,0000043C { 1084 }
 ZC.H+24F60F - A1 B4247500           - mov eax,[ZC.H+3524B4] { (02E97990) }
 ZC.H+24F614 - E8 9F2FFFFF           - call ZC.H+2425B8
+
+
+发起的特征 00631C80 
+00627DD2        mov         edx,628194;'在战斗的时候你不能退出游戏'
+00627DD7        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+-- 会连续出现2次 这3个指令, 组1和组2
+00627E30        mov         edx,dword ptr [eax+30] -- 这里不是固定的
+00627E33        mov         eax,dword ptr [ebp-4]
+00627E36        call        00631C80 

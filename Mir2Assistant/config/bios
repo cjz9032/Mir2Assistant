@@ -8,11 +8,16 @@ ZC.H+13B944          - 0019FE30,ZC.H+13B94E,0019FD00,035F062F,...
 䠸䅁䉈䅚††††††1.70MAG B460M MORTAR (MS-7C82)07C8210_KA1C156308
 
 
+lom2key67me3934od7sdn3
+
 前2层
 ZC.H+243135 - 8D 45 9C              - lea eax,[ebp-64]
 ZC.H+243138 - E8 532AFFFF           - call ZC.H+235B90
 ZC.H+24313D - 8B 45 9C              - mov eax,[ebp-64]
 ZC.H+243140 - 8D 55 F0              - lea edx,[ebp-10]
+
+
+最直接找lom2key67me3934od7sdn3 访问的地方 对应的函数就知道了
 
 
 GetIdeSerialNumber

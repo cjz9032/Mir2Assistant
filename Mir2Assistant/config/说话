@@ -11,15 +11,15 @@
 // Classes TStringList.Get方法 很容易找到 
 // [ebx+2C] + 8*esi
 
+
+679e18 [00679E18];^gvar_007524B8:TDrawScreen
 base: [679e18] + 0 + 1C
 [[base+2C] + 8*esi]  DelphiStr
 
 
-
-
-
-
 说话call
+特征码  	 6A 00 6A 00 6A 00 33 C9 BA 51000000
+
 ZC.H+23ABD4 - 05 E8030000           - add eax,000003E8 { 1000 }
 ZC.H+23ABD9 - 8B 55 FC              - mov edx,[ebp-04]
 ZC.H+23ABDC - 89 82 58040000        - mov [edx+00000458],eax

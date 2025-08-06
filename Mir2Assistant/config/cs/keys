@@ -1,24 +1,16 @@
 
-刷新
-ZC.H+23ABD4 - 05 E8030000           - add eax,000003E8 { 1000 }
-ZC.H+23ABD9 - 8B 55 FC              - mov edx,[ebp-04]
-ZC.H+23ABDC - 89 82 58040000        - mov [edx+00000458],eax
+刷新 
+特征码  6A 006A 006A 0033C9 BA 51000000  
+地址 00627CEB
 ZC.H+23ABE2 - 6A 00                 - push 00 { 0 }
 ZC.H+23ABE4 - 6A 00                 - push 00 { 0 }
 ZC.H+23ABE6 - 6A 00                 - push 00 { 0 }
 ZC.H+23ABE8 - 33 C9                 - xor ecx,ecx
 ZC.H+23ABEA - BA 51000000           - mov edx,00000051 { 81 }
-ZC.H+23ABEF - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+23ABF2 - E8 2D790000           - call ZC.H+242524
-ZC.H+23ABF7 - E9 10020000           - jmp ZC.H+23AE0C
-ZC.H+23ABFC - F6 45 08 04           - test byte ptr [ebp+08],04 { 4 }
-ZC.H+23AC00 - 0F84 06020000         - je ZC.H+23AE0C
-ZC.H+23AC06 - 33 C9                 - xor ecx,ecx
-ZC.H+23AC08 - BA 50B06300           - mov edx,ZC.H+23B050 { ("@AttackMode") }
-ZC.H+23AC0D - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+23AC10 - E8 8B880000           - call ZC.H+2434A0
+ZC.H+23ABD9 - 8B 55 FC              - mov eax,[0x72BF90] // frmMain
+ZC.H+23ABF2 - E8 2D790000           - call Client.exe+22E34C
 
-SendClientMessage call ZC.H+242524  说话旁边也很容易找到, 或者特征码 00081
+SendClientMessage call Client.exe+22E34C
 
 
 push 0
@@ -30,6 +22,14 @@ mov eax,[0x7524B4]
 call 0x642524
 
 
+
+006399A8 特征码  6A 00 6A 00 6A 00   33 C9 BA F1030000
+ZC.H+239A13 - 6A 00                 - push 00 { 0 }
+ZC.H+239A15 - 6A 00                 - push 00 { 0 }
+ZC.H+239A17 - 6A 00                 - push 00 { 0 }
+ZC.H+239A19 - 33 C9                 - xor ecx,ecx
+ZC.H+239A1B - BA F1030000           - mov edx,000003F1 { 1009 }
+
 小腿
 pushad
 pushfd
@@ -38,31 +38,15 @@ call 006399A8
 popfd
 popad
 
-// 任意dlg实现, 特征码
+// 任意dlg实现, 特征码 -- 58EC48
 ZC.H+19A7D9 - 8B 80 24060000        - mov eax,[eax+00000624]
 ZC.H+19A7DF - B9 7D010000           - mov ecx,0000017D { 381 }
 
-// 这个不好找, 根据dlg找
-ZC.H+2399C1 - 55                    - push ebp
-ZC.H+2399C2 - 68 DD9A6300           - push ZC.H+239ADD { (233) }
-ZC.H+2399C7 - 64 FF 30              - push fs:[eax]
-ZC.H+2399CA - 64 89 20              - mov fs:[eax],esp
-ZC.H+2399CD - A1 28A76700           - mov eax,[ZC.H+27A728] { (0074350C) }
-ZC.H+2399D2 - 8B 00                 - mov eax,[eax]
-ZC.H+2399D4 - 66 8B 0D E89A6300     - mov cx,[ZC.H+239AE8] { (12) }
-ZC.H+2399DB - BA F89A6300           - mov edx,ZC.H+239AF8 { (1626562728) }
-ZC.H+2399E0 - E8 770DF6FF           - call ZC.H+19A75C -- 小退补丁
-ZC.H+2399E5 - 48                    - dec eax  -- 小退补丁
-ZC.H+2399E6 - 0F85 D3000000         - jne ZC.H+239ABF  -- 小退补丁
-ZC.H+2399EC - 33 D2                 - xor edx,edx
-ZC.H+2399EE - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+2399F1 - 8B 80 B8030000        - mov eax,[eax+000003B8]
-ZC.H+2399F7 - E8 3C31E7FF           - call ZC.H+ACB38
-ZC.H+2399FC - 33 D2                 - xor edx,edx
-ZC.H+2399FE - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+239A01 - E8 AE070100           - call ZC.H+24A1B4
-ZC.H+239A06 - 33 C9                 - xor ecx,ecx
-
+// 这个不好找, 根据dlg找 
+Client.exe+226D6A - E8 D97EF6FF           - call Client.exe+18EC48
+Client.exe+226D6F - 48                    - dec eax
+Client.exe+226D70 - 75 59                 - jne Client.exe+226DCB
+E8 D97EF6FF4875 59 -> 9090
 
 
 _Unit101.TFrmMain.FormKeyDown

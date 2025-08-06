@@ -3,7 +3,6 @@
 #include <string>
 #include "goRun.h"
 #include "login.h"
-#include "skill.h"
 #include "npc.h"
 #include "sys.h"
 
@@ -34,9 +33,6 @@ LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam) {
 			}
 			else if (code >= 3000) {//npc
 				Npc::process(code, data);
-			}
-			else if (code >= 2000) {//技能
-				Skill::process(code, data);
 			}
 			else if (code >= 1000) {//走路跑路寻路
 				GoRun::process(code, data);

@@ -17,9 +17,9 @@ void clickNPC(int npcId)
 		push 00
 		mov ecx, npcId
 		mov edx, 0x000003F2 
-		mov eax, dword ptr ds : [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, dword ptr ds : [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov ebx, eax 
-		mov esi, 0x642524 // sendclientmessage
+		mov esi, MIR_SendClientMessage_CALL // sendclientmessage
 		call esi 
 
 		popfd
@@ -70,7 +70,7 @@ const std::map<int, int> offsetMap = {
 
 
 
-
+// DItemGridGridSelect_
 void bagGridClick(int index){
 
 	// 8x5的背包布局
@@ -85,11 +85,11 @@ void bagGridClick(int index){
 		push row
 		push col
 		push 0
-		mov ebx, dword ptr ds : [0x7432F4]
+		mov ebx, dword ptr ds : [MIR_GRID_FOO_ADDR]
 		mov ecx,100
-		mov edx, dword ptr ds : [0x7432F4]
-		mov eax, dword ptr ds : [0x0074350C]
-		mov esi, 0x005ABB7C
+		mov edx, dword ptr ds : [MIR_GRID_FOO_ADDR]
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
+		mov esi, MIR_DItemGridGridSelect_CALL
 		call esi 
 
 		popfd
@@ -97,6 +97,7 @@ void bagGridClick(int index){
 	}
 }
 
+// 
 void charGridClick(int index){
 	int myoffset = offsetMap.at(index);
 	__asm {
@@ -104,14 +105,14 @@ void charGridClick(int index){
 		pushfd
 
 		push 100
-		mov eax, dword ptr ds : [0x0074350C]
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
 		mov ebx, eax
 		add ebx, myoffset
 		mov ebx, [ebx]
 		mov ecx,100
 		mov edx,ebx
 
-		mov esi, 0x0059F718
+		mov esi, MIR_DSWWeaponClick_CALL
 		call esi
 
 		popfd
@@ -152,9 +153,9 @@ void takeOff2(DelphiString* name, int idx, int id) {
 		push eax
 		mov edx, idx
 		mov ecx, id
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x006440F4
+		mov esi, MIR_TAKE_OFF_DIRECT_CALL
 		call esi
 
 		popfd
@@ -173,9 +174,9 @@ void takeOn2(DelphiString* name, int idx, int id) {
 		push eax
 		mov edx, idx
 		mov ecx, id
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x64401C
+		mov esi, MIR_TAKE_ON_DIRECT_CALL
 		call esi
 
 		popfd
@@ -194,9 +195,9 @@ void eatIndexItem(int idx){
 		pushad
 		pushfd
 		mov edx, idx
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x63D914
+		mov esi, MIR_EAT_ITEM_CALL
 		call esi
 		popfd
 		popad
@@ -214,11 +215,13 @@ void talk2(DelphiString* cmd)
 		pushfd
 
 	    mov ecx, eax
-		mov edx, dword ptr ds : [0x7563A4]
-		mov eax, dword ptr ds : [0x00679EBC]
-		mov eax, dword ptr[eax]
+
+		mov edx, dword ptr ds : [MIC_G_NPC_ID]
+		mov edx, [edx]
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
 		mov ecx, cmdData
-		mov esi, 0x006446D0
+		mov esi, MIR_NPC_2ND_TALK_CALL
 		call esi
 
 		popfd
@@ -235,12 +238,12 @@ void getGoodsList(DelphiString* name)
 		pushfd
 		mov eax,nameData
 		push eax
-		mov edx,dword ptr ds:[0x6799E8];
+		mov edx,dword ptr ds:[MIC_G_NPC_ID];
 		mov edx,[edx]
-		mov eax,dword ptr ds:[0x679EBC];
-		mov eax,[eax]
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
 		xor ecx,ecx
-		mov esi, 0x6454AC
+		mov esi, MIR_GET_GoodsList_CALL
 		call esi
 		popfd
 		popad
@@ -254,13 +257,13 @@ void buyGoodsFixedIndex()
 		pushad
 		pushfd
 		push 100
-		mov ebx, 0x7432F4
+		mov ebx, MIR_GRID_FOO_ADDR
 		mov ebx, [ebx]
 		mov ecx, 100
 		mov edx, ebx
-
-		mov eax, dword ptr ds : [0x0074350C]
-		mov esi, 0x005B112C
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
+		mov esi, MIR_DMenuBuyClick_CALL
 		call esi	
 
 		popfd
@@ -281,11 +284,11 @@ void buy(DelphiString* name)
 		push        eax
 		push        0 // count 1或0 不懂
 		mov         ecx, 0 // stock 药水不用
-		mov edx,dword ptr ds:[0x6799E8];
+		mov edx,dword ptr ds:[MIC_G_NPC_ID];
 		mov edx,dword ptr [edx]
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x006459F4
+		mov esi, MIR_SendBuyItem_CALL
 		call esi
 
 		popfd
@@ -305,9 +308,9 @@ void executeNpcFunction(DelphiString* name, int id, uintptr_t functionAddress)
 		push        eax
 		push        1
 		mov         ecx, id
-		mov edx, dword ptr ds:[0x6799E8];
+		mov edx, dword ptr ds:[MIC_G_NPC_ID];
 		mov edx, dword ptr [edx]
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov esi, functionAddress
 		call esi
@@ -327,11 +330,11 @@ void repairItem(DelphiString* name, int id)
 		mov         eax, nameData
 		push        eax
 		mov         ecx, id
-		mov edx, dword ptr ds:[0x6799E8];
+		mov edx, dword ptr ds:[MIC_G_NPC_ID];
 		mov edx, dword ptr [edx]
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x006450F8
+		mov esi, MIR_REPAIR_ITEM_CALL
 		call esi
 
 		popfd
@@ -351,9 +354,9 @@ void butch(int x, int y,int dir, int monsterId)
 		push monsterId
 		mov ecx, y 
 		mov edx, x 
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x6445AC
+		mov esi, MIR_BUTCH_DIRECT_CALL
 		call esi
 
 		popfd
@@ -365,9 +368,9 @@ void pickUp(){
 	__asm {
 		pushad
 		pushfd
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x00643F84
+		mov esi, MIR_PICKUP_DIRECT_CALL
 		call esi
 		popfd
 		popad
@@ -384,9 +387,9 @@ void sendSpell(int spellId, int x, int y, int targetId){
 		push targetId
 		mov ecx,x
 		mov edx, 0x00000BC9
-		mov eax, 0x7524B4
+		mov eax, FRMMAIN_ADDR
 		mov eax, [eax]
-		mov esi, 0x643C88
+		mov esi, MIR_SPELL_DIRECT_CALL
 		call esi 
 		popfd
 		popad
@@ -399,17 +402,17 @@ void sendSpell(int spellId, int x, int y, int targetId){
 
 void sell(DelphiString* name, int id)
 {
-	executeNpcFunction(name, id, 0x00645018);
+	executeNpcFunction(name, id, MIR_SELL_ITEM_CALL);
 }
 
 void storeItem(DelphiString* name, int id)
 {
-	executeNpcFunction(name, id, 0x006452EC);
+	executeNpcFunction(name, id, MIR_STORE_ITEM_CALL);
 }
 
 void backStoreItem(DelphiString* name, int id)
 {
-	executeNpcFunction(name, id, 0x006452EC);
+	executeNpcFunction(name, id, MIR_BACK_STORE_ITEM_CALL);
 }
 
 

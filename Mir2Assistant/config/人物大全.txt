@@ -26,8 +26,13 @@ nop ZC.H+1DF4AC - C6 45 EF 00           - mov byte ptr [ebp-11],00 { 0 }
 
 怪物数组 [[[7524C8]+000034C8]+4]+4*i
 长度+8
-打怪 756370
-光标锁定 756374
+打怪 756370 above-4 
+光标锁定 756374 -- _Unit101.TFrmMain.FormKeyDown
+
+ 0063ACC9        mov         edx,63B08C;'在战斗的时候你不能退出游戏'
+0063ACCE        mov         eax,[007524B8];gvar_007524B8:TDrawScreen
+
+0063AD07        cmp         dword ptr ds:[756374],0;gvar_00756374
 
 人物信息
 [00752764]

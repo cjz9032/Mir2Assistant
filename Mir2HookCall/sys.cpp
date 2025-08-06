@@ -33,9 +33,9 @@ void setGroupState(int state) {
 		pushad
 		pushfd
 		mov edx , state
-		mov eax,[0x007524B4]
+		mov eax,[FRMMAIN_ADDR]
 		mov eax,[eax]
-		mov esi, 0x00645F44
+		mov esi, MIR_ALLOW_GROUP_CALL
 		call esi
 		popfd
 		popad
@@ -51,28 +51,28 @@ void groupOne(DelphiString* name)
         pushad
         pushfd
 
-        mov eax, [0x7563CC]
+        mov eax, [MIR_GROUP_MEMBER_ADDR]
         mov eax, [eax]
         add eax, 0x30
-        mov ecx, [eax]           // ecx = *(int*)(0x7563CC + 30)
+        mov ecx, [eax]           // ecx = *(int*)(MIR_GROUP_MEMBER_ADDR + 30)
         test ecx, ecx
         jz  group_zero           // 如果为0，跳转到group_zero
 
         // > 0 分支
         mov eax, nameData
         mov edx, eax
-        mov eax, dword ptr ds:[0x00679EBC]
+        mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
         mov eax, dword ptr [eax]
-        mov esi, 0x00646630
+        mov esi, MIR_GROUP_ONE_CALL
         call esi                 // ZC.H+246630
         jmp group_end
 
     group_zero:
         mov eax, nameData
         mov edx, eax
-        mov eax, dword ptr ds:[0x00679EBC]
+        mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
         mov eax, dword ptr [eax]
-        mov esi, 0x00645FF4
+        mov esi, MIR_GROUP_TWO_CALL
         call esi                 // ZC.H+245FF4
 
     group_end:
@@ -88,14 +88,12 @@ void addChat(DelphiString* chat)
 	__asm {
 		pushad
 		pushfd
-		// ZC.H+23AC26 - BA 74B06300           - mov edx,ZC.H+23B074 { ("@Rest") }
-		// ZC.H+23AC2B - 8B 45 FC              - mov eax,[ebp-04]
-		// ZC.H+23AC2E - E8 6D880000           - call ZC.H+2434A0
+
 
 		mov edx, chatData
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x6434A0
+		mov esi, MIR_CHAT_CALL
 		call esi
 
 		popfd
@@ -107,43 +105,18 @@ void clearChat(){
 	__asm {
 	pushad
 	pushfd
-		mov eax, 0x679E18
+		mov eax, DRAW_SCREEN_ADDR
 		mov eax, [eax]
 		mov eax, [eax]
 		add eax, 0x1C
 		mov eax, [eax]
-		mov esi, 0x0043e870
+		mov esi, DELPHI_STRINGLIST_CLEAR_CALL
 		call esi
 	popfd
 	popad
 	}
 }
 
-void __declspec(naked) override_write_screen_call()
-{
-	_asm {
-		pushad
-		mov msg, edx
-		mov flag, ecx
-	}
-	//int len = MultiByteToWideChar(CP_ACP, 0, msg, -1, NULL, 0);
-	//wchar_t* utf16Str = new wchar_t[len];
-	//MultiByteToWideChar(CP_ACP, 0, msg, -1, utf16Str, len);
-	//// 使用MessageBoxW显示消息框
-	//MessageBoxW(NULL, utf16Str, L"标题", MB_OK);
-	send_msg(msg, flag);
-	_asm {
-		popad
-		push ebp
-		mov ebp, esp
-		add esp, 0xFFFFFFD8
-		push ebx
-		push esi
-		mov ebx, orgNext
-		jmp ebx
-	}
-	//((func_t)trampoline)();
-}
 
 bool hook_address(void* target_address, void* hook_function) {
 	original_ptr = (func_t)target_address;
@@ -170,27 +143,14 @@ bool hook_address(void* target_address, void* hook_function) {
 	return true;
 }
 
-void restore_write_screen_call() {
-	// if (original_ptr == nullptr || trampoline == nullptr) {
-	// 	return;
-	// }
-	// DWORD old_protect;
-	// VirtualProtect(original_ptr, 8, PAGE_EXECUTE_READWRITE, &old_protect);
-	// //memcpy(original_ptr, trampoline, 8);
-	// char org[8] = { 0x55, 0x8b,0xec,0x83,0xc4,0xd8 ,0x53,0x56 };
-	// memcpy(original_ptr, org, 8);
-	// //memcpy(original_ptr, trampoline, 5);
-	// VirtualProtect(original_ptr, 8, old_protect, &old_protect);
-}
-
 void cancelItemMoving(){
 	__asm {
 
 		pushad
 		pushfd
 
-		mov eax, dword ptr ds : [0x0074350C]
-		mov esi, 0x0065EA88
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
+		mov esi, MIR_CANCEL_ITEM_MOVING_CALL
 		call esi
 
 		popfd
@@ -211,9 +171,9 @@ void refPkg()
 		xor ecx,ecx
 		mov edx, 0x51 
 		mov ebx, 0 // unused
-		mov eax, [0x7524B4] // gvar_007524B4:TFrmMain
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
-		mov esi, 0x642524 // sendclientmessage
+		mov esi, MIR_SendClientMessage_CALL // sendclientmessage
 		call esi 
 
 		popfd
@@ -225,9 +185,9 @@ void exitToSelectScene(){
 	_asm {
 		pushad
 		pushfd
-		mov eax, 0x7524B4
+		mov eax, FRMMAIN_ADDR
 		mov eax,[eax]
-		mov esi, 0x006399A8
+		mov esi, MIR_EXIT_TO_SELECT_SCENE_CALL
 		call esi
 		popfd
 		popad
@@ -238,10 +198,9 @@ void startButton(){
 		pushad
 		pushfd
 
-		mov eax, 0x0067A018
+		mov eax, MIR_SELECT_CHR_SCENE_ADDR
         mov eax, [eax]
-        mov eax, [eax]
-        mov esi, 0x0056D10C
+        mov esi, MIR_START_BTN_CALL
         call esi
 
 		popfd
@@ -255,15 +214,15 @@ void okButton(){
 		pushfd
 		push 100
 		
-		mov ebx, 0x74350C
+		mov ebx, FRM_DLG_ADDR
 		mov ebx, [ebx]
 		add ebx, 0x8FC
 		mov ebx,[ebx]
 		mov ecx, 100
 		mov edx, ebx
 		
-		mov eax, dword ptr ds : [0x74350C]
-		mov esi, 0x0059B340
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
+		mov esi, MIR_Dlg_Ok_Click
 		call esi	
 		
 		popfd
@@ -282,11 +241,8 @@ void Sys::process(int code, int* data)
 	switch (code)
 	{
 	case 9001: //hook 写屏call
-		// hwnd = (HWND)data[1];
-		// hook_address((void*)data[0], override_write_screen_call);
 		break;
 	case 9002: //恢复写屏call
-		// restore_write_screen_call();
 		break;
 	case 9003: // 接收账号和密码数据
 		ProcessWideStringsWithLengths(data, 2, [](wchar_t** strings, int* length) {

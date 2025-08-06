@@ -47,10 +47,10 @@ MDlgStr: string;
             <退出/@exit>
 
  
-2级对话命令 直接找g_nCurMerchant 或是 DMerchantDlgClick_005B18B8 再继续找select的call
-    frmMain.SendMerchantDlgSelect(g_nCurMerchant, p.rstr); -- 006446D0
+商人 ds:[6799E8];^gvar_007563A4 直接找对应的字符串的 请输入你想购买的商品数量
 
-直接调用会不对, 最好不, 但是一般都可以
+2级对话命令
+DMerchantDlgClick_005B18B8
 005B19F3        mov         edx,dword ptr ds:[6799E8];^gvar_007563A4
 005B19F9        mov         edx,dword ptr [edx]
 005B19FB        mov         eax,[00679EBC];^gvar_007524B4:TFrmMain
@@ -58,6 +58,8 @@ MDlgStr: string;
 005B1A02        mov         ecx,dword ptr [ebp-18] -- cmd @sell 等的str
 005B1A05        mov         ecx,dword ptr [ecx+10]
 005B1A08        call        006446D0
+// 继续找 在最后call 1388
+frmMain.SendMerchantDlgSelect(g_nCurMerchant, p.rstr); -- 006446D0
 
 // test 2级 call
 pushad
@@ -116,13 +118,17 @@ say string
 一般购买 
 // 第一个是获取列表的函数 
 frmMain.SendGetDetailItem(g_nCurMerchant, 0, pg.Name);
+
+DMenuBuyClick
 ZC.H+1B11E8 - 8B 45 E0              - mov eax,[ebp-20]
 ZC.H+1B11EB - 50                    - push eax
 ZC.H+1B11EC - 8B 15 E8996700        - mov edx,[ZC.H+2799E8] { (007563A4) }
 ZC.H+1B11F2 - 8B 12                 - mov edx,[edx]
 ZC.H+1B11F4 - A1 BC9E6700           - mov eax,[ZC.H+279EBC] { (007524B4) }
+-- 特征
 ZC.H+1B11F9 - 8B 00                 - mov eax,[eax]
 ZC.H+1B11FB - 33 C9                 - xor ecx,ecx
+-- 特征
 ZC.H+1B11FD - E8 AA420900           - call ZC.H+2454AC
 
 // test call
@@ -133,6 +139,8 @@ mov eax,ptr 0x679EBC
 mov eax,[eax]
 xor ecx,ecx
 mov esi, 0x6454AC
+
+
 call esi
 
 // 使用选index 购买 ZC.H+34350C C6C
@@ -152,19 +160,20 @@ frmMain.SendBuyItem(g_nCurMerchant, pg.Stock, pg.Name, Word(Count)) 006459F4
   005B14DF        call        006459F4 // SendBuyItem 
 
 // 买/卖/修/存 都是 ... 用完刷新
-// 修特殊加了
+// 修特殊加了 -- call在 DSellDlgOkClick 第2个 TFrmMain 旁边
 
 // 仓库UI很多, 所以都直接找call 
 // 存
-SendStorageItem 006452EC -- 从通用里找 DSellDlgOkClick 多断几个就找到了
+SendStorageItem 006452EC -- DSellDlgOkClick 第三个 TFrmMain 旁边
 procedure TfrmMain.SendStorageItem(merchant, itemindex: Integer; itemname: string; count: Word);
   同上, count随便写1就好了
 
 // 取
-SendTakeBackStorageItem 645B6C -- 从通用里找 DMenuBuyClick 多断几个就找到了
+SendTakeBackStorageItem 645B6C -- 母鸡 再说
 procedure TfrmMain.SendTakeBackStorageItem(merchant, itemserverindex: Integer; itemname: string; count: Word);
 
 
+SendSellItem 00645018 --  DSellDlgOkClick 第1个 TFrmMain 旁边
 // 卖
 dmSell: frmMain.SendSellItem(g_nCurMerchant, g_SellDlgItem.MakeIndex, g_SellDlgItem.s.Name, g_SellDlgItem.Dura);
 

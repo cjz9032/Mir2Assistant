@@ -151,13 +151,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="account_info.h" />
+    <ClInclude Include="const.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="goRun.h" />
     <ClInclude Include="login.h" />
     <ClInclude Include="MinHook.h" />
     <ClInclude Include="npc.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="skill.h" />
     <ClInclude Include="sys.h" />
   </ItemGroup>
   <ItemGroup>
@@ -173,7 +173,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="skill.cpp" />
     <ClCompile Include="sys.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
