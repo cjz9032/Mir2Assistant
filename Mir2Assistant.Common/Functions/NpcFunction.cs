@@ -916,7 +916,7 @@ namespace Mir2Assistant.Common.Functions
                         // 判断是否存在
                         // len [[0x74350C]+0x00000C5C]+08
                         menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
-                        (int)GameState.MirConfig["菜单偏移1"], (int)GameState.MirConfig["菜单偏移2"])));
+                        (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
                         if (menuListLen > 0)
                         {
                             break;
@@ -927,7 +927,7 @@ namespace Mir2Assistant.Common.Functions
                     {
                         continue;
                     }
-                    var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0xC6C);
+                    var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
                     memoryUtils.WriteInt(addr, 0);
                     await Task.Delay(300);
                     SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
