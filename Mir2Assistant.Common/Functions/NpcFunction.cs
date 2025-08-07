@@ -172,7 +172,7 @@ namespace Mir2Assistant.Common.Functions
                 for (int i = 0; i < 1; i++)
                 {
                     var memoryUtils = gameInstance!.memoryUtils!;
-                    var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
+                    var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0xC6C);
                     memoryUtils.WriteInt(addr, i);
                     await Task.Delay(300);
                     SendMirCall.Send(gameInstance, 3006, new nint[] { i });
@@ -915,7 +915,7 @@ namespace Mir2Assistant.Common.Functions
                         await Task.Delay(1000);
                         // 判断是否存在
                         // len [[0x74350C]+0x00000C5C]+08
-                        menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(0x74350C, 0x00000C5C, 08)));
+                        menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0x00000C5C, 08)));
                         if (menuListLen > 0)
                         {
                             break;
@@ -926,7 +926,7 @@ namespace Mir2Assistant.Common.Functions
                     {
                         continue;
                     }
-                    var addr = memoryUtils.GetMemoryAddress(0x74350C, 0xC6C);
+                    var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0xC6C);
                     memoryUtils.WriteInt(addr, 0);
                     await Task.Delay(300);
                     SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });

@@ -16,7 +16,7 @@ public static class CharacterStatusFunction
         {
             return;
         }
-        var bagBaseAddr = gameInstance!.memoryUtils!.ReadToInt(0x00679940);
+        var bagBaseAddr = (int)GameState.MirConfig["背包基址"];
         ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
     }
 
@@ -55,7 +55,7 @@ public static class CharacterStatusFunction
 
         var chats = new List<string>();
         var memoryUtils = gameInstance!.memoryUtils!;
-        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x679E18, 0, 0x1C));
+        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["对话框基址"], 0x1C));
         var count = memoryUtils.ReadToInt(chatAddr + 0x30);
         var chatArrayAddr = memoryUtils.ReadToInt(chatAddr + 0x2C);
         int takeCount = Math.Min(count, 100);
@@ -98,8 +98,14 @@ public static class CharacterStatusFunction
     public static void AdjustAttackSpeed(MirGameInstanceModel gameInstance, int attackSpeed)
     {
         var memoryUtils = gameInstance.memoryUtils!;
-        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(0x679B78, 0) , attackSpeed);
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["攻速基址"]), attackSpeed);
     }
+     public static void AdjustMoveSpeed(MirGameInstanceModel gameInstance, int attackSpeed)
+    {
+        var memoryUtils = gameInstance.memoryUtils!;
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["移速基址"]), attackSpeed);
+    }
+
 
 }
 

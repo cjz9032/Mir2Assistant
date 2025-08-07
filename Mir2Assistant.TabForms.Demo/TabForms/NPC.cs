@@ -78,9 +78,6 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            var memoryUtils = GameInstance!.memoryUtils!;
-
-
             var scrollOffset = listBox1.TopIndex;
             npcs.Clear();
             foreach (var item in GameInstance!.Monsters.Values.Where(o => o.TypeStr == "NPC"))

@@ -141,21 +141,6 @@ namespace Mir2Assistant.TabForms.Demo
         {
 
             SendMirCall.Send(GameInstance!, 1, new nint[] {});
-
-            //SendMirCall.Send(GameInstance!, 9999,
-            //AsmUtils.Init(GameInstance!.MirPid)
-            //   .Push6A(0)
-            //   .Push6A(0)
-            //   .Push6A(0)
-            //   .Push6A(0)
-            //   .Mov_EAX((int)GameInstance.MirConfig["通用参数"])
-            //   .Mov_EAX_DWORD_Ptr_EAX()
-            //   .Mov_EAX_DWORD_Ptr_EAX()
-            //   .Mov_ECX(0)
-            //   .Mov_EDX(0x11B2)
-            //   .Mov_EBX((int)GameInstance!.MirConfig["对话CALL地址"])
-            //   .Call_EBX()
-            //   .GetAsmCode());
         }
 
         private void buttonGroup_Click(object sender, EventArgs e)

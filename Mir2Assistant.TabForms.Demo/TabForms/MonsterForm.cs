@@ -60,7 +60,6 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var memoryUtils = GameInstance!.memoryUtils!;
             if (listBox1.SelectedItems.Count > 0)
             {
                 var monster = listBox1.SelectedItems?[0] as MonsterModel;

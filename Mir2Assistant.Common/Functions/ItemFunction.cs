@@ -66,7 +66,7 @@ namespace Mir2Assistant.Common.Functions
             // drops
             // -- looks +8
             var memoryUtils = gameInstance!.memoryUtils!;
-            var dropsAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(0x7524D0));
+            var dropsAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["地物数组"]));
             var count = memoryUtils.ReadToInt(dropsAddr + 0x8);
             var dropsArrayAddr = memoryUtils.ReadToInt(dropsAddr + 0x4);
             ++gameInstance.DropsItemsUpdateId;
