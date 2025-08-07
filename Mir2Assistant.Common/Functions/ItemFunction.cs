@@ -16,7 +16,7 @@ namespace Mir2Assistant.Common.Functions
                 //}
                 gameInstance.IsReadingItems = true;
                 var memoryUtils = gameInstance!.memoryUtils!;
-                int itemSize = 0x80; // 每个item占80字节
+                int itemSize = (int)GameState.MirConfig["物品SIZE"]; // 每个item占80字节
 
                 for (int i = 0; i < targetItems.Count; i++)
                 {
@@ -27,7 +27,7 @@ namespace Mir2Assistant.Common.Functions
                     
                     if (!item.IsEmpty)
                     {
-                        item.Id = memoryUtils.ReadToInt(itemAddr + 0x74);
+                        item.Id = memoryUtils.ReadToInt(itemAddr + (int)GameState.MirConfig["物品ID"]);
                         if (nameLength > 0)
                         {
                             item.Name = memoryUtils.ReadToString(itemAddr + 1, nameLength);
@@ -36,10 +36,17 @@ namespace Mir2Assistant.Common.Functions
                         {
                             item.Name = string.Empty;
                         }
-                        item.GodPts = memoryUtils.ReadToInt(itemAddr + 0x7C);
+                        if (GameState.MirConfig["物品极品点"] > 0)
+                        {
+                            item.GodPts = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品极品点"]);
+                        }
+                        else
+                        {
+                            item.GodPts = 0;
+                        }
                         item.IsGodly = item.GodPts > 0;
-                        item.Duration = memoryUtils.ReadToShort(itemAddr + 0x78)/100;
-                        item.MaxDuration = memoryUtils.ReadToShort(itemAddr + 0x7A)/100;
+                        item.Duration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品持久"])/100;
+                        item.MaxDuration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品最大持久"])/100;
                         item.stdMode = memoryUtils.ReadToInt8(itemAddr + 0xF);
                         item.addr = itemAddr;
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + 0x24);
@@ -84,9 +91,13 @@ namespace Mir2Assistant.Common.Functions
                 }
                 item.UpdateId = gameInstance.DropsItemsUpdateId;
                 item.Id = id;
-                byte nameLength = memoryUtils.ReadToInt8(itemAddr+0x24);
-                item.Name = memoryUtils.ReadToString(itemAddr + 0x25, nameLength);
-                item.GodPts = memoryUtils.ReadToInt8(itemAddr + 0x54);
+                byte nameLength = memoryUtils.ReadToInt8(itemAddr+GameState.MirConfig["地物NAME偏移"]);
+                item.Name = memoryUtils.ReadToString(itemAddr + GameState.MirConfig["地物NAME偏移"] + 1, nameLength);
+                if(GameState.MirConfig["地物极品点"] > 0){
+                    item.GodPts = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["地物极品点"]);
+                }else{
+                    item.GodPts = 0;
+                }
                 item.IsGodly = item.GodPts > 0;
 
                 item.X = memoryUtils.ReadToShort(itemAddr + 0x4);
@@ -112,7 +123,7 @@ namespace Mir2Assistant.Common.Functions
             }
             // var sw = Stopwatch.StartNew();
 
-            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] + 0x80*6, gameInstance.Items);
+            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] + ((int)GameState.MirConfig["物品SIZE"]*6), gameInstance.Items);
             ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] , gameInstance.QuickItems);
             // sw.Stop();
             // Log.Debug($"读取背包耗时: {sw.ElapsedMilliseconds}ms, 物品数量: {gameInstance.Items.Count}");
