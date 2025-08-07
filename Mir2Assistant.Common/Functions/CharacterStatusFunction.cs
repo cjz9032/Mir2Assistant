@@ -55,7 +55,7 @@ public static class CharacterStatusFunction
 
         var chats = new List<string>();
         var memoryUtils = gameInstance!.memoryUtils!;
-        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["对话框基址"], 0x1C));
+        var chatAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["TDrawScreen"], 0x1C));
         var count = memoryUtils.ReadToInt(chatAddr + 0x30);
         var chatArrayAddr = memoryUtils.ReadToInt(chatAddr + 0x2C);
         int takeCount = Math.Min(count, 100);
