@@ -915,7 +915,7 @@ namespace Mir2Assistant.Common.Functions
                         await Task.Delay(1000);
                         // 判断是否存在
                         // len [[0x74350C]+0x00000C5C]+08
-                        menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0x00000C5C, 08)));
+                        menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["菜单偏移1"], 08)));
                         if (menuListLen > 0)
                         {
                             break;
