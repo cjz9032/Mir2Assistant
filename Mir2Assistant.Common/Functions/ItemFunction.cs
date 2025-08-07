@@ -111,8 +111,9 @@ namespace Mir2Assistant.Common.Functions
                 return;
             }
             // var sw = Stopwatch.StartNew();
-            ReadItems(gameInstance, 0x007531E8, gameInstance.Items);
-            ReadItems(gameInstance, 0x007531E8 - 0x80 * 6, gameInstance.QuickItems);
+
+            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] + 0x80*6, gameInstance.Items);
+            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] , gameInstance.QuickItems);
             // sw.Stop();
             // Log.Debug($"读取背包耗时: {sw.ElapsedMilliseconds}ms, 物品数量: {gameInstance.Items.Count}");
         }

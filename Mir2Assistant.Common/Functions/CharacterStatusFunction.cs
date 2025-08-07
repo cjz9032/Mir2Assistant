@@ -16,7 +16,7 @@ public static class CharacterStatusFunction
         {
             return;
         }
-        var bagBaseAddr = (int)GameState.MirConfig["背包基址"];
+        var bagBaseAddr = (int)GameState.MirConfig["装备基址"];
         ItemFunction.ReadItems(gameInstance, bagBaseAddr, gameInstance.CharacterStatus!.useItems);
     }
 
