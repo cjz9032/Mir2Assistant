@@ -29,17 +29,16 @@ public static class CharacterStatusFunction
         var status = gameInstance.CharacterStatus!;
         var memoryUtils = gameInstance.memoryUtils!;
 
-
-        status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x34, 0));
+        status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物NAME偏移"]));
         status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图基址"], 0));
         status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图ID基址"], 0x2AE8C, 0));
-        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
-        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
-        status.CurrentHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x48));
-        status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4C));
-        status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4A));
-        status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4E));
-        status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x3C));
+        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物X偏移"]));
+        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物Y偏移"]));
+        status.CurrentHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物CurrentHP偏移"]));
+        status.MaxHP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物MAXHP偏移"]));
+        status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物CurrentMP偏移"]));
+        status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物MAXMP偏移"]));
+        status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物LEVEL偏移"]));
         status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_MEMBER_ADDR"], 0x30));
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_ALLOW_ADDR"])) == 1;
     }
@@ -78,8 +77,8 @@ public static class CharacterStatusFunction
     {
         var status = gameInstance.CharacterStatus!;
         var memoryUtils = gameInstance.memoryUtils!;
-        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x8));
-        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0xA));
+        status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物X偏移"]));
+        status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物Y偏移"]));
     }
 
     public static void AddChat(MirGameInstanceModel gameInstance, string chat)
