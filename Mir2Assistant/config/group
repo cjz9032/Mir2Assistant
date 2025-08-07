@@ -49,11 +49,3 @@ len +30
 0064F712        mov         cx,word ptr ds:[65459C];0x3 gvar_0065459C
 0064F719        call        0059A75C +5
 
-
-发起的特征 00631C80 
-00627DD2        mov         edx,628194;'在战斗的时候你不能退出游戏'
-00627DD7        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
--- 会连续出现2次 这3个指令, 组1和组2
-00627E30        mov         edx,dword ptr [eax+30] -- 这里不是固定的
-00627E33        mov         eax,dword ptr [ebp-4]
-00627E36        call        00631C80 

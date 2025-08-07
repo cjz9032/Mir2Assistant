@@ -63,6 +63,7 @@
     #define MIR_HK_AUTO_GROUP_1_ADDR 0x638AAE
     #define MIR_HK_AUTO_GROUP_2_ADDR 0x638BD3
     #define MIR_HK_AUTO_AGREE_ADDR 00626D6A
+    #define MIR_GAME_PATH L"Client.exe"
     
 #else
     #define MIR_BU_DAO_ADDR    0x1DF76C
@@ -123,4 +124,5 @@
     #define MIR_HK_AUTO_GROUP_1_ADDR 0x64F5F4
     #define MIR_HK_AUTO_GROUP_2_ADDR 0x64F719
     #define MIR_HK_AUTO_AGREE_ADDR 0x000000
+    #define MIR_GAME_PATH L"ZC.H"
 #endif

@@ -44,7 +44,7 @@ void groupOne(DelphiString* name)
         mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
         mov eax, dword ptr [eax]
         mov esi, MIR_GROUP_ONE_CALL
-        call esi                 // ZC.H+246630
+        call esi                 
         jmp group_end
 
     group_zero:
@@ -53,7 +53,7 @@ void groupOne(DelphiString* name)
         mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
         mov eax, dword ptr [eax]
         mov esi, MIR_GROUP_TWO_CALL
-        call esi                 // ZC.H+245FF4
+        call esi                
 
     group_end:
         popfd

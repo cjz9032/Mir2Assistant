@@ -7,6 +7,7 @@
 #include <random>
 #include <string>
 
+
 // 生成随机字符串的函数
 std::wstring GenerateRandomString(int length) {
     const wchar_t charset[] = L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -138,7 +139,7 @@ __declspec(naked) void HookFunction5()
 }
 
 void InitBaseAddr() {
-    g_BaseAddr = (DWORD)GetModuleHandle(L"ZC.H");
+    g_BaseAddr = (DWORD)GetModuleHandle(MIR_GAME_PATH);
 }
 
 // 在 InitHook 函数中，使用临时变量避免直接引用 g_ActString
@@ -193,10 +194,7 @@ void InitializeBiosString() {
 }
 
 // BIOS信息伪造
-// ZC.H+243135 - 8D 45 9C              - lea eax,[ebp-64]
-// ZC.H+243138 - E8 532AFFFF           - call ZC.H+235B90
-// ZC.H+24313D - 8B 45 9C              - mov eax,[ebp-64]
-// ZC.H+243140 - 8D 55 F0              - lea edx,[ebp-10]
+// 最直接找lom2key67me3934od7sdn3
 __declspec(naked) void BiosFake()
 {
     __asm {
@@ -287,7 +285,7 @@ bool InstallHooks()
 
     // 不倒翁
     if (MIR_BU_DAO_HOOK) {
-        DWORD targetAddress1 = MIR_BU_DAO_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+        DWORD targetAddress1 = MIR_BU_DAO_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
         if (MH_CreateHook((LPVOID)targetAddress1, HookFunction, (LPVOID*)&originalFunc1) != MH_OK)
         {
             printf("hook 1 fail\n");
@@ -295,7 +293,7 @@ bool InstallHooks()
         }
     }
     // 自动跳
-    DWORD targetAddress2 = MIR_HK2_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress2 = MIR_HK2_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     if (MH_CreateHook((LPVOID)targetAddress2, HookFunction2, (LPVOID*)&originalFunc2) != MH_OK)
     {
         printf("hook 2 fail\n");
@@ -303,7 +301,7 @@ bool InstallHooks()
     }
 
     // 自动填充账号  
-    DWORD targetAddress3 = MIR_LOGIN_ACT_HOOK + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress3 = MIR_LOGIN_ACT_HOOK + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     if (MH_CreateHook((LPVOID)targetAddress3, HookFunction3, (LPVOID*)&originalFunc3) != MH_OK)
     {
         printf("hook 3 fail\n");
@@ -311,7 +309,7 @@ bool InstallHooks()
     }
 
     // 自动填充密码
-    DWORD targetAddress4 = MIR_LOGIN_PWD_HOOK + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    DWORD targetAddress4 = MIR_LOGIN_PWD_HOOK + (DWORD)GetModuleHandle(MIR_GAME_PATH);  // 根据注释中的地址
     if (MH_CreateHook((LPVOID)targetAddress4, HookFunction4, (LPVOID*)&originalFunc4) != MH_OK)
     {
         printf("hook 4 fail\n");
@@ -322,7 +320,7 @@ bool InstallHooks()
     // 目前 特征相同 
     // 消息列表找 '这个帐号正在使用，或者是被异常的终止锁定了\请稍后再试。'
 
-    DWORD targetAddress5 = MIR_HK5_ADDR + (DWORD)GetModuleHandle(L"ZC.H");  // 根据注释中的地址
+    DWORD targetAddress5 = MIR_HK5_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);  // 根据注释中的地址
     if (MH_CreateHook((LPVOID)targetAddress5, HookFunction5, (LPVOID*)&originalFunc5) != MH_OK)
     {
         printf("hook 5 fail\n");
@@ -335,14 +333,14 @@ bool InstallHooks()
     // 0072F784 超负重
     // 血量 通过组队找把
     // 6 基础属性变速等
-    // DWORD targetAddress6 = 0x2520D2 + (DWORD)GetModuleHandle(L"ZC.H"); // TODO: 替换为你的目标地址
+    // DWORD targetAddress6 = 0x2520D2 + (DWORD)GetModuleHandle(MIR_GAME_PATH); // TODO: 替换为你的目标地址
     // if (MH_CreateHook((LPVOID)targetAddress6, HookFunction6, (LPVOID*)&originalFunc6) != MH_OK)
     // {
     //     printf("hook 6 fail\n");
     //     return false;
     // }
     // // 7 又一些开关, 超负重, 不确定是否有其他
-    // DWORD targetAddress7 = 0x24A84B + (DWORD)GetModuleHandle(L"ZC.H");
+    // DWORD targetAddress7 = 0x24A84B + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     // if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
     // {
     //     printf("hook 7 fail\n");
@@ -352,12 +350,12 @@ bool InstallHooks()
     // 定义所有要跳过的弹窗
     SkipHookInfo skipHooks[] = {
 
-        {L"ZC.H", MIR_SKP_DLG1_ADDR, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
-        {L"ZC.H", MIR_SKP_DLG2_ADDR, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
-        {L"ZC.H", MIR_SKP_DLG3_ADDR, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
-        {L"ZC.H", MIR_SKP_DLG4_ADDR, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
-        {L"ZC.H", MIR_SKP_DLG5_ADDR, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
-        {L"ZC.H", MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG1_ADDR, SkipPopup, (void**)&originalFunc8, "skip_popup1"},  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG2_ADDR, SkipPopup, (void**)&originalFunc9, "skip_popup2"},  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG3_ADDR, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG4_ADDR, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG5_ADDR, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
+        {MIR_GAME_PATH, MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子
@@ -372,7 +370,7 @@ bool InstallHooks()
     }
 
     // 12 BIOS信息伪造
-    DWORD targetAddress12 = MIR_HK_BIOS_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress12 = MIR_HK_BIOS_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     if (MH_CreateHook((LPVOID)targetAddress12, BiosFake, (LPVOID*)&originalFunc12) != MH_OK)
     {
         printf("hook 12 fail\n");
@@ -380,7 +378,7 @@ bool InstallHooks()
     }
 
     // 13 跑10血
-    DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     if (MH_CreateHook((LPVOID)targetAddressHP, RunHP, (LPVOID*)&originalFuncRunHP) != MH_OK)
     {
         printf("hook 13 fail\n");
@@ -388,7 +386,7 @@ bool InstallHooks()
     }
 
     // 14 无视战斗小退
-    DWORD targetAddress14 = MIR_HK_EXIT_BATTLE_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    DWORD targetAddress14 = MIR_HK_EXIT_BATTLE_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
     if (MH_CreateHook((LPVOID)targetAddress14, ExitBattle, (LPVOID*)&originalFuncExitBattle) != MH_OK)
     {
         printf("hook 14 fail\n");
@@ -396,14 +394,14 @@ bool InstallHooks()
     }
 
      // 15 自动接受组1
-     DWORD targetAddress15 = MIR_HK_AUTO_GROUP_1_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+     DWORD targetAddress15 = MIR_HK_AUTO_GROUP_1_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
      if (MH_CreateHook((LPVOID)targetAddress15, AutoGroup1, (LPVOID*)&originalFuncAutoGroup1) != MH_OK)
      {
          printf("hook 14 fail\n");
          return false;
      }
      // 16 自动接受组2
-     DWORD targetAddress16 = MIR_HK_AUTO_GROUP_2_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+     DWORD targetAddress16 = MIR_HK_AUTO_GROUP_2_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
      if (MH_CreateHook((LPVOID)targetAddress16, AutoGroup2, (LPVOID*)&originalFuncAutoGroup2) != MH_OK)
      {
          printf("hook 16 fail\n");
@@ -411,7 +409,7 @@ bool InstallHooks()
      }
      // 17 小退自动同意
     if (!MIR_BU_DAO_HOOK) {
-        DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+        DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + (DWORD)GetModuleHandle(MIR_GAME_PATH);
         if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
         {
             printf("hook 17 fail\n");
