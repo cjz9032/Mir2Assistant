@@ -36,12 +36,22 @@ namespace Mir2Assistant
 
                 GameState.GameInstances.Add(gameInstance);
             }
+            var clg = "new";
+            // 注释我
+            clg = "old";
 
-            var cfgVer = "2.1.0.1230.ini";
-            // var cfgVer = "2.1.0.1226.ini";
+            var cfgVer = "";
+            if (clg == "new")
+            {
+                cfgVer = "2.1.0.1230.ini";
+            }
+            else
+            {
+                cfgVer = "2.1.0.1226.ini";
+            }
 
             var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config", cfgVer);
-            var cfgStr = File.ReadAllText(configPath, System.Text.Encoding.GetEncoding("utf8"));
+            var cfgStr = File.ReadAllText(configPath);
 
             foreach (var cfg in cfgStr.Split('\n'))
             {
@@ -52,17 +62,17 @@ namespace Mir2Assistant
             }
             if (cfgVer == "2.1.0.1230.ini")
             {
-                gamePath = "ZC.H";
-                gameDirectory = @"G:\cq\cd";
-                encodeArgMainLarge = @"kfOoahYhb3fG+gA4fSangPnDCxTkr4MFKyoW9LH4W28SVhlJvRGmm3gS9BTJKj1XXKvbBY2jXq7Oijy5Ndyrl26OkaL1VZhHlhVKhSCUYve1TH9GgI4qZyM4JQPJeGhjP37oFxARRsxzev4HbOsulCkXoRO0uL5VGX7T5vIiCZRE9nhbDDW4H34zLNXwBQGoml/S2EcHXUyIndJnOMyddNYzS1zAJFKTPwhE6mOZXoIhO2cOuNhGVepTwwsJDAiPg68l5nHGkAG7SGqD2JP5GALD/LP7noJKKjFT3Y+fo4gvF4YR+U0fMwyDPu8kkpZ3/V3AOUpFHJvBoAd878ebSCCKxEYvgKFN/W0J1UzoN4wzeoX9zR/GjiENNDH/EYf9/GutWxwxMm9IcXHWnnTnffdoxxLaWX95NEyCLtEi7+7fF2gM1YTIAwG3Nyd26oj3WkabRDygpttgLbVpLKuffRFiuvoJdGIYkcjF2uC/mK4lXGupfWN9Ieh1Mpr4lk8O90FMLHwVOVTdGxYva+N91uCw3hzpRrJaojwCWLVfPHJznl+7emqylU0l9/4dzdNfdpSKDryBlGg1hqHGGXgQ5RJ02VMNeQSHpqflOx/XuSjaNvKUTsqnl55iP2gQ4ntEM4hM9WBjeX6/guFChBXVDet6rwXMf7GZJvQIpg3btjFjcMKrXqyWhdFaNmz9uabWf4neA8C06+y8aBcPDgEQX7Uin98WLKTHKKb00AZYxNuT2yfTOzzJavnCn2kSGmj8sk5I1kZr8dTcVo2gdC77o8kCuY4dtGbqOExFv6RFNtrIwywUv6pSFN9DsSvKWzwiJwjn+2YqzZxJitB1t07y8ByRygWbvpCqmb9jqS+MWX9zn/ZGnb61JjJVFZDdHUyq1URBz+Q1tOj8bJ1o5aGi3cQbG0v00oH66+uOXzVXNlHbkDy6Y5nyUBY39TLHFelJDlBgI68D6QLx21rwk3nzV2HqTbQX+4JaJMCkH0xd3GLbh8QV2M5u6gDWfr+MXyWM";
-                encodeArgOtherSmall = @"4V/1bwu8lqrZMQVVO1BIYDHyVWUSBU7O08Cx4QUu4TRozkhjtCiplv/eCIDhcjJ9ZbfM2+f7XHWNpGdCVOgKjqnEHHweuCVM3AldA0HoF0IPD70w9Xd8WYRe3SnhSlS409969oAOQRrSOqNvCAWjZYt/ICyYM6igVotv9RzLSL3azgJZN/qdECOu7KCnxeva/XBAixA7h3XBvMggke6e698XwXFs0ISyNrSj+oFvw8rk02uRodUagCowmh8cGib9QpcFxrK1TuUJKgRbqK03QcN+pLSxrq8e+UwtamASEFM3wnQPB6K+pMtOZOkcrr8+Kd7klYlXBRrYbT8hvYQ8eF0WgbOEN4KzThDOXMa0INxVX94UxemyUhXIGJGOAN3yIWhy9jYBR9PbZ+yFvtTo0Alz5GmAvQV2zONMZeeI9RleWewtwRBjMwraS8XCwJfHgyS6nZNmEfVQmULQmCC2Ow9MSFbYBloawb9aNqBgS2esl6djUA3y4+ozQjcW9AdN+WJMeWYUAQGIkQ7GVYQFi5LiXYmmev7WvezzjXin7NtYoRKkTMPtnfqLTwHBueeO5adtlz2RlgN5cte47l6fBgsTh23OHcJqT8cuJv99C9deLIDWFNY1/+8HFw8X2fPJvVgJNRJKMULWV4iQ3KgmU75ZLp+QAxTGJrQA5bicxCU30mjIaY+vCD2HPznaUugskIBLSWk4q47lDR0e8DtqH/Bf00rW0s/ymd9CouAufsDWw2tRIHD+iFaFZc5UoLCHpuZK77neQNjrydJyg6077Hrxf5yZOfdlUzUWKTzdgblCAMLXApPX1TSNedsrwgBpP55O0CLaEgr4l5xPFwPtYAX289hd6JLmopEehIzrFPyJc2awmn5A/ST2wukLdySweiKjShHk2BWRXYYkxxI0xM4pIFEIkPujKWimzNeXfSMeKrjb+TGbIQDauvVMhUhMHqZ8mu33XeaQezUyfSttDjpTjzGpaxVEcoRtb/QLHGBGY9GrpLMWpu1FbeyJHeUv";
-            }
-            else
-            {
-                gamePath = "Client.exe";
+                gamePath = @"Client.exe";
                 gameDirectory = @"G:\cq\cs";
                 encodeArgMainLarge = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
                 encodeArgOtherSmall = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
+            }
+            else
+            {
+                gamePath = @"ZC.H";
+                gameDirectory = @"G:\cq\cd";
+                encodeArgMainLarge = @"kfOoahYhb3fG+gA4fSangPnDCxTkr4MFKyoW9LH4W28SVhlJvRGmm3gS9BTJKj1XXKvbBY2jXq7Oijy5Ndyrl26OkaL1VZhHlhVKhSCUYve1TH9GgI4qZyM4JQPJeGhjP37oFxARRsxzev4HbOsulCkXoRO0uL5VGX7T5vIiCZRE9nhbDDW4H34zLNXwBQGoml/S2EcHXUyIndJnOMyddNYzS1zAJFKTPwhE6mOZXoIhO2cOuNhGVepTwwsJDAiPg68l5nHGkAG7SGqD2JP5GALD/LP7noJKKjFT3Y+fo4gvF4YR+U0fMwyDPu8kkpZ3/V3AOUpFHJvBoAd878ebSCCKxEYvgKFN/W0J1UzoN4wzeoX9zR/GjiENNDH/EYf9/GutWxwxMm9IcXHWnnTnffdoxxLaWX95NEyCLtEi7+7fF2gM1YTIAwG3Nyd26oj3WkabRDygpttgLbVpLKuffRFiuvoJdGIYkcjF2uC/mK4lXGupfWN9Ieh1Mpr4lk8O90FMLHwVOVTdGxYva+N91uCw3hzpRrJaojwCWLVfPHJznl+7emqylU0l9/4dzdNfdpSKDryBlGg1hqHGGXgQ5RJ02VMNeQSHpqflOx/XuSjaNvKUTsqnl55iP2gQ4ntEM4hM9WBjeX6/guFChBXVDet6rwXMf7GZJvQIpg3btjFjcMKrXqyWhdFaNmz9uabWf4neA8C06+y8aBcPDgEQX7Uin98WLKTHKKb00AZYxNuT2yfTOzzJavnCn2kSGmj8sk5I1kZr8dTcVo2gdC77o8kCuY4dtGbqOExFv6RFNtrIwywUv6pSFN9DsSvKWzwiJwjn+2YqzZxJitB1t07y8ByRygWbvpCqmb9jqS+MWX9zn/ZGnb61JjJVFZDdHUyq1URBz+Q1tOj8bJ1o5aGi3cQbG0v00oH66+uOXzVXNlHbkDy6Y5nyUBY39TLHFelJDlBgI68D6QLx21rwk3nzV2HqTbQX+4JaJMCkH0xd3GLbh8QV2M5u6gDWfr+MXyWM";
+                encodeArgOtherSmall = @"4V/1bwu8lqrZMQVVO1BIYDHyVWUSBU7O08Cx4QUu4TRozkhjtCiplv/eCIDhcjJ9ZbfM2+f7XHWNpGdCVOgKjqnEHHweuCVM3AldA0HoF0IPD70w9Xd8WYRe3SnhSlS409969oAOQRrSOqNvCAWjZYt/ICyYM6igVotv9RzLSL3azgJZN/qdECOu7KCnxeva/XBAixA7h3XBvMggke6e698XwXFs0ISyNrSj+oFvw8rk02uRodUagCowmh8cGib9QpcFxrK1TuUJKgRbqK03QcN+pLSxrq8e+UwtamASEFM3wnQPB6K+pMtOZOkcrr8+Kd7klYlXBRrYbT8hvYQ8eF0WgbOEN4KzThDOXMa0INxVX94UxemyUhXIGJGOAN3yIWhy9jYBR9PbZ+yFvtTo0Alz5GmAvQV2zONMZeeI9RleWewtwRBjMwraS8XCwJfHgyS6nZNmEfVQmULQmCC2Ow9MSFbYBloawb9aNqBgS2esl6djUA3y4+ozQjcW9AdN+WJMeWYUAQGIkQ7GVYQFi5LiXYmmev7WvezzjXin7NtYoRKkTMPtnfqLTwHBueeO5adtlz2RlgN5cte47l6fBgsTh23OHcJqT8cuJv99C9deLIDWFNY1/+8HFw8X2fPJvVgJNRJKMULWV4iQ3KgmU75ZLp+QAxTGJrQA5bicxCU30mjIaY+vCD2HPznaUugskIBLSWk4q47lDR0e8DtqH/Bf00rW0s/ymd9CouAufsDWw2tRIHD+iFaFZc5UoLCHpuZK77neQNjrydJyg6077Hrxf5yZOfdlUzUWKTzdgblCAMLXApPX1TSNedsrwgBpP55O0CLaEgr4l5xPFwPtYAX289hd6JLmopEehIzrFPyJc2awmn5A/ST2wukLdySweiKjShHk2BWRXYYkxxI0xM4pIFEIkPujKWimzNeXfSMeKrjb+TGbIQDauvVMhUhMHqZ8mu33XeaQezUyfSttDjpTjzGpaxVEcoRtb/QLHGBGY9GrpLMWpu1FbeyJHeUv";
             }
             
             

@@ -40,8 +40,8 @@ public static class CharacterStatusFunction
         status.CurrentMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4A));
         status.MaxMP = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x4E));
         status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], 0x3C));
-        status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563CC, 0x30));
-        status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(0x7563C8)) == 1;
+        status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_MEMBER_ADDR"], 0x30));
+        status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_ALLOW_ADDR"])) == 1;
     }
 
     public static void ReadChats(MirGameInstanceModel gameInstance, bool force = false)

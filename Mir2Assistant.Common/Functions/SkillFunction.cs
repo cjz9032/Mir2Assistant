@@ -50,13 +50,4 @@ public static class SkillFunction
 
 
 
-
-    /// <summary>
-    /// 技能CAll
-    /// </summary>
-    public static void SkillCall(MirGameInstanceModel gameInstance, int skillAddr)
-    {
-        SendMirCall.Send(gameInstance, 2001, [skillAddr, GameState.MirConfig["技能CALL地址"]]);
-    }
-
 }

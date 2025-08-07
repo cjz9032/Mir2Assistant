@@ -69,15 +69,15 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                     MonsterFunction.LockMonster(GameInstance!, monster.Addr);
                 }
             }
-            if (listBox2.SelectedItems.Count > 0)
-            {
-                var skill = listBox2.SelectedItems[0] as SkillModel;
-                if (skill != null)
-                {
-                    SkillFunction.SkillCall(GameInstance, skill.Addr!.Value);
+            // if (listBox2.SelectedItems.Count > 0)
+            // {
+            //     var skill = listBox2.SelectedItems[0] as SkillModel;
+            //     if (skill != null)
+            //     {
+            //         SkillFunction.SkillCall(GameInstance, skill.Addr!.Value);
 
-                }
-            }
+            //     }
+            // }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
