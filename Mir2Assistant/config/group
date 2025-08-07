@@ -26,42 +26,28 @@ ZC.H+1B71FC - E8 43ED0800           - call ZC.H+245F44
 [7563CC] -- C 006507FD '该名字不在编组中。' 下一个TStringList
 len +30
 
-被邀请2处. 自动组先
-111
-ZC.H+24F5E0 - 8B 95 08F9FFFF        - mov edx,[ebp-000006F8]
-ZC.H+24F5E6 - A1 28A76700           - mov eax,[ZC.H+27A728] { (0074350C) }
-ZC.H+24F5EB - 8B 00                 - mov eax,[eax]
-ZC.H+24F5ED - 66 8B 0D 9C456500     - mov cx,[ZC.H+25459C] { (3) }
+自动组
+组1
+从消息列表找 邀请您加入队伍，是否同意？
+0064F5D3        mov         ecx,654580;'邀请您加入队伍，是否同意？'
+0064F5D8        mov         edx,dword ptr [ebp-24]
+0064F5DB        call        @UStrCat3
+0064F5E0        mov         edx,dword ptr [ebp-6F8]
+0064F5E6        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0064F5EB        mov         eax,dword ptr [eax]
+0064F5ED        mov         cx,word ptr ds:[65459C];0x3 gvar_0065459C
+0064F5F4        call        0059A75C +5
 
-ZC.H+24F5F4 - E8 63B1F4FF           - call ZC.H+19A75C 
-ZC.H+24F5F9 - 83 F8 06              - cmp eax,06 { 6 }
-ZC.H+24F5FC - 75 1D                 - jne ZC.H+24F61B
-
-ZC.H+24F5F4 - 90 90909090
-ZC.H+24F5F9 - 83 F8 06              - cmp eax,06 { 6 }
-ZC.H+24F5FC - 74 1D                 - je ZC.H+24F61B
-
-222
-ZC.H+24F712 - 66 8B 0D 9C456500     - mov cx,[ZC.H+25459C] { (3) }
-ZC.H+24F719 - E8 3EB0F4FF           - call ZC.H+19A75C
-ZC.H+24F71E - 83 F8 06              - cmp eax,06 { 6 }
-ZC.H+24F721 - 75 1D                 - jne ZC.H+24F740
-replaced
-90 90909090
-83 F8 06
-74 1D
-
-
-// 自动的 应该是同意了, 不用管
-ZC.H+24F5FE - 6A 00                 - push 00 { 0 }
-ZC.H+24F600 - 6A 00                 - push 00 { 0 }
-ZC.H+24F602 - 6A 00                 - push 00 { 0 }
-ZC.H+24F604 - 8B 45 DC              - mov eax,[ebp-24]
-ZC.H+24F607 - 50                    - push eax
-ZC.H+24F608 - 33 C9                 - xor ecx,ecx
-ZC.H+24F60A - BA 3C040000           - mov edx,0000043C { 1084 }
-ZC.H+24F60F - A1 B4247500           - mov eax,[ZC.H+3524B4] { (02E97990) }
-ZC.H+24F614 - E8 9F2FFFFF           - call ZC.H+2425B8
+组2
+从消息列表找 邀请您加入队伍，是否同意？
+0064F6F8        mov         ecx,654580;'邀请您加入队伍，是否同意？'
+0064F6FD        mov         edx,dword ptr [ebp-24]
+0064F700        call        @UStrCat3
+0064F705        mov         edx,dword ptr [ebp-704]
+0064F70B        mov         eax,[0067A728];^gvar_0074350C:TFrmDlg
+0064F710        mov         eax,dword ptr [eax]
+0064F712        mov         cx,word ptr ds:[65459C];0x3 gvar_0065459C
+0064F719        call        0059A75C +5
 
 
 发起的特征 00631C80 

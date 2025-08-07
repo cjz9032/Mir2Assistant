@@ -43,6 +43,12 @@ OriginalFuncType originalFunc11 = NULL;
 OriginalFuncType originalFunc111 = NULL;
 OriginalFuncType originalFunc112 = NULL;
 OriginalFuncType originalFunc12 = NULL;
+OriginalFuncType originalFuncRunHP = NULL;
+OriginalFuncType originalFuncExitBattle = NULL;
+OriginalFuncType originalFuncAutoGroup1 = NULL;
+OriginalFuncType originalFuncAutoGroup2 = NULL;
+OriginalFuncType originalFuncAutoAgree = NULL;
+
 
 __declspec(naked) void HookFunction()
 {
@@ -200,6 +206,53 @@ __declspec(naked) void BiosFake()
     }
 }
 
+__declspec(naked) void RunHP()
+{
+    __asm {
+        mov eax, 1
+        sub eax, 0
+        mov eax, originalFuncRunHP
+        add eax, 5
+        jmp eax
+    }
+}
+
+__declspec(naked) void ExitBattle()
+{
+    __asm {
+        mov eax, originalFuncExitBattle
+        add eax, 2
+        jmp eax
+    }
+}
+
+__declspec(naked) void AutoGroup1()
+{
+    __asm {
+        mov eax, originalFuncAutoGroup1
+        add eax, 5
+        jmp eax
+    }
+}
+
+__declspec(naked) void AutoGroup2()
+{
+    __asm {
+        mov eax, originalFuncAutoGroup2
+        add eax, 5
+        jmp eax
+    }
+}
+
+__declspec(naked) void AutoAgree()
+{
+    __asm {
+        mov eax, originalFuncAutoAgree
+        add eax, 8
+        jmp eax
+    }
+}
+
 
 __declspec(naked) void SkipPopup()
 {
@@ -325,7 +378,46 @@ bool InstallHooks()
         printf("hook 12 fail\n");
         return false;
     }
-    
+
+    // 13 跑10血
+    DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    if (MH_CreateHook((LPVOID)targetAddressHP, RunHP, (LPVOID*)&originalFuncRunHP) != MH_OK)
+    {
+        printf("hook 13 fail\n");
+        return false;
+    }
+
+    // 14 无视战斗小退
+    DWORD targetAddress14 = MIR_HK_EXIT_BATTLE_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+    if (MH_CreateHook((LPVOID)targetAddress14, ExitBattle, (LPVOID*)&originalFuncExitBattle) != MH_OK)
+    {
+        printf("hook 14 fail\n");
+        return false;
+    }
+
+     // 15 自动接受组1
+     DWORD targetAddress15 = MIR_HK_AUTO_GROUP_1_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+     if (MH_CreateHook((LPVOID)targetAddress15, AutoGroup1, (LPVOID*)&originalFuncAutoGroup1) != MH_OK)
+     {
+         printf("hook 14 fail\n");
+         return false;
+     }
+     // 16 自动接受组2
+     DWORD targetAddress16 = MIR_HK_AUTO_GROUP_2_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+     if (MH_CreateHook((LPVOID)targetAddress16, AutoGroup2, (LPVOID*)&originalFuncAutoGroup2) != MH_OK)
+     {
+         printf("hook 16 fail\n");
+         return false;
+     }
+     // 17 小退自动同意
+    if (!MIR_BU_DAO_HOOK) {
+        DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + (DWORD)GetModuleHandle(L"ZC.H");
+        if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
+        {
+            printf("hook 17 fail\n");
+            return false;
+        }
+    }
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {

@@ -58,7 +58,12 @@ died 28 B
 ZC.H+23A5CE - 0F8CE6000000         - jl ZC.H+23A6BA
 ZC.H+23A5CE - 0F8DE6000000         - jnl ZC.H+23A6BA
 
-
+跑10血 特征码 83 C4 F8             89 45 FC             C7 45 F8 01000000    8B 45 FC            
+005D338A        mov         dword ptr [ebp-4],eax
+005D338D        mov         dword ptr [ebp-8],1
+005D3394        mov         eax,dword ptr [ebp-4]
+005D3397        cmp         word ptr [eax+44],0A -- 跳过 + 5
+005D339C>       jae         005D33A7
 
 
 

@@ -30,7 +30,7 @@ mov eax,[0x7524B4]
 call 0x642524
 
 
-小腿
+小腿无dlg
 pushad
 pushfd
 mov eax,[0x7524B4]
@@ -42,27 +42,15 @@ popad
 ZC.H+19A7D9 - 8B 80 24060000        - mov eax,[eax+00000624]
 ZC.H+19A7DF - B9 7D010000           - mov ecx,0000017D { 381 }
 
-// 这个不好找, 根据dlg找
-ZC.H+2399C1 - 55                    - push ebp
-ZC.H+2399C2 - 68 DD9A6300           - push ZC.H+239ADD { (233) }
-ZC.H+2399C7 - 64 FF 30              - push fs:[eax]
-ZC.H+2399CA - 64 89 20              - mov fs:[eax],esp
-ZC.H+2399CD - A1 28A76700           - mov eax,[ZC.H+27A728] { (0074350C) }
-ZC.H+2399D2 - 8B 00                 - mov eax,[eax]
-ZC.H+2399D4 - 66 8B 0D E89A6300     - mov cx,[ZC.H+239AE8] { (12) }
-ZC.H+2399DB - BA F89A6300           - mov edx,ZC.H+239AF8 { (1626562728) }
-ZC.H+2399E0 - E8 770DF6FF           - call ZC.H+19A75C -- 小退补丁
-ZC.H+2399E5 - 48                    - dec eax  -- 小退补丁
-ZC.H+2399E6 - 0F85 D3000000         - jne ZC.H+239ABF  -- 小退补丁
-ZC.H+2399EC - 33 D2                 - xor edx,edx
-ZC.H+2399EE - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+2399F1 - 8B 80 B8030000        - mov eax,[eax+000003B8]
-ZC.H+2399F7 - E8 3C31E7FF           - call ZC.H+ACB38
-ZC.H+2399FC - 33 D2                 - xor edx,edx
-ZC.H+2399FE - 8B 45 FC              - mov eax,[ebp-04]
-ZC.H+239A01 - E8 AE070100           - call ZC.H+24A1B4
-ZC.H+239A06 - 33 C9                 - xor ecx,ecx
+// 小退自动同意 特征码 E8 D9 7E F6 FF 48 75 59 +8跳过 只有2可以, 1客户端好像还不一样
 
+小退战斗退出补丁
+特征 74 1C 6A 00 6A 00 6A 00
+0063AC9D        cmp         byte ptr [eax+28],0
+0063ACA1>       je          0063ACBF
+0063ACA3        push        0
+0063ACA5        push        0
+0063ACA7        push        0
 
 
 _Unit101.TFrmMain.FormKeyDown
