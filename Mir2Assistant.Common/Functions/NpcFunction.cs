@@ -48,7 +48,7 @@ namespace Mir2Assistant.Common.Functions
 
             var memoryUtil = gameInstance!.memoryUtils!;
             var base2 = memoryUtil.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0);
-            var prevAddr2 = memoryUtil.GetMemoryAddress(base2) + 0xC40;
+            var prevAddr2 = memoryUtil.GetMemoryAddress(base2) + GameState.MirConfig["NPC对话偏移"];
             var prevAddr = memoryUtil.GetMemoryAddress(prevAddr2, 0);
             nint resAddr = 0;
             if (!await TaskWrapper.Wait(() =>
@@ -143,7 +143,7 @@ namespace Mir2Assistant.Common.Functions
         public async static Task BuyLZ(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             if (GameState.gamePath == "Client") return;
-            
+
             gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", "火把", 1);
             // 查看背包有没火把 没有就买一个
             if (gameInstance.Items.Where(o => o.Name == "火把").Count() < 1)
