@@ -640,6 +640,7 @@ namespace Mir2Assistant
                     data[data.Length - 1] = meat.Id;
                     SendMirCall.Send(instanceValue!, 3011, data);
                     await Task.Delay(500);
+                    instanceValue!.memoryUtils.WriteByte(meat.addr, 0);
                 }
 
                 await Task.Delay(500);
