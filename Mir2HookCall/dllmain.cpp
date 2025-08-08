@@ -372,13 +372,11 @@ bool InstallHooks()
          return false;
      }
      // 17 小退自动同意
-    if (!MIR_BU_DAO_HOOK) {
-        DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + g_BaseAddr;
-        if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
-        {
-            printf("hook 17 fail\n");
-            return false;
-        }
+    DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + g_BaseAddr;
+    if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
+    {
+        printf("hook 17 fail\n");
+        return false;
     }
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
