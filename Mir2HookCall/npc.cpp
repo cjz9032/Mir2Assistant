@@ -216,7 +216,7 @@ void talk2(DelphiString* cmd)
 
 	    mov ecx, eax
 
-		mov edx, dword ptr ds : [MIC_G_NPC_ID]
+		mov edx, dword ptr ds:[MIC_G_NPC_ID]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov ecx, cmdData

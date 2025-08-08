@@ -181,45 +181,50 @@ __declspec(naked) void RunHP()
     __asm {
         mov eax, 1
         sub eax, 0
-        mov eax, originalFuncRunHP
-        add eax, 5
-        jmp eax
+        mov esi, g_BaseAddr
+        add esi, MIR_HK_RUN_HP_ADDR
+        add esi, 5
+        jmp esi
     }
 }
 
 __declspec(naked) void ExitBattle()
 {
     __asm {
-        mov eax, originalFuncExitBattle
-        add eax, 2
-        jmp eax
+        mov ecx, g_BaseAddr
+        add ecx, MIR_HK_EXIT_BATTLE_ADDR
+        add ecx, 6
+        jmp ecx
     }
 }
 
 __declspec(naked) void AutoGroup1()
 {
     __asm {
-        mov eax, originalFuncAutoGroup1
-        add eax, 5
-        jmp eax
+        mov esi, g_BaseAddr
+        add esi, MIR_HK_AUTO_GROUP_1_ADDR
+        add esi, 5
+        jmp esi
     }
 }
 
 __declspec(naked) void AutoGroup2()
 {
     __asm {
-        mov eax, originalFuncAutoGroup2
-        add eax, 5
-        jmp eax
+        mov esi, g_BaseAddr
+        add esi, MIR_HK_AUTO_GROUP_2_ADDR
+        add esi, 5
+        jmp esi
     }
 }
 
 __declspec(naked) void AutoAgree()
 {
     __asm {
-        mov eax, originalFuncAutoAgree
-        add eax, 8
-        jmp eax
+        mov esi, g_BaseAddr
+        add esi, MIR_HK_AUTO_AGREE_ADDR
+        add esi, 8
+        jmp esi
     }
 }
 
