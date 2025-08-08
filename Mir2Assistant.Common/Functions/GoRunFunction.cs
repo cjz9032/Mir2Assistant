@@ -1413,7 +1413,7 @@ public static class GoRunFunction
     public static async Task RestartByToSelectScene(MirGameInstanceModel gameInstance)
     {
         SendMirCall.Send(gameInstance, 9098, new nint[] { });
-        await Task.Delay(5000);
+        await Task.Delay(7000);
         SendMirCall.Send(gameInstance, 9099, new nint[] { });
         await Task.Delay(6000);
         SendMirCall.Send(gameInstance, 9100, new nint[] { });
@@ -1453,7 +1453,7 @@ public static class GoRunFunction
     {
         // role
         if (GameInstance.AccountInfo.role != RoleType.taoist
-        || GameInstance.CharacterStatus!.Level < 7)
+        || GameInstance.CharacterStatus!.Level < 18)
         {
             return false;
         }

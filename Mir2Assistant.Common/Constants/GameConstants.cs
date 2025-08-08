@@ -34,7 +34,7 @@ public static class GameConstants
     {
         if (level < 10)
         {
-            return allowMonsters.Concat(allowM10).Concat(allow15).Concat(allow22).ToArray();
+            return allowMonsters.Concat(allowM10).Concat(allow15).ToArray();
         }
         else if (level < 15)
         {

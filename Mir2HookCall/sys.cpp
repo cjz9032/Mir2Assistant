@@ -175,7 +175,7 @@ void startButton(){
 		pushad
 		pushfd
 
-		mov eax, MIR_SELECT_CHR_SCENE_ADDR
+		mov eax, [MIR_SELECT_CHR_SCENE_ADDR]
         mov eax, [eax]
         mov esi, MIR_START_BTN_CALL
         call esi
