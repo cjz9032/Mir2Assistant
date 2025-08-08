@@ -183,7 +183,7 @@ __declspec(naked) void RunHP()
         sub eax, 0
         mov esi, g_BaseAddr
         add esi, MIR_HK_RUN_HP_ADDR
-        add esi, 5
+        add esi, 10
         jmp esi
     }
 }
@@ -203,7 +203,7 @@ __declspec(naked) void AutoGroup1()
     __asm {
         mov esi, g_BaseAddr
         add esi, MIR_HK_AUTO_GROUP_1_ADDR
-        add esi, 5
+        add esi, 10
         jmp esi
     }
 }
@@ -213,7 +213,7 @@ __declspec(naked) void AutoGroup2()
     __asm {
         mov esi, g_BaseAddr
         add esi, MIR_HK_AUTO_GROUP_2_ADDR
-        add esi, 5
+        add esi, 10
         jmp esi
     }
 }
