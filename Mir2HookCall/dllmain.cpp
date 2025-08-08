@@ -183,7 +183,7 @@ __declspec(naked) void RunHP()
         sub eax, 0
         mov esi, g_BaseAddr
         add esi, MIR_HK_RUN_HP_ADDR
-        add esi, 10
+        add esi, 5
         jmp esi
     }
 }
