@@ -157,9 +157,11 @@ void exitToSelectScene(){
 	_asm {
 		pushad
 		pushfd
+		push 1
 		mov eax, [FRMMAIN_ADDR]
 		mov eax,[eax]
 		mov esi, MIR_DBotLogoutClick_CALL
+		mov ecx, 1
 		call esi
 		popfd
 		popad
