@@ -82,6 +82,8 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
                 SendMirCall.Send(GameInstance!, 3011, data);
                 await Task.Delay(500);
+                
+                GameInstance!.memoryUtils.WriteByte(item.addr, 0);
             }
 
             await Task.Delay(500);
