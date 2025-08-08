@@ -39,7 +39,7 @@ namespace Mir2Assistant
             }
             var clg = "new";
             // 注释我
-            clg = "old";
+            // clg = "old";
 
             var cfgVer = "";
             if (clg == "new")
