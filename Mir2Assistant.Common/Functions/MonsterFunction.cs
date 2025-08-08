@@ -34,7 +34,7 @@ public static class MonsterFunction
         gameInstance.IsReadingMonsters = true;
         //var Monsters = new List<MonsterModel>();
         var memoryUtils = gameInstance!.memoryUtils!;
-        var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["怪物数组"], 0x34C8));
+        var monstersAddr = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["怪物数组"], GameState.MirConfig["怪物数组偏移"]));
         var monsterCount = memoryUtils.ReadToInt(monstersAddr + 0x8);
         var monsterArrayAddr = memoryUtils.ReadToInt(monstersAddr + 0x4);
         ++gameInstance.MonstersUpdateId;
@@ -43,7 +43,7 @@ public static class MonsterFunction
         {
             bool isNew = false;
             var monsterAddr = memoryUtils.ReadToInt(monsterArrayAddr + i * 0x4);
-            var id = memoryUtils.ReadToInt(monsterAddr + 0x4);
+            var id = memoryUtils.ReadToInt(monsterAddr +  GameState.MirConfig["怪物ID偏移"]);
             gameInstance.Monsters.TryGetValue(id, out MonsterModel? monster);
             if (monster == null)
             {
@@ -51,7 +51,7 @@ public static class MonsterFunction
                 isNew = true;
             }
             // name为空说明无效
-            var myName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + 0x34, 0));
+            var myName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(monsterAddr + GameState.MirConfig["怪物NAME偏移"], 0));
             if (string.IsNullOrEmpty(myName))
             {
                 // new回被过滤, 旧也会因旧id销毁
@@ -60,34 +60,28 @@ public static class MonsterFunction
 
             monster.UpdateId = gameInstance.MonstersUpdateId;
             monster.Id = id;
-            monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr + 0x18); // todo confirm
+            monster.Type = monster.Type ?? memoryUtils.ReadToInt8(monsterAddr +  GameState.MirConfig["怪物TYPE偏移"]); 
             monster.Addr = monsterAddr;
             monster.Name = myName;
 
-            // todo side effect
-            // memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(monsterAddr + 0x158), 1);
+            monster.X = memoryUtils.ReadToShort(monsterAddr + GameState.MirConfig["怪物X偏移"]);
+            monster.Y = memoryUtils.ReadToShort(monsterAddr + GameState.MirConfig["怪物Y偏移"]);
 
-            //if (monster.X == null)               {
-            monster.X = memoryUtils.ReadToShort(monsterAddr + 0x08);
-            monster.Y = memoryUtils.ReadToShort(monsterAddr + 0x0A);
-            //}
-            //MonsterModel.Guild = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(monsterAddr + 0x44, 0));
+            monster.CurrentHP = memoryUtils.ReadToShort(monsterAddr + GameState.MirConfig["怪物CHP偏移"]);
+            monster.MaxHP = memoryUtils.ReadToShort(monsterAddr + GameState.MirConfig["怪物MHP偏移"]);
 
-            monster.CurrentHP = memoryUtils.ReadToShort(monsterAddr + 0x48);
-            monster.MaxHP = memoryUtils.ReadToShort(monsterAddr + 0x4C);
+            monster.CurrentMP = memoryUtils.ReadToShort(monsterAddr +  GameState.MirConfig["怪物CMP偏移"]);
+            monster.MaxMP = memoryUtils.ReadToShort(monsterAddr +  GameState.MirConfig["怪物MMP偏移"]);
 
-            monster.CurrentMP = memoryUtils.ReadToShort(monsterAddr + 0x4A);
-            monster.MaxMP = memoryUtils.ReadToShort(monsterAddr + 0x4E);
-
-            monster.Level = memoryUtils.ReadToInt8(monsterAddr + 0x3C);
+            monster.Level = memoryUtils.ReadToInt8(monsterAddr + GameState.MirConfig["怪物LV偏移"]);
 
             if (isNew)
             {
                 gameInstance.Monsters.TryAdd(id, monster);
             }
-            monster.isDead = memoryUtils.ReadToInt8(monsterAddr + 0x28) > 0;
-            monster.isButched = memoryUtils.ReadToInt8(monsterAddr + 0x29) > 0;
-            monster.Appr = memoryUtils.ReadToInt8(monsterAddr + 0x16);
+            monster.isDead = memoryUtils.ReadToInt8(monsterAddr +  GameState.MirConfig["怪物DEAD偏移"]) > 0;
+            monster.isButched = memoryUtils.ReadToInt8(monsterAddr +  GameState.MirConfig["怪物BUTCHED偏移"]) > 0;
+            monster.Appr = memoryUtils.ReadToInt8(monsterAddr + GameState.MirConfig["怪物APPR偏移"]);
         }
         foreach (var item in gameInstance.Monsters.Values.Where(o => o.UpdateId != gameInstance.MonstersUpdateId))
         {
