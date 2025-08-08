@@ -131,21 +131,21 @@ namespace Mir2Assistant
             }
         }
 
-        protected override void WndProc(ref Message m)
-        {
-            const int WM_COPYDATA = 0x004A;
+        // protected override void WndProc(ref Message m)
+        // {
+        //     const int WM_COPYDATA = 0x004A;
 
-            if (m.Msg == WM_COPYDATA)
-            {
-                // Extract the string from the COPYDATASTRUCT
-                COPYDATASTRUCT cds = (COPYDATASTRUCT)m.GetLParam(typeof(COPYDATASTRUCT))!;
-                string? msg = Marshal.PtrToStringAnsi(cds.lpData);
-                var flag = m.WParam;
-                gameInstance!.InvokeSysMsg(flag, msg);
-            }
+        //     if (m.Msg == WM_COPYDATA)
+        //     {
+        //         // Extract the string from the COPYDATASTRUCT
+        //         COPYDATASTRUCT cds = (COPYDATASTRUCT)m.GetLParam(typeof(COPYDATASTRUCT))!;
+        //         string? msg = Marshal.PtrToStringAnsi(cds.lpData);
+        //         var flag = m.WParam;
+        //         gameInstance!.InvokeSysMsg(flag, msg);
+        //     }
 
-            base.WndProc(ref m);
-        }
+        //     base.WndProc(ref m);
+        // }
 
         // Define the COPYDATASTRUCT for C#
         private struct COPYDATASTRUCT

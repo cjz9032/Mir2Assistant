@@ -47,10 +47,10 @@ namespace Mir2Assistant.Common.Functions
                         item.IsGodly = item.GodPts > 0;
                         item.Duration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品持久"])/100;
                         item.MaxDuration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品最大持久"])/100;
-                        item.stdMode = memoryUtils.ReadToInt8(itemAddr + 0xF);
+                        item.stdMode = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MODE"]);
                         item.addr = itemAddr;
-                        item.reqType = memoryUtils.ReadToInt8(itemAddr + 0x24);
-                        item.reqPoints = memoryUtils.ReadToInt8(itemAddr + 0x25);
+                        item.reqType = memoryUtils.ReadToInt8(itemAddr +  GameState.MirConfig["物品ReqType"]);
+                        item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"] );
 
                         
                     }
@@ -100,8 +100,8 @@ namespace Mir2Assistant.Common.Functions
                 }
                 item.IsGodly = item.GodPts > 0;
 
-                item.X = memoryUtils.ReadToShort(itemAddr + 0x4);
-                item.Y = memoryUtils.ReadToShort(itemAddr + 0x6);
+                item.X = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物X"]);
+                item.Y = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Y"]);
                 if (isNew)
                 {
                     gameInstance.DropsItems.TryAdd(id, item);
