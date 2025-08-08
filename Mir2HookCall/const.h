@@ -2,7 +2,7 @@
 
 
 // const.h
-// #define USE_VERSION_CS  // 注释这行就用第二个版本
+#define USE_VERSION_CS  // 注释这行就用第二个版本
 
 #ifdef USE_VERSION_CS
     #define MIR_BU_DAO_ADDR    0x000000
@@ -62,7 +62,7 @@
     #define MIR_HK_EXIT_BATTLE_ADDR 0x627DAA
     #define MIR_HK_AUTO_GROUP_1_ADDR 0x638AAE
     #define MIR_HK_AUTO_GROUP_2_ADDR 0x638BD3
-    #define MIR_HK_AUTO_AGREE_ADDR 00626D6A
+    #define MIR_HK_AUTO_AGREE_ADDR 0x626D6A
     
 #else
     #define MIR_BU_DAO_ADDR    0x1DF76C

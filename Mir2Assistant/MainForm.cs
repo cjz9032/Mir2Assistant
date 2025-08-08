@@ -8,6 +8,7 @@ using System.Text.Json;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using Mir2Assistant.Common;
 using Mir2Assistant.Common.Constants;
+using System.Runtime.InteropServices;
 
 namespace Mir2Assistant
 {
@@ -38,7 +39,7 @@ namespace Mir2Assistant
             }
             var clg = "new";
             // 注释我
-            clg = "old";
+            // clg = "old";
 
             var cfgVer = "";
             if (clg == "new")
@@ -366,6 +367,7 @@ namespace Mir2Assistant
                         SendMirCall.Send(gameInstance, 9003, data);
 
 
+
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         // 如果是主控，显示辅助窗口
@@ -406,6 +408,11 @@ namespace Mir2Assistant
                         await Task.Delay(6000);
                         SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                         await Task.Delay(3000);
+                        // 写标题
+                        if (this.gamePath == "Client.exe")
+                        {
+                            ChangeTitleByProcess(hwnd,$"<{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+                        }
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{
                         return false;
@@ -423,6 +430,37 @@ namespace Mir2Assistant
                 return false;
                 // MessageBox.Show($"绑定游戏进程失败: {ex.Message}");
             }
+        }
+        
+        // 导入Windows API函数
+        // 导入Windows API用于设置窗口标题
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool SetWindowText(IntPtr hWnd, string lpString);
+
+        /// <summary>
+        /// 通过Process对象修改窗口标题
+        /// </summary>
+        /// <param name="process">进程对象</param>
+        /// <param name="newTitle">新标题</param>
+        /// <returns>是否修改成功</returns>
+        public static bool ChangeTitleByProcess(IntPtr mainWindowHandle, string newTitle)
+        {
+          
+            if (mainWindowHandle == IntPtr.Zero)
+            {
+                Console.WriteLine("无法获取窗口句柄（可能是控制台程序或无窗口进程）");
+                return false;
+            }
+
+            bool success = SetWindowText(mainWindowHandle, newTitle);
+            if (!success)
+            {
+                Console.WriteLine($"修改失败，错误代码: {Marshal.GetLastWin32Error()}");
+                return false;
+            }
+
+            Console.WriteLine("窗口标题修改成功");
+            return true;
         }
 
         protected override void WndProc(ref Message m)//监视Windows消息
