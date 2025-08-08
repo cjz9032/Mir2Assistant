@@ -1140,6 +1140,16 @@ namespace Mir2Assistant
                             }
                             if (CharacterStatus.CurrentHP > 0)
                             {
+                                // 用用再说
+                                if (instance.AccountInfo!.role == RoleType.blade)
+                                {
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 900);
+                                }
+                                else
+                                {
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
+                                }
+
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
                                 {
                                     instance.sameHPtimes++;
