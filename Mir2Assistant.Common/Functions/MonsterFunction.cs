@@ -108,11 +108,11 @@ public static class MonsterFunction
     public static void SlayingMonster(MirGameInstanceModel gameInstance, int monsterAddr)
     {
         var memoryUtils = gameInstance!.memoryUtils!;
-        memoryUtils.WriteInt(GameState.MirConfig["打怪基址"], monsterAddr);
+        memoryUtils.WriteInt(GameState.MirConfig["存怪参数"], monsterAddr);
     }
     public static void SlayingMonsterCancel(MirGameInstanceModel gameInstance)
     {
         var memoryUtils = gameInstance!.memoryUtils!;
-        memoryUtils.WriteInt(GameState.MirConfig["打怪基址"], 0);
+        memoryUtils.WriteInt(GameState.MirConfig["存怪参数"], 0);
     }
 }
