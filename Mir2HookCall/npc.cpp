@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "npc.h"
-#include "utils.h" // Ìí¼ÓÍ·ÎÄ¼şÒıÓÃ
+#include "utils.h" // æ·»åŠ å¤´æ–‡ä»¶å¼•ç”¨
 #include <map>
 
 
 
-//µã»÷NPC
+//ç‚¹å‡»NPC
 void clickNPC(int npcId)
 {
 	__asm {
@@ -73,9 +73,9 @@ const std::map<int, int> offsetMap = {
 // DItemGridGridSelect_
 void bagGridClick(int index){
 
-	// 8x5µÄ±³°ü²¼¾Ö
-	int row = index % 8;        // Ã¿ĞĞ8¸ñ
-	int col = index / 8;        // ×Ü¹²5ĞĞ
+	// 8x5çš„èƒŒåŒ…å¸ƒå±€
+	int row = index % 8;        // æ¯è¡Œ8æ ¼
+	int col = index / 8;        // æ€»å…±5è¡Œ
 	__asm {
 
 		pushad
@@ -203,13 +203,13 @@ void eatIndexItem(int idx){
 		popad
 	}
 }
-//¶ş¼¶¶Ô»° 
+//äºŒçº§å¯¹è¯ 
 void talk2(DelphiString* cmd)
 {
 
 	auto cmdData = cmd->data;
 
-	// ÔÚtalk2º¯ÊıÖĞ
+	// åœ¨talk2å‡½æ•°ä¸­
 	__asm {
 		pushad
 		pushfd
@@ -282,8 +282,8 @@ void buy(DelphiString* name)
 
 		mov         eax,nameData
 		push        eax
-		push        0 // count 1»ò0 ²»¶®
-		mov         ecx, 0 // stock Ò©Ë®²»ÓÃ
+		push        0 // count 1æˆ–0 ä¸æ‡‚
+		mov         ecx, 0 // stock è¯æ°´ä¸ç”¨
 		mov edx,dword ptr ds:[MIC_G_NPC_ID];
 		mov edx,dword ptr [edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
@@ -296,7 +296,7 @@ void buy(DelphiString* name)
 	}
 }
 
-// Í¨ÓÃ NPC ¹¦ÄÜÖ´ĞĞº¯Êı
+// é€šç”¨ NPC åŠŸèƒ½æ‰§è¡Œå‡½æ•°
 void executeNpcFunction(DelphiString* name, int id, uintptr_t functionAddress)
 {
 	auto nameData = name->data;
@@ -447,7 +447,7 @@ void Npc::process(int code, int* data)
 		});
 		break;
 	case 3006:
-		// °´indexËæ±ãÂò
+		// æŒ‰indexéšä¾¿ä¹°
 		buyGoodsFixedIndex();
 		break;
 	case 3010:
@@ -469,17 +469,17 @@ void Npc::process(int code, int* data)
 	case 3016:
 		processNpcCommand(data, backStoreItem);
 		break;
-	case 3019: // ³Ô
+	case 3019: // åƒ
 		eatIndexItem(data[0]);
 		break;
-	case 3020: // ÍÑ
+	case 3020: // è„±
 		takeOff(data[0]);
 		break;
-	case 3021: // ´©
+	case 3021: // ç©¿
 		takeOn(data[0], data[1]);
 		break;
 
-	case 3022: // ÍÑ2
+	case 3022: // è„±2
 		ProcessWideString(data, [data](const wchar_t* str, int length) {
 			DelphiString* name = CreateDelphiString(str, length);
 			int idx = data[length + 1];
@@ -488,7 +488,7 @@ void Npc::process(int code, int* data)
 			delete name;
 		});
 		break;
-	case 3023: // ´©2
+	case 3023: // ç©¿2
 		if(MIR_TAKE_ON_DIRECT_CALL == 0) break;
 		ProcessWideString(data, [data](const wchar_t* str, int length) {
 			DelphiString* name = CreateDelphiString(str, length);
@@ -498,13 +498,13 @@ void Npc::process(int code, int* data)
 			delete name;
 		});
 		break;
-	case 3030: // ÍÀÔ×
+	case 3030: // å± å®°
 		butch(data[0], data[1], data[2], data[3]);
 		break;
-	case 3031: // ¼ñÈ¡
+	case 3031: // æ¡å–
 		pickUp();
 		break;
-	case 3100: // Ä§·¨
+	case 3100: // é­”æ³•
 		sendSpell(data[0], data[1], data[2], data[3]);
 		break;
 	default:
