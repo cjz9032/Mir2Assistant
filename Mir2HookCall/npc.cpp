@@ -489,6 +489,7 @@ void Npc::process(int code, int* data)
 		});
 		break;
 	case 3023: // ´©2
+		if(MIR_TAKE_ON_DIRECT_CALL == 0) break;
 		ProcessWideString(data, [data](const wchar_t* str, int length) {
 			DelphiString* name = CreateDelphiString(str, length);
 			int idx = data[length + 1];
