@@ -887,7 +887,7 @@ namespace Mir2Assistant.Common.Functions
             foreach (var position in Enum.GetValues(typeof(EquipPosition)))
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
-                if (preferBuyItems == null)
+                if (preferBuyItems == null || preferBuyItems.Count == 0)
                 {
                     continue;
                 }
