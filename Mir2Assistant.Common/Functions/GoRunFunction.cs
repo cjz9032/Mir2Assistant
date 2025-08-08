@@ -1528,7 +1528,7 @@ public static class GoRunFunction
                 // 再次检查
                 if (people == null)
                 {
-                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1500);
+                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1000);
                 }
             });
             return;

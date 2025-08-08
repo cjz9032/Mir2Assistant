@@ -157,11 +157,14 @@ void exitToSelectScene(){
 	_asm {
 		pushad
 		pushfd
-		push 1
+		push 100
+		mov ebx, MIR_GRID_FOO_ADDR
+		mov ebx, [ebx]
+		mov edx, ebx
 		mov eax, [FRMMAIN_ADDR]
 		mov eax,[eax]
+		mov ecx, 100
 		mov esi, MIR_DBotLogoutClick_CALL
-		mov ecx, 1
 		call esi
 		popfd
 		popad
