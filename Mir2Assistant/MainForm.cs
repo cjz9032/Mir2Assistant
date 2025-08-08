@@ -365,9 +365,8 @@ namespace Mir2Assistant
                         nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
                         // auto login 
                         SendMirCall.Send(gameInstance, 9003, data);
-
-
-
+                        await Task.Delay(2000);
+                        SendMirCall.Send(gameInstance, 9104, data);
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         // 如果是主控，显示辅助窗口
@@ -405,13 +404,15 @@ namespace Mir2Assistant
                         await Task.Delay(8000);
                         // todo 挪走到外面
                         SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                        await Task.Delay(6000);
+                        await Task.Delay(5000);
                         SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                         await Task.Delay(3000);
                         // 写标题
                         if (this.gamePath == "Client.dat")
                         {
-                            ChangeTitleByProcess(hwnd,$"<{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+
+                            var insIdx = GameState.GameInstances.IndexOf(gameInstance);
+                            ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
                         }
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{

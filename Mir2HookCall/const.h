@@ -16,8 +16,11 @@
     #define DRAW_SCREEN_ADDR    0x72BF94
     #define MIR_LOGIN_ACT_HOOK    0x1C426D
     #define MIR_LOGIN_PWD_HOOK    0x1C4290
+    // # 暂时没用
     #define MIR_G_SERVER_NAME    0x32B6CC
     #define MIR_SELECT_SERVER_CALL    0x22E878
+    // # 暂时没用
+
     #define MIR_Dlg_Ok_Click    0x58F82C
     #define MIR_SELECT_CHR_SCENE_ADDR    0x72BFA0
     #define MIR_START_BTN_CALL 0x5C6AF8
@@ -63,6 +66,7 @@
     #define MIR_HK_AUTO_GROUP_1_ADDR 0x238AAE
     #define MIR_HK_AUTO_GROUP_2_ADDR 0x238BD3
     #define MIR_HK_AUTO_AGREE_ADDR 0x226D6A
+    #define MIR_DSServer1Click_CALL 0x5905C8
     
 #else
     #define MIR_BU_DAO_ADDR    0x1DF76C
@@ -76,8 +80,11 @@
     #define DRAW_SCREEN_ADDR    0x679E18
     #define MIR_LOGIN_ACT_HOOK    0x16A881
     #define MIR_LOGIN_PWD_HOOK    0x16A8A4
+    // # 暂时没用
     #define MIR_G_SERVER_NAME    0x3526C0
     #define MIR_SELECT_SERVER_CALL    0x242A48
+    // # 暂时没用
+
     #define MIR_Dlg_Ok_Click    0x59B340
     #define MIR_SELECT_CHR_SCENE_ADDR    0x7524C4
     #define MIR_START_BTN_CALL 0x56D10C
@@ -122,5 +129,8 @@
     #define MIR_HK_EXIT_BATTLE_ADDR 0x23AC9D
     #define MIR_HK_AUTO_GROUP_1_ADDR 0x24F5F4
     #define MIR_HK_AUTO_GROUP_2_ADDR 0x24F719
-    #define MIR_HK_AUTO_AGREE_ADDR 0x000000
+    // 已有补丁
+    #define MIR_HK_AUTO_AGREE_ADDR 0x000000 
+    #define MIR_DSServer1Click_CALL 0x59C0DC
+    
 #endif

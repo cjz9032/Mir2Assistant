@@ -32,7 +32,6 @@ OriginalFuncType originalFunc1 = NULL;
 // DWORD g_BaseAddr = 0;
 DWORD g_BaseAddr = 0x00400000;
 
-OriginalFuncType originalFunc2 = NULL;
 OriginalFuncType originalFunc3 = NULL;
 OriginalFuncType originalFunc4 = NULL;
 OriginalFuncType originalFunc5 = NULL;
@@ -66,35 +65,6 @@ __declspec(naked) void HookFunction()
     call_original:
         popfd
         jmp originalFunc1
-    }
-}
-
-// 添加线程函数声明
-DWORD WINAPI DelayedStartGameThread(LPVOID lpParam);
-
-__declspec(naked) void HookFunction2()
-{
-    __asm {
-        // 选择服务器 
-        pushad
-        pushfd
-
-		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
-		mov eax, [eax]
-
-        mov         ebx, g_BaseAddr
-        add         ebx, MIR_G_SERVER_NAME
-        mov         edx, [ebx]
-        
-        mov         ebx, g_BaseAddr
-        add         ebx, MIR_SELECT_SERVER_CALL
-        call        ebx
-  
-        popfd
-        popad
-    
-        jmp originalFunc2
-
     }
 }
 
@@ -294,14 +264,6 @@ bool InstallHooks()
             return false;
         }
     }
-    // 自动跳
-    DWORD targetAddress2 = MIR_HK2_ADDR + g_BaseAddr;
-    if (MH_CreateHook((LPVOID)targetAddress2, HookFunction2, (LPVOID*)&originalFunc2) != MH_OK)
-    {
-        printf("hook 2 fail\n");
-        return false;
-    }
-
     // 自动填充账号  
     DWORD targetAddress3 = MIR_LOGIN_ACT_HOOK + g_BaseAddr;
     if (MH_CreateHook((LPVOID)targetAddress3, HookFunction3, (LPVOID*)&originalFunc3) != MH_OK)

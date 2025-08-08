@@ -1,0 +1,655 @@
+_Unit101.TFrmMain.FormKeyPress
+006281B0        push        ebp
+006281B1        mov         ebp,esp
+006281B3        add         esp,0FFFFFFBC
+006281B6        push        ebx
+006281B7        xor         ebx,ebx
+006281B9        mov         dword ptr [ebp-44],ebx
+006281BC        mov         dword ptr [ebp-40],ebx
+006281BF        mov         dword ptr [ebp-38],ebx
+006281C2        mov         dword ptr [ebp-3C],ebx
+006281C5        mov         dword ptr [ebp-34],ebx
+006281C8        mov         dword ptr [ebp-30],ebx
+006281CB        mov         dword ptr [ebp-2C],ebx
+006281CE        mov         dword ptr [ebp-28],ebx
+006281D1        mov         dword ptr [ebp-8],ecx
+006281D4        mov         dword ptr [ebp-20],edx
+006281D7        mov         dword ptr [ebp-4],eax
+006281DA        xor         eax,eax
+006281DC        push        ebp
+006281DD        push        628C3F
+006281E2        push        dword ptr fs:[eax]
+006281E5        mov         dword ptr fs:[eax],esp
+006281E8        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006281ED        mov         eax,dword ptr [eax]
+006281EF        mov         eax,dword ptr [eax+670]
+006281F5        cmp         byte ptr [eax+300],0
+006281FC>       je          00628368
+00628202        mov         eax,dword ptr [ebp-8]
+00628205        mov         ax,word ptr [eax]
+00628208        and         eax,0FF
+0062820D        add         eax,0FFFFFFCF
+00628210        cmp         eax,7
+00628213>       ja          00628C14
+00628219        jmp         dword ptr [eax*4+628220]
+00628220        dd          00628240
+00628224        dd          00628265
+00628228        dd          0062828A
+0062822C        dd          006282AF
+00628230        dd          006282D4
+00628234        dd          006282F9
+00628238        dd          0062831E
+0062823C        dd          00628343
+00628240        push        1
+00628242        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628247        mov         eax,dword ptr [eax]
+00628249        mov         edx,dword ptr [eax+678]
+0062824F        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628254        mov         eax,dword ptr [eax]
+00628256        mov         ecx,1
+0062825B        call        TFrmDlg.DSServer1Click
+00628260>       jmp         00628C14
+00628265        push        1
+00628267        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062826C        mov         eax,dword ptr [eax]
+0062826E        mov         edx,dword ptr [eax+67C]
+00628274        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628279        mov         eax,dword ptr [eax]
+0062827B        mov         ecx,1
+00628280        call        TFrmDlg.DSServer1Click
+00628285>       jmp         00628C14
+0062828A        push        1
+0062828C        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628291        mov         eax,dword ptr [eax]
+00628293        mov         edx,dword ptr [eax+680]
+00628299        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062829E        mov         eax,dword ptr [eax]
+006282A0        mov         ecx,1
+006282A5        call        TFrmDlg.DSServer1Click
+006282AA>       jmp         00628C14
+006282AF        push        1
+006282B1        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006282B6        mov         eax,dword ptr [eax]
+006282B8        mov         edx,dword ptr [eax+684]
+006282BE        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006282C3        mov         eax,dword ptr [eax]
+006282C5        mov         ecx,1
+006282CA        call        TFrmDlg.DSServer1Click
+006282CF>       jmp         00628C14
+006282D4        push        1
+006282D6        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006282DB        mov         eax,dword ptr [eax]
+006282DD        mov         edx,dword ptr [eax+688]
+006282E3        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006282E8        mov         eax,dword ptr [eax]
+006282EA        mov         ecx,1
+006282EF        call        TFrmDlg.DSServer1Click
+006282F4>       jmp         00628C14
+006282F9        push        1
+006282FB        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628300        mov         eax,dword ptr [eax]
+00628302        mov         edx,dword ptr [eax+68C]
+00628308        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062830D        mov         eax,dword ptr [eax]
+0062830F        mov         ecx,1
+00628314        call        TFrmDlg.DSServer1Click
+00628319>       jmp         00628C14
+0062831E        push        1
+00628320        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628325        mov         eax,dword ptr [eax]
+00628327        mov         edx,dword ptr [eax+698]
+0062832D        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628332        mov         eax,dword ptr [eax]
+00628334        mov         ecx,1
+00628339        call        TFrmDlg.DSServer1Click
+0062833E>       jmp         00628C14
+00628343        push        1
+00628345        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062834A        mov         eax,dword ptr [eax]
+0062834C        mov         edx,dword ptr [eax+694]
+00628352        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628357        mov         eax,dword ptr [eax]
+00628359        mov         ecx,1
+0062835E        call        TFrmDlg.DSServer1Click
+00628363>       jmp         00628C14
+00628368        mov         edx,dword ptr [ebp-8]
+0062836B        mov         eax,[006615E8];^gvar_0072B478:TDWinManager
+00628370        mov         eax,dword ptr [eax]
+00628372        call        005486D0
+00628377        test        al,al
+00628379>       jne         00628C14
+0062837F        mov         eax,dword ptr [ebp-8]
+00628382        mov         ax,word ptr [eax]
+00628385        cmp         al,0D
+00628387>       jne         006283C4
+00628389        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062838E        mov         eax,dword ptr [eax]
+00628390        mov         eax,dword ptr [eax+638]
+00628396        cmp         byte ptr [eax+300],0
+0062839D>       je          006283C4
+0062839F        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006283A4        mov         eax,dword ptr [eax]
+006283A6        mov         eax,dword ptr [eax+740]
+006283AC        cmp         byte ptr [eax+300],0
+006283B3>       jne         006283C4
+006283B5        mov         eax,[0072BFA0];gvar_0072BFA0:TSelectChrScene
+006283BA        call        005C6AF8
+006283BF>       jmp         00628C14
+006283C4        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+006283C9        mov         eax,dword ptr [eax+18]
+006283CC        cmp         eax,dword ptr ds:[72BFA4];gvar_0072BFA4:TPlayScene
+006283D2>       jne         00628C14
+006283D8        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006283DD        mov         eax,dword ptr [eax]
+006283DF        mov         eax,dword ptr [eax+8D0]
+006283E5        cmp         byte ptr [eax+300],0
+006283EC>       je          00628459
+006283EE        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006283F3        mov         eax,dword ptr [eax]
+006283F5        mov         eax,dword ptr [eax+8D0]
+006283FB        mov         edx,dword ptr ds:[661DA0];^gvar_0072B47C
+00628401        cmp         eax,dword ptr [edx]
+00628403>       je          00628459
+00628405        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062840A        mov         eax,dword ptr [eax]
+0062840C        mov         eax,dword ptr [eax+8D0]
+00628412        mov         edx,dword ptr [eax+27C]
+00628418        xor         ecx,ecx
+0062841A        mov         eax,[0072BF90];gvar_0072BF90:TFrmMain
+0062841F        call        0062F2B4
+00628424        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628429        mov         eax,dword ptr [eax]
+0062842B        mov         eax,dword ptr [eax+8D0]
+00628431        xor         edx,edx
+00628433        call        TDControl.SetCaption
+00628438        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062843D        mov         eax,dword ptr [eax]
+0062843F        mov         eax,dword ptr [eax+8D0]
+00628445        mov         byte ptr [eax+300],0
+0062844C        mov         eax,dword ptr [ebp-8]
+0062844F        mov         word ptr [eax],0
+00628454>       jmp         00628C14
+00628459        mov         eax,dword ptr [ebp-8]
+0062845C        mov         ax,word ptr [eax]
+0062845F        and         eax,0FF
+00628464        cmp         eax,45
+00628467>       jg          006284DF
+00628469>       je          00628670
+0062846F        cmp         eax,2C
+00628472>       jg          006284B3
+00628474>       je          00628908
+0062847A        cmp         eax,20
+0062847D>       jg          0062849C
+0062847F>       je          00628828
+00628485        sub         eax,0D
+00628488>       je          00628828
+0062848E        sub         eax,0E
+00628491>       je          0062881B
+00628497>       jmp         00628C0C
+0062849C        sub         eax,21
+0062849F>       je          00628908
+006284A5        sub         eax,9
+006284A8>       je          006285C4
+006284AE>       jmp         00628C0C
+006284B3        sub         eax,2F
+006284B6>       je          00628908
+006284BC        add         eax,0FFFFFFFE
+006284BF        sub         eax,6
+006284C2>       jb          006287F8
+006284C8        sub         eax,9
+006284CB>       je          00628908
+006284D1        sub         eax,4
+006284D4>       je          0062879E
+006284DA>       jmp         00628C0C
+006284DF        cmp         eax,65
+006284E2>       jg          0062851F
+006284E4>       je          00628670
+006284EA        cmp         eax,57
+006284ED>       jg          00628508
+006284EF>       je          006285C4
+006284F5        sub         eax,4E
+006284F8>       je          0062871C
+006284FE        sub         eax,3
+00628501>       je          00628544
+00628503>       jmp         00628C0C
+00628508        sub         eax,60
+0062850B>       je          00628787
+00628511        sub         eax,4
+00628514>       je          0062879E
+0062851A>       jmp         00628C0C
+0062851F        sub         eax,6E
+00628522>       je          0062871C
+00628528        sub         eax,3
+0062852B>       je          00628544
+0062852D        sub         eax,6
+00628530>       je          006285C4
+00628536        sub         eax,40
+00628539>       je          00628787
+0062853F>       jmp         00628C0C
+00628544        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+00628549        cmp         byte ptr [eax+1],0
+0062854D>       jne         00628580
+0062854F        mov         eax,[00661784];^gvar_0065EC44:Byte
+00628554        cmp         byte ptr [eax],0
+00628557>       jne         00628580
+00628559        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+0062855E        mov         byte ptr [eax+1],1
+00628562        push        0FFFFFF
+00628567        mov         ecx,8000
+0062856C        mov         edx,628C58;'[开启:隐藏尸体]'
+00628571        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+00628576        call        005C88E0
+0062857B>       jmp         00628C0C
+00628580        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+00628585        cmp         byte ptr [eax+1],0
+00628589>       je          00628C0C
+0062858F        mov         eax,[00661784];^gvar_0065EC44:Byte
+00628594        cmp         byte ptr [eax],0
+00628597>       jne         00628C0C
+0062859D        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006285A2        mov         byte ptr [eax+1],0
+006285A6        push        0FFFFFF
+006285AB        mov         ecx,8000
+006285B0        mov         edx,628C74;'[关闭:隐藏尸体]'
+006285B5        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+006285BA        call        005C88E0
+006285BF>       jmp         00628C0C
+006285C4        mov         eax,[0072C240];gvar_0072C240
+006285C9        cmp         byte ptr [eax+13],2
+006285CD>       jne         00628614
+006285CF        mov         eax,[00661784];^gvar_0065EC44:Byte
+006285D4        cmp         byte ptr [eax],0
+006285D7>       je          00628614
+006285D9        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006285DE        cmp         byte ptr [eax+48],0
+006285E2>       jne         00628614
+006285E4        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006285E9        mov         byte ptr [eax+48],1
+006285ED        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006285F2        mov         byte ptr [eax+47],0
+006285F6        push        0FFFFFF
+006285FB        mov         ecx,8000
+00628600        mov         edx,628C90;'[开启:仅绿毒]'
+00628605        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+0062860A        call        005C88E0
+0062860F>       jmp         00628C0C
+00628614        mov         eax,[0072C240];gvar_0072C240
+00628619        cmp         byte ptr [eax+13],2
+0062861D>       jne         00628C0C
+00628623        mov         eax,[00661784];^gvar_0065EC44:Byte
+00628628        cmp         byte ptr [eax],0
+0062862B>       je          00628C0C
+00628631        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+00628636        cmp         byte ptr [eax+48],0
+0062863A>       je          00628C0C
+00628640        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+00628645        mov         byte ptr [eax+48],0
+00628649        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+0062864E        mov         byte ptr [eax+47],0
+00628652        push        0FFFFFF
+00628657        mov         ecx,8000
+0062865C        mov         edx,628CAC;'[关闭:仅绿毒/开启:仅红毒]'
+00628661        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+00628666        call        005C88E0
+0062866B>       jmp         00628C0C
+00628670        mov         eax,[0072C240];gvar_0072C240
+00628675        cmp         byte ptr [eax+13],2
+00628679>       jne         006286C0
+0062867B        mov         eax,[00661784];^gvar_0065EC44:Byte
+00628680        cmp         byte ptr [eax],0
+00628683>       je          006286C0
+00628685        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+0062868A        cmp         byte ptr [eax+47],0
+0062868E>       jne         006286C0
+00628690        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+00628695        mov         byte ptr [eax+47],1
+00628699        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+0062869E        mov         byte ptr [eax+48],0
+006286A2        push        0FFFFFF
+006286A7        mov         ecx,8000
+006286AC        mov         edx,628CD4;'[开启:红绿毒互换]'
+006286B1        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+006286B6        call        005C88E0
+006286BB>       jmp         00628C0C
+006286C0        mov         eax,[0072C240];gvar_0072C240
+006286C5        cmp         byte ptr [eax+13],2
+006286C9>       jne         00628C0C
+006286CF        mov         eax,[00661784];^gvar_0065EC44:Byte
+006286D4        cmp         byte ptr [eax],0
+006286D7>       je          00628C0C
+006286DD        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006286E2        cmp         byte ptr [eax+47],0
+006286E6>       je          00628C0C
+006286EC        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006286F1        mov         byte ptr [eax+47],0
+006286F5        mov         eax,[006613BC];^gvar_0072B4A8:Boolean
+006286FA        mov         byte ptr [eax+48],0
+006286FE        push        0FFFFFF
+00628703        mov         ecx,8000
+00628708        mov         edx,628CF4;'[关闭:红绿毒互换/开启:仅红毒]'
+0062870D        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+00628712        call        005C88E0
+00628717>       jmp         00628C0C
+0062871C        cmp         byte ptr ds:[72F775],0;gvar_0072F775
+00628723>       je          00628754
+00628725        mov         eax,[00661784];^gvar_0065EC44:Byte
+0062872A        cmp         byte ptr [eax],0
+0062872D>       jne         00628754
+0062872F        mov         byte ptr ds:[72F775],0;gvar_0072F775
+00628736        push        0FFFFFF
+0062873B        mov         ecx,8000
+00628740        mov         edx,628D20;'[关闭:人物显名]'
+00628745        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+0062874A        call        005C88E0
+0062874F>       jmp         00628C0C
+00628754        mov         eax,[00661784];^gvar_0065EC44:Byte
+00628759        cmp         byte ptr [eax],0
+0062875C>       jne         00628C0C
+00628762        mov         byte ptr ds:[72F775],1;gvar_0072F775
+00628769        push        0FFFFFF
+0062876E        mov         ecx,8000
+00628773        mov         edx,628D3C;'[开启:人物显名]'
+00628778        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+0062877D        call        005C88E0
+00628782>       jmp         00628C0C
+00628787        mov         eax,dword ptr [ebp-4]
+0062878A        call        0062FCB8
+0062878F        call        kernel32.GetTickCount
+00628794        mov         [0072F75C],eax;gvar_0072F75C:DWORD
+00628799>       jmp         00628C0C
+0062879E        xor         eax,eax
+006287A0        mov         [0072F630],eax;gvar_0072F630
+006287A5        cmp         byte ptr ds:[72F774],0;gvar_0072F774
+006287AC>       je          006287D3
+006287AE        mov         byte ptr ds:[72F774],0;gvar_0072F774
+006287B5        push        0FFFFFF
+006287BA        mov         ecx,8000
+006287BF        mov         edx,628D58;'自动奔跑关闭'
+006287C4        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+006287C9        call        005C88E0
+006287CE>       jmp         00628C0C
+006287D3        mov         byte ptr ds:[72F774],1;gvar_0072F774
+006287DA        push        0FFFFFF
+006287DF        mov         ecx,8000
+006287E4        mov         edx,628D74;'自动奔跑开启'
+006287E9        mov         eax,[0072BF94];gvar_0072BF94:TDrawScreen
+006287EE        call        005C88E0
+006287F3>       jmp         00628C0C
+006287F8        mov         byte ptr ds:[72F769],1;gvar_0072F769
+006287FF        mov         edx,dword ptr [ebp-8]
+00628802        mov         dx,word ptr [edx]
+00628805        and         edx,0FF
+0062880B        sub         edx,31
+0062880E        mov         eax,dword ptr [ebp-4]
+00628811        call        00629FE0
+00628816>       jmp         00628C0C
+0062881B        mov         eax,dword ptr [ebp-4]
+0062881E        call        0062D288
+00628823>       jmp         00628C0C
+00628828        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062882D        mov         eax,dword ptr [eax]
+0062882F        mov         eax,dword ptr [eax+8D0]
+00628835        mov         byte ptr [eax+300],1
+0062883C        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628841        mov         eax,dword ptr [eax]
+00628843        mov         eax,dword ptr [eax+8D0]
+00628849        mov         edx,dword ptr [eax]
+0062884B        call        dword ptr [edx+0E8]
+00628851        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628856        mov         eax,dword ptr [eax]
+00628858        cmp         byte ptr [eax+129C],0
+0062885F>       je          006288EF
+00628865        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062886A        mov         eax,dword ptr [eax]
+0062886C        mov         eax,dword ptr [eax+8D0]
+00628872        mov         edx,628D90;'!~'
+00628877        call        TDControl.SetCaption
+0062887C        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628881        mov         eax,dword ptr [eax]
+00628883        mov         eax,dword ptr [eax+8D0]
+00628889        mov         eax,dword ptr [eax+27C]
+0062888F        call        00535940
+00628894        mov         edx,eax
+00628896        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062889B        mov         eax,dword ptr [eax]
+0062889D        mov         eax,dword ptr [eax+8D0]
+006288A3        mov         cl,1
+006288A5        call        0054A5A4
+006288AA        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006288AF        mov         eax,dword ptr [eax]
+006288B1        mov         eax,dword ptr [eax+8D0]
+006288B7        mov         eax,dword ptr [eax+27C]
+006288BD        call        00535940
+006288C2        mov         edx,eax
+006288C4        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006288C9        mov         eax,dword ptr [eax]
+006288CB        mov         eax,dword ptr [eax+8D0]
+006288D1        call        0054A394
+006288D6        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006288DB        mov         eax,dword ptr [eax]
+006288DD        mov         eax,dword ptr [eax+8D0]
+006288E3        xor         edx,edx
+006288E5        call        0054A36C
+006288EA>       jmp         00628C0C
+006288EF        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006288F4        mov         eax,dword ptr [eax]
+006288F6        mov         eax,dword ptr [eax+8D0]
+006288FC        xor         edx,edx
+006288FE        call        TDControl.SetCaption
+00628903>       jmp         00628C0C
+00628908        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+0062890D        mov         eax,dword ptr [eax]
+0062890F        mov         eax,dword ptr [eax+8D0]
+00628915        mov         byte ptr [eax+300],1
+0062891C        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628921        mov         eax,dword ptr [eax]
+00628923        mov         eax,dword ptr [eax+8D0]
+00628929        mov         edx,dword ptr [eax]
+0062892B        call        dword ptr [edx+0E8]
+00628931        mov         byte ptr ds:[661358],0A;gvar_00661358
+00628938        mov         eax,dword ptr [ebp-8]
+0062893B        cmp         word ptr [eax],2F
+0062893F>       jne         00628A8F
+00628945        mov         eax,dword ptr [ebp-4]
+00628948        cmp         dword ptr [eax+444],0;TFrmMain.?f444:string
+0062894F>       jne         00628979
+00628951        lea         eax,[ebp-28]
+00628954        mov         edx,dword ptr [ebp-8]
+00628957        mov         dx,word ptr [edx]
+0062895A        call        @UStrFromWChar
+0062895F        mov         edx,dword ptr [ebp-28]
+00628962        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628967        mov         eax,dword ptr [eax]
+00628969        mov         eax,dword ptr [eax+8D0]
+0062896F        call        TDControl.SetCaption
+00628974>       jmp         00628A06
+00628979        lea         eax,[ebp-2C]
+0062897C        mov         edx,dword ptr [ebp-4]
+0062897F        mov         edx,dword ptr [edx+444];TFrmMain.?f444:string
+00628985        mov         ecx,0
+0062898A        call        @LStrFromUStr
+0062898F        mov         eax,dword ptr [ebp-2C]
+00628992        mov         dword ptr [ebp-0C],eax
+00628995        cmp         dword ptr [ebp-0C],0
+00628999>       je          006289A6
+0062899B        mov         eax,dword ptr [ebp-0C]
+0062899E        sub         eax,4
+006289A1        mov         eax,dword ptr [eax]
+006289A3        mov         dword ptr [ebp-0C],eax
+006289A6        cmp         dword ptr [ebp-0C],2
+006289AA>       jle         006289E3
+006289AC        push        628DA4;'/'
+006289B1        mov         eax,dword ptr [ebp-4]
+006289B4        push        dword ptr [eax+444];TFrmMain.?f444:string
+006289BA        push        628DB4;' '
+006289BF        lea         eax,[ebp-30]
+006289C2        mov         edx,3
+006289C7        call        @UStrCatN
+006289CC        mov         edx,dword ptr [ebp-30]
+006289CF        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006289D4        mov         eax,dword ptr [eax]
+006289D6        mov         eax,dword ptr [eax+8D0]
+006289DC        call        TDControl.SetCaption
+006289E1>       jmp         00628A06
+006289E3        lea         eax,[ebp-34]
+006289E6        mov         edx,dword ptr [ebp-8]
+006289E9        mov         dx,word ptr [edx]
+006289EC        call        @UStrFromWChar
+006289F1        mov         edx,dword ptr [ebp-34]
+006289F4        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+006289F9        mov         eax,dword ptr [eax]
+006289FB        mov         eax,dword ptr [eax+8D0]
+00628A01        call        TDControl.SetCaption
+00628A06        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628A0B        mov         eax,dword ptr [eax]
+00628A0D        mov         eax,dword ptr [eax+8D0]
+00628A13        mov         eax,dword ptr [eax+27C]
+00628A19        call        00535940
+00628A1E        mov         edx,eax
+00628A20        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628A25        mov         eax,dword ptr [eax]
+00628A27        mov         eax,dword ptr [eax+8D0]
+00628A2D        mov         cl,1
+00628A2F        call        0054A5A4
+00628A34        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628A39        mov         eax,dword ptr [eax]
+00628A3B        mov         eax,dword ptr [eax+8D0]
+00628A41        mov         eax,dword ptr [eax+27C]
+00628A47        mov         dword ptr [ebp-10],eax
+00628A4A        mov         eax,dword ptr [ebp-10]
+00628A4D        mov         dword ptr [ebp-14],eax
+00628A50        cmp         dword ptr [ebp-14],0
+00628A54>       je          00628A61
+00628A56        mov         eax,dword ptr [ebp-14]
+00628A59        sub         eax,4
+00628A5C        mov         eax,dword ptr [eax]
+00628A5E        mov         dword ptr [ebp-14],eax
+00628A61        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628A66        mov         eax,dword ptr [eax]
+00628A68        mov         eax,dword ptr [eax+8D0]
+00628A6E        mov         edx,dword ptr [ebp-14]
+00628A71        call        0054A394
+00628A76        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628A7B        mov         eax,dword ptr [eax]
+00628A7D        mov         eax,dword ptr [eax+8D0]
+00628A83        xor         edx,edx
+00628A85        call        0054A36C
+00628A8A>       jmp         00628C05
+00628A8F        mov         eax,dword ptr [ebp-8]
+00628A92        cmp         word ptr [eax],2C
+00628A96>       jne         00628B89
+00628A9C        lea         eax,[ebp-38]
+00628A9F        push        eax
+00628AA0        lea         ecx,[ebp-3C]
+00628AA3        xor         edx,edx
+00628AA5        mov         eax,[0072F690];gvar_0072F690:TRelationShipMgr
+00628AAA        call        00554B18
+00628AAF        mov         eax,dword ptr [ebp-3C]
+00628AB2        mov         ecx,6
+00628AB7        mov         edx,8
+00628ABC        call        @UStrCopy
+00628AC1        cmp         dword ptr [ebp-38],0
+00628AC5>       je          00628AE0
+00628AC7        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628ACC        mov         eax,dword ptr [eax]
+00628ACE        mov         eax,dword ptr [eax+8D0]
+00628AD4        mov         edx,628DC4;'⒔'
+00628AD9        call        TDControl.SetCaption
+00628ADE>       jmp         00628B03
+00628AE0        lea         eax,[ebp-40]
+00628AE3        mov         edx,dword ptr [ebp-8]
+00628AE6        mov         dx,word ptr [edx]
+00628AE9        call        @UStrFromWChar
+00628AEE        mov         edx,dword ptr [ebp-40]
+00628AF1        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628AF6        mov         eax,dword ptr [eax]
+00628AF8        mov         eax,dword ptr [eax+8D0]
+00628AFE        call        TDControl.SetCaption
+00628B03        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B08        mov         eax,dword ptr [eax]
+00628B0A        mov         eax,dword ptr [eax+8D0]
+00628B10        mov         eax,dword ptr [eax+27C]
+00628B16        call        00535940
+00628B1B        mov         edx,eax
+00628B1D        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B22        mov         eax,dword ptr [eax]
+00628B24        mov         eax,dword ptr [eax+8D0]
+00628B2A        mov         cl,1
+00628B2C        call        0054A5A4
+00628B31        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B36        mov         eax,dword ptr [eax]
+00628B38        mov         eax,dword ptr [eax+8D0]
+00628B3E        mov         eax,dword ptr [eax+27C]
+00628B44        mov         dword ptr [ebp-18],eax
+00628B47        mov         eax,dword ptr [ebp-18]
+00628B4A        mov         dword ptr [ebp-1C],eax
+00628B4D        cmp         dword ptr [ebp-1C],0
+00628B51>       je          00628B5E
+00628B53        mov         eax,dword ptr [ebp-1C]
+00628B56        sub         eax,4
+00628B59        mov         eax,dword ptr [eax]
+00628B5B        mov         dword ptr [ebp-1C],eax
+00628B5E        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B63        mov         eax,dword ptr [eax]
+00628B65        mov         eax,dword ptr [eax+8D0]
+00628B6B        mov         edx,dword ptr [ebp-1C]
+00628B6E        call        0054A394
+00628B73        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B78        mov         eax,dword ptr [eax]
+00628B7A        mov         eax,dword ptr [eax+8D0]
+00628B80        xor         edx,edx
+00628B82        call        0054A36C
+00628B87>       jmp         00628C05
+00628B89        lea         eax,[ebp-44]
+00628B8C        mov         edx,dword ptr [ebp-8]
+00628B8F        mov         dx,word ptr [edx]
+00628B92        call        @UStrFromWChar
+00628B97        mov         edx,dword ptr [ebp-44]
+00628B9A        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628B9F        mov         eax,dword ptr [eax]
+00628BA1        mov         eax,dword ptr [eax+8D0]
+00628BA7        call        TDControl.SetCaption
+00628BAC        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628BB1        mov         eax,dword ptr [eax]
+00628BB3        mov         eax,dword ptr [eax+8D0]
+00628BB9        mov         eax,dword ptr [eax+27C]
+00628BBF        call        00535940
+00628BC4        mov         edx,eax
+00628BC6        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628BCB        mov         eax,dword ptr [eax]
+00628BCD        mov         eax,dword ptr [eax+8D0]
+00628BD3        mov         cl,1
+00628BD5        call        0054A5A4
+00628BDA        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628BDF        mov         eax,dword ptr [eax]
+00628BE1        mov         eax,dword ptr [eax+8D0]
+00628BE7        mov         edx,1
+00628BEC        call        0054A394
+00628BF1        mov         eax,[00662098];^gvar_0072B56C:TFrmDlg
+00628BF6        mov         eax,dword ptr [eax]
+00628BF8        mov         eax,dword ptr [eax+8D0]
+00628BFE        xor         edx,edx
+00628C00        call        0054A36C
+00628C05        mov         byte ptr ds:[661358],4;gvar_00661358
+00628C0C        mov         eax,dword ptr [ebp-8]
+00628C0F        mov         word ptr [eax],0
+00628C14        xor         eax,eax
+00628C16        pop         edx
+00628C17        pop         ecx
+00628C18        pop         ecx
+00628C19        mov         dword ptr fs:[eax],edx
+00628C1C        push        628C46
+00628C21        lea         eax,[ebp-44]
+00628C24        mov         edx,6
+00628C29        call        @UStrArrayClr
+00628C2E        lea         eax,[ebp-2C]
+00628C31        call        @LStrClr
+00628C36        lea         eax,[ebp-28]
+00628C39        call        @UStrClr
+00628C3E        ret
+00628C3F>       jmp         @HandleFinally
+00628C44>       jmp         00628C21
+00628C46        pop         ebx
+00628C47        mov         esp,ebp
+00628C49        pop         ebp
+00628C4A        ret

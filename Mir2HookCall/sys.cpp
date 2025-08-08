@@ -61,6 +61,23 @@ void groupOne(DelphiString* name)
     }
 }
 
+void DSServer1Click(){
+	__asm {
+		pushad
+		pushfd
+		push 1
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
+		add eax, 678 
+		mov edx, eax
+		mov ecx,1
+		mov eax, dword ptr ds : [FRM_DLG_ADDR]
+		mov esi, MIR_DSServer1Click_CALL
+		call esi
+		popfd
+		popad
+	}
+}
+
 void addChat(DelphiString* chat)
 {
 	auto chatData = chat->data;
@@ -205,7 +222,9 @@ void Sys::process(int code, int* data)
              loginFirst();
          });
         break;
-
+	case 9104: // 选服务器1
+			DSServer1Click();
+		break;
 	case 9004: // 组人
 		ProcessWideString(data, [](const wchar_t* str, int length) {
 			DelphiString* groupName = CreateDelphiString(str, length);
