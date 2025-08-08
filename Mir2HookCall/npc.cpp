@@ -217,7 +217,6 @@ void talk2(DelphiString* cmd)
 	    mov ecx, eax
 
 		mov edx, dword ptr ds : [MIC_G_NPC_ID]
-		mov edx, [edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov ecx, cmdData
@@ -239,7 +238,6 @@ void getGoodsList(DelphiString* name)
 		mov eax,nameData
 		push eax
 		mov edx,dword ptr ds:[MIC_G_NPC_ID];
-		mov edx,[edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		xor ecx,ecx
@@ -285,7 +283,6 @@ void buy(DelphiString* name)
 		push        0 // count 1或0 不懂
 		mov         ecx, 0 // stock 药水不用
 		mov edx,dword ptr ds:[MIC_G_NPC_ID];
-		mov edx,dword ptr [edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov esi, MIR_SendBuyItem_CALL
@@ -309,7 +306,6 @@ void executeNpcFunction(DelphiString* name, int id, uintptr_t functionAddress)
 		push        1
 		mov         ecx, id
 		mov edx, dword ptr ds:[MIC_G_NPC_ID];
-		mov edx, dword ptr [edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov esi, functionAddress
@@ -331,7 +327,6 @@ void repairItem(DelphiString* name, int id)
 		push        eax
 		mov         ecx, id
 		mov edx, dword ptr ds:[MIC_G_NPC_ID];
-		mov edx, dword ptr [edx]
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov esi, MIR_REPAIR_ITEM_CALL
