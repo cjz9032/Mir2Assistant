@@ -126,7 +126,7 @@ public static class GoRunFunction
          int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
      {
         var allowButch = new List<string> { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
-        if (instanceValue.CharacterStatus!.Level > 13)
+        if (instanceValue.CharacterStatus!.Level < 13)
         {
             allowButch.Add("鸡");
         }
