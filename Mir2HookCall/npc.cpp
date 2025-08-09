@@ -251,7 +251,6 @@ void getGoodsList(DelphiString* name)
 void buyGoodsFixedIndex()
 {
 	__asm {
-		// DItemBuyClick_005C9C58
 		pushad
 		pushfd
 		push 100
@@ -259,7 +258,7 @@ void buyGoodsFixedIndex()
 		mov ebx, [ebx]
 		mov ecx, 100
 		mov edx, ebx
-		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [FRM_DLG_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]
 		mov esi, MIR_DMenuBuyClick_CALL
 		call esi	
