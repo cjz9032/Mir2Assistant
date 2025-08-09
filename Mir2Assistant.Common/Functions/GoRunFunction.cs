@@ -965,7 +965,7 @@ public static class GoRunFunction
                 (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
-                .OrderBy(o => o.Name == "鹿" || o.Name == "羊" || o.Name == "鸡" ? 1 : 0)
+                .OrderBy(o =>  GameConstants.allowM10.Contains(o.Name) ? 1 : 0)
                 .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
                 .FirstOrDefault();
                 // 保护消费者法师

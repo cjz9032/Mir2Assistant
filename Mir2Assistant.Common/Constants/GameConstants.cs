@@ -24,7 +24,7 @@ public static class GameConstants
 
 
        
-    public static readonly string[] allowM10 = new string[] { "鹿", "羊" };  // "鸡",
+    public static readonly string[] allowM10 = new string[] { "鹿", "羊", "鸡" };
  
     
     
