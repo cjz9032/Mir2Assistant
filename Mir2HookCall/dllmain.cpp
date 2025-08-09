@@ -141,15 +141,15 @@ extern "C" DWORD GetPwdStringDataAddr();
 //     }
 // }
 
-// __declspec(naked) void HookFunction7()
-// {
-//     __asm {
-//         mov eax, g_BaseAddr
-//         add eax, 0x3564EC        
-//         mov byte ptr [eax], 0x1 
-//         jmp originalFunc7
-//     }
-// }
+__declspec(naked) void HookFunction7()
+{
+    __asm {
+        mov eax, g_BaseAddr
+        add eax, 0x3564EC        
+        mov byte ptr [eax], 0x1 
+        jmp originalFunc7
+    }
+}
 
 // 跳过弹窗的hook函数
 // 00650312        mov         edx,654720;'物品被卖出。'
@@ -309,12 +309,15 @@ bool InstallHooks()
     //     return false;
     // }
     // // 7 又一些开关, 超负重, 不确定是否有其他
-    // DWORD targetAddress7 = 0x24A84B + g_BaseAddr;
-    // if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
-    // {
-    //     printf("hook 7 fail\n");
-    //     return false;
-    // }
+    if (MIR_BU_DAO_HOOK) {
+
+        DWORD targetAddress7 = 0x24A84B + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddress7, HookFunction7, (LPVOID*)&originalFunc7) != MH_OK)
+        {
+            printf("hook 7 fail\n");
+            return false;
+        }
+    }
 
     // 定义所有要跳过的弹窗
     SkipHookInfo skipHooks[] = {
