@@ -360,12 +360,6 @@ namespace Mir2Assistant
                         DllInject.loadDll(gameInstance);
                         // 不知道加载多久 随便写个
                         await Task.Delay(100);
-                        // todo 挪走到外面
-                        nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
-                        // auto login 
-                        SendMirCall.Send(gameInstance, 9003, data);
-                        await Task.Delay(2000);
-                        SendMirCall.Send(gameInstance, 9104, data);
                         // TODO 会导致不刷新 , 需要重新搞个不依赖tab的
                         gameInstance.AssistantForm.Location = new Point(rect.Left, rect.Top);
                         // 如果是主控，显示辅助窗口
@@ -399,19 +393,28 @@ namespace Mir2Assistant
                                 gameInstance.Clear();
                             }
                         };
-
-                        await Task.Delay(8000);
-                        // todo 挪走到外面
-                        SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                        await Task.Delay(5000);
-                        SendMirCall.Send(gameInstance!, 9100, new nint[] { });
-                        await Task.Delay(3000);
-                        // 写标题
-                        if (GameState.gamePath == "Client.dat")
+                        if (gameInstance.CharacterStatus.CurrentHP <= 0)
                         {
+                            // todo 挪走到外面
+                            nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
+                            // auto login 
+                            SendMirCall.Send(gameInstance, 9003, data);
+                            await Task.Delay(2000);
+                            SendMirCall.Send(gameInstance, 9104, data);
 
-                            var insIdx = GameState.GameInstances.IndexOf(gameInstance);
-                            ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+                            await Task.Delay(8000);
+                            // todo 挪走到外面
+                            SendMirCall.Send(gameInstance!, 9099, new nint[] { });
+                            await Task.Delay(5000);
+                            SendMirCall.Send(gameInstance!, 9100, new nint[] { });
+                            await Task.Delay(3000);
+                            // 写标题
+                            if (GameState.gamePath == "Client.dat")
+                            {
+
+                                var insIdx = GameState.GameInstances.IndexOf(gameInstance);
+                                ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+                            }
                         }
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{
