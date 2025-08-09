@@ -708,9 +708,11 @@ namespace Mir2Assistant
         
          private static async Task findMeatNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
-            var CharacterStatus = instanceValue.CharacterStatus!;
-            var isLeftAlive = CharacterStatus.X < 400;
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "0", 6, true, 10);
+            // var CharacterStatus = instanceValue.CharacterStatus!;
+            // var isLeftAlive = CharacterStatus.X < 400;
+            // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "0", 6, true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 293, 604, "0", 6, true, 10);
+            
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -1135,7 +1137,7 @@ namespace Mir2Assistant
                             if (CharacterStatus.CurrentHP > 0)
                             {
                                 // 用用再说
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 95);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 110);
                                 if (instance.AccountInfo!.role == RoleType.blade)
                                 {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 900);
