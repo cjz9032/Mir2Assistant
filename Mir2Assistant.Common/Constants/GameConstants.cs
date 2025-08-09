@@ -20,7 +20,9 @@ public static class GameConstants
     };
 
 
-    public static readonly string[] allowM10 = new string[] { "鸡", "鹿", "羊" };
+
+       
+    public static readonly string[] allowM10 = new string[] { "鹿", "羊" };  // "鸡",
  
     
     
