@@ -1664,7 +1664,7 @@ public static class GoRunFunction
         }
 
         // for low mp
-        if (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.6 || GameInstance.CharacterStatus.CurrentMP < 10)
+        if ((GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.35) || GameInstance.CharacterStatus.CurrentMP < 10)
         {
             // 找蓝药 太阳水
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
