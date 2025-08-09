@@ -821,6 +821,10 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("青铜剑");
                         }
+                        if (CharacterStatus.Level < 5)
+                        {
+                            itemNames.Add("乌木剑");
+                        }
                         if (CharacterStatus.Level >= 10)
                         {
                             itemNames.Add("铁剑");

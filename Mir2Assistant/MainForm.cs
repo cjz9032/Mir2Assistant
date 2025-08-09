@@ -642,7 +642,7 @@ namespace Mir2Assistant
                     Array.Resize(ref data, data.Length + 1);
                     data[data.Length - 1] = meat.Id;
                     SendMirCall.Send(instanceValue!, 3011, data);
-                    await Task.Delay(500);
+                    await Task.Delay(600);
                     instanceValue!.memoryUtils.WriteByte(meat.addr, 0);
                 }
 
