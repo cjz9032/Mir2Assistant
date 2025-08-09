@@ -796,9 +796,9 @@ public static class GoRunFunction
         var mainInstance = GameState.GameInstances[0];
         if (mainInstance.IsAttached)
         {
-            if (mainInstance.CharacterStatus!.Level > (instanceValue.CharacterStatus!.Level + 1) &&
-                // 后期战道可以自己打一点
-                instanceValue.CharacterStatus!.Level < 19)
+            // 后期战道可以自己打一点
+            var diff = mainInstance.CharacterStatus!.Level - instanceValue.CharacterStatus!.Level;
+            if (diff < 10 || instanceValue.CharacterStatus!.Level > 16)
             {
                 return 1;
             }
