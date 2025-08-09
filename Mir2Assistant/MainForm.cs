@@ -408,12 +408,12 @@ namespace Mir2Assistant
                             SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                             await Task.Delay(3000);
                             // 写标题
-                            if (GameState.gamePath == "Client.dat")
-                            {
+                            // if (GameState.gamePath == "Client.dat")
+                            // {
 
                                 var insIdx = GameState.GameInstances.IndexOf(gameInstance);
                                 ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
-                            }
+                            // }
                         }
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{
@@ -1139,7 +1139,7 @@ namespace Mir2Assistant
                             if (CharacterStatus.CurrentHP > 0)
                             {
                                 // 用用再说
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 100);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                                 if (instance.AccountInfo!.role == RoleType.blade)
                                 {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
