@@ -42,12 +42,11 @@ public static class GameConstants
        
         if (level < (NoobLevel+offset))
         {
-            var temp = allowMonsters.Concat(allowM10).Concat(allow15).ToList();
+            var temp = allowM10.Concat(allow15).ToList();
             if(level > 7){
                 temp.Remove("鸡");
             }
             return temp.ToArray();
-
               
         }
         else if (level < 16+offset)
