@@ -897,45 +897,46 @@ namespace Mir2Assistant.Common.Functions
                 bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
                 if (pathFound)
                 {
-                    await ClickNPC(gameInstance!, npcName);
-                    await Talk2(gameInstance!, "@buy");
+      
 
                     var memoryUtils = gameInstance.memoryUtils!;
                     var menuListLen = 0;
                     // 从高到低找 , 找不到就用前面的
                     for (int i = 0; i < preferBuyItems.Count; i++)
                     {
-
                         // 已经检测过存在了, 只看是否为空先
                         var name = preferBuyItems[i];
                         var exists = await CheckExistsInBags(gameInstance, name);
                         if (exists)
                         {
-                            continue;
+                            break;
                         }
+                        await ClickNPC(gameInstance!, npcName);
+                        await Talk2(gameInstance!, "@buy");
+
                         nint[] data = MemoryUtils.PackStringsToData(name);
                         SendMirCall.Send(gameInstance, 3005, data);
                         await Task.Delay(1000);
                         // 判断是否存在
-                        // len [[0x74350C]+0x00000C5C]+08
                         menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
                         (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
                         if (menuListLen > 0)
                         {
-                            break;
-                        }
-                        // 盲选
-                    }
-                    if (menuListLen == 0)
-                    {
-                        continue;
-                    }
-                    var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
-                    memoryUtils.WriteInt(addr, 0);
-                    await Task.Delay(300);
-                    SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
-                    await Task.Delay(600);
+                            var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
+                            memoryUtils.WriteInt(addr, 0);
+                            await Task.Delay(300);
+                            SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
+                            await Task.Delay(600);
 
+                            var ss = await CheckExistsInBags(gameInstance, name);
+                            if (ss)
+                            {
+                                break;
+                            }
+                        }
+                    }
+                
+                 
                     // trigger takeon 
                     await autoReplaceEquipment(gameInstance, false);
                 }
