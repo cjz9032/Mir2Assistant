@@ -921,6 +921,7 @@ namespace Mir2Assistant.Common.Functions
                         }
                         await ClickNPC(gameInstance!, npcName);
                         await Talk2(gameInstance!, "@buy");
+                        await Task.Delay(200);
 
                         nint[] data = MemoryUtils.PackStringsToData(name);
                         SendMirCall.Send(gameInstance, 3005, data);
@@ -932,9 +933,9 @@ namespace Mir2Assistant.Common.Functions
                         {
                             var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
                             memoryUtils.WriteInt(addr, 0);
-                            await Task.Delay(300);
+                            await Task.Delay(400);
                             SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
-                            await Task.Delay(600);
+                            await Task.Delay(700);
 
                             var ss = await CheckExistsInBags(gameInstance, name);
                             if (ss)
