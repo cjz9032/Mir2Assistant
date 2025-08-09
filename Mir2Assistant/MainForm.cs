@@ -695,12 +695,10 @@ namespace Mir2Assistant
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
-            var isLeftAlive = CharacterStatus.X < 400;
-
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 630 : 283, !isLeftAlive ? 603 : 608, "0", 6,true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 283, 608, "0", 6,true, 10);
             if (pathFound)
             {
-                await NpcFunction.ClickNPC(instanceValue!, !isLeftAlive ? "助手小敏" : "助手阿妍");
+                await NpcFunction.ClickNPC(instanceValue!, "助手阿妍");
             }
         }
 
@@ -708,9 +706,6 @@ namespace Mir2Assistant
         
          private static async Task findMeatNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
-            // var CharacterStatus = instanceValue.CharacterStatus!;
-            // var isLeftAlive = CharacterStatus.X < 400;
-            // bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, !isLeftAlive ? 647 : 293, !isLeftAlive ? 595 : 604, "0", 6, true, 10);
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 293, 604, "0", 6, true, 10);
             
             if (pathFound)
@@ -751,7 +746,7 @@ namespace Mir2Assistant
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
-                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 0) // 6
+                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6) // 6
                         {
                             // 主线
                             if (act.TaskMain0Step == 0)
@@ -842,10 +837,16 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
                                 // 精武馆老板
-                                // await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                var (npcMap, npcName, x, y) = NpcFunction.PickEquipNpcByMap(instanceValue, EquipPosition.Weapon, "0");
+                                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, x, y, npcMap, 6);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue, npcName);
+                                }
+
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
-                                // await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                await NpcFunction.ClickNPC(instanceValue, npcName);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
                                 // 回复会得到乌木剑, 会自动带
