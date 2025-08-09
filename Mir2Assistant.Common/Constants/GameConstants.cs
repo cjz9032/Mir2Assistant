@@ -4,6 +4,8 @@ namespace Mir2Assistant.Common.Constants;
 
 public static class GameConstants
 {
+    public const int NoobLevel = 11;
+
     public static class Skills
     {
         public const int HealSpellId = 2;
@@ -30,18 +32,18 @@ public static class GameConstants
 
     
         public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
-    public static readonly string[] allow22 = new string[] { "半兽人","森林雪人", "食人花", "毒蜘蛛" };
-    public static readonly string[] allowMonsters = new string[]  {   "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
+    public static readonly string[] allow22 = new string[] { "半兽人","森林雪人",  "毒蜘蛛" };
+    public static readonly string[] allowMonsters = new string[]  {   "食人花", "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
             , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
 
     public static string[] GetAllowMonsters(int level, RoleType role)
     {
         var offset = role == RoleType.blade ? -3 : 0;
-        if (level < (13+offset))
+        if (level < (NoobLevel+offset))
         {
             return allowMonsters.Concat(allowM10).Concat(allow15).ToArray();
         }
-        else if (level < 15+offset)
+        else if (level < 16+offset)
         {
             return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
         }

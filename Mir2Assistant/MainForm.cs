@@ -986,7 +986,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D421";
                                 }
-                                else if (CharacterStatus.Level >= 13)
+                                else if (CharacterStatus.Level >= GameConstants.NoobLevel)
                                 {
                                     hangMapId = "D002";
                                 }

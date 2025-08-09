@@ -125,11 +125,8 @@ public static class GoRunFunction
      public static async Task<bool> PerformButchering(MirGameInstanceModel instanceValue,
          int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
      {
-        var allowButch = new List<string> { "鹿", "羊" }; // 不要 "鸡", "毒蜘蛛", "蝎子", "洞蛆",
-        if (instanceValue.CharacterStatus!.Level < 13)
-        {
-            allowButch.Add("鸡");
-        }
+        var allowButch = new List<string> { "鸡", "鹿", "羊" }; // "毒蜘蛛", "蝎子", "洞蛆",
+       
 
          var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
          if (miscs.Count() >= maxBagCount)
@@ -743,7 +740,7 @@ public static class GoRunFunction
             portalEndX = 300;
             portalStartY = 550;
             portalEndY = 620;
-            if (CharacterStatus.Level > 13)
+            if (CharacterStatus.Level >= GameConstants.NoobLevel)
             {
                 portalStartX = 50;
                 portalEndX = 250;
@@ -1263,6 +1260,7 @@ public static class GoRunFunction
                 }
                 await cleanMobs(GameInstance, attacksThan, cancellationToken);
                 await PerformPickup(GameInstance, cancellationToken);
+                await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
 
                 var node = goNodes[0];
                 var oldX = GameInstance!.CharacterStatus!.X;
