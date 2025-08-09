@@ -144,7 +144,7 @@ public static class GoRunFunction
          foreach (var body in bodys)
          {
              instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 999);
+             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1);
              if (pathFound)
              {
                  // 要持续屠宰, 直到尸体消失, 最大尝试次数
@@ -1261,7 +1261,7 @@ public static class GoRunFunction
                 await cleanMobs(GameInstance, attacksThan, cancellationToken);
                 await PerformPickup(GameInstance, cancellationToken);
                 // 寻路会出问题
-                await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
+                // await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
 
                 var node = goNodes[0];
                 var oldX = GameInstance!.CharacterStatus!.X;
