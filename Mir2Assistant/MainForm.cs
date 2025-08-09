@@ -580,8 +580,8 @@ namespace Mir2Assistant
         private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             // 目前只有道士买魔法, 
-            // TODO法师
-            if (instanceValue.AccountInfo.role == RoleType.taoist && instanceValue.CharacterStatus!.Level > 6)
+            // TODO法师 诱惑
+            if (GoRunFunction.CapbilityOfHeal(instanceValue))
             {
                 var items = GameConstants.Items.MegaPotions;
                 var exitsQuan = 0;
