@@ -1,3 +1,5 @@
+using Mir2Assistant.Common.Models;
+
 namespace Mir2Assistant.Common.Constants;
 
 public static class GameConstants
@@ -30,17 +32,18 @@ public static class GameConstants
     public static readonly string[] allowMonsters = new string[]  {   "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
             , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
 
-    public static string[] GetAllowMonsters(int level)
+    public static string[] GetAllowMonsters(int level, RoleType role)
     {
-        if (level < 10)
+        var offset = role == RoleType.blade ? -3 : 0;
+        if (level < (10+offset))
         {
             return allowMonsters.Concat(allowM10).Concat(allow15).ToArray();
         }
-        else if (level < 15)
+        else if (level < 15+offset)
         {
             return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
         }
-        else if (level < 22)
+        else if (level < 22 + offset)
         {
             return allowMonsters.Concat(allow22).ToArray();
         }

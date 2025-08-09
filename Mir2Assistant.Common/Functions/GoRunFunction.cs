@@ -831,7 +831,7 @@ public static class GoRunFunction
         instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
 
         // 等级高了不打鸡鹿
-        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level);
+        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
         // 当前巡回
         var curP = 0;
         var direction = 1; // 1表示正向(0->N), -1表示反向(N->0)
@@ -1111,7 +1111,7 @@ public static class GoRunFunction
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)  
         {
-            var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level);
+            var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).ToList();
             if (monsters.Count > attacksThan)
