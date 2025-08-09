@@ -35,7 +35,7 @@ public static class GameConstants
     public static string[] GetAllowMonsters(int level, RoleType role)
     {
         var offset = role == RoleType.blade ? -3 : 0;
-        if (level < (10+offset))
+        if (level < (13+offset))
         {
             return allowMonsters.Concat(allowM10).Concat(allow15).ToArray();
         }
