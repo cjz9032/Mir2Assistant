@@ -599,7 +599,8 @@ namespace Mir2Assistant
                     await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MegaPotions[0], GameConstants.Items.megaBuyCount - exitsQuan);
                 }
             }
-            else
+            // 等级太低没钱
+            else if(instanceValue.CharacterStatus.Level > 10)
             {
                 // 其他就预备血6
                 var items2 = GameConstants.Items.HealPotions;
