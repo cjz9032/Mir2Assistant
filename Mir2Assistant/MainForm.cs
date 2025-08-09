@@ -218,7 +218,7 @@ namespace Mir2Assistant
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                await Task.Delay(5000);
+                await Task.Delay(6000);
 
                 string output = process.StandardOutput.ReadLine(); // 只读一行即可
                 // 不需要 WaitForExit
@@ -399,9 +399,9 @@ namespace Mir2Assistant
                             nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
                             // auto login 
                             SendMirCall.Send(gameInstance, 9003, data);
-                            await Task.Delay(2000);
+                            await Task.Delay(3000);
                             SendMirCall.Send(gameInstance, 9104, data);
-                            await Task.Delay(6000);
+                            await Task.Delay(7000);
                             // todo 挪走到外面
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                             await Task.Delay(3000);
