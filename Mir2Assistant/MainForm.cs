@@ -1141,11 +1141,11 @@ namespace Mir2Assistant
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 95);
                                 if (instance.AccountInfo!.role == RoleType.blade)
                                 {
-                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }
                                 else
                                 {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1050);
+                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1050);
                                 }
 
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
