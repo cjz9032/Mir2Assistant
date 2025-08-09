@@ -345,45 +345,47 @@ bool InstallHooks()
         printf("hook 12 fail\n");
         return false;
     }
-    // 貌似DLL不稳定 用补丁法
+    // CD 用补丁法
+    if (MIR_BU_DAO_HOOK) {
+        // 13 跑10血
+        DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddressHP, RunHP, (LPVOID*)&originalFuncRunHP) != MH_OK)
+        {
+            printf("hook 13 fail\n");
+            return false;
+        }
 
-    // 13 跑10血
-    DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + g_BaseAddr;
-    if (MH_CreateHook((LPVOID)targetAddressHP, RunHP, (LPVOID*)&originalFuncRunHP) != MH_OK)
-    {
-        printf("hook 13 fail\n");
-        return false;
-    }
+        // 14 无视战斗小退
+        DWORD targetAddress14 = MIR_HK_EXIT_BATTLE_ADDR + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddress14, ExitBattle, (LPVOID*)&originalFuncExitBattle) != MH_OK)
+        {
+            printf("hook 14 fail\n");
+            return false;
+        }
 
-    // 14 无视战斗小退
-    DWORD targetAddress14 = MIR_HK_EXIT_BATTLE_ADDR + g_BaseAddr;
-    if (MH_CreateHook((LPVOID)targetAddress14, ExitBattle, (LPVOID*)&originalFuncExitBattle) != MH_OK)
-    {
-        printf("hook 14 fail\n");
-        return false;
+        // 15 自动接受组1
+        DWORD targetAddress15 = MIR_HK_AUTO_GROUP_1_ADDR + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddress15, AutoGroup1, (LPVOID*)&originalFuncAutoGroup1) != MH_OK)
+        {
+            printf("hook 14 fail\n");
+            return false;
+        }
+        // 16 自动接受组2
+        DWORD targetAddress16 = MIR_HK_AUTO_GROUP_2_ADDR + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddress16, AutoGroup2, (LPVOID*)&originalFuncAutoGroup2) != MH_OK)
+        {
+            printf("hook 16 fail\n");
+            return false;
+        }
+        // 17 小退自动同意
+        DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + g_BaseAddr;
+        if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
+        {
+            printf("hook 17 fail\n");
+            return false;
+        }
     }
-
-     // 15 自动接受组1
-     DWORD targetAddress15 = MIR_HK_AUTO_GROUP_1_ADDR + g_BaseAddr;
-     if (MH_CreateHook((LPVOID)targetAddress15, AutoGroup1, (LPVOID*)&originalFuncAutoGroup1) != MH_OK)
-     {
-         printf("hook 14 fail\n");
-         return false;
-     }
-     // 16 自动接受组2
-     DWORD targetAddress16 = MIR_HK_AUTO_GROUP_2_ADDR + g_BaseAddr;
-     if (MH_CreateHook((LPVOID)targetAddress16, AutoGroup2, (LPVOID*)&originalFuncAutoGroup2) != MH_OK)
-     {
-         printf("hook 16 fail\n");
-         return false;
-     }
-     // 17 小退自动同意
-    DWORD targetAddress17 = MIR_HK_AUTO_AGREE_ADDR + g_BaseAddr;
-    if (MH_CreateHook((LPVOID)targetAddress17, AutoAgree, (LPVOID*)&originalFuncAutoAgree) != MH_OK)
-    {
-        printf("hook 17 fail\n");
-        return false;
-    }
+  
 
     if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK)
     {
