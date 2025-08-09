@@ -622,6 +622,10 @@ namespace Mir2Assistant.Common.Functions
                     await Task.Delay(500);
                     await SellItems(gameInstance, lists);
                 }
+                else
+                {
+                    gameInstance.GameInfo($"出售失败 {npcName}的{position}装备");
+                }
             }
             await RefreshPackages(gameInstance);
         }
