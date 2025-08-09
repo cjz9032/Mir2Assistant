@@ -1057,14 +1057,16 @@ public static class GoRunFunction
 
             // 使用通用捡取方法
             await PerformPickup(instanceValue, _cancellationToken);
+
+            // 使用通用屠挖肉方法
+            await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
+
             // checker 满足条件就跳出循环, checker是参数
             if (checker(instanceValue!))
             {
                 break;
             }
-            // 使用通用屠挖肉方法
-            await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
-
+          
          
             // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
             curP += direction;
@@ -1118,7 +1120,7 @@ public static class GoRunFunction
                     // 重读怪物
                     var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).Count();
                     // 怪物死了剩余一半就可以通过
-                    if (existsCount <= attacksThan / 2)
+                    if (existsCount <= attacksThan / 3)
                     {
                         return true;
                     }
