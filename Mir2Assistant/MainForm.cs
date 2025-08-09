@@ -218,7 +218,7 @@ namespace Mir2Assistant
                 };
 
                 var process = System.Diagnostics.Process.Start(psi);
-                await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 6000);
+                await Task.Delay(4000);
 
                 string output = process.StandardOutput.ReadLine(); // 只读一行即可
                 // 不需要 WaitForExit
@@ -401,11 +401,10 @@ namespace Mir2Assistant
                             SendMirCall.Send(gameInstance, 9003, data);
                             await Task.Delay(2000);
                             SendMirCall.Send(gameInstance, 9104, data);
-
-                            await Task.Delay(8000);
+                            await Task.Delay(7000);
                             // todo 挪走到外面
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
-                            await Task.Delay(5000);
+                            await Task.Delay(4000);
                             SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                             await Task.Delay(3000);
                             // 写标题
@@ -545,8 +544,8 @@ namespace Mir2Assistant
             foreach (var account in accountList)
             {
                 RestartGameProcess(GameState.GameInstances.FirstOrDefault(g => g.AccountInfo?.Account == account.Account)!);
-                await Task.Delay( Environment.ProcessorCount <=4 ?  10_000 : 15000);
-                }
+                await Task.Delay(5000);
+            }
              
                 // sllep 
                 // await Task.Delay(20_000);

@@ -1413,11 +1413,11 @@ public static class GoRunFunction
     public static async Task RestartByToSelectScene(MirGameInstanceModel gameInstance)
     {
         SendMirCall.Send(gameInstance, 9098, new nint[] { });
-        await Task.Delay(7000);
+        await Task.Delay(8000);
         SendMirCall.Send(gameInstance, 9099, new nint[] { });
-        await Task.Delay(6000);
+        await Task.Delay(7000);
         SendMirCall.Send(gameInstance, 9100, new nint[] { });
-        await Task.Delay(3000);
+        await Task.Delay(4000);
     }
 
     /// <summary>
