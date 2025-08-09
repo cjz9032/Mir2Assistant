@@ -1451,7 +1451,7 @@ public static class GoRunFunction
     {
         // role
         if (GameInstance.AccountInfo.role != RoleType.taoist
-        || GameInstance.CharacterStatus!.Level < 18)
+        || GameInstance.CharacterStatus!.Level < 7)
         {
             return false;
         }

@@ -193,7 +193,7 @@ __declspec(naked) void ExitBattle()
     __asm {
         mov ecx, g_BaseAddr
         add ecx, MIR_HK_EXIT_BATTLE_ADDR
-        add ecx, 6
+        add ecx, 8
         jmp ecx
     }
 }
@@ -223,7 +223,7 @@ __declspec(naked) void AutoAgree()
     __asm {
         mov esi, g_BaseAddr
         add esi, MIR_HK_AUTO_AGREE_ADDR
-        add esi, 8
+        add esi, 12
         jmp esi
     }
 }
@@ -345,6 +345,7 @@ bool InstallHooks()
         printf("hook 12 fail\n");
         return false;
     }
+    // 貌似DLL不稳定 用补丁法
 
     // 13 跑10血
     DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + g_BaseAddr;
