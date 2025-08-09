@@ -1143,9 +1143,9 @@ namespace Mir2Assistant
                                 {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }
-                                else
+                                else if(instance.CharacterStatus.Level < 7)
                                 {
-                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1050);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1050);
                                 }
 
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
