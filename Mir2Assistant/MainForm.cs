@@ -751,7 +751,7 @@ namespace Mir2Assistant
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
-                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6)
+                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 0) // 6
                         {
                             // 主线
                             if (act.TaskMain0Step == 0)
@@ -842,10 +842,10 @@ namespace Mir2Assistant
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
                                 // 精武馆老板
-                                await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                // await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
-                                await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
+                                // await findWeaponNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
                                 // 回复会得到乌木剑, 会自动带
