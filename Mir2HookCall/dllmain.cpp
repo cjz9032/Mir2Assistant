@@ -346,7 +346,7 @@ bool InstallHooks()
         return false;
     }
     // CD 用补丁法
-    if (MIR_BU_DAO_HOOK) {
+    if (!MIR_BU_DAO_HOOK) {
         // 13 跑10血
         DWORD targetAddressHP = MIR_HK_RUN_HP_ADDR + g_BaseAddr;
         if (MH_CreateHook((LPVOID)targetAddressHP, RunHP, (LPVOID*)&originalFuncRunHP) != MH_OK)
