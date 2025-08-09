@@ -499,7 +499,7 @@ namespace Mir2Assistant.Common.Functions
             var nearHome = PickNearHomeMap(gameInstance);
             var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 19级道士才需要
-            if (gameInstance.CharacterStatus.Level < 19 && gameInstance.AccountInfo.role != RoleType.taoist)
+            if (gameInstance.CharacterStatus.Level < 19 || gameInstance.AccountInfo.role != RoleType.taoist)
             {
                 return;
             }
