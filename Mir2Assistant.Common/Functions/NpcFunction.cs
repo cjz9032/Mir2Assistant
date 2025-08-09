@@ -142,7 +142,7 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public async static Task BuyLZ(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            if (GameState.gamePath == "Client") return;
+            if (GameState.gamePath == "Client.dat") return;
 
             gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", "火把", 1);
             // 查看背包有没火把 没有就买一个
@@ -415,7 +415,7 @@ namespace Mir2Assistant.Common.Functions
                 switch (position)
                 {
                     case EquipPosition.Weapon:
-                        return ("0", GameState.gamePath =="Client"? "铁匠铺老板" : "边界村铁匠铺", 295, 608);
+                        return ("0", GameState.gamePath =="Client.dat"? "铁匠铺老板" : "边界村铁匠铺", 295, 608);
                     case EquipPosition.Dress:
                     case EquipPosition.Helmet:
                         return ("0", "白家服装老板", 304, 608);
