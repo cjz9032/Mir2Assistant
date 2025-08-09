@@ -1047,7 +1047,7 @@ namespace Mir2Assistant
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     var isLowFushen = false;
-                                    if (instanceValue.AccountInfo.role == RoleType.taoist)
+                                    if (instanceValue.AccountInfo.role == RoleType.taoist && instanceValue.CharacterStatus.Level > 18)
                                     {
                                         // 总计只剩50 跑路足够了
                                         var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
@@ -1056,6 +1056,7 @@ namespace Mir2Assistant
                                         if (allFushen < 50)
                                         {
                                             isLowFushen = true;
+                                            Log.Debug("沪深低耐久, 需要替换, 回家");
                                         }
                                     }
                                     var final = miscs.Count > 38 || realLowEq || isLowHpMP || isLowFushen;
