@@ -98,7 +98,7 @@
     #define MIR_SendClientMessage_CALL 0x642524
     #define MIR_GRID_FOO_ADDR 0x7432F4
     #define MIR_DMenuBuyClick_CALL 0x5B112C
-    #define MIC_G_NPC_ID 0x6799E8
+    #define MIC_G_NPC_ID 0x7563A4
     #define MIR_GET_GoodsList_CALL 0x6454AC
     #define MIR_SendBuyItem_CALL 0x6459F4
     #define MIR_STORE_ITEM_CALL 0x6452EC
