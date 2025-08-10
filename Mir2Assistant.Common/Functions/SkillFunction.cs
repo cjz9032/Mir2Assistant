@@ -31,7 +31,7 @@ public static class SkillFunction
 
                 var skill = new SkillModel
                 {
-                    Id = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x8)),
+                    Id = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(addr, 0x8)),
                     Addr = memoryUtils.ReadToInt(addr),
                     Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 0xA+1), nameLength),
                     points = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x4)),

@@ -14,6 +14,6 @@ namespace Mir2Assistant.Common.Models
         public int points { get; set; }
         public int maxPoints { get; set; }
         public int level { get; set; }
-        public string Display => $"{Addr?.ToString("x2").PadRight(10)}{Name} {points}/{maxPoints}";
+        public string Display => $"{Addr.ToString("x2").PadRight(10)} {Id} {Name} {points}/{maxPoints}";
     }
 }
