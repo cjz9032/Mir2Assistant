@@ -1199,7 +1199,7 @@ namespace Mir2Assistant
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
                                 {
                                     instance.sameHPtimes++;
-                                    if (instance.sameHPtimes > 10)
+                                    if (instance.sameHPtimes > 6)
                                     {
                                         // 掉线 怀疑掉线 用脱装备验证
                                         var oldV = instance.Items.Count(o => !o.IsEmpty);
