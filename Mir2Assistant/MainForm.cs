@@ -877,7 +877,7 @@ namespace Mir2Assistant
                                 SaveAccountList();
 
                             }
-                            if (act.TaskMain0Step == 6 && instanceValue.CharacterStatus.Level > 9)
+                            if (act.TaskMain0Step == 6 && instanceValue.CharacterStatus.Level > 99)
                             {
                                 // 主线
                                 // 去道士武士魔法之家
