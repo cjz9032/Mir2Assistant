@@ -1641,6 +1641,9 @@ public static class GoRunFunction
                 var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
                 var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.HealPotions;
                 int resIdx = -1;
+                if(veryLow)  {
+                    items =  GameConstants.Items.SuperPotions.Concat(items).ToList();
+                }
                 foreach (var item in items)
                 {
                     var idx = findIdxInAllItems(GameInstance, item);
@@ -1664,8 +1667,11 @@ public static class GoRunFunction
         {
             // 找蓝药 太阳水
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
-            var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.MegaPotions;
+            var items =  GameConstants.Items.MegaPotions;
             int resIdx = -1;
+            if(veryLow)  {
+                items =  GameConstants.Items.SuperPotions.Concat(items).ToList();
+            }
             foreach (var item in items)
             {
                 var idx = findIdxInAllItems(GameInstance, item);
