@@ -892,7 +892,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            var lowCoin = gameInstance.CharacterStatus.coin < 1000;
+            var lowCoin = gameInstance.CharacterStatus.coin < 2000;
             foreach (var position in Enum.GetValues(typeof(EquipPosition)))
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);

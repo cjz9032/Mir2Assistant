@@ -579,7 +579,7 @@ namespace Mir2Assistant
      
         private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
-            var lowCoin = instanceValue.CharacterStatus.coin < 1000;
+            var lowCoin = instanceValue.CharacterStatus.coin < 3000;
             if(lowCoin) return;
             // 目前只有道士买魔法, 
             // TODO法师 诱惑
