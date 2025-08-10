@@ -752,18 +752,46 @@ namespace Mir2Assistant.Common.Functions
                     }
                     break;
                 case EquipPosition.Helmet:
-                    if (CharacterStatus.Level >= 10)
-                    {
-                        itemNames.Add("青铜头盔");
+                    if (gameInstance.AccountInfo.role == RoleType.blade){
+                         if (CharacterStatus.Level >= 10)
+                        {
+                            itemNames.Add("青铜头盔");
+                        }
+                        if (CharacterStatus.Level >= 14)
+                        {
+                            itemNames.Add("魔法头盔");
+                        }
+                        if (CharacterStatus.Level >= 23)
+                        {
+                            itemNames.Add("道士头盔");
+                        }
+                    } else {
+                        var isMage = gameInstance.AccountInfo.role == RoleType.mage;
+                        if(isMage){
+                            if (CharacterStatus.Level >= 14 )
+                            {
+                                itemNames.Add("青铜头盔");
+                                itemNames.Add("魔法头盔");
+                            }
+                            if (CharacterStatus.Level >= 23)
+                            {
+                                itemNames.Add("道士头盔");
+                            }
+                        }else{
+                            if (CharacterStatus.Level >= 20)
+                            {
+                                itemNames.Add("青铜头盔");
+                                itemNames.Add("魔法头盔");
+                            }
+                            if (CharacterStatus.Level >= 23)
+                            {
+                                itemNames.Add("道士头盔");
+                            }
+                        }
+                      
                     }
-                    if (CharacterStatus.Level >= 14)
-                    {
-                        itemNames.Add("魔法头盔");
-                    }
-                    if (CharacterStatus.Level >= 23)
-                    {
-                        itemNames.Add("道士头盔");
-                    }
+
+                   
                     break;
                 case EquipPosition.Dress:
                     itemNames.Add("布衣" + genderStr);
