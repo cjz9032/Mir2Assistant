@@ -892,9 +892,11 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
+            var lowCoin = gameInstance.CharacterStatus.coin < 1000;
             foreach (var position in Enum.GetValues(typeof(EquipPosition)))
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
+                if(lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon) ) continue;
                 if (preferBuyItems == null || preferBuyItems.Count == 0)
                 {
                     continue;
@@ -955,6 +957,7 @@ namespace Mir2Assistant.Common.Functions
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string itemName, int count)
         {
+
             gameInstance.GameInfo($"购买药品 {itemName} {count}个");
             var nearHome = PickNearHomeMap(gameInstance);  
             var (npcMap, npcName, x, y) = PickDrugNpcByMap(gameInstance, nearHome);
