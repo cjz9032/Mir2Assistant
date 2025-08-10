@@ -54,7 +54,7 @@ public static class GoRunFunction
                 : true
             )
             // 药
-            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
+            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
                     instanceValue.AccountInfo.role != RoleType.taoist ? (CharacterStatus.Level > 24 && megaCount < (GameConstants.Items.megaBuyCount/2))
                     : (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
