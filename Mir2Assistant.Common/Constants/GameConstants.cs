@@ -166,13 +166,26 @@ public static class GameConstants
             // "铁剑",
             "青铜头盔",
            };
+
+                 private static readonly List<string> binItemsMid =
+           new List<string>
+           {
+            "牛角戒指",
+            "金项链",
+            "钢手镯",
+            "铁剑",
+           };
         public static List<string> GetBinItems(int level)
         {
             if (level < 14)
             {
                 return binItems;
             }
-            return binItems.Concat(binItemsNoob).ToList();
+            if (level < 20)
+            {
+                return binItems.Concat(binItemsNoob).ToList();
+            }
+            return binItems.Concat(binItemsNoob).Concat(binItemsMid).ToList();
         }
     }
     
