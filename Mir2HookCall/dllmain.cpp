@@ -190,9 +190,12 @@ __declspec(naked) void RunHP()
 __declspec(naked) void learnSkip()
 {
     __asm {
+  
         mov esi, g_BaseAddr
         add esi, MIR_LEARN_SKIP_ADDR
-        add esi, 0xA
+        add esi, 0x8
+        mov eax, 1
+        cmp eax, 1
         jmp esi
     }
 }
