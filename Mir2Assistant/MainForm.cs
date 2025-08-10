@@ -1204,7 +1204,7 @@ namespace Mir2Assistant
                                 if (CharacterStatus.CurrentHP == instance.lastHP)
                                 {
                                     instance.sameHPtimes++;
-                                    if (instance.sameHPtimes > 6)
+                                    if (instance.sameHPtimes > 10)
                                     {
                                         // 掉线 怀疑掉线 用脱装备验证
                                         var oldV = instance.Items.Count(o => !o.IsEmpty);
@@ -1212,10 +1212,15 @@ namespace Mir2Assistant
                                         if (fitem != null)
                                         {
                                             var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
+                                            await Task.Delay(300);
                                             if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
                                             {
                                                 RestartGameProcess(instance);
                                                 return;
+                                            }
+                                            else
+                                            {
+                                                instance.sameHPtimes = 0;
                                             }
 
                                         }

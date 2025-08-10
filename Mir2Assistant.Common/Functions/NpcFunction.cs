@@ -271,7 +271,7 @@ namespace Mir2Assistant.Common.Functions
                 );
                 SendMirCall.Send(gameInstance!, 3022, data);
                 gameInstance!.memoryUtils!.WriteByte(item.addr, 0);
-                await Task.Delay(600);
+                await Task.Delay(700);
                 return itemCopy;
             }
             return null;
