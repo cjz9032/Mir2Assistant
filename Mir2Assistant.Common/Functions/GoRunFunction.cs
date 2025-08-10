@@ -391,7 +391,7 @@ public static class GoRunFunction
         }   
 
         // obstacles 前2个int 32是宽高
-        return (width, height, obstacles);
+        return (width, height, (byte[])obstacles.Clone());
     }
     public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize){
         var localObstacles = new List<(int x, int y)>();

@@ -23,10 +23,10 @@ namespace Mir2Assistant.Common.Services
             var cacheKey = $"{fromMapId}->{toMapId}";
             
             // 检查缓存
-            if (_pathCache.TryGetValue(cacheKey, out var cachedPath))
-            {
-                return cachedPath;
-            }
+            // if (_pathCache.TryGetValue(cacheKey, out var cachedPath))
+            // {
+            //     return cachedPath;
+            // }
 
             // 转换为索引
             var fromIndex = MapData.GetMapIndex(fromMapId);
@@ -41,7 +41,7 @@ namespace Mir2Assistant.Common.Services
             var path = FindPathInternal(fromIndex, toIndex);
             
             // 缓存结果
-            _pathCache[cacheKey] = path;
+            // _pathCache[cacheKey] = path;
             
             return path;
         }
