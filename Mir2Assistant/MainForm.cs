@@ -1006,6 +1006,7 @@ namespace Mir2Assistant
                             // 目前死循环
                             while (true)
                             {
+                                CharacterStatus = instance.CharacterStatus!;
                                 if (CharacterStatus.CurrentHP == 0)
                                 {
                                     await Task.Delay(5_000);
