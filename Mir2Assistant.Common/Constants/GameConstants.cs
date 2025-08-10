@@ -155,15 +155,15 @@ public static class GameConstants
            new List<string>
            {
             "古铜戒指",
-            "牛角戒指",
-            "金项链",
+            // "牛角戒指",
+            // "金项链",
             "传统项链",
             "铁手镯",
             "皮制手套",
-            "钢手镯",
+            // "钢手镯",
             "匕首",
             "青铜剑",
-            "铁剑",
+            // "铁剑",
             "青铜头盔",
            };
         public static List<string> GetBinItems(int level)
