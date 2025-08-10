@@ -1042,7 +1042,7 @@ namespace Mir2Assistant
                                     {
                                         return false;
                                     }
-                                    if (!instanceValue.CharacterStatus.CurrentHP <= 0)
+                                    if (instanceValue.CharacterStatus.CurrentHP <= 0)
                                     {
                                         return false;
                                     }
