@@ -1114,6 +1114,7 @@ namespace Mir2Assistant
                                     var final = isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
+                                instanceValue.GameInfo("开始回家");
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                 await NpcFunction.autoReplaceEquipment(instanceValue, false);
                                 instanceValue.isHomePreparing = true;
