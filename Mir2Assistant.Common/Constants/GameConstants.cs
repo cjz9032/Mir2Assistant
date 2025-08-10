@@ -93,7 +93,8 @@ public static class GameConstants
             "命运之刃"	,
             "龙纹剑"	,
     };
-        public static readonly int megaBuyCount = 10;
+        public static readonly int megaBuyCount = 8;
+        public static readonly int superPickCount = 3;
         public static readonly int healBuyCount = 6;
         public static readonly List<string> MegaPotions =
         new List<string>

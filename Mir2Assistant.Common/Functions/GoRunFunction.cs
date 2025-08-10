@@ -56,11 +56,11 @@ public static class GoRunFunction
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > 6))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
-                    instanceValue.AccountInfo.role == RoleType.blade ? (CharacterStatus.Level > 28 && megaCount < 6)
-                    : true
+                    instanceValue.AccountInfo.role != RoleType.taoist ? (CharacterStatus.Level > 24 && megaCount < (GameConstants.Items.megaBuyCount/2))
+                    : (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
                 ) : true)
-            && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
-            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > 6))
+            // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
+            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
             &&
             (
                 // todo 更多属性获取drop更高效
