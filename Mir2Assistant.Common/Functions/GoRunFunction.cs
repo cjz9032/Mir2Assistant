@@ -1540,7 +1540,7 @@ public static class GoRunFunction
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
-        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 4000);
+        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
 
     // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态
