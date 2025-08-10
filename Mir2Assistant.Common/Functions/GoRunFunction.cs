@@ -469,13 +469,21 @@ public static class GoRunFunction
 
             if (candidatePoints.Count > 0)
             {
-                // 从前3个点中随机选择一个（如果不足3个则在现有点中随机选择）
-                var random = new Random();
-                //var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
-                var selectedPoint = candidatePoints[random.Next(candidatePoints.Count)];
-                targetX = selectedPoint.X;
-                targetY = selectedPoint.Y;
-                gameInstance.GameDebug($"从{candidatePoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY})");
+                if(blurRange == 1){
+                    // 基本是单点扩 所以用基本测距
+                    var selectedPoint = candidatePoints.OrderBy(ep => Math.Max(Math.Abs(myX - ep.X), Math.Abs(myY- ep.Y))).FirstOrDefault();
+                    targetX = selectedPoint.X;
+                    targetY = selectedPoint.Y;
+                }else{
+                    // 从前3个点中随机选择一个（如果不足3个则在现有点中随机选择）
+                    var random = new Random();
+                    //var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
+                    var selectedPoint = candidatePoints[random.Next(candidatePoints.Count)];
+                    targetX = selectedPoint.X;
+                    targetY = selectedPoint.Y;
+                }
+         
+                // gameInstance.GameDebug($"从{candidatePoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY})");
             }
 
             if (targetX == -1)
