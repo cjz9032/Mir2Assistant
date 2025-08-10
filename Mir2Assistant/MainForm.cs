@@ -1042,6 +1042,10 @@ namespace Mir2Assistant
                                     {
                                         return false;
                                     }
+                                    if (!instanceValue.CharacterStatus.CurrentHP <= 0)
+                                    {
+                                        return false;
+                                    }
                                     // go home
                                     // 排除药品, 
                                     // todo 扔掉红
