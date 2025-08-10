@@ -747,7 +747,7 @@ namespace Mir2Assistant
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
-                        if (CharacterStatus.Level <= 8 && act.TaskMain0Step < 6) // 6
+                        if (CharacterStatus.Level <= 11 && act.TaskMain0Step < 7) // 6
                         {
                             // 主线
                             if (act.TaskMain0Step == 0)
@@ -873,6 +873,40 @@ namespace Mir2Assistant
                                 SaveAccountList();
 
                             }
+                            if (act.TaskMain0Step == 6 && instanceValue.CharacterStatus.Level > 9)
+                            {
+                                // 主线
+                                // 去道士武士魔法之家
+                                // ["0114"] = "高级武士之家",
+                                // ["01141"] = "高级武士之家",
+                                // ["01142"] = "任务地图",
+                                // ["0115"] = "高级魔法师之家",
+                                // ["01152"] = "任务地图",
+                                // ["0113"] = "高级道士之家",
+                                // ["01132"] = "任务地图",
+
+                                 // 精武馆老板
+                                if(instanceValue.AccountInfo.role == RoleType.blade){
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10,10, "0114", 6, true, 20);
+                                    if (pathFound)
+                                    {
+                                        await NpcFunction.ClickNPC(instanceValue, "高级战士");
+                                    }
+                                }else if (instanceValue.AccountInfo.role == RoleType.taoist){
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10,10, "0113", 6, true, 20);
+                                    if (pathFound)
+                                    {
+                                        await NpcFunction.ClickNPC(instanceValue, "高级道士");
+                                    }
+                                }
+                              
+                                // await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                               
+
+                                // act.TaskMain0Step = 7;
+                                // SaveAccountList();
+
+                            }
                         }
                         // 支线8级, 没啥调用 先不要了
                         if (CharacterStatus.Level >= 999 && act.TaskSub0Step < 99)
@@ -956,11 +990,7 @@ namespace Mir2Assistant
                             //     SaveAccountList();
                             // }
                         }
-                        // 主线
-                        // 去道士武士魔法之家, todo 跨地图寻路
-                        // 道士 544, 560
-                        // 武士 107, 316
-                        // 魔法 314, 474
+                      
                         if (CharacterStatus.Level >= 1)
                         {
                             // todo 跨地图

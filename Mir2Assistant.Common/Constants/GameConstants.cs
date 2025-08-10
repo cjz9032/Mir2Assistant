@@ -4,7 +4,7 @@ namespace Mir2Assistant.Common.Constants;
 
 public static class GameConstants
 {
-    public const int NoobLevel = 13;
+    public const int NoobLevel = 10;
 
     public static class Skills
     {

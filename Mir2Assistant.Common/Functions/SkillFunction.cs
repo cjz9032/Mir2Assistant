@@ -17,36 +17,30 @@ public static class SkillFunction
     /// 读取角色技能列表
     /// </summary>
     /// <param name="gameInstance"></param>
-    // public static void ReadSkills(MirGameInstanceModel gameInstance)
-    // {
-    //     Task.Run(() =>
-    //     {
-    //         gameInstance.Skills.Clear();
-    //         var memoryUtils = gameInstance!.memoryUtils!;
-    //         var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, 0);
-    //         while (memoryUtils.ReadToInt(addr) != 0)
-    //         {
-    //             var length = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 0));
-    //             if (length <= 0 || length > 12)
-    //             {
-    //                 break;
-    //             }
-    //             var skill = new SkillModel
-    //             {
-    //                 Addr = memoryUtils.ReadToInt(addr),
-    //                 Length = length,
-    //                 Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 1), length),
-    //                 Type = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 15)),
-    //             };
-    //             // if(skill.Type == 4)
-    //             // {
-         
-    //             // }
-    //             gameInstance.Skills.Add(skill);
-    //             addr += 4;
-    //         }
-    //     });
-    // }
+    public static void ReadSkills(MirGameInstanceModel gameInstance)
+    {
+        Task.Run(() =>
+        {
+            gameInstance.Skills.Clear();
+            var memoryUtils = gameInstance!.memoryUtils!;
+            var count = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 8));
+            for (int i = 0; i < count; i++)
+            {
+                var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, i * 0x4);
+                var nameLength = (byte)memoryUtils.ReadToChar(memoryUtils.GetMemoryAddress(addr, 0xA));
+
+                var skill = new SkillModel
+                {
+                    Id = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x8)),
+                    Addr = memoryUtils.ReadToInt(addr),
+                    Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 0xA+1), nameLength),
+                    points = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x4)),
+                    maxPoints = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x24))
+                };
+                gameInstance.Skills.Add(skill);
+            }
+        });
+    }
 
 
 

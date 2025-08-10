@@ -14,6 +14,7 @@ public class CharacterStatusModel
     public byte Level { get; set; } = 0;
     public byte groupMemCount { get; set; } = 0;
     public bool allowGroup { get; set; } = false;
+    public int coin { get; set; } = 0;
 
     // 装备9格
     public List<ItemModel> useItems { get; set; } = new List<ItemModel>();

@@ -142,6 +142,7 @@ public class MirGameInstanceModel
         MonsterFunction.ReadMonster(this, true);
         ItemFunction.ReadBag(this, true);
         ItemFunction.ReadDrops(this, true);
+        SkillFunction.ReadSkills(this);
         isRefreshing = false;
     }
 }
