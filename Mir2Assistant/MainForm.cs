@@ -1006,6 +1006,11 @@ namespace Mir2Assistant
                             // 目前死循环
                             while (true)
                             {
+                                if (CharacterStatus.CurrentHP == 0)
+                                {
+                                    await Task.Delay(5_000);
+                                    continue;
+                                }
                                 // 挑选挂机点, 
                                 // 13级以前比起
                                 // >=13 自然骷髅
@@ -1026,7 +1031,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D002";
                                 }
-                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} ");
+                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} lowFrds:{friends.Count} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
                                 instanceValue.isHomePreparing = false;
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
