@@ -687,6 +687,8 @@ namespace Mir2Assistant
             await NpcFunction.autoReplaceEquipment(instanceValue);
             // save, 该带的极品已经带了, 可以存了, 书记也存
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && (o.IsGodly || o.stdMode == 4)).ToArray());
+            // 卖所有
+            await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);

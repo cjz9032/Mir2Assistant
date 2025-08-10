@@ -21,9 +21,10 @@ public static class SkillFunction
     {
         Task.Run(() =>
         {
-            gameInstance.Skills.Clear();
             var memoryUtils = gameInstance!.memoryUtils!;
             var count = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 8));
+            if(count == gameInstance.Skills.Count) return;
+            gameInstance.Skills.Clear();
             for (int i = 0; i < count; i++)
             {
                 var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, i * 0x4);

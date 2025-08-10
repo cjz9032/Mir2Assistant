@@ -1452,13 +1452,7 @@ public static class GoRunFunction
 
     public static bool CapbilityOfHeal(MirGameInstanceModel GameInstance)
     {
-        // role
-        if (GameInstance.AccountInfo.role != RoleType.taoist
-        || GameInstance.CharacterStatus!.Level < 7)
-        {
-            return false;
-        }
-        return true;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == 2) != null;
     }
 
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
