@@ -1065,7 +1065,7 @@ namespace Mir2Assistant
                                                 var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
                                                 if (replacement == null)
                                                 {
-                                                    Log.Debug("没替换装备了装备{Name}低耐久, 需要替换, 回家", useItem.Name);
+                                                    instanceValue.GameInfo("没替换装备了装备{Name}低耐久, 需要替换, 回家", useItem.Name);
                                                     realLowEq = true;
                                                     break;
                                                 }
@@ -1082,7 +1082,7 @@ namespace Mir2Assistant
                                                 var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
                                                 if (replacement == null)
                                                 {
-                                                    Log.Debug("杂货极品{Name}没替换装备了低耐久, 需要替换, 回家", useItem.Name);
+                                                    instanceValue.GameInfo("杂货极品{Name}没替换装备了低耐久, 需要替换, 回家", useItem.Name);
                                                     realLowEq = true;
                                                     break;
                                                 }
@@ -1104,10 +1104,14 @@ namespace Mir2Assistant
                                         if (allFushen < 50)
                                         {
                                             isLowFushen = true;
-                                            Log.Debug("沪深低耐久, 需要替换, 回家");
+                                            instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
                                         }
                                     }
-                                    var final = miscs.Count > 38 || realLowEq || isLowHpMP || isLowFushen;
+                                    var isFull = miscs.Count > 38;
+                                    if(isFull){
+                                        instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
+                                    }
+                                    var final = isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家

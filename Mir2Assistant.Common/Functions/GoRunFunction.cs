@@ -785,7 +785,7 @@ public static class GoRunFunction
         }
       
 
-        Log.Information($"共生成 地图 {CharacterStatus.MapId} 的 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
+        instanceValue.GameInfo($"共生成 地图 {CharacterStatus.MapId} 的 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
 
         // 转换为数组
         return fixedPoints.ToArray();
@@ -918,7 +918,7 @@ public static class GoRunFunction
                 if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                 {
                     // 跟随
-                    Log.Information("跟随 in start: {X}, {Y}", px, py);
+                    instanceValue.GameInfo("跟随 in start: {X}, {Y}", px, py);
                     await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                 }
             }
@@ -960,7 +960,7 @@ public static class GoRunFunction
                     }
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
-                        Log.Information("跟随 in monster: {X}, {Y}", px, py);
+                        instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
                     }
                 }
@@ -1109,7 +1109,7 @@ public static class GoRunFunction
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "寻路测距异常");
+            GameInstance.GameError("寻路测距异常" + ex.Message);
         }
         return 999;
     }
@@ -1224,7 +1224,7 @@ public static class GoRunFunction
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "寻路异常");
+                GameInstance!.GameError("寻路异常" + ex.Message);
                 await Task.Delay(100);
                 if (GameInstance.CharacterStatus!.CurrentHP == 0)
                 {
@@ -1325,7 +1325,7 @@ public static class GoRunFunction
                             }
                             catch (Exception ex)
                             {
-                                Log.Error(ex, "寻路异常");
+                                GameInstance!.GameError("寻路异常" + ex.Message);
                                 await Task.Delay(100);
                                 if (GameInstance.CharacterStatus!.CurrentHP == 0)
                                 {

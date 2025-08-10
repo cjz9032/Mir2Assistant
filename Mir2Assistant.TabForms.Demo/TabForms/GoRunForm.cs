@@ -1,6 +1,7 @@
 ﻿using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.TabForms;
+using Mir2Assistant.Common.Utils;
 using Serilog;
 using System.DirectoryServices.ActiveDirectory;
 using System.Runtime.InteropServices;
@@ -133,7 +134,7 @@ namespace Mir2Assistant.TabForms.Demo
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "转图操作发生错误");
+                GameInstance!.GameError("转图操作发生错误" + ex.Message);
             }
         }
 
