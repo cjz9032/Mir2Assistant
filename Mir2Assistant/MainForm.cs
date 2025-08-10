@@ -1026,6 +1026,8 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D002";
                                 }
+                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} ");
+
                                 instanceValue.isHomePreparing = false;
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                 {
