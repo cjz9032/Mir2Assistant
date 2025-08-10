@@ -49,7 +49,7 @@ OriginalFuncType originalFuncExitBattle = NULL;
 OriginalFuncType originalFuncAutoGroup1 = NULL;
 OriginalFuncType originalFuncAutoGroup2 = NULL;
 OriginalFuncType originalFuncAutoAgree = NULL;
-
+OriginalFuncType originalFunclearnSkip = NULL;
 
 __declspec(naked) void HookFunction()
 {
@@ -184,6 +184,15 @@ __declspec(naked) void RunHP()
         mov esi, g_BaseAddr
         add esi, MIR_HK_RUN_HP_ADDR
         add esi, 5
+        jmp esi
+    }
+}
+__declspec(naked) void learnSkip()
+{
+    __asm {
+        mov esi, g_BaseAddr
+        add esi, MIR_LEARN_SKIP_ADDR
+        add esi, 0xA
         jmp esi
     }
 }
@@ -348,6 +357,15 @@ bool InstallHooks()
         printf("hook 12 fail\n");
         return false;
     }
+    // 学习钩子
+    DWORD  targetAddress_SKIP = MIR_LEARN_SKIP_ADDR + g_BaseAddr;
+    
+    if (MH_CreateHook((LPVOID)  targetAddress_SKIP, learnSkip, (LPVOID*)&originalFunclearnSkip) != MH_OK)
+    {
+        printf("hook learn fail\n");
+        return false;
+    }
+
     // CD 用补丁法
     if (!MIR_BU_DAO_HOOK) {
         // 13 跑10血

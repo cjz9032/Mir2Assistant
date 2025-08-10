@@ -132,5 +132,7 @@
     // 已有补丁
     #define MIR_HK_AUTO_AGREE_ADDR 0x000000 
     #define MIR_DSServer1Click_CALL 0x59C0DC
+
+    #define MIR_LEARN_SKIP_ADDR 0x23DD0D
     
 #endif
