@@ -897,7 +897,8 @@ public static class GoRunFunction
                 else
                 {
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 5, true, 14);
+                    instanceValue.GameInfo("跟随 in init: {X}, {Y}", px, py);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
                 }
             }
 
@@ -938,7 +939,8 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
                         instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
-                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
+                        break;
                     }
                 }
                  // 查看存活怪物 并且小于距离10个格子
@@ -1009,7 +1011,8 @@ public static class GoRunFunction
                             if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                             {
                                 instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
-                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 9);
+                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
+                                break;
                             }
                         }
                         // 检查是否被包围
