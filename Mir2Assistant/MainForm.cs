@@ -719,7 +719,7 @@ namespace Mir2Assistant
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
             // 买书, 治愈诱惑基本
-            await buyBooks(instanceValue, _cancellationToken);
+            // await buyBooks(instanceValue, _cancellationToken);
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
 

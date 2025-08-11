@@ -814,7 +814,7 @@ public static class GoRunFunction
         return 0;
     }
 
-    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
+  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
     {
 
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -868,6 +868,11 @@ public static class GoRunFunction
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         while (true)
         {
+		    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+			{
+				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+				return false;
+			}
             instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
@@ -909,7 +914,11 @@ public static class GoRunFunction
             while (true)
             {
                 CharacterStatus = instanceValue.CharacterStatus;
-
+				if (instanceValue.CharacterStatus!.CurrentHP == 0)
+				{
+					instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+					return false;
+				}
                 await Task.Delay(100);
                 monsterTried++;
                 if (monsterTried > 100)
@@ -1003,6 +1012,11 @@ public static class GoRunFunction
                     var escapeTried = 0;
                     while (true)
                     {
+						if (instanceValue.CharacterStatus!.CurrentHP == 0)
+						{
+							instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+							return false;
+						}
                         CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
