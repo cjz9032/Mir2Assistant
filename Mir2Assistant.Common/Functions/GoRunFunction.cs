@@ -1004,7 +1004,7 @@ public static class GoRunFunction
                         {
                             sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
                         }
-                    } else if (canLight)
+                    } else if (canLight && ani.CurrentHP > 50)
                     // todo 间歇有蓝才搞
                     {
                         sendSpell(instanceValue!, GameConstants.Skills.LightingSpellId, ani.X, ani.Y, ani.Id);
