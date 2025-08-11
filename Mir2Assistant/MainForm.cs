@@ -1244,7 +1244,7 @@ namespace Mir2Assistant
                                         if (fitem != null)
                                         {
                                             var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
-                                            await Task.Delay(300);
+                                            await Task.Delay(500);
                                             if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
                                             {
                                                 RestartGameProcess(instance);
@@ -1253,6 +1253,8 @@ namespace Mir2Assistant
                                             else
                                             {
                                                 instance.sameHPtimes = 0;
+                                                await NpcFunction.autoReplaceEquipment(instance);
+                                                await Task.Delay(5000);
                                             }
 
                                         }
