@@ -865,6 +865,7 @@ public static class GoRunFunction
         // 巡逻太多次了 有问题
         var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
+        var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         while (true)
         {
             instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
@@ -963,7 +964,22 @@ public static class GoRunFunction
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
-
+                    // 如果是法师 可以抽陀螺
+                    if (canTemp)
+                    {
+                        // 寻找陀螺
+                        var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                        && o.Level <= (CharacterStatus.Level + 3)
+                        && GameConstants.allowTemp.Contains(o.Name)
+                        // 还要看下是不是距离巡逻太远了, 就不要, 
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                        .OrderBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
+                        .FirstOrDefault();
+                        if (mytop != null)
+                        {
+                            sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
+                        }
+                    }
                     continue;
                 }
                 // 保护消费者

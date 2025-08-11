@@ -8,6 +8,7 @@ public static class GameConstants
 
     public static class Skills
     {
+        public const int TemptationSpellId = 20;
         public const int HealSpellId = 2;
         public const int RecallBoneSpellId = 17;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
@@ -25,6 +26,7 @@ public static class GameConstants
 
        
     public static readonly string[] allowM10 = new string[] { "鹿", "羊", "鸡" };
+    public static readonly string[] allowTemp = new string[] { "洞蛆", "威思而小虫", "蜈蚣" ,"黑色恶蛆" };
  
     
     
@@ -32,7 +34,7 @@ public static class GameConstants
 
     
         public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
-    public static readonly string[] allow22 = new string[] { "半兽人","森林雪人",  "毒蜘蛛" };
+    public static readonly string[] allow22 = new string[] { "半兽人","森林雪人",  "毒蜘蛛" , "威思而小虫" };
     public static readonly string[] allowMonsters = new string[]  {   "食人花", "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
             , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
 
