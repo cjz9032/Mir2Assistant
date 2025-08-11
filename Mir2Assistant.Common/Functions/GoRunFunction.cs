@@ -32,6 +32,7 @@ public static class GoRunFunction
         var megaCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.MegaPotions.Contains(o.Name));
         var healCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.HealPotions.Contains(o.Name));
         var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
+        var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
         var maxWeapon = GameConstants.Items.keepWeaponCount;
@@ -56,7 +57,7 @@ public static class GoRunFunction
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
             && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
-                    instanceValue.AccountInfo.role != RoleType.taoist ? ( instanceValue.AccountInfo.role == RoleType.mage && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
+                    instanceValue.AccountInfo.role != RoleType.taoist ? ( canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
                     : (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
                 ) : true)
             // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
@@ -866,6 +867,8 @@ public static class GoRunFunction
         var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
+        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
+
         while (true)
         {
 		    if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -1001,6 +1004,10 @@ public static class GoRunFunction
                         {
                             sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
                         }
+                    } else if (canLight)
+                    // todo 间歇有蓝才搞
+                    {
+                        sendSpell(instanceValue!, GameConstants.Skills.LightingSpellId, ani.X, ani.Y, ani.Id);
                     }
                     continue;
                 }
@@ -1517,6 +1524,11 @@ public static class GoRunFunction
     public static bool CapbilityOfTemptation(MirGameInstanceModel GameInstance)
     {
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 20) != null;
+    }
+
+    public static bool CapbilityOfLighting(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 11) != null;
     }
 
     public static void TryHealPeople(MirGameInstanceModel GameInstance)

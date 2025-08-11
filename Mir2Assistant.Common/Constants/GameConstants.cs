@@ -9,6 +9,7 @@ public static class GameConstants
     public static class Skills
     {
         public const int TemptationSpellId = 20;
+        public const int LightingSpellId = 11;
         public const int HealSpellId = 2;
         public const int RecallBoneSpellId = 17;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
