@@ -178,7 +178,7 @@ public static class GoRunFunction
     /// <param name="maxMonstersNearby">身边允许的最大怪物数量，超过此数量才躲避，默认为0（即有怪就躲）</param>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>是否成功躲避</returns>
-    public static async Task<bool> PerformEscape(MirGameInstanceModel instanceValue, (int x, int y) centerPoint, 
+    public static async Task<int> PerformEscape(MirGameInstanceModel instanceValue, (int x, int y) centerPoint, 
         int dangerDistance = 1, (int min, int max) safeDistance = default, int searchRadius = 10, 
         int maxMonstersNearby = 0, CancellationToken cancellationToken = default)
     {
@@ -196,7 +196,7 @@ public static class GoRunFunction
             
         if (nearbyMonstersCount <= maxMonstersNearby)
         {
-            return false; // 身边怪物数量未超过阈值，不需要躲避
+            return -1; // 身边怪物数量未超过阈值，不需要躲避
         }
         
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
@@ -260,12 +260,12 @@ public static class GoRunFunction
             instanceValue.GameInfo($"躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
             MonsterFunction.SlayingMonsterCancel(instanceValue!);
             await PerformPathfinding(cancellationToken, instanceValue, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 999);
-            return true;
+            return 1;
         }
         else
         {
             instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
-            return false;
+            return 0;
         }
     }
     
@@ -997,6 +997,7 @@ public static class GoRunFunction
                     var monTried = 0;
                     // 等待初始到怪面前的时间 根据初始距离推算 200ms 一格, 保持loop delay一致
                     var INIT_WAIT = Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y));
+                    var escapeTried = 0;
                     while (true)
                     {
                         // 检测距离
@@ -1011,12 +1012,16 @@ public static class GoRunFunction
                         }
                         // 检查是否被包围
                         var centerPoint = (ani.X, ani.Y);
-                        if (instanceValue.AccountInfo!.role == RoleType.taoist)
+                        if (instanceValue.AccountInfo!.role == RoleType.taoist && escapeTried < 3)
                         {
                             var isEscaped = await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 2, cancellationToken: _cancellationToken);
-                            if (isEscaped)
+                            if (isEscaped == 1)
                             {
                                 break;
+                            }else if (isEscaped == 0){
+                                escapeTried++;
+                                await Task.Delay(200);
+                                continue;
                             }
                         }
                         monTried++;
