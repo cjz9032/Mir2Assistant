@@ -945,7 +945,7 @@ public static class GoRunFunction
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                     {
                         instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
@@ -1022,7 +1022,7 @@ public static class GoRunFunction
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                         {
                             (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                            if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                            if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                             {
                                 instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                                 await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
