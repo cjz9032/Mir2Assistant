@@ -89,13 +89,13 @@ namespace Mir2Assistant.Common.Functions
             });
         }
 
-        public static async Task<string> ClickNPC(MirGameInstanceModel gameInstance, string NpcName)
+        public static async Task<string> ClickNPC(MirGameInstanceModel gameInstance, string NpcName, bool fuzzy = true)
         {
             gameInstance.GameDebug("尝试点击NPC: {Name}", NpcName);
             MonsterModel? npc = null;
             if (!await TaskWrapper.Wait(() =>
             {
-                npc = gameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC" && o.Name == NpcName);
+                npc = gameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC" && (fuzzy ? o.Name.Contains(NpcName) : o.Name == NpcName));
                 return npc != null;
             }))
             {
@@ -407,6 +407,20 @@ namespace Mir2Assistant.Common.Functions
                 return ("-1", "", 0, 0);
             }
         }
+        public static (string map, string npcName, int x, int y) PickBookNpcByMap(MirGameInstanceModel gameInstance, string mapId)
+        {
+            // 根据当前所在地图, 找到最近的NPC
+            if (mapId == "0")
+            {
+                return ("0132", "书", 8, 15);
+            }
+            else
+            {
+                // 其他大图
+                return ("-1", "", 0, 0);
+            }
+        }
+        
         public static (string map, string npcName, int x, int y) PickEquipNpcByMap(MirGameInstanceModel gameInstance, EquipPosition position, string mapId)
         {
             // 根据当前所在地图, 找到最近的NPC
@@ -1002,6 +1016,24 @@ namespace Mir2Assistant.Common.Functions
 
                 // 已经检测过存在了, 只看是否为空先
                 await BuyImmediate(gameInstance, itemName, count);
+            }
+        }
+
+        public async static Task BuyBook(MirGameInstanceModel gameInstance, string itemName)
+        {
+
+            gameInstance.GameInfo($"购买书籍 {itemName}");
+            var nearHome = PickNearHomeMap(gameInstance);  
+            var (npcMap, npcName, x, y) = PickBookNpcByMap(gameInstance, nearHome);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@buy");
+                await Task.Delay(500);
+
+                // 已经检测过存在了, 只看是否为空先
+                await BuyImmediate(gameInstance, itemName, 1);
             }
         }
 

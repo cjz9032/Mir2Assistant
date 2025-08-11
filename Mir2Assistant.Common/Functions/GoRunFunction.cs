@@ -1447,6 +1447,11 @@ public static class GoRunFunction
         return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == 2) != null;
     }
 
+    public static bool CapbilityOfTemptation(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 20) != null;
+    }
+
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfHeal(GameInstance))
