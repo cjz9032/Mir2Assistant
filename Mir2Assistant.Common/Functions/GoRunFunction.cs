@@ -955,7 +955,7 @@ public static class GoRunFunction
                         var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;
-                        var atksThan = diffFar > 6 ? 12 : 0;
+                        var atksThan = diffFar > 12 ? 12 : 0;
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, atksThan, soFarGezi);
                         if(isSS){
                             break;
@@ -1038,7 +1038,7 @@ public static class GoRunFunction
                                 var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;
-                                var atksThan = diffFar > 6 ? 12 : 0;
+                                var atksThan = diffFar > 12 ? 12 : 0;
                                 var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, atksThan, soFarGezi);
                                 if(isSS){
                                     break;
