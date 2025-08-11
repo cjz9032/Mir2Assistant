@@ -605,18 +605,18 @@ namespace Mir2Assistant.Common.Functions
                     var preferItems = preferStdEquipment(gameInstance, position);
                     if (preferItems != null && preferItems.Count > 0)
                     {
-                        var prefs = preferItems.Take(GameConstants.Items.keepWeaponCount).ToList();
+                        var prefs = preferItems;
                         // 保留多个最好的装备，最多3个
                         var keepItems = new List<ItemModel>();
                         foreach (var preferName in prefs)
                         {
-                            var foundItems = lists.Where(o => o.Name == preferName).Take(3).ToList();
+                            var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.keepWeaponCount).ToList();
                             keepItems.AddRange(foundItems);
-                            if (keepItems.Count >= 3) break;
+                            if (keepItems.Count >= GameConstants.Items.keepWeaponCount) break;
                         }
 
                         // 如果找到了要保留的装备，从卖出列表中移除
-                        foreach (var keepItem in keepItems)
+                        foreach (var keepItem in keepItems.Take(GameConstants.Items.keepWeaponCount))
                         {
                             lists.Remove(keepItem);
                             gameInstance.GameInfo($"保留备用{position}: {keepItem.Name} (IsGodly: {keepItem.IsGodly})");
