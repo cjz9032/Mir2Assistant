@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Mir2Assistant;
 using Mir2Assistant.Common.Utils;
-using Serilog; // Add this reference to access DllInject
+using Serilog;
+using Mir2Assistant.Common.Constants; // Add this reference to access DllInject
 
 namespace Mir2Assistant.Common.Functions
 {
@@ -590,16 +591,18 @@ namespace Mir2Assistant.Common.Functions
                     var preferItems = preferStdEquipment(gameInstance, position);
                     if (preferItems != null && preferItems.Count > 0)
                     {
-                        // 只保留一个最好的，优先极品，然后按推荐顺序
-                        ItemModel? keepItem = null;
-                        foreach (var preferName in preferItems)
+                        var prefs = preferItems.Take(GameConstants.Items.keepWeaponCount).ToList();
+                        // 保留多个最好的装备，最多3个
+                        var keepItems = new List<ItemModel>();
+                        foreach (var preferName in prefs)
                         {
-                            keepItem = lists.Where(o => o.Name == preferName).FirstOrDefault();
-                            if (keepItem != null) break;
+                            var foundItems = lists.Where(o => o.Name == preferName).Take(3).ToList();
+                            keepItems.AddRange(foundItems);
+                            if (keepItems.Count >= 3) break;
                         }
 
                         // 如果找到了要保留的装备，从卖出列表中移除
-                        if (keepItem != null)
+                        foreach (var keepItem in keepItems)
                         {
                             lists.Remove(keepItem);
                             gameInstance.GameInfo($"保留备用{position}: {keepItem.Name} (IsGodly: {keepItem.IsGodly})");
@@ -866,6 +869,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             if (gameInstance.AccountInfo.role == RoleType.blade)
                             {
+                                itemNames.Add("半月");
                                 itemNames.Add("八荒");
                             }
                             else

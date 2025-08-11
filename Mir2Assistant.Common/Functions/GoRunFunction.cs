@@ -34,10 +34,10 @@ public static class GoRunFunction
         var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
-        var maxWeapon = instanceValue.AccountInfo.role == RoleType.blade ? 4 : 2;
+        var maxWeapon = GameConstants.Items.keepWeaponCount;
 
         var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
-        var maxCloth = instanceValue.AccountInfo.role == RoleType.blade ? 2 : 1;
+        var maxCloth = GameConstants.Items.keepClothCount;
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
         // 武器表
