@@ -1507,7 +1507,7 @@ public static class GoRunFunction
             return false;
         }
         // fs x 2
-        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 2400 : 1200;
+        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 1600 : 1200;
         if (GameInstance.spellLastTime + fsBase > Environment.TickCount)
         {
             return false;
