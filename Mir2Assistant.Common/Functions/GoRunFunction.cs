@@ -77,14 +77,14 @@ public static class GoRunFunction
         foreach (var drop in drops)
         {
             instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-            bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10);
+            bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
             
             var triedGoPick = 0;
             var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
             while (!pathFound && triedGoPick < maxTriedGoPick)
             {
                 triedGoPick++;
-                pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1);
+                pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30);
             }
 
             var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
@@ -144,7 +144,7 @@ public static class GoRunFunction
          foreach (var body in bodys)
          {
              instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1);
+             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1, 30);
              if (pathFound)
              {
                  // 要持续屠宰, 直到尸体消失, 最大尝试次数
@@ -259,7 +259,7 @@ public static class GoRunFunction
         {
             instanceValue.GameInfo($"躲避到安全点: ({bestEscapePoint.Item1}, {bestEscapePoint.Item2}) [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-            await PerformPathfinding(cancellationToken, instanceValue, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 999);
+            await PerformPathfinding(cancellationToken, instanceValue, bestEscapePoint.Item1, bestEscapePoint.Item2, "", 0, true, 999, 30);
             return 1;
         }
         else
@@ -903,7 +903,11 @@ public static class GoRunFunction
                 {
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     instanceValue.GameInfo("跟随 in init: {X}, {Y}", px, py);
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
+                    // 判断主任是否太远, 不同图可以认为太远, 或者是距离过长也是
+                    var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
+                    || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
+
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
                 }
             }
 
@@ -948,7 +952,9 @@ public static class GoRunFunction
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                     {
                         instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
-                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
+                        var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
+                        || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
+                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
                         break;
                     }
                 }
@@ -1025,7 +1031,9 @@ public static class GoRunFunction
                             if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                             {
                                 instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
-                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12);
+                                var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
+                                || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
+                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
                                 break;
                             }
                         }
@@ -1173,6 +1181,7 @@ public static class GoRunFunction
           int blurRange = 0,
           bool nearBlur = true,
           int attacksThan = 3,
+          int maxPathLength = 9999,
           int retries = 0
         )
     {
@@ -1243,7 +1252,7 @@ public static class GoRunFunction
             if (GameInstance.CharacterStatus.MapId != connection.From.MapId)
             {
                 // reset
-                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
+                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
             }
 
             var stopwatchTotal = new System.Diagnostics.Stopwatch();
@@ -1281,14 +1290,14 @@ public static class GoRunFunction
                 if (retries < 3)
                 {
                     GameInstance.GameWarning("寻路未找到路径，准备第 {Retry} 次重试", retries + 1);
-                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
+                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
                 }
 
                 GameInstance.GameWarning("寻路最终未找到路径，已重试 {Retries} 次", retries);
                 return false;
             }
 
-            if(attacksThan == 999 && goNodes.Count > 30){
+            if(goNodes.Count > maxPathLength){
                 GameInstance.GameWarning("寻路路径太长:{Retries} ", goNodes.Count);
                 return false;
             }
@@ -1417,13 +1426,13 @@ public static class GoRunFunction
                         {
                             // 失败了怎么办, 只能放弃先了
                             GameInstance.GameWarning($"寻路最终未找到 -- 跳点 再次尝试 NB");
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1);
                             // return false;
                         }
                         else
                         {
                             // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
                         }
                     }
 
