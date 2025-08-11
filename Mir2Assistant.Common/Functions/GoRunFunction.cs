@@ -863,6 +863,7 @@ public static class GoRunFunction
                 .i;
         }
         // 巡逻太多次了 有问题
+        var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
         while (true)
         {
@@ -894,34 +895,11 @@ public static class GoRunFunction
                 }
                 else
                 {
-                    // 从是跟随
-                    var mainInstance = GameState.GameInstances[0];
-                    if (mainInstance.IsAttached)
-                    {
-                        (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
-                    }
+                    (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 5, true, 14);
                 }
             }
 
-
-            // 如果是跟随
-            if (!instanceValue.AccountInfo!.IsMainControl && !forceSkip)
-            {
-                // 从是跟随 -- 这是重复代码 先放着
-                var mainInstance = GameState.GameInstances[0];
-                if (mainInstance.IsAttached)
-                {
-                    (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
-                }
-                // 检测距离
-                if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
-                {
-                    // 跟随
-                    instanceValue.GameInfo("跟随 in start: {X}, {Y}", px, py);
-                    await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
-                }
-            }
 
             var monsterTried = 0;
             // 无怪退出
@@ -953,11 +931,7 @@ public static class GoRunFunction
                 // 检测距离
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
-                    var mainInstance = GameState.GameInstances[0];
-                    if (mainInstance.IsAttached)
-                    {
-                        (px, py) = (mainInstance.CharacterStatus!.X!, mainInstance.CharacterStatus!.Y!);
-                    }
+                    (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                     {
                         instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
@@ -1001,14 +975,24 @@ public static class GoRunFunction
                         firstMonPos = (ani.X, ani.Y);
                     }
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
-                ani.Name, ani.X, ani.Y,
-                Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
+                        ani.Name, ani.X, ani.Y,
+                        Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
                     // 等待初始到怪面前的时间 根据初始距离推算 200ms 一格, 保持loop delay一致
                     var INIT_WAIT = Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y));
                     while (true)
                     {
+                        // 检测距离
+                        if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
+                        {
+                            (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
+                            if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
+                            {
+                                instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
+                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
+                            }
+                        }
                         // 检查是否被包围
                         var centerPoint = (ani.X, ani.Y);
                         if (instanceValue.AccountInfo!.role == RoleType.taoist)

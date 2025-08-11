@@ -110,7 +110,13 @@ public class MirGameInstanceModel
         TalkCmds.Clear();
         chats = new List<string>();
         // MapBasicInfo.Clear(); 保留把, 固定的信息
-        CharacterStatus = new CharacterStatusModel();
+        // CharacterStatus = new CharacterStatusModel();
+        CharacterStatus.CurrentHP = 0;
+        CharacterStatus.X = 0;
+        CharacterStatus.Y = 0;
+        CharacterStatus.MapId = "";
+        CharacterStatus.MapName = "";
+
         // 别销毁
         //AccountInfo = new GameAccountModel();
         MirPid = 0;
