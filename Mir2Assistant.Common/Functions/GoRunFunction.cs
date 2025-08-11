@@ -1065,7 +1065,7 @@ public static class GoRunFunction
                         if (monTried > INIT_WAIT && Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999);
+                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30);
                             instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
                             if (ani3 == null)
                             {
