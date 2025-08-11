@@ -907,6 +907,8 @@ public static class GoRunFunction
             var firstMonPos = (0, 0);
             while (true)
             {
+                CharacterStatus = instanceValue.CharacterStatus;
+
                 await Task.Delay(100);
                 monsterTried++;
                 if (monsterTried > 100)
@@ -971,9 +973,8 @@ public static class GoRunFunction
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && o.Level <= (CharacterStatus.Level + 3)
                         && GameConstants.allowTemp.Contains(o.Name)
-                        // 还要看下是不是距离巡逻太远了, 就不要, 
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
-                        .OrderBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10)
+                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
                         .FirstOrDefault();
                         if (mytop != null)
                         {
@@ -1000,6 +1001,7 @@ public static class GoRunFunction
                     var escapeTried = 0;
                     while (true)
                     {
+                        CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                         {
@@ -1007,7 +1009,7 @@ public static class GoRunFunction
                             if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 12)
                             {
                                 instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
-                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 14);
+                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 3, true, 9);
                             }
                         }
                         // 检查是否被包围
