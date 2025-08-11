@@ -1056,13 +1056,13 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D421";
                                 }
+                                else if (CharacterStatus.Level >= 18)
+                                {
+                                    hangMapId = "D421";
+                                }
                                 else if (CharacterStatus.Level >= GameConstants.NoobLevel)
                                 {
                                     hangMapId = "D002";
-                                }
-                                else if (CharacterStatus.Level >= 18)
-                                {
-                                    hangMapId = "1";
                                 }
                                 instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} lowFrds:{friends.Count} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
