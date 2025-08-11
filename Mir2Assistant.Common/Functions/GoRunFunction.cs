@@ -1072,9 +1072,9 @@ public static class GoRunFunction
                             break;
                         }
                     }
-                    // 7格没怪 可以捡取
+                    // 5格没怪 可以捡取
                     var existAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
-                    Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 7).FirstOrDefault();
+                    Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
                     if (existAni == null)
                     {
                         await PerformPickup(instanceValue, _cancellationToken);
