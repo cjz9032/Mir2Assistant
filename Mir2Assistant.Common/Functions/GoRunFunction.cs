@@ -954,8 +954,10 @@ public static class GoRunFunction
                         instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                         || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
-                        await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
-                        break;
+                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
+                        if(isSS){
+                            break;
+                        }
                     }
                 }
                  // 查看存活怪物 并且小于距离10个格子
@@ -1033,8 +1035,10 @@ public static class GoRunFunction
                                 instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
-                                await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
-                                break;
+                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
+                                if(isSS){
+                                    break;
+                                }
                             }
                         }
                         // 检查是否被包围
