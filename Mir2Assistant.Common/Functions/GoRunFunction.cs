@@ -1288,7 +1288,10 @@ public static class GoRunFunction
                 return false;
             }
 
-
+            if(attacksThan == 999 && goNodes.Count > 30){
+                GameInstance.GameWarning("寻路路径太长:{Retries} ", goNodes.Count);
+                return false;
+            }
             while (goNodes.Count > 0)
             {
                 if (cancellationToken.IsCancellationRequested)
