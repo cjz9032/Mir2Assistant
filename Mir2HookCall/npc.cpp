@@ -203,6 +203,45 @@ void eatIndexItem(int idx){
 		popad
 	}
 }
+
+// DWORD WINAPI EatIndexDelayThread(LPVOID lpParam) {
+// 	Sleep(300);
+// 	int itemIdx = reinterpret_cast<int>(lpParam);
+// 	eatIndexItem(-1);
+// 	return 0;
+// }
+// void eatWithMovingIndexItem(int girdIdx) {
+// 	bagGridClick(girdIdx);
+// 	CreateThread(NULL, 0, EatIndexDelayThread, reinterpret_cast<LPVOID>(girdIdx), 0, NULL);
+// }
+void eatItemDirectly(int id) {
+	__asm {
+		// 0063DD40        mov         eax,dword ptr [ebp-94] 
+		// 0063DD46        push        eax
+		// 0063DD47        mov         ecx,dword ptr ds:[7562EC];gvar_007562EC
+		// 0063DD4D        mov         edx,dword ptr [ebp-8] // 0xFFFFFFFF 书记?
+		// 0063DD50        mov         eax,dword ptr [ebp-4]
+		// 0063DD53        call        006441CC
+
+		pushad
+		pushfd
+
+		push 0 // NAME
+		mov ecx, id
+		mov edx ,0xFFFFFFFF
+		mov eax, [FRMMAIN_ADDR]
+		mov eax, [eax]
+		mov esi, 0x6441CC
+		call esi
+
+		popfd
+		popad
+	}
+}
+
+
+
+
 //二级对话 
 void talk2(DelphiString* cmd)
 {
@@ -465,6 +504,9 @@ void Npc::process(int code, int* data)
 		break;
 	case 3019: // 吃
 		eatIndexItem(data[0]);
+		break;
+	case 3029: // 吃书
+		eatItemDirectly(data[0]);
 		break;
 	case 3020: // 脱
 		takeOff(data[0]);

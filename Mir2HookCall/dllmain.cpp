@@ -363,11 +363,11 @@ bool InstallHooks()
     // 学习钩子
     DWORD  targetAddress_SKIP = MIR_LEARN_SKIP_ADDR + g_BaseAddr;
     
-    if (MH_CreateHook((LPVOID)  targetAddress_SKIP, learnSkip, (LPVOID*)&originalFunclearnSkip) != MH_OK)
-    {
-        printf("hook learn fail\n");
-        return false;
-    }
+    // if (MH_CreateHook((LPVOID)  targetAddress_SKIP, learnSkip, (LPVOID*)&originalFunclearnSkip) != MH_OK)
+    // {
+    //     printf("hook learn fail\n");
+    //     return false;
+    // }
 
     // CD 用补丁法
     if (!MIR_BU_DAO_HOOK) {

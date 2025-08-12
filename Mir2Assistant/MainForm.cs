@@ -598,13 +598,12 @@ namespace Mir2Assistant
                 }
             }
 
-            var bookIdx = instanceValue.Items.FindIndex(o => o.Name == "治愈术");
-            if(bookIdx != -1){
-                // + 6
-                NpcFunction.EatIndexItem(instanceValue!, bookIdx + 6, true);
+            var book = instanceValue.Items.Where(o => !o.IsEmpty && o.Name == "治愈术").FirstOrDefault();
+            if(book != null){
+                book.Name = "";
+                NpcFunction.EatBookItem(instanceValue!, book.Id);
+                await Task.Delay(500);
             }
-         
-           
         }
 
         private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -689,6 +688,7 @@ namespace Mir2Assistant
             // 要先回家, 如果不在的话, 
             // TODO 用地牢飞, 先走
 
+
             var nearHome = NpcFunction.PickNearHomeMap(instanceValue);
             if (nearHome != CharacterStatus.MapId)
             {
@@ -707,6 +707,10 @@ namespace Mir2Assistant
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
             // 卖所有
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
+
+
+            
+
             await buyBooks(instanceValue, _cancellationToken);
             // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);

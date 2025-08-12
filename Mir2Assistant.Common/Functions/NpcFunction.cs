@@ -242,6 +242,20 @@ namespace Mir2Assistant.Common.Functions
         }
 
         /// <summary>
+        /// 吃书
+        /// </summary>
+        /// <param name="gameInstance"></param>
+        /// <returns></returns>
+        public static void EatBookItem(MirGameInstanceModel gameInstance, int id)
+        {
+            gameInstance.GameDebug("使用书集，id: {id}", id);
+            gameInstance.eatItemLastTime = Environment.TickCount;
+            SendMirCall.Send(gameInstance, 3029, new nint[] { id });
+        }
+
+        
+
+        /// <summary>
         /// 脱东西
         /// </summary>
         /// <param name="gameInstance"></param>
