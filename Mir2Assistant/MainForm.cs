@@ -697,14 +697,16 @@ namespace Mir2Assistant
             }
             // 卖肉
             await sellMeat(instanceValue, _cancellationToken);
+            // 买书, 治愈诱惑基本
+
             // 蜡烛检测
             await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
             // 确保到家了, 到家先把极品穿起来, 这样不会被购买替换了, 然后被维修
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
-            // 买所有
             // 卖所有
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
+            await buyBooks(instanceValue, _cancellationToken);
             // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);
             // 重复修 保证没被换
@@ -721,8 +723,7 @@ namespace Mir2Assistant
             // 卖所有
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
-            // 买书, 治愈诱惑基本
-            await buyBooks(instanceValue, _cancellationToken);
+     
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
 
