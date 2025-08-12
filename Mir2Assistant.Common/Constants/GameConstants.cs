@@ -4,7 +4,8 @@ namespace Mir2Assistant.Common.Constants;
 
 public static class GameConstants
 {
-    public const int NoobLevel = 10;
+    public const int NoobLevel = 7;
+    public const int MidLevel = 11;
 
     public static class Skills
     {
@@ -46,9 +47,12 @@ public static class GameConstants
         if (level < (NoobLevel+offset))
         {
             var temp = allowM10.Concat(allow15).ToList();
-            if(level > 7){
-                temp.Remove("鸡");
-            }
+            return temp.ToArray();
+        }
+        else if (level < MidLevel+offset)
+        {
+            var temp = allowM10.Concat(allow15).Concat(allow22).ToList();
+            temp.Remove("鸡");
             return temp.ToArray();
               
         }
