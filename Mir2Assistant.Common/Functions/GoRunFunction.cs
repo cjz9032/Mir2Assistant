@@ -1168,13 +1168,13 @@ public static class GoRunFunction
         return 999;
     }
 
-    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, CancellationToken cancellationToken) {
+    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken) {
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)  
         {
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).ToList();
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name))).ToList();
             if (monsters.Count > attacksThan)
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
@@ -1297,7 +1297,7 @@ public static class GoRunFunction
 
             if (goNodes.Count == 0)
             {
-                await cleanMobs(GameInstance, attacksThan, cancellationToken);
+                await cleanMobs(GameInstance, attacksThan, true, cancellationToken);
                 await PerformPickup(GameInstance, cancellationToken);
                 // 加个重试次数3次
                 await Task.Delay(200);
@@ -1326,7 +1326,7 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                await cleanMobs(GameInstance, attacksThan, cancellationToken);
+                await cleanMobs(GameInstance, attacksThan, false, cancellationToken);
                 await PerformPickup(GameInstance, cancellationToken);
                 // 寻路会出问题
                 // await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
@@ -1618,7 +1618,7 @@ public static class GoRunFunction
     public static async Task TryAliveRecallMob(MirGameInstanceModel GameInstance)
     {
         if (GameInstance.AccountInfo.role != RoleType.taoist
-        || GameInstance.CharacterStatus!.Level < 19)
+        || GameInstance.CharacterStatus!.Level < 29)
         {
             return;
         }
