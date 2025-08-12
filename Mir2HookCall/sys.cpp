@@ -153,6 +153,28 @@ void refPkg()
 
 	}
 }
+void openDoor(int x, int y)
+{
+	_asm {
+		pushad
+		pushfd
+
+		push x
+		push y
+		push 0x20
+		xor ecx,ecx
+		mov edx, 0x3ea
+		mov ebx, 0
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
+		mov esi, MIR_SendClientMessage_CALL // sendclientmessage
+		call esi 
+
+		popfd
+		popad
+
+	}
+}
 void exitToSelectScene(){
 	_asm {
 		pushad
@@ -242,6 +264,9 @@ void Sys::process(int code, int* data)
 		break;
 	case 9010: //刷新背包
 		refPkg();
+		break;
+	case 9020:
+		openDoor(data[0], data[1]);
 		break;
 	case 9098:
 		exitToSelectScene();

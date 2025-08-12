@@ -329,6 +329,11 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
+    public static void openDoor(MirGameInstanceModel gameInstance, int x, int y)
+    {
+        SendMirCall.Send(gameInstance, 9020, new nint[] { x, y });
+    }
+
     public static (int width, int height, byte[] obstacles) retriveMapObstacles(MirGameInstanceModel gameInstance)
     {
         var id = gameInstance!.CharacterStatus!.MapId;
@@ -1263,7 +1268,7 @@ public static class GoRunFunction
         for (var i = 0; i < connectionsPath.Count; i++)
         {
             // 所以可得前面的N blur一定是0, 除非count只有一个
-            var localBlurRange = connectionsPath.Count > 1 && i < connectionsPath.Count - 1 ? 0 : blurRange;
+            var localBlurRange = isAcross && i < connectionsPath.Count - 1 ? 0 : blurRange;
 
             var connection = connectionsPath[i];
             // 检查当前是否所在地图 否则说明失效 重新搞
@@ -1340,6 +1345,10 @@ public static class GoRunFunction
                 var (nextX, nextY) = getNextPostion(oldX, oldY, node.dir, node.steps);
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
+                if(isAcross && goNodes.Count < 4){
+                    var lastN = goNodes[goNodes.Count-1];
+                    openDoor(GameInstance, lastN.x, lastN.y);
+                }
 
                 var tried = 0;
                 var maxed = 9;

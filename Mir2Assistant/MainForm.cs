@@ -579,18 +579,21 @@ namespace Mir2Assistant
       private async Task buyBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             if (instanceValue.AccountInfo.role == RoleType.blade ){
-                if(instanceValue.CharacterStatus.coin > 600 && instanceValue.CharacterStatus.Level >=7 
+                if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 
                 && instanceValue.Skills.FirstOrDefault(o=>o.Id == 3) == null
                 ){
                     await NpcFunction.BuyBook(instanceValue, "基本剑术");
                 }
             }
             else if (instanceValue.AccountInfo.role == RoleType.taoist ){
-                if(instanceValue.CharacterStatus.coin > 600 && instanceValue.CharacterStatus.Level >=7 && !GoRunFunction.CapbilityOfHeal(instanceValue)){
+                if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 && !GoRunFunction.CapbilityOfHeal(instanceValue)){
                     await NpcFunction.BuyBook(instanceValue, "治愈术");
                 }
+                   if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=9 && instanceValue.Skills.FirstOrDefault(o=>o.Id == 4) == null){
+                    await NpcFunction.BuyBook(instanceValue, "精神力战法");
+                }
             }else if(instanceValue.AccountInfo.role == RoleType.mage){
-                if(instanceValue.CharacterStatus.coin > 1500 && instanceValue.CharacterStatus.Level >=18 && !GoRunFunction.CapbilityOfTemptation(instanceValue)){
+                if(instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >=18 && !GoRunFunction.CapbilityOfTemptation(instanceValue)){
                     await NpcFunction.BuyBook(instanceValue, "诱惑之光");
                 }
             }
@@ -719,7 +722,7 @@ namespace Mir2Assistant
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
             // 买书, 治愈诱惑基本
-            // await buyBooks(instanceValue, _cancellationToken);
+            await buyBooks(instanceValue, _cancellationToken);
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
 

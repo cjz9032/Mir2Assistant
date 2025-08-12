@@ -412,7 +412,7 @@ namespace Mir2Assistant.Common.Functions
             // 根据当前所在地图, 找到最近的NPC
             if (mapId == "0")
             {
-                return ("0132", "书", 8, 15);
+                return ("0132", "书", 6, 18);
             }
             else
             {
