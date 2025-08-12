@@ -99,7 +99,8 @@ public static class GoRunFunction
                 );
                 if (needDropItem != null)
                 {
-                    NpcFunction.EatIndexItem(instanceValue, needDropItem.Index, true);
+                    // + 6
+                    NpcFunction.EatIndexItem(instanceValue, needDropItem.Index + 6, true);
                     await Task.Delay(200);
                 }
             }

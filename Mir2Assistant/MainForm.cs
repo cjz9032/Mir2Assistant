@@ -600,7 +600,8 @@ namespace Mir2Assistant
 
             var bookIdx = instanceValue.Items.FindIndex(o => o.Name == "治愈术");
             if(bookIdx != -1){
-                NpcFunction.EatIndexItem(instanceValue!, bookIdx, true);
+                // + 6
+                NpcFunction.EatIndexItem(instanceValue!, bookIdx + 6, true);
             }
          
            
