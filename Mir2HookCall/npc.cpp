@@ -253,10 +253,10 @@ void buyGoodsFixedIndex()
 	__asm {
 		pushad
 		pushfd
-		push 100
+		push 0
 		mov ebx, MIR_GRID_FOO_ADDR
 		mov ebx, [ebx]
-		mov ecx, 100
+		mov ecx, 0
 		mov edx, ebx
 		mov eax, [FRM_DLG_ADDR] // gvar_:TFrmMain
 		mov eax, [eax]

@@ -168,16 +168,16 @@ namespace Mir2Assistant.Common.Functions
 
                 nint[] data = MemoryUtils.PackStringsToData("火把");
                 await Talk2(gameInstance!, "@buy");
-                await Task.Delay(500);
+                await Task.Delay(700);
                 SendMirCall.Send(gameInstance, 3005, data);
-                await Task.Delay(800);
+                await Task.Delay(900);
                 // 盲选
                 for (int i = 0; i < 1; i++)
                 {
                     var memoryUtils = gameInstance!.memoryUtils!;
                     var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], 0xC6C);
                     memoryUtils.WriteInt(addr, i);
-                    await Task.Delay(300);
+                    await Task.Delay(400);
                     SendMirCall.Send(gameInstance, 3006, new nint[] { i });
                     await Task.Delay(300);
                 }
@@ -957,6 +957,10 @@ namespace Mir2Assistant.Common.Functions
 
                     var memoryUtils = gameInstance.memoryUtils!;
                     var menuListLen = 0;
+                    await ClickNPC(gameInstance!, npcName);
+                    await Talk2(gameInstance!, "@buy");
+                    await Task.Delay(800);
+
                     // 从高到低找 , 找不到就用前面的
                     for (int i = 0; i < preferBuyItems.Count; i++)
                     {
@@ -967,10 +971,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             break;
                         }
-                        await ClickNPC(gameInstance!, npcName);
-                        await Talk2(gameInstance!, "@buy");
-                        await Task.Delay(200);
-
+                  
                         nint[] data = MemoryUtils.PackStringsToData(name);
                         SendMirCall.Send(gameInstance, 3005, data);
                         await Task.Delay(1000);
@@ -981,7 +982,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
                             memoryUtils.WriteInt(addr, 0);
-                            await Task.Delay(400);
+                            await Task.Delay(600);
                             SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
                             await Task.Delay(700);
 
