@@ -937,6 +937,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
+            if(gameInstance.CharacterStatus.coin < 100) return;
             var lowCoin = gameInstance.CharacterStatus.coin < 2000;
             foreach (var position in Enum.GetValues(typeof(EquipPosition)))
             {
