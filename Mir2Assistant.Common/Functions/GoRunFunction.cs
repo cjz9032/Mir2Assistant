@@ -1186,7 +1186,7 @@ public static class GoRunFunction
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) && 
-             Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds
+             Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
             ).ToList();
             if (monsters.Count > attacksThan)
             {
