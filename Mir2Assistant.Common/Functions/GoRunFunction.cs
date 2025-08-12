@@ -974,8 +974,11 @@ public static class GoRunFunction
                 (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
-                .OrderBy(o =>  GameConstants.allowM10.Contains(o.Name) ? 1 : 0)
-                .ThenBy(o => measureGenGoPath(instanceValue!, o.X, o.Y))
+                .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
+                .Where(o => o.Distance <= 15)
+                .OrderBy(o => GameConstants.allowM10.Contains(o.Monster.Name) ? 1 : 0)
+                .ThenBy(o => o.Distance)
+                .Select(o => o.Monster)
                 .FirstOrDefault();
                 // 保护消费者法师
                 if (whoIsConsumer(instanceValue!) == 0)  
@@ -1090,7 +1093,7 @@ public static class GoRunFunction
                         ani = ani2;
                         if (ani.isDead || monTried > 150)
                         {
-                            instanceValue.attackedMonsterIds.Add(ani.Id);
+                            // instanceValue.attackedMonsterIds.Add(ani.Id);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             break;
                         }
