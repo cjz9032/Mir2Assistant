@@ -1127,7 +1127,7 @@ namespace Mir2Assistant
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     var isLowFushen = false;
-                                    if (instanceValue.AccountInfo.role == RoleType.taoist && instanceValue.CharacterStatus.Level > 18)
+                                    if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                     {
                                         // 总计只剩50 跑路足够了
                                         var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();

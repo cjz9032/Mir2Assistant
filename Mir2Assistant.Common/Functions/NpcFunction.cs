@@ -511,13 +511,12 @@ namespace Mir2Assistant.Common.Functions
         
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            var nearHome = PickNearHomeMap(gameInstance);
-            var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
-            // 19级道士才需要
-            if (gameInstance.CharacterStatus.Level < 19 || gameInstance.AccountInfo.role != RoleType.taoist)
+            if (!GoRunFunction.CapbilityOfSekeleton(gameInstance))
             {
                 return;
             }
+            var nearHome = PickNearHomeMap(gameInstance);
+            var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
             // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
             var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
