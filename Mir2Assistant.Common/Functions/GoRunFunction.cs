@@ -1528,6 +1528,12 @@ public static class GoRunFunction
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 20) != null;
     }
 
+    public static bool CapbilityOfSekeleton(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.RecallBoneSpellId) != null;
+    }
+
+
     public static bool CapbilityOfLighting(MirGameInstanceModel GameInstance)
     {
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 11) != null;
@@ -1617,8 +1623,7 @@ public static class GoRunFunction
 
     public static async Task TryAliveRecallMob(MirGameInstanceModel GameInstance)
     {
-        if (GameInstance.AccountInfo.role != RoleType.taoist
-        || GameInstance.CharacterStatus!.Level < 29)
+        if (!CapbilityOfSekeleton(GameInstance))
         {
             return;
         }
