@@ -578,31 +578,35 @@ namespace Mir2Assistant
 
       private async Task buyBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
+            var bookName = "";
             if (instanceValue.AccountInfo.role == RoleType.blade ){
                 if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 
                 && instanceValue.Skills.FirstOrDefault(o=>o.Id == 3) == null
                 ){
-                    await NpcFunction.BuyBook(instanceValue, "基本剑术");
+                    bookName = "基本剑术";
                 }
             }
             else if (instanceValue.AccountInfo.role == RoleType.taoist ){
                 if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 && !GoRunFunction.CapbilityOfHeal(instanceValue)){
-                    await NpcFunction.BuyBook(instanceValue, "治愈术");
+                    bookName = "治愈术";
                 }
                    if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=9 && instanceValue.Skills.FirstOrDefault(o=>o.Id == 4) == null){
-                    await NpcFunction.BuyBook(instanceValue, "精神力战法");
+                    bookName = "精神力战法";
                 }
             }else if(instanceValue.AccountInfo.role == RoleType.mage){
                 if(instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >=18 && !GoRunFunction.CapbilityOfTemptation(instanceValue)){
-                    await NpcFunction.BuyBook(instanceValue, "诱惑之光");
+                    bookName = "诱惑之光";
                 }
             }
-
-            var book = instanceValue.Items.Where(o => !o.IsEmpty && o.Name == "治愈术").FirstOrDefault();
-            if(book != null){
-                book.Name = "";
-                NpcFunction.EatBookItem(instanceValue!, book.Id);
-                await Task.Delay(500);
+            if(bookName != ""){
+                await NpcFunction.BuyBook(instanceValue, bookName);
+                var book = instanceValue.Items.Where(o => !o.IsEmpty && o.Name == bookName).FirstOrDefault();
+                if(book != null){
+                    book.Name = "";
+                    book.IsEmpty = true;
+                    NpcFunction.EatBookItem(instanceValue!, book.Id);
+                    await Task.Delay(500);
+                }
             }
         }
 
