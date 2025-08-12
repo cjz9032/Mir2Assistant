@@ -820,7 +820,7 @@ public static class GoRunFunction
         return 0;
     }
 
-  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false)
+  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 11)
     {
 
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -977,7 +977,7 @@ public static class GoRunFunction
                 (cleanAll || allowMonsters.Contains(o.Name)) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
                 (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
-                 && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
+                 && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds)
                 // 还要把鹿羊鸡放最后
                 .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                 .Where(o => o.Distance <= 30)
@@ -1109,6 +1109,8 @@ public static class GoRunFunction
                     if (existAni == null)
                     {
                         await PerformPickup(instanceValue, _cancellationToken);
+                        await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
+
                     }
                 }
                 else
@@ -1180,9 +1182,12 @@ public static class GoRunFunction
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)  
         {
+            var searchRds = 9;
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name))).ToList();
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) && 
+             Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds
+            ).ToList();
             if (monsters.Count > attacksThan)
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
@@ -1195,7 +1200,7 @@ public static class GoRunFunction
                         return true;
                     }
                     return false;
-                }, "", cleanAll);
+                }, "", cleanAll, searchRds);
             }
         }
     }
