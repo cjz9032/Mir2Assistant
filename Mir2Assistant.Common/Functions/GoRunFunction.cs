@@ -975,7 +975,7 @@ public static class GoRunFunction
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
                 // 还要把鹿羊鸡放最后
                 .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
-                .Where(o => o.Distance <= 15)
+                .Where(o => o.Distance <= 30)
                 .OrderBy(o => GameConstants.allowM10.Contains(o.Monster.Name) ? 1 : 0)
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
