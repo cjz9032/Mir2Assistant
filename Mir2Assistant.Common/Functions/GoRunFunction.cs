@@ -815,7 +815,7 @@ public static class GoRunFunction
         return 0;
     }
 
-  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "")
+  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false)
     {
 
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -969,7 +969,7 @@ public static class GoRunFunction
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
-                allowMonsters.Contains(o.Name) &&
+                (cleanAll || allowMonsters.Contains(o.Name)) &&
                 // 还要看下是不是距离巡逻太远了, 就不要, 
                 (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 13)
@@ -1187,7 +1187,7 @@ public static class GoRunFunction
                         return true;
                     }
                     return false;
-                });
+                }, "", cleanAll);
             }
         }
     }
