@@ -1187,7 +1187,9 @@ public static class GoRunFunction
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
                 {
                     // 重读怪物
-                    var existsCount = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name)).Count();
+                    var existsCount = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
+             Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
+            ).Count();
                     // 怪物死了剩余一半就可以通过
                     if (existsCount <= attacksThan / 3)
                     {
