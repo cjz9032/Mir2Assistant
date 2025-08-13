@@ -1136,11 +1136,13 @@ namespace Mir2Assistant
                                             }
                                         }
                                     }
-                                    // 7级以下不配
+                                    // N级以下不配
                                     var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
                                     && (isConsumer == 2)
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                    // 主号没药
+                                    var lowMPMain = instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
                                     var isLowFushen = false;
                                     if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                     {
@@ -1158,9 +1160,13 @@ namespace Mir2Assistant
                                     if(isFull){
                                         instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
                                     }
-                                    var final = isFull || realLowEq || isLowHpMP || isLowFushen;
+                                    if(lowMPMain){
+                                        instanceValue.GameInfo("主号没魔法药, 回家");
+                                    }
+                                    var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
+                                instanceValue.isHomePreparing = true;
                                 while(instanceValue.CharacterStatus.CurrentHP <= 0)
                                 {
                                     instanceValue.GameInfo("等待上线再回家");
@@ -1170,7 +1176,6 @@ namespace Mir2Assistant
                                 instanceValue.GameInfo("开始回家");
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                 await NpcFunction.autoReplaceEquipment(instanceValue, false);
-                                instanceValue.isHomePreparing = true;
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }
                             // act.TaskSub0Step = 6;
