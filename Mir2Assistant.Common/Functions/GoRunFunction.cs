@@ -821,7 +821,7 @@ public static class GoRunFunction
         return 0;
     }
 
-  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 11)
+  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 10)
     {
 
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -923,7 +923,6 @@ public static class GoRunFunction
 
             var monsterTried = 0;
             // 无怪退出
-            var firstMonPos = (0, 0);
             while (true)
             {
                 CharacterStatus = instanceValue.CharacterStatus;
@@ -975,9 +974,7 @@ public static class GoRunFunction
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
-                (cleanAll || allowMonsters.Contains(o.Name)) &&
-                // 还要看下是不是距离巡逻太远了, 就不要, 
-                (firstMonPos.Item1 == 0 ? true : Math.Max(Math.Abs(o.X - firstMonPos.Item1), Math.Abs(o.Y - firstMonPos.Item2)) < 16)
+                (cleanAll || allowMonsters.Contains(o.Name))
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds)
                 // 还要把鹿羊鸡放最后
                 .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
@@ -1024,10 +1021,6 @@ public static class GoRunFunction
                
                 if (ani != null)
                 {
-                    if (firstMonPos.Item1 == 0)
-                    {
-                        firstMonPos = (ani.X, ani.Y);
-                    }
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
                         ani.Name, ani.X, ani.Y,
                         Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
@@ -1104,7 +1097,7 @@ public static class GoRunFunction
                             break;
                         }
                     }
-                    // 5格没怪 可以捡取
+                    // 5格内没怪 可以捡取
                     var existAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
                     if (existAni == null)
@@ -1183,7 +1176,7 @@ public static class GoRunFunction
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)  
         {
-            var searchRds = 9;
+            var searchRds = 7;
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) && 

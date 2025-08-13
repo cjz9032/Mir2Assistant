@@ -1050,6 +1050,7 @@ namespace Mir2Assistant
                                 CharacterStatus = instance.CharacterStatus!;
                                 if (CharacterStatus.CurrentHP == 0)
                                 {
+                                    instanceValue.GameInfo("等待上线开工");
                                     await Task.Delay(5_000);
                                     continue;
                                 }
@@ -1159,6 +1160,12 @@ namespace Mir2Assistant
                                     var final = isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
+                                while(instanceValue.CharacterStatus.CurrentHP <= 0)
+                                {
+                                    instanceValue.GameInfo("等待上线再回家");
+                                    await Task.Delay(6_0000);
+                                    continue;
+                                }
                                 instanceValue.GameInfo("开始回家");
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                 await NpcFunction.autoReplaceEquipment(instanceValue, false);
@@ -1197,135 +1204,135 @@ namespace Mir2Assistant
 
         private async void autoAtBackground()
         {
-            while (true)
+           
+            var instances = GameState.GameInstances;
+            instances.ForEach(async instance =>
             {
-                try 
+                // 连续没有IsAttached, 尝试attached
+                var tryiedAttach = 0;
+                while (true)
                 {
                     Log.Debug("开始后台自动处理");
                     await Task.Delay(20_000);
-                    var instances = GameState.GameInstances;
-
-                    instances.ForEach(async instance =>
+                    try
                     {
-                        try
+                        if (!instance.IsAttached)
                         {
-                            if (!instance.IsAttached)
-                            {
-                                //Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
-                                return;
+                            // 
+                            //Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
+                            tryiedAttach++;
+                            if(tryiedAttach == 15){
+                                RestartGameProcess(instance);
+                                tryiedAttach = 0
                             }
-                            Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
-                            instance.RefreshAll();
-                            // todo ref方法 避免重复调用
-                            var CharacterStatus = instance.CharacterStatus;
-                            // 死亡 判断有没怪物
-                            if (CharacterStatus.CurrentHP <= 0 && instance.Monsters.Count > 0)
+                            return;
+                        }
+                        Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
+                        instance.RefreshAll();
+                        // todo ref方法 避免重复调用
+                        var CharacterStatus = instance.CharacterStatus;
+                        // 死亡 判断有没怪物
+                        if (CharacterStatus.CurrentHP <= 0 && instance.Monsters.Count > 0)
+                        {
+                            // 复活 重启
+                            // 尝试小退
+                            await GoRunFunction.RestartByToSelectScene(instance);
+                            await Task.Delay(2000);
+                            CharacterStatusFunction.GetInfo(instance);
+                            if (CharacterStatus.CurrentHP == 0)
                             {
-                                // 复活 重启
-                                // 尝试小退
-                                await GoRunFunction.RestartByToSelectScene(instance);
-                                await Task.Delay(2000);
-                                CharacterStatusFunction.GetInfo(instance);
-                                // check hp -- 其实还不起作用
-                                if (CharacterStatus.CurrentHP == 0)
-                                {
-                                   RestartGameProcess(instance);
-                                }
-                                return;
+                                RestartGameProcess(instance);
                             }
-                            if (CharacterStatus.CurrentHP > 0)
+                            return;
+                        }
+                        if (CharacterStatus.CurrentHP > 0)
+                        {
+                            // 用用再说
+                            CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
+                            if (instance.AccountInfo!.role == RoleType.blade)
                             {
-                                // 用用再说
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
-                                if (instance.AccountInfo!.role == RoleType.blade)
-                                {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
-                                }
-                                else if(instance.CharacterStatus.Level < 7)
-                                {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
-                                }
+                                CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
+                            }
+                            else if(instance.CharacterStatus.Level < 7)
+                            {
+                                CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
+                            }
 
-                                if (CharacterStatus.CurrentHP == instance.lastHP)
+                            if (CharacterStatus.CurrentHP == instance.lastHP)
+                            {
+                                instance.sameHPtimes++;
+                                if (instance.sameHPtimes > 10)
                                 {
-                                    instance.sameHPtimes++;
-                                    if (instance.sameHPtimes > 10)
+                                    // 掉线 怀疑掉线 用脱装备验证
+                                    var oldV = instance.Items.Count(o => !o.IsEmpty);
+                                    var fitem = instance.CharacterStatus.useItems.FirstOrDefault(o => !o.IsEmpty);
+                                    if (fitem != null)
                                     {
-                                        // 掉线 怀疑掉线 用脱装备验证
-                                        var oldV = instance.Items.Count(o => !o.IsEmpty);
-                                        var fitem = instance.CharacterStatus.useItems.FirstOrDefault(o => !o.IsEmpty);
-                                        if (fitem != null)
-                                        {
-                                            var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
-                                            await Task.Delay(500);
-                                            if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
-                                            {
-                                                RestartGameProcess(instance);
-                                                return;
-                                            }
-                                            else
-                                            {
-                                                instance.sameHPtimes = 0;
-                                                await NpcFunction.autoReplaceEquipment(instance);
-                                                await Task.Delay(5000);
-                                            }
-
-                                        }
-                                        else
+                                        var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
+                                        await Task.Delay(500);
+                                        if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
                                         {
                                             RestartGameProcess(instance);
                                             return;
                                         }
-                                       
+                                        else
+                                        {
+                                            instance.sameHPtimes = 0;
+                                            await NpcFunction.autoReplaceEquipment(instance);
+                                            await Task.Delay(5000);
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        RestartGameProcess(instance);
+                                        return;
+                                    }
+                                
+                                }
+                            }
+                            else
+                            {
+                                instance.sameHPtimes = 0;
+                            }
+                            instance.lastHP = CharacterStatus.CurrentHP;
+
+                            // 组队
+                            if (CharacterStatus.groupMemCount < GameState.GameInstances.Count)
+                            {
+                                if (instance.AccountInfo.IsMainControl)
+                                {
+                                    // GameInstances 除了自己
+                                    var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.AccountInfo.CharacterName).ToList();
+                                    foreach (var member in members)
+                                    {
+                                        nint[] data = StringUtils.GenerateCompactStringData(member);
+                                        SendMirCall.Send(instance, 9004, data);
+                                        await Task.Delay(300);
                                     }
                                 }
                                 else
                                 {
-                                    instance.sameHPtimes = 0;
-                                }
-                                instance.lastHP = CharacterStatus.CurrentHP;
-
-                                // 组队
-                                if (CharacterStatus.groupMemCount < GameState.GameInstances.Count)
-                                {
-                                    if (instance.AccountInfo.IsMainControl)
+                                    if (!instance.CharacterStatus.allowGroup)
                                     {
-                                        // GameInstances 除了自己
-                                        var members = GameState.GameInstances.Where(o => o.IsAttached && o.MirPid != instance.MirPid).Select(o => o.AccountInfo.CharacterName).ToList();
-                                        foreach (var member in members)
-                                        {
-                                            nint[] data = StringUtils.GenerateCompactStringData(member);
-                                            SendMirCall.Send(instance, 9004, data);
-                                            await Task.Delay(300);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (!instance.CharacterStatus.allowGroup)
-                                        {
-                                            SendMirCall.Send(instance, 9005, new nint[] { 1 });
-                                        }
+                                        SendMirCall.Send(instance, 9005, new nint[] { 1 });
                                     }
                                 }
-                                await NpcFunction.autoReplaceEquipment(instance);
-                                await GoRunFunction.TryAliveRecallMob(instance);
                             }
+                            await NpcFunction.autoReplaceEquipment(instance);
+                            await GoRunFunction.TryAliveRecallMob(instance);
                         }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "后台处理出错，账号: {Account}", instance.AccountInfo?.Account);
-                            await Task.Delay(3000);
-                            //autoAtBackground();
-                            //return;
-                        }
-                    });
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "后台处理出错，账号: {Account}", instance.AccountInfo?.Account);
+                        await Task.Delay(3000);
+                        //autoAtBackground();
+                        //return;
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "后台处理主循环出错");
-                    await Task.Delay(3000);
-                }
-            }
+            });
+             
         }
         
           private async void autoAtBackgroundFast(){
