@@ -1224,7 +1224,7 @@ namespace Mir2Assistant
                 var tryiedAttach = 0;
                 while (true)
                 {
-                    Log.Debug("开始后台自动处理");
+                    // Log.Debug("开始后台自动处理");
                     await Task.Delay(20_000);
                     try
                     {
@@ -1244,7 +1244,7 @@ namespace Mir2Assistant
                             tryiedAttach = 0;
                         }
                         
-                        Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
+                        // Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
                         instance.RefreshAll();
                         // todo ref方法 避免重复调用
                         var CharacterStatus = instance.CharacterStatus;
