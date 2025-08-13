@@ -316,7 +316,7 @@ namespace Mir2Assistant
             }
         }
 
-        async private bool RestartGameProcess(MirGameInstanceModel gameInstance)
+        async private Task<bool> RestartGameProcess(MirGameInstanceModel gameInstance)
         {
             if (gameInstance.isRestarting)
             {
@@ -1229,7 +1229,10 @@ namespace Mir2Assistant
                                 }
                             }
                             return;
+                        }else{
+                            tryiedAttach = 0;
                         }
+                        
                         Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
                         instance.RefreshAll();
                         // todo ref方法 避免重复调用
