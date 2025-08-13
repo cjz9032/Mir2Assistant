@@ -29,8 +29,8 @@ public static class GoRunFunction
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level);
         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
-        var megaCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.MegaPotions.Contains(o.Name));
-        var healCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.HealPotions.Contains(o.Name));
+        var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+        var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
         var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
@@ -56,9 +56,10 @@ public static class GoRunFunction
             )
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
-            && (GameConstants.Items.MegaPotions.Contains(o.Value.Name) ? (
-                    instanceValue.AccountInfo.role != RoleType.taoist ? ( canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
-                    : (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
+            && (o.Value.Name.Contains("魔法药") ? (
+                    instanceValue.AccountInfo.role == RoleType.taoist 
+                    ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
+                    : (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
                 ) : true)
             // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
@@ -1439,7 +1440,7 @@ public static class GoRunFunction
                                 {
                                     // 移除跳过的路径点和对应的位置信息
                                     goNodes.RemoveRange(0, jumpSteps + 1);
-                                    GameInstance.GameDebug($"成功跳过{jumpSteps}步");
+                                    // GameInstance.GameDebug($"成功跳过{jumpSteps}步");
                                     tried = 0;
                                     break;
                                 }
