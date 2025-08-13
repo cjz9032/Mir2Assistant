@@ -27,7 +27,7 @@ public static class GoRunFunction
         if (instanceValue.isPickingWay) return false;
         instanceValue.isPickingWay = true;
         var CharacterStatus = instanceValue.CharacterStatus!;
-        var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level);
+        var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
         var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));

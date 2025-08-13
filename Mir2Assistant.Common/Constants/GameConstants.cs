@@ -144,12 +144,13 @@ public static class GameConstants
             "布衣(女)",
           //  "短剑",
           //  "青铜斧",
-            "六角戒指",
+            "八荒",
             "玻璃戒指",
             "黑檀项链",
             "黑色水晶项链",
             "黄色水晶项链",
             "白色虎齿项链",
+            "六角戒指",
             "琥珀项链",
             "小手镯",
             "银手镯",
@@ -184,7 +185,7 @@ public static class GameConstants
             "钢手镯",
             "铁剑",
            };
-        public static List<string> GetBinItems(int level)
+        public static List<string> GetBinItems(int level, RoleType role)
         {
             if (level < 14)
             {
@@ -192,7 +193,15 @@ public static class GameConstants
             }
             if (level < 20)
             {
-                return binItems.Concat(binItemsNoob).ToList();
+                var temp = binItems.Concat(binItemsNoob).ToList();
+                if(role == RoleType.mage){
+                    temp.Remove("六角戒指");
+                    temp.Remove("琥珀项链");
+                }
+                if(role == RoleType.blade){
+                    temp.Remove("八荒");
+                }
+                return temp.ToList();
             }
             return binItems.Concat(binItemsNoob).Concat(binItemsMid).ToList();
         }

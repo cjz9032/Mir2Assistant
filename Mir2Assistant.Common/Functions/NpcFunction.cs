@@ -708,6 +708,10 @@ namespace Mir2Assistant.Common.Functions
                     }
                     else
                     {
+                        if (CharacterStatus.Level >= 17)
+                        {
+                            itemNames.Add("琥珀项链");
+                        }
                         if (CharacterStatus.Level >= 24)
                         {
                             itemNames.Add("放大镜");
@@ -778,6 +782,15 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 itemNames.Add("道德戒指");
                             }
+                        }
+                    }else{
+                        if (CharacterStatus.Level >= 11)
+                        {
+                            itemNames.Add("六角戒指");
+                        }
+                        if (CharacterStatus.Level >= 20)
+                        {
+                            itemNames.Add("蛇眼戒指");
                         }
                     }
                     break;
@@ -930,10 +943,10 @@ namespace Mir2Assistant.Common.Functions
                     }
                     else
                     {
-                        if (CharacterStatus.Level >= 5)
-                        {
-                            itemNames.Add("青铜剑");
-                        }
+                        // if (CharacterStatus.Level >= 5)
+                        // {
+                        //     itemNames.Add("青铜剑");
+                        // }
                         if (CharacterStatus.Level >= 15)
                         {
                             itemNames.Add("海魂");
