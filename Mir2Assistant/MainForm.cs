@@ -1062,12 +1062,12 @@ namespace Mir2Assistant
                                 var hangMapId = "0";
                                 // 如果有朋友等级太低, 先到5
                                 // 检查朋友的等级
-                                // var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 4).ToList();
-                                // if (friends.Count > 0)
-                                // {
-                                //     hangMapId = "0";
-                                // }
-                                // else  
+                                var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 4).ToList();
+                                if (friends.Count > 0)
+                                {
+                                    hangMapId = "D001";
+                                }
+                                else  
                                 if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D421";
