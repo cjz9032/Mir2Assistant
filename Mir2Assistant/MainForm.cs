@@ -316,11 +316,11 @@ namespace Mir2Assistant
             }
         }
 
-        async private void RestartGameProcess(MirGameInstanceModel gameInstance)
+        async private bool RestartGameProcess(MirGameInstanceModel gameInstance)
         {
             if (gameInstance.isRestarting)
             {
-                return;
+                return false;
             }
             gameInstance.isRestarting = true;
             gameInstance.GameInfo("重启游戏进程，账号: {Account}", gameInstance.AccountInfo.Account);
@@ -329,8 +329,9 @@ namespace Mir2Assistant
             gameInstance.isRestarting = false;
             if(!isSuccess){
                 gameInstance.GameWarning("重启游戏进程失败，账号: {Account}", gameInstance.AccountInfo.Account);
-                RestartGameProcess(gameInstance);
+                await RestartGameProcess(gameInstance);
             }
+            return true;
         }
 
         private async Task<bool> AttachToGameProcess(Process process, GameAccountModel account)
@@ -1221,9 +1222,11 @@ namespace Mir2Assistant
                             // 
                             //Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
                             tryiedAttach++;
-                            if(tryiedAttach == 15){
-                                RestartGameProcess(instance);
-                                tryiedAttach = 0
+                            if(tryiedAttach >= 10){
+                                var ss = await RestartGameProcess(instance);
+                                if(ss){
+                                    tryiedAttach = 0;
+                                }
                             }
                             return;
                         }
