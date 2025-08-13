@@ -1228,7 +1228,7 @@ namespace Mir2Assistant
                                     tryiedAttach = 0;
                                 }
                             }
-                            return;
+                            continue;
                         }else{
                             tryiedAttach = 0;
                         }
@@ -1247,9 +1247,9 @@ namespace Mir2Assistant
                             CharacterStatusFunction.GetInfo(instance);
                             if (CharacterStatus.CurrentHP == 0)
                             {
-                                RestartGameProcess(instance);
+                                await RestartGameProcess(instance);
                             }
-                            return;
+                            continue;
                         }
                         if (CharacterStatus.CurrentHP > 0)
                         {
@@ -1278,8 +1278,8 @@ namespace Mir2Assistant
                                         await Task.Delay(500);
                                         if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
                                         {
-                                            RestartGameProcess(instance);
-                                            return;
+                                            await RestartGameProcess(instance);
+                                            continue;
                                         }
                                         else
                                         {
@@ -1291,8 +1291,8 @@ namespace Mir2Assistant
                                     }
                                     else
                                     {
-                                        RestartGameProcess(instance);
-                                        return;
+                                        await RestartGameProcess(instance);
+                                        continue;
                                     }
                                 
                                 }
