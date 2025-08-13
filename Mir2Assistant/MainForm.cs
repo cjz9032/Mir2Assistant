@@ -1062,12 +1062,13 @@ namespace Mir2Assistant
                                 var hangMapId = "0";
                                 // 如果有朋友等级太低, 先到5
                                 // 检查朋友的等级
-                                var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 4).ToList();
-                                if (friends.Count > 0)
-                                {
-                                    hangMapId = "0";
-                                }
-                                else  if (CharacterStatus.Level >= 22)
+                                // var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 4).ToList();
+                                // if (friends.Count > 0)
+                                // {
+                                //     hangMapId = "0";
+                                // }
+                                // else  
+                                if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D421";
                                 }
@@ -1079,7 +1080,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D002";
                                 }
-                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} lowFrds:{friends.Count} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
+                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
                                 instanceValue.isHomePreparing = false;
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
