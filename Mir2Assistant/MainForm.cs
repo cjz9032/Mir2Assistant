@@ -1174,6 +1174,9 @@ namespace Mir2Assistant
                                     if(lowMPMain){
                                         instanceValue.GameInfo("主号没魔法药, 回家");
                                     }
+                                    if(isLowHpMP){
+                                        instanceValue.GameInfo("主号太低了, 回家");
+                                    }
                                     var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
                                 }, hangMapId);
