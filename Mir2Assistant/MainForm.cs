@@ -736,7 +736,10 @@ namespace Mir2Assistant
      
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
-
+            // 全搞完 回血
+            while(instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9){
+                await Task.Delay(5000);
+            }
         }
 
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
