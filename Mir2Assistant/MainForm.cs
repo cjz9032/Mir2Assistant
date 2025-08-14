@@ -526,7 +526,7 @@ namespace Mir2Assistant
         private void KillAllGameProcess()
         {
             // 先杀死所有进程
-            foreach (var process in System.Diagnostics.Process.GetProcessesByName(GameState.gamePath))
+            foreach (var process in System.Diagnostics.Process.GetProcessesByName(GameState.gamePath.Replace(".exe", "")))
             {
                 try
                 {
@@ -1408,7 +1408,7 @@ namespace Mir2Assistant
         private void btnAttachAll_Click(object sender, EventArgs e)
         {
             // 获取所有运行中的游戏进程
-            foreach (var process in Process.GetProcessesByName(GameState.gamePath))
+            foreach (var process in Process.GetProcessesByName(GameState.gamePath.Replace(".exe", "")))
             {
                 try
                 {
