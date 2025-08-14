@@ -38,7 +38,7 @@ public static class GameConstants
         public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
     public static readonly string[] allow22 = new string[] { "半兽人","森林雪人",  "毒蜘蛛" , "威思而小虫" };
     public static readonly string[] allowMonsters = new string[]  {   "食人花", "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
-            , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠"};
+            , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠", "尸王"};
 
     public static string[] GetAllowMonsters(int level, RoleType role)
     {
