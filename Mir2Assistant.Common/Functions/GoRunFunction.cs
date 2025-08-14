@@ -353,7 +353,7 @@ public static class GoRunFunction
             obstacles = new byte[bytes.Length - 8];
             Array.Copy(bytes, 8, obstacles, 0, obstacles.Length);
             // 地图0 有个bug 特殊处理几个点
-            if (id == "0" && GameState.gamePath == "ZC.H")
+            if (id == "0" && GameState.gamePath == "ZC.H.exe")
             {
                 var bugPoints = new (int, int)[] { 
                     (266,198),
