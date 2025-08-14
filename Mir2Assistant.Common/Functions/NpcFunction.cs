@@ -727,7 +727,7 @@ namespace Mir2Assistant.Common.Functions
                     }
                     if (CharacterStatus.Level >= 7)
                     {
-                        itemNames.Add("皮质手套");
+                        itemNames.Add("皮制手套");
                     }
                     if (CharacterStatus.Level >= 8)
                     {
