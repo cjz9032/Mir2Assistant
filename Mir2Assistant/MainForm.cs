@@ -1285,7 +1285,8 @@ namespace Mir2Assistant
                                     // 掉线 怀疑掉线 用脱装备验证
                                     var oldV = instance.Items.Count(o => !o.IsEmpty);
                                     var fitem = instance.CharacterStatus.useItems.FirstOrDefault(o => !o.IsEmpty);
-                                    if (fitem != null)
+                                    // 1血卡位了
+                                    if (fitem != null && instance.CharacterStatus.CurrentHP > 1)
                                     {
                                         var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
                                         await Task.Delay(500);
