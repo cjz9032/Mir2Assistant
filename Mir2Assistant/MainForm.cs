@@ -1148,7 +1148,9 @@ namespace Mir2Assistant
                                     && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                     && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
                                     // 主号没药
-                                    var lowMPMain = instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
+            
+
+                                    var lowMPMain = instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
                                     var isLowFushen = false;
                                     if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                     {
