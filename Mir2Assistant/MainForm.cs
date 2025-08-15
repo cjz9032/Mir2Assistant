@@ -662,9 +662,9 @@ namespace Mir2Assistant
 
             var meats = instanceValue.Items.Where(o => o.Name == "肉");
             var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
-            var keepOneMeat = instanceValue.CharacterStatus!.Level < 7;
-            var expressMeats = keepOneMeat ? meats.Skip(1).ToList() : meats.ToList();
-            var expressChickens = keepOneMeat ? chickens.Skip(1).ToList() : chickens.ToList();
+            var keepOneMeat = instanceValue.CharacterStatus!.Level > 6 && instanceValue.CharacterStatus!.Level < 8;
+            var expressMeats = keepOneMeat ? meats.Skip(5).ToList() : meats.ToList();
+            var expressChickens = keepOneMeat ? chickens.Skip(5).ToList() : chickens.ToList();
             var allMeats = expressMeats.Concat(expressChickens).ToList();
             if (allMeats.Count > 0)
             {
@@ -958,7 +958,7 @@ namespace Mir2Assistant
                             }
                         }
                         // 支线8级, 没啥调用 先不要了
-                        if (CharacterStatus.Level >= 999 && act.TaskSub0Step < 99)
+                        if (CharacterStatus.Level >= 4 && CharacterStatus.Level < 8 && act.TaskSub0Step < 6)
                         {
                             // 1、7级前从新手村助手阿妍处接介绍信任务
                             // 2、给屠夫1块鹿肉、1块鸡肉（得到太阳水1瓶）
@@ -967,7 +967,6 @@ namespace Mir2Assistant
                             // 5、祈福项链拿给比奇黄飞龙可升到10级。
                             if (act.TaskSub0Step == 0)
                             {
-                                // click 助手阿妍 630 603
                                 await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@next");
                                 await NpcFunction.Talk2(instanceValue!, "@next1");
@@ -1008,36 +1007,35 @@ namespace Mir2Assistant
                                 act.TaskSub0Step = 4;
                                 SaveAccountList();
                             }
-                            // 一点经验没啥用
-                            // if (act.TaskSub0Step == 4)
-                            // {
-                            //     // 去银杏村药店 药剂师
-                            //     bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
-                            //     if (pathFound)
-                            //     {
-                            //         await NpcFunction.ClickNPC(instanceValue!, "药剂师");
-                            //         // 介绍信任务/@news
-                            //         await NpcFunction.Talk2(instanceValue!, "@news");
-                            //         // < 可以 / @new2_21 >,
-                            //         await NpcFunction.Talk2(instanceValue!, "@new2_21");
-                            //         // <接受/@new2_211>
-                            //         await NpcFunction.Talk2(instanceValue!, "@new2_211");
-                            //     }
-                            //     act.TaskSub0Step = 5;
-                            //     SaveAccountList();
-                            // }
-                            //  if (act.TaskSub0Step == 5)
-                            // {
-                            //     // 继续找肉 5 5
-                            //     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, patrolPairs, (instanceValue) =>
-                            //     {
-                            //         var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
-                            //         var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
-                            //         return meats.Count > 4 && chickens.Count > 4;
-                            //     });
-                            //     act.TaskSub0Step = 6;
-                            //     SaveAccountList();
-                            // }
+                            if (act.TaskSub0Step == 4)
+                            {
+                                // 去银杏村药店 药剂师
+                                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationTokenSource.Token, instanceValue!, 9, 13, "", 6);
+                                if (pathFound)
+                                {
+                                    await NpcFunction.ClickNPC(instanceValue!, "药剂师");
+                                    // 介绍信任务/@news
+                                    await NpcFunction.Talk2(instanceValue!, "@news");
+                                    // < 可以 / @new2_21 >,
+                                    await NpcFunction.Talk2(instanceValue!, "@new2_21");
+                                    // <接受/@new2_211>
+                                    await NpcFunction.Talk2(instanceValue!, "@new2_211");
+                                }
+                                act.TaskSub0Step = 5;
+                                SaveAccountList();
+                            }
+                             if (act.TaskSub0Step == 5)
+                            {
+                                // 继续找肉 5 5
+                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
+                                {
+                                    var meats = instanceValue.Items.Where(o => o.Name == "肉").ToList();
+                                    var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉").ToList();
+                                    return meats.Count > 4 && chickens.Count > 4;
+                                });
+                                act.TaskSub0Step = 6;
+                                SaveAccountList();
+                            }
                         }
                       
                         if (CharacterStatus.Level >= 1)

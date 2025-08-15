@@ -52,7 +52,6 @@ public static class GameConstants
         else if (level < MidLevel+offset)
         {
             var temp = allowM10.Concat(allow15).Concat(allow22).ToList();
-            temp.Remove("鸡");
             return temp.ToArray();
               
         }
