@@ -42,7 +42,7 @@ public static class GameConstants
 
     public static string[] GetAllowMonsters(int level, RoleType role)
     {
-        var offset = role == RoleType.blade ? -3 : 0;
+        var offset = role == RoleType.blade ? -1 : 0;
        
         if (level < (NoobLevel+offset))
         {
