@@ -372,6 +372,11 @@ namespace Mir2Assistant.Common.Functions
             // 根据当前所在地图, 找到最近的回家点
             var home = "0";
             var mapId = gameInstance.CharacterStatus.MapId;
+            // 野外商店
+            if (mapId == "D002")
+            {
+                home = "DM001";
+            }
             // 毒蛇山谷
             if (mapId.StartsWith("D42") || mapId.StartsWith("E6"))
             {
@@ -481,6 +486,11 @@ namespace Mir2Assistant.Common.Functions
                     default:
                         return ("-1", "", 0, 0);
                 }
+            }
+            else if (mapId == "DM001")
+            {
+                // 超级野生NPC
+                return ("DM001", "商", 4, 6);
             }
             else
             {

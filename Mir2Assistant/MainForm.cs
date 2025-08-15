@@ -958,7 +958,7 @@ namespace Mir2Assistant
                             }
                         }
                         // 支线8级, 没啥调用 先不要了
-                        if (CharacterStatus.Level >= 4 && CharacterStatus.Level < 8 && act.TaskSub0Step < 6)
+                        if (CharacterStatus.Level >= 444 && CharacterStatus.Level < 8 && act.TaskSub0Step < 6)
                         {
                             // 1、7级前从新手村助手阿妍处接介绍信任务
                             // 2、给屠夫1块鹿肉、1块鸡肉（得到太阳水1瓶）
