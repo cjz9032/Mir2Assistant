@@ -840,8 +840,11 @@ public static class GoRunFunction
         {
             patrolPairs = GenMobCleanPairs(instanceValue, mapId);
         }
+
+        if(instanceValue.AccountInfo.IsMainControl){
+            instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
+        }
       
-        instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
 
         // 等级高了不打鸡鹿
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
@@ -883,7 +886,7 @@ public static class GoRunFunction
 				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
 				return false;
 			}
-            instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
+            // instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
             if (whoIsConsumer(instanceValue!) == 2 && patrolTried > 200)
@@ -912,7 +915,7 @@ public static class GoRunFunction
                 else
                 {
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                    instanceValue.GameInfo("跟随 in init: {X}, {Y}", px, py);
+                    // instanceValue.GameInfo("跟随 in init: {X}, {Y}", px, py);
                     // 判断主任是否太远, 不同图可以认为太远, 或者是距离过长也是
                     var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                     || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
@@ -960,7 +963,7 @@ public static class GoRunFunction
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                     {
-                        instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
+                        // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;
@@ -1044,7 +1047,7 @@ public static class GoRunFunction
                             (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                             if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
                             {
-                                instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
+                                // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                                 var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;

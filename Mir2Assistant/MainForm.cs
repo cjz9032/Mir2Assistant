@@ -738,7 +738,8 @@ namespace Mir2Assistant
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
             // 全搞完 回血
             while(instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.9){
-                await Task.Delay(5000);
+                instanceValue.GameInfo("回血中, 当前血量: {CurrentHP}, 当前魔法: {CurrentMP}", instanceValue.CharacterStatus.CurrentHP, instanceValue.CharacterStatus.CurrentMP);
+                await Task.Delay(30_000);
             }
         }
 
