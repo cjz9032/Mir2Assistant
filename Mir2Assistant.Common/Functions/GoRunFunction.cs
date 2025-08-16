@@ -920,8 +920,15 @@ public static class GoRunFunction
                     // 判断主任是否太远, 不同图可以认为太远, 或者是距离过长也是
                     var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                     || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
-
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
+                    // 距离之内不要乱跑 但是为了防卡死 偶尔东东
+                    if(
+                        Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) < 10 &&
+                        new Random().Next(100) < 90
+                    ){
+                        await Task.Delay(2000);
+                    }else{
+                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
+                    }
                 }
             }
 
@@ -944,20 +951,20 @@ public static class GoRunFunction
                     break;
                 }
                 // 发现活人先停下 并且不是自己人
-                var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
-                var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
-                var huorend = 0;
-                if (otherPeople != null && otherPeople.CurrentHP > 0)
-                {
-                    instanceValue.GameInfo($"发现活人{otherPeople.Name}  hp {otherPeople.CurrentHP} level {otherPeople.Level} 停下");
-                    await Task.Delay(1000);
-                    huorend++;
-                    if (huorend > 15)
-                    {
-                        break;
-                    }
-                    continue;
-                }
+                // var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
+                // var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
+                // var huorend = 0;
+                // if (otherPeople != null && otherPeople.CurrentHP > 0)
+                // {
+                //     instanceValue.GameInfo($"发现活人{otherPeople.Name}  hp {otherPeople.CurrentHP} level {otherPeople.Level} 停下");
+                //     await Task.Delay(1000);
+                //     huorend++;
+                //     if (huorend > 15)
+                //     {
+                //         break;
+                //     }
+                //     continue;
+                // }
                 // 检测距离
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
