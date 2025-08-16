@@ -43,8 +43,9 @@ public static class GoRunFunction
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
         // 武器表
             // 筛选可捡取的物品
-            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (!instanceValue.pickupItemIds.Contains(o.Value.Id)
-            && !curinItems.Contains(o.Value.Name)
+            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
+                // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
+                !curinItems.Contains(o.Value.Name)
             // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
             &&
             (
