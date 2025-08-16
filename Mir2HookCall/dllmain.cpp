@@ -341,8 +341,8 @@ bool InstallHooks()
         {L"xxx", MIR_SKP_DLG3_ADDR, SkipPopup, (void**)&originalFunc10, "skip_popup3"},  // hook在这里
         {L"xxx", MIR_SKP_DLG4_ADDR, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
         {L"xxx", MIR_SKP_DLG5_ADDR, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
-        {L"xxx", MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
-        {L"xxx", MIR_SKP_DLG7_ADDR, SkipPopup, (void**)&originalFunc113, "skip_popup7"}  // hook在这里
+        {L"xxx", MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"},  // hook在这里
+        {L"xxx", MIR_SKP_DLG7_ADDR, SkipPopup, (void**)&originalFunc113, "skip_popup7"}, // hook在这里
         {L"xxx", MIR_SKP_DLG8_ADDR, SkipPopup, (void**)&originalFunc114, "skip_popup8"}  // hook在这里
     };
 
