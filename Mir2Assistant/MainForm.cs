@@ -1252,6 +1252,8 @@ namespace Mir2Assistant
                 {
                     // Log.Debug("开始后台自动处理");
                     await Task.Delay(20_000);
+                    var samePosTimes = 0;
+                    var lastPos = 0;
                     try
                     {
                         if (!instance.IsAttached)
@@ -1299,6 +1301,20 @@ namespace Mir2Assistant
                             else if(instance.CharacterStatus.Level < 7)
                             {
                                 CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
+                            }
+
+                            if(CharacterStatus.X > 0){
+                                 if(CharacterStatus.X  == lastPos){
+                                        samePosTimes+=1;
+                                        if(samePosTimes == 10){
+                                            samePosTimes = 0;
+                                            lastPos = 0;
+                                            await RestartGameProcess(instance);
+                                        }
+                                 }else{
+                                        lastPos = CharacterStatus.X;
+                                        samePosTimes=0;
+                                 }
                             }
 
                             if (CharacterStatus.CurrentHP == instance.lastHP)
