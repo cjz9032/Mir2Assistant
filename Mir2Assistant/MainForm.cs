@@ -1304,7 +1304,7 @@ namespace Mir2Assistant
                             }
 
                             if(CharacterStatus.X > 0){
-                                 if(CharacterStatus.X  == lastPos){
+                                 if(Math.Abs(CharacterStatus.X - lastPos) < 3){
                                         samePosTimes+=1;
                                         if(samePosTimes == 10){
                                             samePosTimes = 0;
