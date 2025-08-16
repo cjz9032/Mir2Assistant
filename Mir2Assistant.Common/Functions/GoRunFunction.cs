@@ -47,11 +47,18 @@ public static class GoRunFunction
             
         bool pickedAny = false;
         var allTimes = 0;
+
+        var preferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99);
+        var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
+        var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
+
         while(allTimes < 2){
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
                     // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
                     !curinItems.Contains(o.Value.Name)
+                // 不是自己的 但是是别人的 不拿
+                && (!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name))
                 // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
                 &&
                 (

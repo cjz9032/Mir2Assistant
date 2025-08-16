@@ -670,11 +670,12 @@ namespace Mir2Assistant.Common.Functions
             await RefreshPackages(gameInstance);
         }
 
-        public static List<string> preferStdEquipment(MirGameInstanceModel gameInstance, EquipPosition position)
+        public static List<string> preferStdEquipment(MirGameInstanceModel gameInstance, EquipPosition position, int? levelParam = null, RoleType? roleParam = null)
         {
             var itemNames = new List<string>();
             var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
-            var CharacterStatus = gameInstance.CharacterStatus;
+            var level = levelParam ?? gameInstance.CharacterStatus.Level;
+			var role = roleParam ?? gameInstance.AccountInfo.role;
             // 自动推荐装备
             switch (position)
             {
@@ -683,34 +684,34 @@ namespace Mir2Assistant.Common.Functions
                     itemNames.Add("火把");
                     break;
                 case EquipPosition.Necklace:
-                    if (gameInstance.AccountInfo.role != RoleType.mage)
+                    if (role != RoleType.mage)
                     {
-                        if (CharacterStatus.Level >= 3)
+                        if (level >= 3)
                         {
                             itemNames.Add("金项链");
                         }
-                        if (CharacterStatus.Level >= 3)
+                        if (level >= 3)
                         {
                             itemNames.Add("传统项链");
                         }
-                        if (CharacterStatus.Level >= 17)
+                        if (level >= 17)
                         {
-                            if (gameInstance.AccountInfo.role == RoleType.blade)
+                            if (role == RoleType.blade)
                             {
                                 itemNames.Add("魔鬼项链");
                             }
-                            else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                            else if (role == RoleType.taoist)
                             {
                                 itemNames.Add("凤凰明珠");
                             }
                         }
-                        if (CharacterStatus.Level >= 24)
+                        if (level >= 24)
                         {
-                            if (gameInstance.AccountInfo.role == RoleType.blade)
+                            if (role == RoleType.blade)
                             {
                                 itemNames.Add("蓝翡翠项链");
                             }
-                            else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                            else if (role == RoleType.taoist)
                             {
                                 itemNames.Add("竹笛");
                             }
@@ -718,11 +719,11 @@ namespace Mir2Assistant.Common.Functions
                     }
                     else
                     {
-                        if (CharacterStatus.Level >= 17)
+                        if (level >= 17)
                         {
                             itemNames.Add("琥珀项链");
                         }
-                        if (CharacterStatus.Level >= 24)
+                        if (level >= 24)
                         {
                             itemNames.Add("放大镜");
                         }
@@ -731,25 +732,25 @@ namespace Mir2Assistant.Common.Functions
                     break;
                 case EquipPosition.ArmRingLeft:
                 case EquipPosition.ArmRingRight:
-                    if (CharacterStatus.Level >= 3)
+                    if (level >= 3)
                     {
                         itemNames.Add("铁手镯");
                     }
-                    if (CharacterStatus.Level >= 7)
+                    if (level >= 7)
                     {
                         itemNames.Add("皮制手套");
                     }
-                    if (CharacterStatus.Level >= 8)
+                    if (level >= 8)
                     {
                         itemNames.Add("钢手镯");
                     }
-                    if (CharacterStatus.Level >= 9)
+                    if (level >= 9)
                     {
                         itemNames.Add("大手镯");
                     }
-                    if (gameInstance.AccountInfo.role == RoleType.blade)
+                    if (role == RoleType.blade)
                     {
-                        if (CharacterStatus.Level >= 18)
+                        if (level >= 18)
                         {
                             itemNames.Add("坚固手套");
                         }
@@ -757,117 +758,117 @@ namespace Mir2Assistant.Common.Functions
                     break;
                 case EquipPosition.RingLeft:
                 case EquipPosition.RingRight:
-                    if (CharacterStatus.Level >= 3)
+                    if (level >= 3)
                     {
                         itemNames.Add("古铜戒指");
                     }
-                    if (CharacterStatus.Level >= 9)
+                    if (level >= 9)
                     {
                         itemNames.Add("牛角戒指");
                     }
-                    if (gameInstance.AccountInfo.role != RoleType.mage)
+                    if (role != RoleType.mage)
                     {
-                        if (CharacterStatus.Level >= 16)
+                        if (level >= 16)
                         {
                             itemNames.Add("蓝色水晶戒指");
                         }
-                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        if (role == RoleType.blade)
                         {
-                            if (CharacterStatus.Level >= 20)
+                            if (level >= 20)
                             {
                                 itemNames.Add("黑色水晶戒指");
                             }
-                            if (CharacterStatus.Level >= 25)
+                            if (level >= 25)
                             {
                                 itemNames.Add("珊瑚戒指");
                             }
                         }
-                        else if (gameInstance.AccountInfo.role == RoleType.taoist)
+                        else if (role == RoleType.taoist)
                         {
-                            if (CharacterStatus.Level >= 20)
+                            if (level >= 20)
                             {
                                 itemNames.Add("珍珠戒指");
                             }
-                            if (CharacterStatus.Level >= 23)
+                            if (level >= 23)
                             {
                                 itemNames.Add("道德戒指");
                             }
                         }
                     }else{
-                        if (CharacterStatus.Level >= 11)
+                        if (level >= 11)
                         {
                             itemNames.Add("六角戒指");
                         }
-                        if (CharacterStatus.Level >= 20)
+                        if (level >= 20)
                         {
                             itemNames.Add("蛇眼戒指");
                         }
                     }
                     break;
                 case EquipPosition.Helmet:
-                    if (gameInstance.AccountInfo.role == RoleType.blade){
-                         if (CharacterStatus.Level >= 10)
+                    if (role == RoleType.blade){
+                        if (level >= 10)
                         {
                             itemNames.Add("青铜头盔");
                         }
-                        if (CharacterStatus.Level >= 14)
+                        if (level >= 14)
                         {
                             itemNames.Add("魔法头盔");
                         }
-                        if (CharacterStatus.Level >= 23)
+                        if (level >= 23)
                         {
                             itemNames.Add("道士头盔");
                         }
                     } else {
-                        var isMage = gameInstance.AccountInfo.role == RoleType.mage;
+                        var isMage = role == RoleType.mage;
                         if(isMage){
-                            if (CharacterStatus.Level >= 14 )
+                            if (level >= 14 )
                             {
                                 itemNames.Add("青铜头盔");
                                 itemNames.Add("魔法头盔");
                             }
-                            if (CharacterStatus.Level >= 23)
+                            if (level >= 23)
                             {
                                 itemNames.Add("道士头盔");
                             }
                         }else{
-                            if (CharacterStatus.Level >= 20)
+                            if (level >= 20)
                             {
                                 itemNames.Add("青铜头盔");
                                 itemNames.Add("魔法头盔");
                             }
-                            if (CharacterStatus.Level >= 23)
+                            if (level >= 23)
                             {
                                 itemNames.Add("道士头盔");
                             }
                         }
-                      
+                    
                     }
 
-                   
+                
                     break;
                 case EquipPosition.Dress:
                     itemNames.Add("布衣" + genderStr);
-                    if (gameInstance.AccountInfo.role != RoleType.mage)
+                    if (role != RoleType.mage)
                     {
-                        if (CharacterStatus.Level >= 11)
+                        if (level >= 11)
                         {
                             itemNames.Add("轻型盔甲" + genderStr);
                         }
-                        if (CharacterStatus.Level >= 16)
+                        if (level >= 16)
                         {
                             itemNames.Add("中型盔甲" + genderStr);
                         }
-                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        if (role == RoleType.blade)
                         {
-                            if (CharacterStatus.Level >= 22)
+                            if (level >= 22)
                             {
                                 itemNames.Add("重盔甲" + genderStr);
                             }
                         }
                         else
                         {
-                            if (CharacterStatus.Level >= 22)
+                            if (level >= 22)
                             {
                                 itemNames.Add("灵魂战衣" + genderStr);
                             }
@@ -876,15 +877,15 @@ namespace Mir2Assistant.Common.Functions
                     }
                     else
                     {
-                        if (CharacterStatus.Level >= 11)
+                        if (level >= 11)
                         {
                             itemNames.Add("轻型盔甲" + genderStr);
                         }
-                        if (CharacterStatus.Level >= 20)
+                        if (level >= 20)
                         {
                             itemNames.Add("中型盔甲" + genderStr);
                         }
-                        if (CharacterStatus.Level >= 22)
+                        if (level >= 22)
                         {
                             itemNames.Add("魔法长袍" + genderStr);
                         }
@@ -892,32 +893,32 @@ namespace Mir2Assistant.Common.Functions
                     break;
                 case EquipPosition.Weapon:
                     itemNames.Add("木剑");
-                    if (gameInstance.AccountInfo.role != RoleType.mage)
+                    if (role != RoleType.mage)
                     {
-                        if (CharacterStatus.Level >= 2)
+                        if (level >= 2)
                         {
                             itemNames.Add("匕首");
                         }
-                        if (CharacterStatus.Level >= 5)
+                        if (level >= 5)
                         {
                             itemNames.Add("青铜剑");
                         }
-                        if (CharacterStatus.Level < 5)
+                        if (level < 5)
                         {
                             itemNames.Add("乌木剑");
                         }
-                        if (CharacterStatus.Level >= 10)
+                        if (level >= 10)
                         {
                             itemNames.Add("铁剑");
                             itemNames.Add("短剑");
                         }
-                        if (CharacterStatus.Level >= 13)
+                        if (level >= 13)
                         {
                             itemNames.Add("青铜斧");
                         }
-                        if (CharacterStatus.Level >= 15)
+                        if (level >= 15)
                         {
-                            if (gameInstance.AccountInfo.role == RoleType.blade)
+                            if (role == RoleType.blade)
                             {
                                 // itemNames.Add("半月");
                                 itemNames.Add("八荒");
@@ -927,24 +928,24 @@ namespace Mir2Assistant.Common.Functions
                                 itemNames.Add("半月");
                             }
                         }
-                        if (gameInstance.AccountInfo.role == RoleType.blade)
+                        if (role == RoleType.blade)
                         {
-                            if (CharacterStatus.Level >= 19)
+                            if (level >= 19)
                             {
                                 itemNames.Add("凌风");
                             }
-                            if (CharacterStatus.Level >= 20)
+                            if (level >= 20)
                             {
                                 itemNames.Add("破魂");
                             }
-                            if (CharacterStatus.Level >= 22)
+                            if (level >= 22)
                             {
                                 itemNames.Add("修罗");
                             }
                         }
-                        if (gameInstance.AccountInfo.role == RoleType.taoist)
+                        if (role == RoleType.taoist)
                         {
-                            if (CharacterStatus.Level >= 20)
+                            if (level >= 20)
                             {
                                 itemNames.Add("破魂");
                                 itemNames.Add("降魔");
@@ -953,15 +954,15 @@ namespace Mir2Assistant.Common.Functions
                     }
                     else
                     {
-                        // if (CharacterStatus.Level >= 5)
+                        // if (level >= 5)
                         // {
                         //     itemNames.Add("青铜剑");
                         // }
-                        if (CharacterStatus.Level >= 15)
+                        if (level >= 15)
                         {
                             itemNames.Add("海魂");
                         }
-                        if (CharacterStatus.Level >= 20)
+                        if (level >= 20)
                         {
                             itemNames.Add("偃月");
                         }
@@ -971,6 +972,7 @@ namespace Mir2Assistant.Common.Functions
             itemNames.Reverse();
             return itemNames;
         }
+
 
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
