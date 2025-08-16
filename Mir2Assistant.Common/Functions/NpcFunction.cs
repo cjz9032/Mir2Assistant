@@ -373,7 +373,7 @@ namespace Mir2Assistant.Common.Functions
             var home = "0";
             var mapId = gameInstance.CharacterStatus.MapId;
             // 野外商店
-            if (mapId == "D002")
+            if (mapId == "D002" || mapId == "DM001")
             {
                 home = "DM001";
             }

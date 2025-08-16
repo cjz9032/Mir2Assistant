@@ -697,9 +697,9 @@ namespace Mir2Assistant
             var nearHome = NpcFunction.PickNearHomeMap(instanceValue);
             if (nearHome != CharacterStatus.MapId)
             {
-                var (npcMap, npcName, x, y) = NpcFunction.PickDrugNpcByMap(instanceValue, nearHome);
+                //var (npcMap, npcName, x, y) = NpcFunction.PickDrugNpcByMap(instanceValue, nearHome);
                 // 先随便选个NPC位置
-                await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, x, y, npcMap, 6);
+                await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 1, 1, nearHome, 0, true, 12);
             }
             // 卖肉
             await sellMeat(instanceValue, _cancellationToken);
@@ -1187,13 +1187,17 @@ namespace Mir2Assistant
                                     }
                                     var isFull = miscs.Count > 38;
                                     if(isFull){
-                                        instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
+                                        instanceValue.GameInfo("满包 回家");
                                     }
                                     if(lowMPMain){
                                         instanceValue.GameInfo("主号没魔法药, 回家");
                                     }
                                     if(isLowHpMP){
                                         instanceValue.GameInfo("主号太低了, 回家");
+                                    }
+                                    if (realLowEq)
+                                    {
+                                        instanceValue.GameInfo("主号耐久太低, 回家");
                                     }
                                     var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
                                     return final;
