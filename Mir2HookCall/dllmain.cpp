@@ -43,6 +43,8 @@ OriginalFuncType originalFunc10 = NULL;
 OriginalFuncType originalFunc11 = NULL;
 OriginalFuncType originalFunc111 = NULL;
 OriginalFuncType originalFunc112 = NULL;
+OriginalFuncType originalFunc113 = NULL;
+OriginalFuncType originalFunc114 = NULL;
 OriginalFuncType originalFunc12 = NULL;
 OriginalFuncType originalFuncRunHP = NULL;
 OriginalFuncType originalFuncExitBattle = NULL;
@@ -340,6 +342,8 @@ bool InstallHooks()
         {L"xxx", MIR_SKP_DLG4_ADDR, SkipPopup, (void**)&originalFunc11, "skip_popup4"},  // hook在这里
         {L"xxx", MIR_SKP_DLG5_ADDR, SkipPopup, (void**)&originalFunc111, "skip_popup5"},  // hook在这里
         {L"xxx", MIR_SKP_DLG6_ADDR, SkipPopup, (void**)&originalFunc112, "skip_popup6"}  // hook在这里
+        {L"xxx", MIR_SKP_DLG7_ADDR, SkipPopup, (void**)&originalFunc113, "skip_popup7"}  // hook在这里
+        {L"xxx", MIR_SKP_DLG8_ADDR, SkipPopup, (void**)&originalFunc114, "skip_popup8"}  // hook在这里
     };
 
     // 批量安装所有跳过钩子

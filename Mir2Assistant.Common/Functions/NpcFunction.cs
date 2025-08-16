@@ -405,7 +405,7 @@ namespace Mir2Assistant.Common.Functions
             else
             {
                 // 其他大图
-                return ("-1", "", 0, 0);
+                return ("-1", "", -1, -1);
             }
         }
 
@@ -440,7 +440,7 @@ namespace Mir2Assistant.Common.Functions
             }
         }
         
-        public static (string map, string npcName, int x, int y) PickEquipNpcByMap(MirGameInstanceModel gameInstance, EquipPosition position, string mapId)
+        public static (string map, string npcName, int x, int y) PickEquipNpcByMap(MirGameInstanceModel gameInstance, EquipPosition position, string mapId, string action = "buy")
         {
             // 根据当前所在地图, 找到最近的NPC
             if (mapId == "0")
@@ -462,7 +462,7 @@ namespace Mir2Assistant.Common.Functions
                     case EquipPosition.RingRight:
                         return ("0141", "戒指店老板", 23, 23);
                     default:
-                        return ("0", "", 0, 0);
+                        return ("-1", "", -1, -1);
                 }
             }
             else if (mapId == "2")
@@ -487,7 +487,7 @@ namespace Mir2Assistant.Common.Functions
                         return ("-1", "", 0, 0);
                 }
             }
-            else if (mapId == "DM001")
+            else if (mapId == "DM001" && action != "buy")
             {
                 // 超级野生NPC
                 return ("DM001", "商", 4, 6);
@@ -506,7 +506,7 @@ namespace Mir2Assistant.Common.Functions
             foreach (var position in Enum.GetValues(typeof(EquipPosition)))
             {
 
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
+                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
                 var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
                 if (!needRep)
                 {
@@ -593,7 +593,7 @@ namespace Mir2Assistant.Common.Functions
               
                 gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
                 // 找到对应的NPC
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
+                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
                 gameInstance.GameInfo($"修理背包内保留的{npcName}的{position}装备");
                 bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
                 if (pathFound)
@@ -651,7 +651,7 @@ namespace Mir2Assistant.Common.Functions
                 {
                     continue;
                 }
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, position, nearHome);
+                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, position, nearHome, "sell");
 
                 gameInstance.GameInfo($"出售{npcName}的{position}装备");
                 bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
