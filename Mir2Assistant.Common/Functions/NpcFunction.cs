@@ -487,7 +487,7 @@ namespace Mir2Assistant.Common.Functions
                         return ("-1", "", 0, 0);
                 }
             }
-            else if (mapId == "DM001" && action != "buy")
+            else if (mapId == "DM001" && action != "buy" && (position == EquipPosition.Weapon || position == EquipPosition.Dress))
             {
                 // 超级野生NPC
                 return ("DM001", "商", 4, 6);
