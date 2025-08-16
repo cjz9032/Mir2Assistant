@@ -108,6 +108,7 @@ public static class GoRunFunction
             }
 
             ItemFunction.Pickup(instanceValue);
+            await Task.Delay(300);
             // 加捡取过的名单
             instanceValue.pickupItemIds.Add(drop.Value.Id);
             pickedAny = true;
