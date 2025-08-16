@@ -797,7 +797,7 @@ namespace Mir2Assistant
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
-                        if (CharacterStatus.Level <= 14 && act.TaskMain0Step < 7) // 6
+                        if (CharacterStatus.Level <= 16 && act.TaskMain0Step < 7) // 6
                         {
                             // 主线
                             if (act.TaskMain0Step == 0)
@@ -1248,12 +1248,13 @@ namespace Mir2Assistant
             {
                 // 连续没有IsAttached, 尝试attached
                 var tryiedAttach = 0;
+                var samePosTimes = 0;
+                var lastPos = 0;
                 while (true)
                 {
                     // Log.Debug("开始后台自动处理");
                     await Task.Delay(20_000);
-                    var samePosTimes = 0;
-                    var lastPos = 0;
+
                     try
                     {
                         if (!instance.IsAttached)
@@ -1306,10 +1307,12 @@ namespace Mir2Assistant
                             if(CharacterStatus.X > 0){
                                  if(Math.Abs(CharacterStatus.X - lastPos) < 3){
                                         samePosTimes+=1;
-                                        if(samePosTimes == 10){
+                                        lastPos = CharacterStatus.X;
+                                        if (samePosTimes == 6){
                                             samePosTimes = 0;
                                             lastPos = 0;
                                             await RestartGameProcess(instance);
+                                            continue;
                                         }
                                  }else{
                                         lastPos = CharacterStatus.X;
