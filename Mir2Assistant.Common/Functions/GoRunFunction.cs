@@ -1358,9 +1358,13 @@ public static class GoRunFunction
                 var (nextX, nextY) = getNextPostion(oldX, oldY, node.dir, node.steps);
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
-                if(isAcross && goNodes.Count < 4){
+                if(isAcross && goNodes.Count < 9){
                     var lastN = goNodes[goNodes.Count-1];
-                    openDoor(GameInstance, lastN.x, lastN.y);
+                    // 剩下8个格子 尝试8个方向
+                    int[] dx = { 0, 1, 1, 1, 0, -1, -1, -1 };
+                    int[] dy = { -1, -1, 0, 1, 1, 1, 0, -1 };
+                    var triIdx = 8 - goNodes.Count;
+                    openDoor(GameInstance, lastN.x + dx[triIdx], lastN.y + dy[triIdx]);
                 }
 
                 var tried = 0;

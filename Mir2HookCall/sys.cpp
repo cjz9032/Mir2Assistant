@@ -161,8 +161,8 @@ void openDoor(int x, int y)
 
 		push x
 		push y
-		push 0x20
-		xor ecx,ecx
+		push 0
+		mov ecx, 0
 		mov edx, 0x3ea
 		mov ebx, 0
 		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
