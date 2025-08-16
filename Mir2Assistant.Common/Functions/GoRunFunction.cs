@@ -823,7 +823,7 @@ public static class GoRunFunction
         return 0;
     }
 
-  public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 10)
+    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 10)
     {
 
         if (instanceValue.CharacterStatus!.CurrentHP == 0)
@@ -1164,6 +1164,84 @@ public static class GoRunFunction
 
     }
     
+
+  public static async Task<bool> SimpleAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+    {
+
+        if (instanceValue.CharacterStatus!.CurrentHP == 0)
+        {
+            instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+            return false;
+        }
+        var CharacterStatus = instanceValue.CharacterStatus!;
+
+        while (true)
+        {
+		    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+			{
+				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+				return false;
+			}
+            await Task.Delay(100);
+
+            if (instanceValue.CharacterStatus!.CurrentHP == 0)
+            {
+                instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                return false;
+            }
+            await Task.Delay(100);
+            var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon)
+                // 还要把鹿羊鸡放最后
+                .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
+                .OrderBy(o => o.Distance)
+                .Select(o => o.Monster)
+                .FirstOrDefault();
+            
+            if (ani != null)
+            {
+                while (true)
+                {
+                    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+                    {
+                        instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                        return false;
+                    }
+                    CharacterStatus = instanceValue.CharacterStatus;
+                    MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                    await Task.Delay(200);
+                    if (Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                    {
+                        await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30);
+                        instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
+                        ani = ani3;
+                        if (ani == null)
+                        {
+                            break;
+                        }
+                    }
+                    await Task.Delay(200);
+                    instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani2);
+                    ani = ani2;
+                    if (ani2 == null)
+                    {
+                        break;
+                    }
+                    if (ani2.isDead)
+                    {
+                        break;
+                    }
+                    
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+        return true;
+
+    }
+
     public static int measureGenGoPath (MirGameInstanceModel GameInstance, int tx, int ty){
         try
         {
@@ -1361,9 +1439,9 @@ public static class GoRunFunction
                 if(isAcross && goNodes.Count < 9){
                     var lastN = goNodes[goNodes.Count-1];
                     // 剩下8个格子 尝试8个方向
-                    int[] dx = { 0, 1, 1, 1, 0, -1, -1, -1 };
-                    int[] dy = { -1, -1, 0, 1, 1, 1, 0, -1 };
-                    var triIdx = 8 - goNodes.Count;
+                    int[] dx = { 0,0, 1, 1, 1, 0, -1, -1, -1 };
+                    int[] dy = { 0,-1, -1, 0, 1, 1, 1, 0, -1 };
+                    var triIdx = 9 - goNodes.Count;
                     openDoor(GameInstance, lastN.x + dx[triIdx], lastN.y + dy[triIdx]);
                 }
 

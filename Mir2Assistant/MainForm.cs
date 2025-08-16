@@ -793,8 +793,8 @@ namespace Mir2Assistant
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
-                        //if (new string[] { "0", "1", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
-                        //    await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                        if (new string[] { "0", "1", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
+                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
                         if (CharacterStatus.Level <= 14 && act.TaskMain0Step < 7) // 6
@@ -941,21 +941,39 @@ namespace Mir2Assistant
                                     if (pathFound)
                                     {
                                         await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await Task.Delay(1000);
                                         await NpcFunction.Talk2(instanceValue!, "@Q706_1");
+                                        await Task.Delay(1000);
+                                        await GoRunFunction.SimpleAttackPoints(instanceValue, _cancellationTokenSource.Token);
+                                        await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await Task.Delay(1000);
+                                        await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await NpcFunction.Talk2(instanceValue!, "@回屋");
+                                        act.TaskMain0Step = 7;
+                                        SaveAccountList();
                                     }
-                                }else if (instanceValue.AccountInfo.role == RoleType.taoist){
+                                }
+                                else if (instanceValue.AccountInfo.role == RoleType.taoist){
                                     bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10,10, "0113", 6, true, 20);
                                     if (pathFound)
                                     {
                                         await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await Task.Delay(1000);
                                         await NpcFunction.Talk2(instanceValue!, "@Q706_1");
+                                        await Task.Delay(1000);
+                                        await GoRunFunction.SimpleAttackPoints(instanceValue, _cancellationTokenSource.Token);
+                                        await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await Task.Delay(1000);
+                                        await NpcFunction.ClickNPC(instanceValue, "高级");
+                                        await NpcFunction.Talk2(instanceValue!, "@回屋");
+                                        act.TaskMain0Step = 7;
+                                        SaveAccountList();
                                     }
                                 }
                               
                                
 
-                                act.TaskMain0Step = 7;
-                                SaveAccountList();
+                             
 
                             }
                         }
