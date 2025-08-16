@@ -1064,7 +1064,7 @@ namespace Mir2Assistant
                                 var hangMapId = "0";
                                 // 如果有朋友等级太低, 先到5
                                 // 检查朋友的等级
-                                var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 4).ToList();
+                                var friends = GameState.GameInstances.Where(o => o.IsAttached && o.CharacterStatus!.Level > 0 && o.CharacterStatus!.Level < 9).ToList();
                                 if (instanceValue.CharacterStatus.Level < GameConstants.NoobLevel)
                                 {
                                     hangMapId = "0";
