@@ -1312,7 +1312,7 @@ namespace Mir2Assistant
                                  if(Math.Abs(CharacterStatus.X - lastPos) < 3){
                                         samePosTimes+=1;
                                         lastPos = CharacterStatus.X;
-                                        if (samePosTimes == 6){
+                                        if (samePosTimes == 10){
                                             samePosTimes = 0;
                                             lastPos = 0;
                                             await RestartGameProcess(instance);
