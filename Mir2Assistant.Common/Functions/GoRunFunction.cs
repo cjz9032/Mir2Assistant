@@ -58,7 +58,7 @@ public static class GoRunFunction
                     // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
                     !curinItems.Contains(o.Value.Name)
                 // 不是自己的 但是是别人的 不拿
-                && (!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name))
+                && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
                 // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
                 &&
                 (
