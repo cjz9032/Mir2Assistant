@@ -43,75 +43,79 @@ public static class GoRunFunction
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
         // 武器表
             // 筛选可捡取的物品
-            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
-                !curinItems.Contains(o.Value.Name)
-            // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
-            &&
-            (
-                (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
-                    ((clothCount <  maxCloth) ?
-                    (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) 
-                    : false)
-                : true
-            )
-            // 药
-            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
-            && (o.Value.Name.Contains("魔法药") ? (
-                    instanceValue.AccountInfo.role == RoleType.taoist 
-                    ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
-                    : (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
-                ) : true)
-            // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
-            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
-            &&
-            (
-                // todo 更多属性获取drop更高效
-                GameConstants.Items.weaponList.Contains(o.Value.Name) ? (isMage ? false : (
-                    weaponCount < maxWeapon ? true : false
-                )) : true
-            )
-            ))
-            .OrderBy(o => o.Value.IsGodly ? 0 : 1)
-            .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
+        
             
         bool pickedAny = false;
-        
-        foreach (var drop in drops)
-        {
-            instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-            bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
-            
-            var triedGoPick = 0;
-            var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
-            while (!pathFound && triedGoPick < maxTriedGoPick)
+        var allTimes = 0;
+        while(allTimes < 2){
+            allTimes++;
+            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
+                    // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
+                    !curinItems.Contains(o.Value.Name)
+                // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
+                &&
+                (
+                    (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
+                        ((clothCount <  maxCloth) ?
+                        (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) 
+                        : false)
+                    : true
+                )
+                // 药
+                && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
+                && (o.Value.Name.Contains("魔法药") ? (
+                        instanceValue.AccountInfo.role == RoleType.taoist 
+                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
+                        : (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
+                    ) : true)
+                // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
+                && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
+                &&
+                (
+                    // todo 更多属性获取drop更高效
+                    GameConstants.Items.weaponList.Contains(o.Value.Name) ? (isMage ? false : (
+                        weaponCount < maxWeapon ? true : false
+                    )) : true
+                )
+                ))
+                .OrderBy(o => o.Value.IsGodly ? 0 : 1)
+                .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
+            foreach (var drop in drops)
             {
-                triedGoPick++;
-                pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30);
-            }
-
-            var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
-            // 极品满就扔东西 -- todo 还有 自定义极品
-            if (drop.Value.IsGodly && miscs2.Count() == 40)
-            {
-                // 扔东西
-                // 挑选一个扔, 一般扔药
-                var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
-                    GameConstants.Items.MegaPotions.Contains(o.Name)
-                );
-                if (needDropItem != null)
+                instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
+                bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
+                
+                var triedGoPick = 0;
+                var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
+                while (!pathFound && triedGoPick < maxTriedGoPick)
                 {
-                    // + 6
-                    NpcFunction.EatIndexItem(instanceValue, needDropItem.Index + 6, true);
-                    await Task.Delay(200);
+                    triedGoPick++;
+                    pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30);
+                }
+
+                var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
+                // 极品满就扔东西 -- todo 还有 自定义极品
+                if (drop.Value.IsGodly && miscs2.Count() == 40)
+                {
+                    // 扔东西
+                    // 挑选一个扔, 一般扔药
+                    var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
+                        GameConstants.Items.MegaPotions.Contains(o.Name)
+                    );
+                    if (needDropItem != null)
+                    {
+                        // + 6
+                        NpcFunction.EatIndexItem(instanceValue, needDropItem.Index + 6, true);
+                        await Task.Delay(200);
+                    }
+                }
+                if(pathFound){
+                    ItemFunction.Pickup(instanceValue);
+                    await Task.Delay(300);
+                    pickedAny = true;
+                    instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
             }
-
-            ItemFunction.Pickup(instanceValue);
-            await Task.Delay(300);
-            // 加捡取过的名单
-            instanceValue.pickupItemIds.Add(drop.Value.Id);
-            pickedAny = true;
         }
 
         instanceValue.isPickingWay = false;
