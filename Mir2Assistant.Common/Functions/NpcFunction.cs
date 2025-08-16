@@ -919,7 +919,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             if (gameInstance.AccountInfo.role == RoleType.blade)
                             {
-                                itemNames.Add("半月");
+                                // itemNames.Add("半月");
                                 itemNames.Add("八荒");
                             }
                             else
