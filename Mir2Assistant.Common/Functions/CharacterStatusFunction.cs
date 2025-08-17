@@ -41,7 +41,9 @@ public static class CharacterStatusFunction
         status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物LEVEL偏移"]));
         status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_MEMBER_ADDR"], 0x30));
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_ALLOW_ADDR"])) == 1;
-        status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["金地"], 0 ,GameState.MirConfig["金币偏移"]));
+        if(GameState.MirConfig["金地"] != 0){
+            status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["金地"], 0 ,GameState.MirConfig["金币偏移"]));
+        }
     }
 
     public static void ReadChats(MirGameInstanceModel gameInstance, bool force = false)

@@ -21,6 +21,7 @@ public static class SkillFunction
     {
         Task.Run(() =>
         {
+            if(GameState.MirConfig["技能基址"] == 0) return;
             var memoryUtils = gameInstance!.memoryUtils!;
             var count = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 8));
             if(count == gameInstance.Skills.Count) return;

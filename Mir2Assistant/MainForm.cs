@@ -38,7 +38,7 @@ namespace Mir2Assistant
             }
             var clg = "new";
             // 注释我
-            clg = "old";
+            // clg = "old";
 
             var cfgVer = "";
             if (clg == "new")
@@ -409,12 +409,8 @@ namespace Mir2Assistant
                             SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                             await Task.Delay(3000);
                             // 写标题
-                            // if (GameState.gamePath == "Client.dat")
-                            // {
-
-                                var insIdx = GameState.GameInstances.IndexOf(gameInstance);
-                                ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
-                            // }
+                            var insIdx = GameState.GameInstances.IndexOf(gameInstance);
+                            ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
                         }
                         return gameInstance.CharacterStatus.CurrentHP > 0;
                     }else{
