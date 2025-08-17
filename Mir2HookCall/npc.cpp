@@ -231,7 +231,7 @@ void eatItemDirectly(int id) {
 		mov edx ,0xFFFFFFFF
 		mov eax, [FRMMAIN_ADDR]
 		mov eax, [eax]
-		mov esi, 0x6441CC
+		mov esi, MIR_EAT_DIRECT_CALL
 		call esi
 
 		popfd
