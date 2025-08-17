@@ -143,7 +143,7 @@ namespace Mir2Assistant.Common.Functions
         /// <returns></returns>
         public async static Task BuyLZ(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            if (GameState.gamePath == "Client.dat") return;
+            if (GameState.gamePath == "Client.exe") return;
 
             gameInstance.GameInfo("购买物品: {Item}, 数量: {Count}", "火把", 1);
             // 查看背包有没火把 没有就买一个

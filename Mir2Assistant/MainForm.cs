@@ -62,7 +62,7 @@ namespace Mir2Assistant
             }
             if (cfgVer == "2.1.0.1230.ini")
             {
-                GameState.gamePath = @"Client.dat";
+                GameState.gamePath = @"Client.exe";
                 gameDirectory = @"G:\cq\cs";
                 encodeArgMainLarge = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
                 encodeArgOtherSmall = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
@@ -1294,14 +1294,14 @@ namespace Mir2Assistant
                         if (CharacterStatus.CurrentHP > 0)
                         {
                             // 用用再说
-                            if(GameState.gamePath == "Client.dat"){
+                            if(GameState.gamePath == "Client.exe"){
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }else{
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
-                                if(GameState.gamePath == "Client.dat"){
+                                if(GameState.gamePath == "Client.exe"){
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }else{
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
@@ -1309,7 +1309,7 @@ namespace Mir2Assistant
                             }
                             else if(instance.CharacterStatus.Level < 7)
                             {
-                                if(GameState.gamePath == "Client.dat"){
+                                if(GameState.gamePath == "Client.exe"){
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }else{
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
