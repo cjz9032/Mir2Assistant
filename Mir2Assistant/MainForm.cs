@@ -1295,14 +1295,14 @@ namespace Mir2Assistant
                         {
                             // 用用再说
                             if(GameState.gamePath == "Client.dat"){
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 95);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 100);
                             }else{
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
                                 if(GameState.gamePath == "Client.dat"){
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 900);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 950);
                                 }else{
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
                                 }
