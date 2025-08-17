@@ -1302,7 +1302,7 @@ namespace Mir2Assistant
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
                                 if(GameState.gamePath == "Client.dat"){
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 950);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }else{
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
                                 }
