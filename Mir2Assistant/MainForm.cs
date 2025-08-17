@@ -1297,11 +1297,19 @@ namespace Mir2Assistant
                             CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
-                                CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
+                                if(GameState.gamePath == "Client.dat"){
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 900);
+                                }else{
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
+                                }
                             }
                             else if(instance.CharacterStatus.Level < 7)
                             {
-                                CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
+                                if(GameState.gamePath == "Client.dat"){
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
+                                }else{
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
+                                }
                             }
 
                             if(CharacterStatus.X > 0){
