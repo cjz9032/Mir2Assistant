@@ -449,7 +449,7 @@ namespace Mir2Assistant.Common.Functions
                 switch (position)
                 {
                     case EquipPosition.Weapon:
-                        return ("0", GameState.gamePath =="Client.dat"? "铁匠铺老板" : "边界村铁匠铺", 295, 608);
+                        return ("0", "铁匠", 295, 608);
                     case EquipPosition.Dress:
                     case EquipPosition.Helmet:
                         return ("0", "白家服装老板", 304, 608);
