@@ -1295,7 +1295,7 @@ namespace Mir2Assistant
                         {
                             // 用用再说
                             if(GameState.gamePath == "Client.dat"){
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 100);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }else{
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }
