@@ -189,18 +189,18 @@ __declspec(naked) void RunHP()
         jmp esi
     }
 }
-__declspec(naked) void learnSkip()
-{
-    __asm {
-  
-        mov esi, g_BaseAddr
-        add esi, MIR_LEARN_SKIP_ADDR
-        add esi, 0x8
-        mov eax, 1
-        cmp eax, 1
-        jmp esi
-    }
-}
+//__declspec(naked) void learnSkip()
+//{
+//    __asm {
+//  
+//        mov esi, g_BaseAddr
+//        add esi, MIR_LEARN_SKIP_ADDR
+//        add esi, 0x8
+//        mov eax, 1
+//        cmp eax, 1
+//        jmp esi
+//    }
+//}
 
 __declspec(naked) void ExitBattle()
 {
@@ -365,7 +365,7 @@ bool InstallHooks()
         return false;
     }
     // 学习钩子
-    DWORD  targetAddress_SKIP = MIR_LEARN_SKIP_ADDR + g_BaseAddr;
+    //DWORD  targetAddress_SKIP = MIR_LEARN_SKIP_ADDR + g_BaseAddr;
     
     // if (MH_CreateHook((LPVOID)  targetAddress_SKIP, learnSkip, (LPVOID*)&originalFunclearnSkip) != MH_OK)
     // {

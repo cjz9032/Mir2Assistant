@@ -2,7 +2,7 @@
 
 
 // const.h
-// #define USE_VERSION_CS  // 注释这行就用第二个版本
+#define USE_VERSION_CS  // 注释这行就用第二个版本
 
 #ifdef USE_VERSION_CS
     #define MIR_BU_DAO_ADDR    0x000000
@@ -53,6 +53,7 @@
     #define MIR_HK2_ADDR 0x2347A3
     #define MIR_HK5_ADDR 0x234493
     #define MIR_HK_BIOS_ADDR 0x22EF5C
+    #define MIR_EAT_DIRECT_CALL 0x62FEF8
 
     #define MIR_SKP_DLG1_ADDR 0x239733
     #define MIR_SKP_DLG2_ADDR 0x23976D
@@ -60,6 +61,10 @@
     #define MIR_SKP_DLG4_ADDR 0x235876
     #define MIR_SKP_DLG5_ADDR 0x239750
     #define MIR_SKP_DLG6_ADDR 0x2395EF
+    #define MIR_SKP_DLG7_ADDR 0x239495
+    #define MIR_SKP_DLG8_ADDR 0x239411
+
+
     #define MIR_SKP_DLG_END_ADDR 0x23BDE8
     #define MIR_HK_RUN_HP_ADDR 0x1D3397
     #define MIR_HK_EXIT_BATTLE_ADDR 0x227DA6
