@@ -55,7 +55,7 @@ public static class GoRunFunction
         while(allTimes < 2){
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                    // !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
+                    !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
                     !curinItems.Contains(o.Value.Name)
                 // 不是自己的 但是是别人的 不拿
                 && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
