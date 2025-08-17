@@ -43,6 +43,8 @@ public static class CharacterStatusFunction
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_ALLOW_ADDR"])) == 1;
         if(GameState.MirConfig["金地"] != 0){
             status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["金地"], 0 ,GameState.MirConfig["金币偏移"]));
+        }else{
+            status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["金币偏移"]));
         }
     }
 
