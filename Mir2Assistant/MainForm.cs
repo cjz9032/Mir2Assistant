@@ -1294,7 +1294,11 @@ namespace Mir2Assistant
                         if (CharacterStatus.CurrentHP > 0)
                         {
                             // 用用再说
-                            CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
+                            if(GameState.gamePath == "Client.dat"){
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 95);
+                            }else{
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
+                            }
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
                                 if(GameState.gamePath == "Client.dat"){
