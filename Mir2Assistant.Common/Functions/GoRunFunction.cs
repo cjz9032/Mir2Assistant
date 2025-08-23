@@ -923,7 +923,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 5, true, 0);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0);
                 }
                 else
                 {
@@ -939,7 +939,7 @@ public static class GoRunFunction
                     ){
                         await Task.Delay(2000);
                     }else{
-                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, 12, soFarGezi);
+                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
                     }
                 }
             }
@@ -988,7 +988,7 @@ public static class GoRunFunction
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;
                         var atksThan = diffFar > 12 ? 12 : 0;
-                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, atksThan, soFarGezi);
+                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
                         if(isSS){
                             break;
                         }
@@ -1072,7 +1072,7 @@ public static class GoRunFunction
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
                                 ||  diffFar > 30) ? 999 : 30;
                                 var atksThan = diffFar > 12 ? 12 : 0;
-                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 7, true, atksThan, soFarGezi);
+                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
                                 if(isSS){
                                     break;
                                 }
