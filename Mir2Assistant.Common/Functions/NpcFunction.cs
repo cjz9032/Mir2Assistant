@@ -582,12 +582,12 @@ namespace Mir2Assistant.Common.Functions
                 {
                     continue;
                 }
-
-                var needRep = CheckNeedRep(gameInstance, items[0]);
-                if (!needRep)
-                {
-                    continue;
-                }
+                // bug 要所有的 先不管
+                // var needRep = CheckNeedRep(gameInstance, items[0]);
+                //if (!needRep)
+                //{
+                //    continue;
+                //}
 
                 // 找背包内的对应的东西, 目前是1 , 保留多个的能力
               
@@ -751,6 +751,13 @@ namespace Mir2Assistant.Common.Functions
                     if (role == RoleType.blade)
                     {
                         if (level >= 18)
+                        {
+                            itemNames.Add("坚固手套");
+                        }
+                    }
+                    else if (role == RoleType.taoist)
+                    {
+                        if (level >= 19)
                         {
                             itemNames.Add("坚固手套");
                         }

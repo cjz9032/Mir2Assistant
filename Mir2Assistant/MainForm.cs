@@ -1093,7 +1093,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "D421";
                                 }
-                                else if (CharacterStatus.Level >= 18)
+                                else if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D421";
                                 }
@@ -1110,11 +1110,11 @@ namespace Mir2Assistant
                                     // 小号跟随回家
                                     if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
                                     {
-                                        return false;
+                                        return true;
                                     }
                                     if (instanceValue.CharacterStatus.CurrentHP <= 0)
                                     {
-                                        return false;
+                                        return true;
                                     }
                                     // go home
                                     // 排除药品, 
@@ -1167,7 +1167,7 @@ namespace Mir2Assistant
                                     // 主号没药
             
 
-                                    var lowMPMain = instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
+                                    var lowMPMain = hangMapId != "D002" && instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
                                     var isLowFushen = false;
                                     if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                     {
