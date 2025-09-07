@@ -702,7 +702,7 @@ namespace Mir2Assistant
             // 买书, 治愈诱惑基本
 
             // 蜡烛检测
-            await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
+            // await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
             // 确保到家了, 到家先把极品穿起来, 这样不会被购买替换了, 然后被维修
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
@@ -729,7 +729,7 @@ namespace Mir2Assistant
             // 卖所有
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
-     
+            await NpcFunction.sellDrugs(instanceValue, "太阳水");
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
             // 全搞完 回血
@@ -1086,22 +1086,26 @@ namespace Mir2Assistant
                                 }
                                 else if (friends.Count > 0)
                                 {
-                                    hangMapId = "D001";
-                                }
-                                else  
-                                if (CharacterStatus.Level >= 22)
-                                {
-                                    hangMapId = "D421";
+                                    hangMapId = "1";
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D421";
                                 }
+                          
+                                else if (CharacterStatus.Level >= 15)
+                                {
+                                    hangMapId = "D003";
+                                }
                                 else if (CharacterStatus.Level >= GameConstants.MidLevel)
                                 {
-                                    hangMapId = "D002";
+                                    hangMapId = "D001";
                                 }
-                                
+                                else if (CharacterStatus.Level >= 8)
+                                {
+                                    hangMapId = "1";
+                                }
+
                                 instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
                                 instanceValue.isHomePreparing = false;
@@ -1208,6 +1212,15 @@ namespace Mir2Assistant
                                 instanceValue.GameInfo("开始回家");
                                 // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                 await NpcFunction.autoReplaceEquipment(instanceValue, false);
+                                // 有回城卷直接用
+                                var backHomeItems = GoRunFunction.findIdxInAllItems(instanceValue, "回城卷");
+                                if(backHomeItems != null){
+                                    instanceValue.GameInfo("有回城卷, 直接用");
+                                    NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
+                                    await Task.Delay(1000);
+                                }
+
+
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }
                             // act.TaskSub0Step = 6;

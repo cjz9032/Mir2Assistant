@@ -31,6 +31,7 @@ public static class GoRunFunction
         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
         var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
+        var huiCount = miscs.Count(o => o.Name == ("回城卷"));
         var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
@@ -41,10 +42,11 @@ public static class GoRunFunction
         var maxCloth = GameConstants.Items.keepClothCount;
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
+        var ccc = GameConstants.Items.megaBuyCount * 1.5;
         // 武器表
-            // 筛选可捡取的物品
-        
-            
+        // 筛选可捡取的物品
+
+
         bool pickedAny = false;
         var allTimes = 0;
 
@@ -68,6 +70,8 @@ public static class GoRunFunction
                         : false)
                     : true
                 )
+                // 回城卷
+                && (o.Value.Name == "回城卷" ? huiCount < 2 : true)
                 // 药
                 && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
                 && (o.Value.Name.Contains("魔法药") ? (
@@ -937,7 +941,7 @@ public static class GoRunFunction
                         Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) < 10 &&
                         new Random().Next(100) < 90
                     ){
-                        await Task.Delay(2000);
+                        await Task.Delay(1000);
                     }else{
                         bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
                     }
@@ -1823,11 +1827,11 @@ public static class GoRunFunction
         await NpcFunction.autoReplaceEquipment(GameInstance);
     }
 
-    public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name)
+    public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
     {
         // TODO 打包这种还没算
         var bagItems2 = GameInstance.Items;
-        var idx = bagItems2.Where(o => o.Name == name).ToList();
+        var idx = bagItems2.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
         if (idx.Count > 0)
         {
             return idx.Select(o => o.Index + 6).ToArray();
@@ -1835,7 +1839,7 @@ public static class GoRunFunction
         else
         {
             var quickItems = GameInstance.QuickItems;
-            var idx2 = quickItems.Where(o => o.Name == name).ToList();
+            var idx2 = quickItems.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
             if (idx2.Count > 0)
             {
                 return idx2.Select(o => o.Index).ToArray();
@@ -1856,28 +1860,29 @@ public static class GoRunFunction
         if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4) // 0.5避免浪费治疗
         {
 
-                var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
-                var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.HealPotions;
-                int resIdx = -1;
-                if(veryLow)  {
-                    items =  GameConstants.Items.SuperPotions.Concat(items).ToList();
-                }
-                foreach (var item in items)
+            var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
+            var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.HealPotions;
+            int resIdx = -1;
+            if (veryLow)
+            {
+                items = GameConstants.Items.SuperPotions.Concat(items).ToList();
+            }
+            foreach (var item in items)
+            {
+                var idx = findIdxInAllItems(GameInstance, item);
+                if (idx != null)
                 {
-                    var idx = findIdxInAllItems(GameInstance, item);
-                    if (idx != null)
-                    {
-                        resIdx = idx[0];
-                        break;
-                    }
+                    resIdx = idx[0];
+                    break;
                 }
+            }
 
-                if (resIdx == -1)
-                {
-                    return;
-                }
+            if (resIdx == -1)
+            {
+                return;
+            }
 
-                NpcFunction.EatIndexItem(GameInstance, resIdx);
+            NpcFunction.EatIndexItem(GameInstance, resIdx);
         }
 
         // for low mp
@@ -1886,10 +1891,11 @@ public static class GoRunFunction
         {
             // 找蓝药 太阳水
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
-            var items =  GameConstants.Items.MegaPotions;
+            var items = GameConstants.Items.MegaPotions;
             int resIdx = -1;
-            if(veryLow)  {
-                items =  GameConstants.Items.SuperPotions.Concat(items).ToList();
+            if (veryLow)
+            {
+                items = GameConstants.Items.SuperPotions.Concat(items).ToList();
             }
             foreach (var item in items)
             {
@@ -1905,6 +1911,20 @@ public static class GoRunFunction
                 return;
             }
             NpcFunction.EatIndexItem(GameInstance, resIdx);
+        }
+        // 清理战士蓝
+        if (GameInstance.AccountInfo.role == RoleType.blade && GameInstance.CharacterStatus.Level < 28)
+        {
+            var lans = findIdxInAllItems(GameInstance, "魔法药", true);
+            if (lans != null)
+            {
+                NpcFunction.EatIndexItem(GameInstance, lans[0]);
+            }
+        }
+         // 清理红
+        var heals = findIdxInAllItems(GameInstance, "金创药", true);
+        if(heals != null && heals.Length > GameConstants.Items.healBuyCount){
+            NpcFunction.EatIndexItem(GameInstance, heals[0]);
         }
     }
 }

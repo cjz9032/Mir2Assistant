@@ -365,7 +365,7 @@ namespace Mir2Assistant.Common.Functions
 
         public static string PickNearHomeMap(MirGameInstanceModel gameInstance)
         {
-            if(new string[] {"0","1","2","3"}.Contains(gameInstance.CharacterStatus.MapId))
+            if(new string[] {"0","2","3"}.Contains(gameInstance.CharacterStatus.MapId))
             {
                 return gameInstance.CharacterStatus.MapId;
             }
@@ -839,7 +839,7 @@ namespace Mir2Assistant.Common.Functions
                                 itemNames.Add("道士头盔");
                             }
                         }else{
-                            if (level >= 20)
+                            if (level >= 23)
                             {
                                 itemNames.Add("青铜头盔");
                                 itemNames.Add("魔法头盔");
@@ -1063,6 +1063,26 @@ namespace Mir2Assistant.Common.Functions
 
                 // 已经检测过存在了, 只看是否为空先
                 await BuyImmediate(gameInstance, itemName, count);
+            }
+        }
+
+        public async static Task sellDrugs(MirGameInstanceModel gameInstance, string itemName)
+        {
+
+            gameInstance.GameInfo($"出售药品 {itemName}");
+            var lists = new List<ItemModel>();
+            lists = gameInstance.Items.Concat(gameInstance.QuickItems).Where(x => !x.IsEmpty && x.Name.Contains(itemName)).ToList();
+            if(lists.Count == 0) return;
+            var nearHome = PickNearHomeMap(gameInstance);  
+            var (npcMap, npcName, x, y) = PickDrugNpcByMap(gameInstance, nearHome);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@sell");
+                await Task.Delay(500);
+
+                await SellItems(gameInstance, lists);
             }
         }
 

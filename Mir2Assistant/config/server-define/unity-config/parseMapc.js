@@ -233,45 +233,9 @@ parseMapcFile(mapcFilePath)
     // 执行寻路
     const path = jpsAStar(myX, myY, targetX, targetY, result.obstacleData, result.width, result.height);
   
-    // 插值函数：生成跳点间的所有中间步骤
-    function interpolatePath(originalPath) {
-      if (!originalPath || originalPath.length <= 1) return originalPath;
-      
-      const fullPath = [];
-      
-      for (let i = 0; i < originalPath.length - 1; i++) {
-        const start = originalPath[i];
-        const end = originalPath[i + 1];
-        
-        // 添加起始点
-        if (i === 0) {
-          fullPath.push(start);
-        }
-        
-        // 计算方向向量
-        const dx = end.x > start.x ? 1 : end.x < start.x ? -1 : 0;
-        const dy = end.y > start.y ? 1 : end.y < start.y ? -1 : 0;
-        
-        // 计算步数
-        const stepsX = Math.abs(end.x - start.x);
-        const stepsY = Math.abs(end.y - start.y);
-        const maxSteps = Math.max(stepsX, stepsY);
-        
-        // 生成中间点
-        for (let s = 1; s <= maxSteps; s++) {
-          const x = start.x + dx * (stepsX > 0 ? Math.round((stepsX / maxSteps) * s) : 0);
-          const y = start.y + dy * (stepsY > 0 ? Math.round((stepsY / maxSteps) * s) : 0);
-          fullPath.push({x, y});
-        }
-      }
-      
-      return fullPath;
-    }
-  
     if (path) {
-      const fullPath = interpolatePath(path);
-      console.log('寻路成功，完整路径点:');
-      fullPath.forEach((point, index) => {
+      console.log('寻路成功，路径点:');
+      path.forEach((point, index) => {
         console.log(`步骤 ${index + 1}: (${point.x}, ${point.y})`);
       });
     } else {
