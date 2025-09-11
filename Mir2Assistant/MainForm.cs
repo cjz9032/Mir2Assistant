@@ -1088,7 +1088,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "1";
                                 }
-                                else if (CharacterStatus.Level >= 22)
+                                else if (CharacterStatus.Level >= 24)
                                 {
                                     hangMapId = "D421";
                                 }
@@ -1317,7 +1317,7 @@ namespace Mir2Assistant
                                 if(GameState.gamePath == "Client.exe"){
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 950);
                                 }else{
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
                             }
                             else if(instance.CharacterStatus.Level < 7)

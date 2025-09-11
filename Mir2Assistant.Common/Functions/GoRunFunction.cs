@@ -1,5 +1,4 @@
-﻿
-using Mir2Assistant.Common.Models;
+﻿using Mir2Assistant.Common.Models;
 using Serilog; // 新增Serilog引用
 using System.Diagnostics; // 新增Stopwatch引用
 using Mir2Assistant.Common.Utils;
@@ -1420,7 +1419,7 @@ public static class GoRunFunction
                 if (retries < 3)
                 {
                     GameInstance.GameWarning("寻路未找到路径，准备第 {Retry} 次重试", retries + 1);
-                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
+                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1);
                 }
 
                 GameInstance.GameWarning("寻路最终未找到路径，已重试 {Retries} 次", retries);
@@ -1921,6 +1920,15 @@ public static class GoRunFunction
                 NpcFunction.EatIndexItem(GameInstance, lans[0]);
             }
         }
+        // 清理道士蓝
+        if (GameInstance.AccountInfo.role == RoleType.taoist)
+        {
+            var lans = findIdxInAllItems(GameInstance, "魔法药", true);
+            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount * 1.5)
+            {
+                NpcFunction.EatIndexItem(GameInstance, lans[0]);
+            }
+        }
          // 清理红
         var heals = findIdxInAllItems(GameInstance, "金创药", true);
         if(heals != null && heals.Length > GameConstants.Items.healBuyCount){
@@ -1928,5 +1936,3 @@ public static class GoRunFunction
         }
     }
 }
-
-
