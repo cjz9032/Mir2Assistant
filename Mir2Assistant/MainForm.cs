@@ -723,7 +723,7 @@ namespace Mir2Assistant
             // 修所有
             await NpcFunction.RepairAllEquipment(instanceValue, _cancellationToken);
             // 把极品先穿 不然会被存
-            await NpcFunction.autoReplaceEquipment(instanceValue);
+            await NpcFunction.autoReplaceEquipment(instanceValue, false);
             // save, 该带的极品已经带了, 可以存了, 书记也存
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Where(o => !o.IsEmpty && (o.IsGodly || o.stdMode == 4)).ToArray());
             // 卖所有
@@ -1090,7 +1090,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 24)
                                 {
-                                    hangMapId = "D421";
+                                    hangMapId = "D401"; // D401 D421
                                 }
                           
                                 else if (CharacterStatus.Level >= 15)

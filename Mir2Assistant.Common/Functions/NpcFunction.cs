@@ -841,13 +841,13 @@ namespace Mir2Assistant.Common.Functions
                         }else{
                             if (level >= 23)
                             {
-                                itemNames.Add("青铜头盔");
-                                itemNames.Add("魔法头盔");
-                            }
-                            if (level >= 23)
-                            {
                                 itemNames.Add("道士头盔");
                             }
+                            // if (level >= 25)
+                            // {
+                            //     itemNames.Add("青铜头盔");
+                            //     itemNames.Add("魔法头盔");
+                            // }
                         }
                     
                     }
@@ -1141,6 +1141,14 @@ namespace Mir2Assistant.Common.Functions
         // 从不主动脱下来, 只会被换
         public async static Task autoReplaceEquipment(MirGameInstanceModel instance, bool careJPDurability = true)
         {
+            if(careJPDurability){
+                // 查找附近NPC 如果有 说明是内部 极品不需要换下来
+                var npc = instance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
+                if(npc != null){
+                    instance.GameDebug("附近有NPC, 极品不需要换下来");
+                    return;
+                }
+            }
             // instance.GameDebug("开始检查装备更换");
 
             var CharacterStatus = instance.CharacterStatus;
