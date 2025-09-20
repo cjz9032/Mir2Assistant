@@ -206,5 +206,39 @@ public static class GameConstants
             return binItems.Concat(binItemsNoob).Concat(binItemsMid).ToList();
         }
     }
-    
+
+    /// <summary>
+    /// 怪物等级映射表 - 用于快速检索怪物等级
+    /// </summary>
+    public static readonly Dictionary<string, int> TempMonsterLevels = new Dictionary<string, int>
+    {
+        ["鸡"] = 5,
+        ["鹿"] = 12,
+        ["蛤蟆"] = 12,
+        ["多钩猫"] = 13,
+        ["钉耙猫"] = 13,
+        ["羊"] = 13,
+        ["半兽人"] = 15,
+        ["森林雪人"] = 16,
+        ["盔甲虫"] = 16,
+        ["猎鹰"] = 16,
+        ["威思而小虫"] = 16,
+        ["多角虫"] = 16,
+        ["毒蜘蛛"] = 17,
+        ["红蛇"] = 17,
+        ["沙虫"] = 17,
+        ["蝎子"] = 18,
+        ["虎蛇"] = 18,
+        ["食人花"] = 20,
+        ["山洞蝙蝠"] = 20,
+        ["半兽战士"] = 21,
+        ["洞蛆"] = 21,
+        ["暗黑战士"] = 26,
+        ["蜈蚣"] = 26,
+        ["半兽勇士"] = 28,
+        ["巨型多角虫"] = 28,
+        ["黑色恶蛆"] = 28,
+        ["钳虫"] = 31,
+        ["楔蛾"] = 32
+    };
 } 

@@ -1093,9 +1093,9 @@ namespace Mir2Assistant
                           
                                 else if (CharacterStatus.Level >= 15)
                                 {
-                                    hangMapId = "D003";
+                                    hangMapId = "1";
                                 }
-                                else if (CharacterStatus.Level >= GameConstants.MidLevel)
+                                else if (CharacterStatus.Level >= GameConstants.MidLevel) // 11
                                 {
                                     hangMapId = "D001";
                                 }
