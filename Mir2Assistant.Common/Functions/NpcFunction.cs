@@ -831,8 +831,8 @@ namespace Mir2Assistant.Common.Functions
                         if(isMage){
                             if (level >= 14 )
                             {
-                                itemNames.Add("青铜头盔");
-                                itemNames.Add("魔法头盔");
+                                // itemNames.Add("青铜头盔");
+                                // itemNames.Add("魔法头盔");
                             }
                             if (level >= 23)
                             {

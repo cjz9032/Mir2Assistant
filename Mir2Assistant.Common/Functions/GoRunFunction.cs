@@ -1921,7 +1921,7 @@ public static class GoRunFunction
             }
         }
         // 清理道士蓝
-        if (GameInstance.AccountInfo.role == RoleType.taoist)
+        if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
         {
             var lans = findIdxInAllItems(GameInstance, "魔法药", true);
             if (lans != null && lans.Length > GameConstants.Items.megaBuyCount * 1.5)
