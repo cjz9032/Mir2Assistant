@@ -11,6 +11,7 @@ public static class GameConstants
     {
         public const int TemptationSpellId = 20;
         public const int LightingSpellId = 11;
+        public const int temptSpellId = 20;
         public const int HealSpellId = 2;
         public const int RecallBoneSpellId = 17;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
@@ -59,7 +60,7 @@ public static class GameConstants
         {
             return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
         }
-        else if (level < 22 + offset)
+        else if (level < 50 + offset)
         {
             return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
         }

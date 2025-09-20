@@ -612,7 +612,6 @@ namespace Mir2Assistant
             var lowCoin = instanceValue.CharacterStatus.coin < 3000;
             if(lowCoin) return;
             // 目前只有道士买魔法, 
-            // TODO法师 诱惑
             if (GoRunFunction.CapbilityOfHeal(instanceValue))
             {
                 var items = GameConstants.Items.MegaPotions;
@@ -699,7 +698,6 @@ namespace Mir2Assistant
             }
             // 卖肉
             await sellMeat(instanceValue, _cancellationToken);
-            // 买书, 治愈诱惑基本
 
             // 蜡烛检测
             // await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
@@ -711,7 +709,7 @@ namespace Mir2Assistant
 
 
             
-
+            // 买书, 治愈基本
             await buyBooks(instanceValue, _cancellationToken);
             // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);
@@ -789,7 +787,7 @@ namespace Mir2Assistant
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
-                        if (new string[] { "0", "1", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
+                        if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         // 新手任务
                         // todo 目前是5
