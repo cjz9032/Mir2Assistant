@@ -76,7 +76,7 @@ public static class GoRunFunction
                 && (o.Value.Name.Contains("魔法药") ? (
                         instanceValue.AccountInfo.role == RoleType.taoist 
                         ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
-                        : (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
+                        : false // (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
                     ) : true)
                 // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
