@@ -1029,7 +1029,7 @@ public static class GoRunFunction
                     {
                         // 寻找陀螺
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                        && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 3)
+                        && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
                         && GameConstants.allowTemp.Contains(o.Name)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10)
                         .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
