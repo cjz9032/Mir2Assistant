@@ -911,7 +911,8 @@ public static class GoRunFunction
                 return false;
             }
             // 不寻路模式, 其实就是只打怪, 需要抽象
-
+            // 
+            var followDetectDistance = 6;
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
@@ -984,7 +985,7 @@ public static class GoRunFunction
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                    if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > followDetectDistance)
                     {
                         // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
@@ -1068,7 +1069,7 @@ public static class GoRunFunction
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                         {
                             (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
-                            if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 9)
+                            if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > followDetectDistance)
                             {
                                 // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                                 var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
