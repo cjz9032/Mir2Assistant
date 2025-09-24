@@ -1822,9 +1822,9 @@ public static class GoRunFunction
             await Task.Delay(800);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-        await Task.Delay(500);
+        await Task.Delay(800);
         // 再自动换回
-        await NpcFunction.autoReplaceEquipment(GameInstance);
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
