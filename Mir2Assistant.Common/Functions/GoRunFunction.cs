@@ -1828,6 +1828,8 @@ public static class GoRunFunction
         await Task.Delay(300);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
         await Task.Delay(300);
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);    
+        await Task.Delay(500);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
 
