@@ -100,7 +100,7 @@ public static class GameConstants
             "命运之刃"	,
             "龙纹剑"	,
     };
-        public static readonly int megaBuyCount = 8;
+        public static readonly int megaBuyCount = 16;
         public static readonly int superPickCount = 3;
         public static readonly int healBuyCount = 4;
         public static readonly int keepWeaponCount = 3;
