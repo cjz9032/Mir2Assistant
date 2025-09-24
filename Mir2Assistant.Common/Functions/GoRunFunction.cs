@@ -1819,11 +1819,15 @@ public static class GoRunFunction
             //        item.Id
             // );
             // SendMirCall.Send(GameInstance!, 3023, data);
-            await Task.Delay(800);
+            await Task.Delay(300);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-        await Task.Delay(800);
+        await Task.Delay(300);
         // 再自动换回
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
+        await Task.Delay(300);
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
+        await Task.Delay(300);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
 
