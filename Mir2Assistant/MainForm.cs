@@ -9,6 +9,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 using Mir2Assistant.Common;
 using Mir2Assistant.Common.Constants;
 using System.Runtime.InteropServices;
+using Mir2Assistant.Services;
 
 namespace Mir2Assistant
 {
@@ -24,7 +25,6 @@ namespace Mir2Assistant
         {
             InitializeComponent();
             LoadAccountList();
-
             // 为每个账号创建一个游戏实例
             foreach (var account in accountList)
             {
@@ -1086,7 +1086,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "1";
                                 }
-                                else if (CharacterStatus.Level >= 24)
+                                else if (CharacterStatus.Level >= 22)
                                 {
                                     hangMapId = "D401"; // D401 D421
                                 }
@@ -1346,17 +1346,16 @@ namespace Mir2Assistant
                             if (CharacterStatus.CurrentHP == instance.lastHP)
                             {
                                 instance.sameHPtimes++;
-                                if (instance.sameHPtimes > 10)
+                                if (instance.sameHPtimes > 1)
                                 {
                                     // 掉线 怀疑掉线 用脱装备验证
-                                    var oldV = instance.Items.Count(o => !o.IsEmpty);
-                                    var fitem = instance.CharacterStatus.useItems.FirstOrDefault(o => !o.IsEmpty);
-                                    // 1血卡位了
-                                    if (fitem != null && instance.CharacterStatus.CurrentHP > 1)
+                                    if (instance.CharacterStatus.CurrentHP > 1)
                                     {
-                                        var taked = await NpcFunction.TakeOffItem(instance, (EquipPosition)fitem.Index);
-                                        await Task.Delay(500);
-                                        if (instance.Items.FirstOrDefault(o => !o.IsEmpty && o.Id == taked.Id) == null)
+                                        var ai = await HuoshanAIHelper.ChatAsync();
+                                        CharacterStatusFunction.AddChat(instance, ai);
+                                        await Task.Delay(1000);
+                                        // 查看是否发出去 
+                                        if (!instance.chats.Any(chat => chat.Contains(ai)))
                                         {
                                             await RestartGameProcess(instance);
                                             continue;
@@ -1364,17 +1363,15 @@ namespace Mir2Assistant
                                         else
                                         {
                                             instance.sameHPtimes = 0;
-                                            await NpcFunction.autoReplaceEquipment(instance);
                                             await Task.Delay(5000);
                                         }
-
                                     }
                                     else
                                     {
                                         await RestartGameProcess(instance);
                                         continue;
                                     }
-                                
+
                                 }
                             }
                             else
