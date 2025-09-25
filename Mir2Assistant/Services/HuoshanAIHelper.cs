@@ -84,7 +84,14 @@ namespace Mir2Assistant.Services
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {API_KEY}");
 
+                // 开始计时
+                var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+                
                 var response = await _httpClient.PostAsync("https://ark.cn-beijing.volces.com/api/v3/chat/completions", content);
+                
+                // 停止计时
+                stopwatch.Stop();
+                var elapsed = stopwatch.ElapsedMilliseconds;
                 
                 if (response.IsSuccessStatusCode)
                 {
@@ -95,6 +102,9 @@ namespace Mir2Assistant.Services
                     
                     // 添加AI回复到历史
                     history.Add(new ChatMessage { Role = "assistant", Content = aiReply });
+                    
+                    // 输出耗时到控制台
+                    Console.WriteLine($"[HuoshanAI] API调用耗时: {elapsed}ms");
                     
                     return aiReply;
                 }
