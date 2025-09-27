@@ -1811,16 +1811,16 @@ public static class GoRunFunction
         if (useItem == null)
         {
             // 会自动
-            // nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
-            // nint bagGridIndex = item!.Index;
+            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+            nint bagGridIndex = item!.Index;
             // SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
 
-            // var data = StringUtils.GenerateMixedData(
-            //        item.Name,
-            //        toIndex,
-            //        item.Id
-            // );
-            // SendMirCall.Send(GameInstance!, 3023, data);
+            var data = StringUtils.GenerateMixedData(
+                   item.Name,
+                   toIndex,
+                   item.Id
+            );
+            SendMirCall.Send(GameInstance!, 3023, data);
             await Task.Delay(300);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
