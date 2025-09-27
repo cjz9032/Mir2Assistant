@@ -1119,6 +1119,7 @@ namespace Mir2Assistant
                                 var lastSWTime = DateTime.Now;
                                 while (true)
                                 {
+
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
                                         exitForSwichMap = false;
@@ -1216,12 +1217,13 @@ namespace Mir2Assistant
                                         var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
                                         // 太久没经验可以switchMap
                                         // TODO 看exp比例, 只做时间
-                                        
+
                                         int currentMinute = DateTime.Now.Minute;
                                         if (CharacterStatus.MapId == "E402" && (currentMinute / 10) % 2 == 0)
                                         {
                                             exitForSwichMap = true;
-                                        }else if(CharacterStatus.MapId == "E403" && (currentMinute / 10) % 2 == 1)
+                                        }
+                                        else if (CharacterStatus.MapId == "E403" && (currentMinute / 10) % 2 == 1)
                                         {
                                             exitForSwichMap = true;
                                         }
@@ -1248,6 +1250,7 @@ namespace Mir2Assistant
                                         }
                                         return final;
                                     }, hangMapId);
+                                    await Task.Delay(500);
 
                                     if (exitForSwichMap)
                                     {
