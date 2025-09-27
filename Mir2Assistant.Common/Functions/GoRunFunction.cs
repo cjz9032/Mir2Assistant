@@ -1813,7 +1813,7 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            // SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
 
             var data = StringUtils.GenerateMixedData(
                    item.Name,
