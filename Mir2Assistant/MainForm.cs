@@ -1119,10 +1119,10 @@ namespace Mir2Assistant
                                 var lastSWTime = DateTime.Now;
                                 while (true)
                                 {
-
+                                    exitForSwichMap = false;
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                        exitForSwichMap = false;
+                                                                            exitForSwichMap = false;
                                         // 小号跟随回家
                                         if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
                                         {
