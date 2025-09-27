@@ -1107,99 +1107,152 @@ namespace Mir2Assistant
                                 instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
                                 instanceValue.isHomePreparing = false;
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
+                                var exitForSwichMap = false;
+                                // var lastTimeExp = 0;
+                                var lastSWTime = DateTime.Now;
+                                while (true)
                                 {
-                                    // 小号跟随回家
-                                    if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
+                                    await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                        return true;
-                                    }
-                                    if (instanceValue.CharacterStatus.CurrentHP <= 0)
-                                    {
-                                        return true;
-                                    }
-                                    // go home
-                                    // 排除药品, 
-                                    // todo 扔掉红
-                                    var isConsumer = GoRunFunction.whoIsConsumer(instanceValue!);
-                                    var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
-                                    var realLowEq = false;
-                                    if (isConsumer == 2)
-                                    {
-                                        var specificItems = new List<EquipPosition>() { EquipPosition.Weapon, EquipPosition.Dress };
-                                        foreach (var item in specificItems)
+                                        exitForSwichMap = false;
+                                        // 小号跟随回家
+                                        if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
                                         {
-                                            var useItem = instanceValue.CharacterStatus.useItems[(int)item];
-                                            // 手上不管是JP还是普通, 只要包里还有就可以
-                                            if (useItem.IsEmpty || useItem.IsLowDurability)
+                                            return true;
+                                        }
+                                        if (instanceValue.CharacterStatus.CurrentHP <= 0)
+                                        {
+                                            return true;
+                                        }
+                                        // go home
+                                        // 排除药品, 
+                                        // todo 扔掉红
+                                        var isConsumer = GoRunFunction.whoIsConsumer(instanceValue!);
+                                        var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
+                                        var realLowEq = false;
+                                        if (isConsumer == 2)
+                                        {
+                                            var specificItems = new List<EquipPosition>() { EquipPosition.Weapon, EquipPosition.Dress };
+                                            foreach (var item in specificItems)
                                             {
-                                                // check 包里有没有就回家, 趁着还没爆, 当然也有可能已经爆了
-                                                var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
-                                                if (replacement == null)
+                                                var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                                // 手上不管是JP还是普通, 只要包里还有就可以
+                                                if (useItem.IsEmpty || useItem.IsLowDurability)
                                                 {
-                                                    instanceValue.GameInfo("没替换装备了装备{Name}低耐久, 需要替换, 回家", useItem.Name);
-                                                    realLowEq = true;
-                                                    break;
+                                                    // check 包里有没有就回家, 趁着还没爆, 当然也有可能已经爆了
+                                                    var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
+                                                    if (replacement == null)
+                                                    {
+                                                        instanceValue.GameInfo("没替换装备了装备{Name}低耐久, 需要替换, 回家", useItem.Name);
+                                                        realLowEq = true;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            // 其他部分空不要紧, 但是不能爆极品 策略是不一样的的, 而且其他也不容易磨损
+                                            var otherItems = new List<EquipPosition>() { EquipPosition.Helmet, EquipPosition.RingLeft, EquipPosition.RingRight,
+                                            EquipPosition.Necklace, EquipPosition.ArmRingLeft, EquipPosition.ArmRingRight };
+                                            foreach (var item in otherItems)
+                                            {
+                                                var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                                if (useItem.IsGodly && useItem.IsLowDurability)
+                                                {
+                                                    var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
+                                                    if (replacement == null)
+                                                    {
+                                                        instanceValue.GameInfo("杂货极品{Name}没替换装备了低耐久, 需要替换, 回家", useItem.Name);
+                                                        realLowEq = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }
-                                        // 其他部分空不要紧, 但是不能爆极品 策略是不一样的的, 而且其他也不容易磨损
-                                        var otherItems = new List<EquipPosition>() { EquipPosition.Helmet, EquipPosition.RingLeft, EquipPosition.RingRight,
-                                        EquipPosition.Necklace, EquipPosition.ArmRingLeft, EquipPosition.ArmRingRight };
-                                        foreach (var item in otherItems)
-                                        {
-                                            var useItem = instanceValue.CharacterStatus.useItems[(int)item];
-                                            if (useItem.IsGodly && useItem.IsLowDurability)
-                                            {
-                                                var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
-                                                if (replacement == null)
-                                                {
-                                                    instanceValue.GameInfo("杂货极品{Name}没替换装备了低耐久, 需要替换, 回家", useItem.Name);
-                                                    realLowEq = true;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    // N级以下不配
-                                    var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
-                                    && (isConsumer == 2)
-                                    && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
-                                    && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
-                                    // 主号没药
-            
+                                        // N级以下不配
+                                        var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
+                                        && (isConsumer == 2)
+                                        && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
+                                        && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                        // 主号没药
 
-                                    var lowMPMain = hangMapId != "D002" && instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
-                                    var isLowFushen = false;
-                                    if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
-                                    {
-                                        // 总计只剩50 跑路足够了
-                                        var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
-                                        var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
-                                        var allFushen = usedFushen.Concat(items).Sum(o => o.Duration);
-                                        if (allFushen < 50)
+
+                                        var lowMPMain = hangMapId != "D002" && instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
+                                        var isLowFushen = false;
+                                        if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                         {
-                                            isLowFushen = true;
-                                            instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
+                                            // 总计只剩50 跑路足够了
+                                            var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+                                            var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+                                            var allFushen = usedFushen.Concat(items).Sum(o => o.Duration);
+                                            if (allFushen < 50)
+                                            {
+                                                isLowFushen = true;
+                                                instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
+                                            }
                                         }
-                                    }
-                                    var isFull = miscs.Count > 38;
-                                    if(isFull){
-                                        instanceValue.GameInfo("满包 回家");
-                                    }
-                                    if(lowMPMain){
-                                        instanceValue.GameInfo("主号没魔法药, 回家");
-                                    }
-                                    if(isLowHpMP){
-                                        instanceValue.GameInfo("主号太低了, 回家");
-                                    }
-                                    if (realLowEq)
+                                        var isFull = miscs.Count > 38;
+                                        if (isFull)
+                                        {
+                                            instanceValue.GameInfo("满包 回家");
+                                        }
+                                        if (lowMPMain)
+                                        {
+                                            instanceValue.GameInfo("主号没魔法药, 回家");
+                                        }
+                                        if (isLowHpMP)
+                                        {
+                                            instanceValue.GameInfo("主号太低了, 回家");
+                                        }
+                                        if (realLowEq)
+                                        {
+                                            instanceValue.GameInfo("主号耐久太低, 回家");
+                                        }
+                                        var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
+                                        // 太久没经验可以switchMap
+                                        // TODO 看exp比例, 只做时间
+                                        
+                                        int currentMinute = DateTime.Now.Minute;
+                                        if (hangMapId == "E402" && (currentMinute / 10) % 2 == 0)
+                                        {
+                                            exitForSwichMap = true;
+                                        }else if(hangMapId == "E403" && (currentMinute / 10) % 2 == 1)
+                                        {
+                                            exitForSwichMap = true;
+                                        }
+
+
+                                        if (final)
+                                        {
+                                            // 但是优先强制回
+                                            exitForSwichMap = false;
+                                        }
+                                        else if (exitForSwichMap)
+                                        {
+                                            // todo list
+                                            instanceValue.GameInfo("换图 E402/3");
+                                            if (hangMapId == "E402")
+                                            {
+                                                hangMapId = "E403";
+                                            }
+                                            else if (hangMapId == "E403")
+                                            {
+                                                hangMapId = "E402";
+                                            }
+                                            return true;
+                                        }
+                                        return final;
+                                    }, hangMapId);
+
+                                    if (exitForSwichMap)
                                     {
-                                        instanceValue.GameInfo("主号耐久太低, 回家");
+                                        continue;
                                     }
-                                    var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
-                                    return final;
-                                }, hangMapId);
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+
+
                                 instanceValue.isHomePreparing = true;
                                 while(instanceValue.CharacterStatus.CurrentHP <= 0)
                                 {
