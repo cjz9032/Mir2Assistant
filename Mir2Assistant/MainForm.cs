@@ -606,11 +606,16 @@ namespace Mir2Assistant
                 }
             }
         }
+        
+        private async Task sellBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        {
+            await NpcFunction.sellAllBook(instanceValue);
+        }
 
         private async Task buyDrugs(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             var lowCoin = instanceValue.CharacterStatus.coin < 3000;
-            if(lowCoin) return;
+            if (lowCoin) return;
             // 目前只有道士买魔法, 
             if (GoRunFunction.CapbilityOfHeal(instanceValue))
             {
@@ -631,11 +636,11 @@ namespace Mir2Assistant
                 }
             }
             // 等级太低没钱
-            else if(instanceValue.CharacterStatus.Level > 7)
+            else if (instanceValue.CharacterStatus.Level > 7)
             {
                 // 其他就预备血6
                 var items2 = GameConstants.Items.HealPotions;
-                var exitsQuan2= 0;
+                var exitsQuan2 = 0;
                 items2.ForEach(item =>
                     {
                         var bags = GoRunFunction.findIdxInAllItems(instanceValue!, item);
@@ -649,7 +654,7 @@ namespace Mir2Assistant
                     await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.HealPotions[0], GameConstants.Items.healBuyCount - exitsQuan2);
                 }
             }
-           
+
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
@@ -711,6 +716,8 @@ namespace Mir2Assistant
             
             // 买书, 治愈基本
             await buyBooks(instanceValue, _cancellationToken);
+            // 卖书所有
+            await sellBooks(instanceValue, _cancellationToken);
             // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);
             // 重复修 保证没被换

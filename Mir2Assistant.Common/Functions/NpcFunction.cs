@@ -1104,6 +1104,26 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
+        public async static Task sellAllBook(MirGameInstanceModel gameInstance)
+        {
+
+            var lists = new List<ItemModel>();
+            lists = gameInstance.Items.Concat(gameInstance.QuickItems).Where(x => !x.IsEmpty && x.stdMode == 4).ToList();
+            if(lists.Count == 0) return;
+            gameInstance.GameInfo($"卖出书籍 ");
+            var nearHome = PickNearHomeMap(gameInstance);  
+            var (npcMap, npcName, x, y) = PickBookNpcByMap(gameInstance, nearHome);
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@sell");
+                await Task.Delay(500);
+
+                await SellItems(gameInstance, lists);
+            }
+        }
+
         
         public async static Task SaveItem(MirGameInstanceModel gameInstance, string npcName, int x, int y, ItemModel[] items, string mapId = "")
         {
@@ -1113,20 +1133,20 @@ namespace Mir2Assistant.Common.Functions
             // {
             //     await ClickNPC(gameInstance!, npcName);
             // }
-                await Talk2(gameInstance!, "@storage");
+            await Talk2(gameInstance!, "@storage");
 
-                foreach (var item in items)
-                {
-                    var data = Common.Utils.StringUtils.GenerateMixedData(
-                        item.Name,
-                        item.Id
-                    );
+            foreach (var item in items)
+            {
+                var data = Common.Utils.StringUtils.GenerateMixedData(
+                    item.Name,
+                    item.Id
+                );
 
-                    SendMirCall.Send(gameInstance!, 3015, data);
-                    await Task.Delay(200);
-                }
+                SendMirCall.Send(gameInstance!, 3015, data);
+                await Task.Delay(200);
+            }
 
-                await RefreshPackages(gameInstance);
+            await RefreshPackages(gameInstance);
 
         }
         public static ItemModel? checkReplacementInBag(MirGameInstanceModel instance, EquipPosition position, bool careJPDurability = true)
