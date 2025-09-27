@@ -29,6 +29,30 @@ namespace Mir2Assistant.Services
         };
 
         /// <summary>
+        /// 重新开始对话，清除指定实例的对话历史
+        /// </summary>
+        /// <param name="instanceId">实例ID，如果为空则使用当前线程ID</param>
+        public static void RestartConversation(string instanceId = null)
+        {
+            instanceId ??= Thread.CurrentThread.ManagedThreadId.ToString();
+            
+            if (_conversationHistory.ContainsKey(instanceId))
+            {
+                _conversationHistory[instanceId].Clear();
+                Console.WriteLine($"[HuoshanAI] 已重新开始对话 (实例ID: {instanceId})");
+            }
+        }
+
+        /// <summary>
+        /// 清除所有对话历史
+        /// </summary>
+        public static void ClearAllConversations()
+        {
+            _conversationHistory.Clear();
+            Console.WriteLine("[HuoshanAI] 已清除所有对话历史");
+        }
+
+        /// <summary>
         /// 无参数多轮对话函数，自动生成随机聊天内容并维护对话历史
         /// </summary>
         /// <returns>AI回复</returns>
@@ -50,7 +74,7 @@ namespace Mir2Assistant.Services
                 // 如果消息数量超过限制，重置对话历史
                 if (history.Count >= MAX_MESSAGES)
                 {
-                    history.Clear();
+                    RestartConversation(instanceId);
                 }
 
                 string prompt;
@@ -61,7 +85,7 @@ namespace Mir2Assistant.Services
                 }
                 else
                 {
-                    prompt = "你有1万种人格, 随机一个人格, 回复上面的话题，简短点，别带标点";
+                    prompt = "你有1万种人格, 随机一个人格, 回复上面的话题，简短点，性格要多变";
                 }
 
                 // 添加用户消息到历史
