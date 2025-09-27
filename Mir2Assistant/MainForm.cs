@@ -1399,7 +1399,7 @@ namespace Mir2Assistant
                             if (CharacterStatus.CurrentHP == instance.lastHP)
                             {
                                 instance.sameHPtimes++;
-                                if (instance.sameHPtimes > 1)
+                                if (instance.sameHPtimes > 3)
                                 {
                                     // 掉线 怀疑掉线 用脱装备验证
                                     if (instance.CharacterStatus.CurrentHP > 1)
