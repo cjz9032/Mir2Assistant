@@ -1810,9 +1810,11 @@ public static class GoRunFunction
         // 先自动换符咒
         if (useItem == null)
         {
-            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
-            nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            // 会自动
+            // nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+            // nint bagGridIndex = item!.Index;
+            // SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+
             // var data = StringUtils.GenerateMixedData(
             //        item.Name,
             //        toIndex,
