@@ -9,7 +9,8 @@ namespace Mir2Assistant.Services
         private static readonly Dictionary<string, List<ChatMessage>> _conversationHistory = new();
         private static readonly Random _random = new Random();
         private const int MAX_MESSAGES = 50;
-        private const string API_KEY = "5e6d2940-a9e3-4125-98ac-f443d97e7437";
+        // private const string API_KEY = "5e6d2940-a9e3-4125-98ac-f443d97e7437";
+        private const string API_KEY = "a426e068-0c4d-4fe2-9de6-1faf340bbc65";
         //private const string MODEL = "doubao-seed-1-6-flash-250615";
         private const string MODEL = "kimi-k2-250905";
 
@@ -60,7 +61,7 @@ namespace Mir2Assistant.Services
                 }
                 else
                 {
-                    prompt = "继续聊天，回复上面的话题，保持自然对话，简短点，别带标点";
+                    prompt = "你有1万种人格, 随机一个人格, 回复上面的话题，简短点，别带标点";
                 }
 
                 // 添加用户消息到历史
