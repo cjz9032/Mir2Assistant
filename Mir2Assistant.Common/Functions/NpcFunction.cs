@@ -759,7 +759,7 @@ namespace Mir2Assistant.Common.Functions
                     {
                         if (level >= 19)
                         {
-                            itemNames.Add("坚固手套");
+                            // itemNames.Add("坚固手套");
                         }
                     }
                     break;
@@ -839,15 +839,15 @@ namespace Mir2Assistant.Common.Functions
                                 itemNames.Add("道士头盔");
                             }
                         }else{
+                            if (level >= 20)
+                            {
+                                // itemNames.Add("青铜头盔");
+                                itemNames.Add("魔法头盔");
+                            }
                             if (level >= 23)
                             {
                                 itemNames.Add("道士头盔");
                             }
-                            // if (level >= 25)
-                            // {
-                            //     itemNames.Add("青铜头盔");
-                            //     itemNames.Add("魔法头盔");
-                            // }
                         }
                     
                     }
