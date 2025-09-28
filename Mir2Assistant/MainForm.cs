@@ -1115,14 +1115,16 @@ namespace Mir2Assistant
 
                                 instanceValue.isHomePreparing = false;
                                 var exitForSwichMap = false;
+                                var isLostGoHome = false;
                                 // var lastTimeExp = 0;
                                 var lastSWTime = DateTime.Now;
                                 while (true)
                                 {
+                                    isLostGoHome = false;
                                     exitForSwichMap = false;
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                                                            exitForSwichMap = false;
+                                        exitForSwichMap = false;
                                         // 小号跟随回家
                                         if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
                                         {
@@ -1232,6 +1234,7 @@ namespace Mir2Assistant
                                         if (final)
                                         {
                                             // 但是优先强制回
+                                            isLostGoHome = true;
                                             exitForSwichMap = false;
                                         }
                                         else if (exitForSwichMap)
@@ -1270,19 +1273,28 @@ namespace Mir2Assistant
                                     await Task.Delay(6_0000);
                                     continue;
                                 }
-                                instanceValue.GameInfo("开始回家");
-                                // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
-                                await NpcFunction.autoReplaceEquipment(instanceValue, false);
-                                // 有回城卷直接用
-                                var backHomeItems = GoRunFunction.findIdxInAllItems(instanceValue, "回城卷");
-                                if(backHomeItems != null){
-                                    instanceValue.GameInfo("有回城卷, 直接用");
-                                    NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
+                                if (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl)
+                                {
+                                    instanceValue.GameInfo("开始回家");
+                                    // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
+                                    await NpcFunction.autoReplaceEquipment(instanceValue, false);
+                                    // 有回城卷直接用
+                                    var backHomeItems = GoRunFunction.findIdxInAllItems(instanceValue, "回城卷");
+                                    if(backHomeItems != null){
+                                        instanceValue.GameInfo("有回城卷, 直接用");
+                                        NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
+                                        await Task.Delay(1000);
+                                    }
+
+
+                                    await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                }
+                                else
+                                {
+                                    instanceValue.isHomePreparing = false;
+                                    instanceValue.GameInfo("意外回家 取消");
                                     await Task.Delay(1000);
                                 }
-
-
-                                await prepareBags(instanceValue, _cancellationTokenSource.Token);
                             }
                             // act.TaskSub0Step = 6;
                             // SaveAccountList();
