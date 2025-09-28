@@ -1674,7 +1674,7 @@ public static class GoRunFunction
     
     public static bool CapbilityOfMageDefUp(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.mageDefup) != null;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.mageDefup) != null;
     }
 
     public static bool CapbilityOfSekeleton(MirGameInstanceModel GameInstance)
@@ -1868,9 +1868,14 @@ public static class GoRunFunction
             totalMaxDef     += item2.MaxDef;
             totalMaxMageDef += item2.MaxMageDef;
         }
+
         
-        canDef = totalMaxDef >= maxDef;
-        canMageDef = totalMaxMageDef >= maxMageDef;
+        var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
+        var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
+
+        canDef = totalMaxDef >= maxDef + bodyMaxDef;
+        canMageDef = totalMaxMageDef >= maxMageDef + bodyMaxMageDef;
+
         if (!canDef && !canMageDef)
         {
             return;

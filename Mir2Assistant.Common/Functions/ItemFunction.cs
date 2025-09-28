@@ -54,10 +54,10 @@ namespace Mir2Assistant.Common.Functions
                         // 物品MinDef
                         if (GameState.MirConfig["物品MinDef"] > 0)
                         {
-                            item.MinDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MinDef"]);
-                            item.MaxDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MaxDef"]);
-                            item.MinMageDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MinMageDef"]);
-                            item.MaxMageDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MaxMageDef"]);
+                            item.MinDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinDef"]);
+                            item.MaxDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MaxDef"]);
+                            item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinMageDef"]);
+                            item.MaxMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MaxMageDef"]);
                         }
                         
                     }
