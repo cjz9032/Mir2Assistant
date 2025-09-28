@@ -16,6 +16,13 @@ public class CharacterStatusModel
     public bool allowGroup { get; set; } = false;
     public int coin { get; set; } = 0;
 
+    public int MinDef { get; set; } = 0;
+    public int MaxDef { get; set; } = 0;
+
+    public int MinMageDef { get; set; } = 0;
+    public int MaxMageDef { get; set; } = 0;
+
+
     // 装备9格
     public List<ItemModel> useItems { get; set; } = new List<ItemModel>();
 

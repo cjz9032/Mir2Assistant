@@ -96,6 +96,16 @@ namespace Mir2Assistant.Common.Models
         public int Duration { get; set; }
         public int addr { get; set; }
         public int MaxDuration { get; set; }
+        // 1A/B 物防
+        // 1C 1D 魔方
+        // 1E 1F巩膜到
+        // 20 21 
+        // 22 23
+        public int MinDef { get; set; }
+        public int MaxDef { get; set; }
+        public int MinMageDef { get; set; }
+        public int MaxMageDef { get; set; }
+
         public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode} {addr:x2}";
         public bool IsLowDurability => Duration > 0 ? (((double)Duration / MaxDuration) < 0.25) : false;
         public byte[] stdModeToUseItemIndex

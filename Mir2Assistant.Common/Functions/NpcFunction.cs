@@ -1267,6 +1267,8 @@ namespace Mir2Assistant.Common.Functions
                     // 装回检查的位置
                     nint toIndex = index;
                     nint bagGridIndex = final.Index;
+                    SendMirCall.Send(instance, 9011, new nint[] { });
+                    await Task.Delay(500);
                     SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
                     await Task.Delay(1000);
                     ItemFunction.ReadBag(instance);

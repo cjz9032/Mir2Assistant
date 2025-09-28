@@ -264,6 +264,8 @@ void Sys::process(int code, int* data)
 		break;
 	case 9010: //刷新背包
 		refPkg();
+	case 9011: // cancel
+		cancelItemMoving();
 		break;
 	case 9020:
 		openDoor(data[0], data[1]);

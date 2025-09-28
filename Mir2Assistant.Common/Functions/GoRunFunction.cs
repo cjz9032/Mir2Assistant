@@ -1666,10 +1666,20 @@ public static class GoRunFunction
     {
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 20) != null;
     }
+    
+    public static bool CapbilityOfDefUp(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.defUp) != null;
+    }
+    
+    public static bool CapbilityOfMageDefUp(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.mageDefup) != null;
+    }
 
     public static bool CapbilityOfSekeleton(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.RecallBoneSpellId) != null;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId) != null;
     }
 
 
@@ -1828,11 +1838,80 @@ public static class GoRunFunction
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
         await Task.Delay(300);
-        await NpcFunction.autoReplaceEquipment(GameInstance, false);
-        await Task.Delay(300);
-        await NpcFunction.autoReplaceEquipment(GameInstance, false);    
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);  
         await Task.Delay(500);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
+    }
+
+
+        public static async Task TryDefUps(MirGameInstanceModel GameInstance)
+    {
+        var canDef = CapbilityOfDefUp(GameInstance);
+        var canMageDef = CapbilityOfMageDefUp(GameInstance);
+        // 暂时只 查看自己的属性
+
+        if (!canDef && !canMageDef)
+        {
+            return;
+        }
+
+        var maxDef = GameInstance.CharacterStatus.MaxDef;
+        var maxMageDef = GameInstance.CharacterStatus.MaxMageDef;
+
+        // GameInstance.CharacterStatus.useItems
+        int totalMaxDef = 0, totalMaxMageDef = 0;
+
+        foreach (var item2 in GameInstance.CharacterStatus.useItems)
+        {
+            if (item2.IsEmpty) continue;
+
+            totalMaxDef     += item2.MaxDef;
+            totalMaxMageDef += item2.MaxMageDef;
+        }
+        
+        canDef = totalMaxDef >= maxDef;
+        canMageDef = totalMaxMageDef >= maxMageDef;
+        if (!canDef && !canMageDef)
+        {
+            return;
+        }
+
+
+        // 查看有没沪深不然浪费魔法
+        ItemModel? item = null;
+        var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
+        if (useItem == null)
+        {
+            item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+            if (item == null)
+            {
+                return;
+            }
+        }
+        // 检查完
+        // 先自动换符咒
+        if (useItem == null)
+        {
+            // 会自动
+            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+            nint bagGridIndex = item!.Index;
+            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+            await Task.Delay(300);
+        }
+        // if (canDef)
+        // {
+        //     sendSpell(GameInstance, GameConstants.Skills.defUp, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+        // }
+        if (canMageDef)
+        {
+            sendSpell(GameInstance, GameConstants.Skills.mageDefup, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+        }
+        await Task.Delay(300);
+        // 再自动换回
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
+        await Task.Delay(500);
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
+        await Task.Delay(500);
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)

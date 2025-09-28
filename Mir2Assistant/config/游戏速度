@@ -99,6 +99,55 @@ ZC.H+1E2A41 - A1 AC9B6700           - mov eax,[ZC.H+279BAC] { (00756330) }
 调试开关 0075633A
 
 
+
+TfrmMain.CanNextAction
+_Unit101.sub_006471B8
+006471B8        push        ebp
+006471B9        mov         ebp,esp
+006471BB        add         esp,0FFFFFFF8
+006471BE        mov         dword ptr [ebp-4],eax
+006471C1        mov         eax,[00752764];gvar_00752764
+006471C6        call        005DFD88
+006471CB        test        al,al
+006471CD>       je          0064721E
+006471CF        call        kernel32.GetTickCount
+006471D4        sub         eax,dword ptr ds:[756318];gvar_00756318:DWORD
+006471DA        xor         edx,edx
+006471DC        push        edx
+006471DD        push        eax
+006471DE        mov         eax,[0075631C];gvar_0075631C
+006471E3        cdq
+006471E4        cmp         edx,dword ptr [esp+4]
+006471E8>       jne         006471F3
+006471EA        cmp         eax,dword ptr [esp]
+006471ED        pop         edx
+006471EE        pop         eax
+006471EF>       jae         0064721E
+006471F1>       jmp         006471F7
+006471F3        pop         edx
+006471F4        pop         eax
+006471F5>       jge         0064721E
+006471F7        mov         eax,[00752764];gvar_00752764
+006471FC        test        byte ptr [eax+27],4
+00647200>       jne         00647208
+00647202        mov         byte ptr [ebp-5],1
+00647206>       jmp         00647222
+00647208        mov         eax,[0067A028];^gvar_00678937
+0064720D        cmp         byte ptr [eax],0
+00647210>       je          00647218
+00647212        mov         byte ptr [ebp-5],1
+00647216>       jmp         00647222
+00647218        mov         byte ptr [ebp-5],0
+0064721C>       jmp         00647222
+0064721E        mov         byte ptr [ebp-5],0
+00647222        mov         al,byte ptr [ebp-5]
+00647225        pop         ecx
+00647226        pop         ecx
+00647227        pop         ebp
+00647228        ret
+
+
+
 TfrmMain.CanNextHit
 _Unit101.sub_0064722C
 

@@ -24,7 +24,7 @@ namespace Mir2Assistant.Common.Functions
                     var itemAddr = baseAddr + i * itemSize;
                     byte nameLength = memoryUtils.ReadToInt8(itemAddr);
                     item.IsEmpty = nameLength == 0;
-                    
+
                     if (!item.IsEmpty)
                     {
                         item.Id = memoryUtils.ReadToInt(itemAddr + (int)GameState.MirConfig["物品ID"]);
@@ -45,13 +45,20 @@ namespace Mir2Assistant.Common.Functions
                             item.GodPts = 0;
                         }
                         item.IsGodly = item.GodPts > 0;
-                        item.Duration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品持久"])/100;
-                        item.MaxDuration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品最大持久"])/100;
+                        item.Duration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品持久"]) / 100;
+                        item.MaxDuration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品最大持久"]) / 100;
                         item.stdMode = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MODE"]);
                         item.addr = itemAddr;
-                        item.reqType = memoryUtils.ReadToInt8(itemAddr +  GameState.MirConfig["物品ReqType"]);
-                        item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"] );
-
+                        item.reqType = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqType"]);
+                        item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"]);
+                        // 物品MinDef
+                        if (GameState.MirConfig["物品MinDef"] > 0)
+                        {
+                            item.MinDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MinDef"]);
+                            item.MaxDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MaxDef"]);
+                            item.MinMageDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MinMageDef"]);
+                            item.MaxMageDef = memoryUtils.ReadToInt(itemAddr + GameState.MirConfig["物品MaxMageDef"]);
+                        }
                         
                     }
                     else

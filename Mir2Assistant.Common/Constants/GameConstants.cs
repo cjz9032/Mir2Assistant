@@ -12,6 +12,8 @@ public static class GameConstants
         public const int TemptationSpellId = 20;
         public const int LightingSpellId = 11;
         public const int temptSpellId = 20;
+        public const int mageDefup = 14;
+        public const int defUp = 15;
         public const int HealSpellId = 2;
         public const int RecallBoneSpellId = 17;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
@@ -25,9 +27,35 @@ public static class GameConstants
         { 26, 0 }, { 27, 15 }, { 28, 16 }, { 29, 12 }, { 30, 16 }, { 31, 20 }, { 32, 50 }, { 33, 12 }
     };
 
+    // 根据等级返回刀（战士）身体防御区间（最小值, 最大值）
+    public static (int min, int max) GetBladeBodyDefByLevel(int level)
+    {
+        if (level <= 0) return (0, 0);
+        if (level <= 6) return (0, 0);   // 1-6  -> 0-0
+        if (level <= 13) return (0, 1);  // 7-13 -> 0-1
+        if (level <= 20) return (0, 2);  // 14-20 -> 0-2
+        if (level <= 27) return (0, 3);  // 21-27 -> 0-3
+        if (level <= 34) return (0, 4);  // 28-34 -> 0-4
+        if (level <= 41) return (0, 5);  // 35-41 -> 0-5
+        if (level <= 48) return (0, 6);  // 42-48 -> 0-6
+        return (0, 6);                   // 48+
+    }
 
+    // 根据等级返回道士（Toast）身体魔御区间（最小值, 最大值）
+    public static (int min, int max) GetToastBodyMegaDefByLevel(int level)
+    {
+        if (level <= 0) return (0, 1);
+        if (level <= 5) return (0, 1);    // 1-5  -> 0-1
+        if (level <= 11) return (0, 2);   // 6-11 -> 0-2
+        if (level <= 17) return (1, 3);   // 12-17 -> 1-3
+        if (level <= 23) return (1, 4);   // 18-23 -> 1-4
+        if (level <= 29) return (2, 5);   // 24-29 -> 2-5
+        if (level <= 35) return (2, 6);   // 30-35 -> 2-6
+        if (level <= 41) return (3, 7);   // 36-41 -> 3-7
+        if (level <= 47) return (3, 8);   // 42-47 -> 3-8
+        return (3, 8);                    // 47+
+    }
 
-       
     public static readonly string[] allowM10 = new string[] { "鹿", "羊", "鸡" };
     public static readonly string[] allowTemp = new string[] { "洞蛆", "威思而小虫", "蜈蚣" ,"黑色恶蛆" };
  
