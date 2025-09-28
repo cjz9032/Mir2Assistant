@@ -41,7 +41,7 @@ public static class GoRunFunction
         var maxCloth = GameConstants.Items.keepClothCount;
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
-        var ccc = GameConstants.Items.megaBuyCount * 1.2;
+        var ccc = GameConstants.Items.megaBuyCount;
         // 武器表
         // 筛选可捡取的物品
 
