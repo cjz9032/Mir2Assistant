@@ -1933,7 +1933,7 @@ public static class GoRunFunction
         if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
         {
             var lans = findIdxInAllItems(GameInstance, "魔法药", true);
-            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount * 1.2)
+            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount)
             {
                 NpcFunction.EatIndexItem(GameInstance, lans[0]);
             }
