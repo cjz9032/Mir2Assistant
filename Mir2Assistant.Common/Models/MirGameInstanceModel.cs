@@ -3,7 +3,7 @@ using Mir2Assistant.Common.Utils;
 using System.Collections.Concurrent;
 
 namespace Mir2Assistant.Common.Models;
-
+using Serilog; // 新增Serilog引用
 public class MirGameInstanceModel
 {
     public bool IsBotRunning { get; set; }
@@ -142,13 +142,21 @@ public class MirGameInstanceModel
             return;
         }
         isRefreshing = true;
-        CharacterStatusFunction.GetInfo(this, true);
-        CharacterStatusFunction.GetUsedItemInfo(this, true);
-        CharacterStatusFunction.ReadChats(this, true);
-        MonsterFunction.ReadMonster(this, true);
-        ItemFunction.ReadBag(this, true);
-        ItemFunction.ReadDrops(this, true);
-        SkillFunction.ReadSkills(this);
+        try
+        {
+            CharacterStatusFunction.GetInfo(this, true);
+            CharacterStatusFunction.GetUsedItemInfo(this, true);
+            CharacterStatusFunction.ReadChats(this, true);
+            MonsterFunction.ReadMonster(this, true);
+            ItemFunction.ReadBag(this, true);
+            ItemFunction.ReadDrops(this, true);
+            SkillFunction.ReadSkills(this);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("刷新失败: {Error}", ex.Message);
+        }
+
         isRefreshing = false;
     }
 }

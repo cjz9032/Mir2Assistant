@@ -412,7 +412,7 @@ namespace Mir2Assistant
                             var insIdx = GameState.GameInstances.IndexOf(gameInstance);
                             ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
                         }
-                        return gameInstance.CharacterStatus.CurrentHP > 0;
+                        return !gameInstance.CharacterStatus.isEnhanceDead;
                     }else{
                         return false;
                     }
