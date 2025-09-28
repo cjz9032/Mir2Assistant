@@ -58,6 +58,8 @@ public static class CharacterStatusFunction
         {
             status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["金币偏移"]));
         }
+
+        status.isDead = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["怪物DEAD偏移"])) > 0;
     }
 
     public static void ReadChats(MirGameInstanceModel gameInstance, bool force = false)

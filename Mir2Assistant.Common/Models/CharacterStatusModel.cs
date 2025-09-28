@@ -18,10 +18,12 @@ public class CharacterStatusModel
 
     public int MinDef { get; set; } = 0;
     public int MaxDef { get; set; } = 0;
+    public bool isDead { get; set; } = true;
 
     public int MinMageDef { get; set; } = 0;
     public int MaxMageDef { get; set; } = 0;
 
+    public bool isEnhanceDead => isDead || (CurrentHP <= 0 && X <= 0);
 
     // 装备9格
     public List<ItemModel> useItems { get; set; } = new List<ItemModel>();

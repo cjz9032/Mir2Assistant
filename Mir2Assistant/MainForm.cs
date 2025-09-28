@@ -394,7 +394,7 @@ namespace Mir2Assistant
                                 gameInstance.Clear();
                             }
                         };
-                        if (gameInstance.CharacterStatus.CurrentHP <= 0)
+                        if (gameInstance.CharacterStatus.isEnhanceDead)
                         {
                             // todo 挪走到外面
                             nint[] data = MemoryUtils.PackStringsToData(gameInstance.AccountInfo.Account, gameInstance.AccountInfo.Password);
@@ -1071,7 +1071,7 @@ namespace Mir2Assistant
                             while (true)
                             {
                                 CharacterStatus = instance.CharacterStatus!;
-                                if (CharacterStatus.CurrentHP == 0)
+                                if (CharacterStatus.isEnhanceDead)
                                 {
                                     instanceValue.GameInfo("等待上线开工");
                                     await Task.Delay(5_000);
@@ -1128,7 +1128,7 @@ namespace Mir2Assistant
                                         {
                                             return true;
                                         }
-                                        if (instanceValue.CharacterStatus.CurrentHP <= 0)
+                                        if (instanceValue.CharacterStatus.isEnhanceDead)
                                         {
                                             return true;
                                         }
@@ -1264,7 +1264,7 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = true;
-                                while(instanceValue.CharacterStatus.CurrentHP <= 0)
+                                while(instanceValue.CharacterStatus.isEnhanceDead)
                                 {
                                     instanceValue.GameInfo("等待上线再回家");
                                     await Task.Delay(6_0000);
@@ -1352,14 +1352,14 @@ namespace Mir2Assistant
                         // todo ref方法 避免重复调用
                         var CharacterStatus = instance.CharacterStatus;
                         // 死亡 判断有没怪物
-                        if (CharacterStatus.CurrentHP <= 0 && instance.Monsters.Count > 0)
+                        if (CharacterStatus.isEnhanceDead && instance.Monsters.Count > 0)
                         {
                             // 复活 重启
                             // 尝试小退
                             await GoRunFunction.RestartByToSelectScene(instance);
                             await Task.Delay(2000);
                             CharacterStatusFunction.GetInfo(instance);
-                            if (CharacterStatus.CurrentHP == 0)
+                            if (CharacterStatus.isEnhanceDead)
                             {
                                 await RestartGameProcess(instance);
                             }

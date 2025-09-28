@@ -841,7 +841,7 @@ public static class GoRunFunction
     public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 10)
     {
 
-        if (instanceValue.CharacterStatus!.CurrentHP == 0)
+        if (instanceValue.CharacterStatus!.isEnhanceDead)
         {
             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
             return false;
@@ -897,7 +897,7 @@ public static class GoRunFunction
 
         while (true)
         {
-		    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+		    if (instanceValue.CharacterStatus!.isEnhanceDead)
 			{
 				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
 				return false;
@@ -954,7 +954,7 @@ public static class GoRunFunction
             while (true)
             {
                 CharacterStatus = instanceValue.CharacterStatus;
-				if (instanceValue.CharacterStatus!.CurrentHP == 0)
+				if (instanceValue.CharacterStatus!.isEnhanceDead)
 				{
 					instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
 					return false;
@@ -1059,7 +1059,7 @@ public static class GoRunFunction
                     var escapeTried = 0;
                     while (true)
                     {
-						if (instanceValue.CharacterStatus!.CurrentHP == 0)
+						if (instanceValue.CharacterStatus!.isEnhanceDead)
 						{
 							instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
 							return false;
@@ -1184,7 +1184,7 @@ public static class GoRunFunction
   public static async Task<bool> SimpleAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
     {
 
-        if (instanceValue.CharacterStatus!.CurrentHP == 0)
+        if (instanceValue.CharacterStatus!.isEnhanceDead)
         {
             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
             return false;
@@ -1193,14 +1193,14 @@ public static class GoRunFunction
 
         while (true)
         {
-		    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+		    if (instanceValue.CharacterStatus!.isEnhanceDead)
 			{
 				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
 				return false;
 			}
             await Task.Delay(100);
 
-            if (instanceValue.CharacterStatus!.CurrentHP == 0)
+            if (instanceValue.CharacterStatus!.isEnhanceDead)
             {
                 instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                 return false;
@@ -1217,7 +1217,7 @@ public static class GoRunFunction
             {
                 while (true)
                 {
-                    if (instanceValue.CharacterStatus!.CurrentHP == 0)
+                    if (instanceValue.CharacterStatus!.isEnhanceDead)
                     {
                         instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                         return false;
@@ -1320,7 +1320,7 @@ public static class GoRunFunction
             GameInstance.GameDebug("寻路被取消");
             return false;
         }
-        if (GameInstance.CharacterStatus!.CurrentHP == 0)
+        if (GameInstance.CharacterStatus!.isEnhanceDead)
         {
             GameInstance.GameWarning("角色已死亡，无法执行寻路");
             await Task.Delay(5_000);
@@ -1396,7 +1396,7 @@ public static class GoRunFunction
             {
                 GameInstance!.GameError("寻路异常" + ex.Message);
                 await Task.Delay(100);
-                if (GameInstance.CharacterStatus!.CurrentHP == 0)
+                if (GameInstance.CharacterStatus!.isEnhanceDead)
                 {
                     await Task.Delay(60_000);
                 }
@@ -1437,7 +1437,7 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                if (GameInstance.CharacterStatus!.CurrentHP == 0)
+                if (GameInstance.CharacterStatus!.isEnhanceDead)
                 {
                     return false;
                 }
@@ -1481,7 +1481,7 @@ public static class GoRunFunction
                 var maxed = 9;
                 while (true)
                 {
-                    if (GameInstance.CharacterStatus!.CurrentHP == 0)
+                    if (GameInstance.CharacterStatus!.isEnhanceDead)
                     {
                         return false;
                     }
@@ -1524,7 +1524,7 @@ public static class GoRunFunction
                             {
                                 GameInstance!.GameError("寻路异常" + ex.Message);
                                 await Task.Delay(100);
-                                if (GameInstance.CharacterStatus!.CurrentHP == 0)
+                                if (GameInstance.CharacterStatus!.isEnhanceDead)
                                 {
                                     await Task.Delay(60_000);
                                 }
