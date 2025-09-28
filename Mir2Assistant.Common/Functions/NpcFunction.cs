@@ -1268,7 +1268,7 @@ namespace Mir2Assistant.Common.Functions
                     nint toIndex = index;
                     nint bagGridIndex = final.Index;
                     SendMirCall.Send(instance, 9011, new nint[] { });
-                    await Task.Delay(500);
+                    await Task.Delay(600);
                     SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
                     await Task.Delay(1000);
                     ItemFunction.ReadBag(instance);

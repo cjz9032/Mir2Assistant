@@ -1824,7 +1824,7 @@ public static class GoRunFunction
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
-            await Task.Delay(500);
+            await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
 
             // var data = StringUtils.GenerateMixedData(
@@ -1903,7 +1903,7 @@ public static class GoRunFunction
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
-            await Task.Delay(500);
+            await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
             await Task.Delay(300);
         }
