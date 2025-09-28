@@ -1219,11 +1219,11 @@ namespace Mir2Assistant
                                         // TODO 看exp比例, 只做时间
 
                                         int currentMinute = DateTime.Now.Minute;
-                                        if (CharacterStatus.MapId == "E402" && (currentMinute / 10) % 2 == 0)
+                                        if (CharacterStatus.MapId == "E402" && (currentMinute / 10) % 2 == 0 && hangMapId == "E402")
                                         {
                                             exitForSwichMap = true;
                                         }
-                                        else if (CharacterStatus.MapId == "E403" && (currentMinute / 10) % 2 == 1)
+                                        else if (CharacterStatus.MapId == "E401" && (currentMinute / 10) % 2 == 1 && hangMapId == "E401")
                                         {
                                             exitForSwichMap = true;
                                         }
@@ -1240,9 +1240,9 @@ namespace Mir2Assistant
                                             instanceValue.GameInfo("换图 E402/3");
                                             if (CharacterStatus.MapId == "E402")
                                             {
-                                                hangMapId = "E403";
+                                                hangMapId = "E401";
                                             }
-                                            else if (CharacterStatus.MapId == "E403")
+                                            else if (CharacterStatus.MapId == "E401")
                                             {
                                                 hangMapId = "E402";
                                             }
