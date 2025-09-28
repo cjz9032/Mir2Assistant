@@ -1823,6 +1823,8 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
+            SendMirCall.Send(GameInstance, 9011, new nint[] { });
+            await Task.Delay(500);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
 
             // var data = StringUtils.GenerateMixedData(
@@ -1873,8 +1875,8 @@ public static class GoRunFunction
         var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
         var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
 
-        canDef = totalMaxDef >= maxDef + bodyMaxDef;
-        canMageDef = totalMaxMageDef >= maxMageDef + bodyMaxMageDef;
+        canDef = totalMaxDef + bodyMaxDef == maxDef;
+        canMageDef = totalMaxMageDef + bodyMaxMageDef == maxMageDef;
 
         if (!canDef && !canMageDef)
         {
@@ -1900,6 +1902,8 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
+            SendMirCall.Send(GameInstance, 9011, new nint[] { });
+            await Task.Delay(500);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
             await Task.Delay(300);
         }
