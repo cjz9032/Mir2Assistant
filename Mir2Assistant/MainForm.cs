@@ -737,6 +737,8 @@ namespace Mir2Assistant
             await NpcFunction.sellDrugs(instanceValue, "太阳水");
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
+            // 买地牢
+            await NpcFunction.BuyLaoLan(instanceValue, _cancellationToken);
             // 全搞完 回血
             while(instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.9){
                 instanceValue.GameInfo("回血中, 当前血量: {CurrentHP}, 当前魔法: {CurrentMP}", instanceValue.CharacterStatus.CurrentHP, instanceValue.CharacterStatus.CurrentMP);

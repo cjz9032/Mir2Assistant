@@ -402,6 +402,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("2", "罗家铺子老板", 506, 480);
             }
+            else if (mapId == "3")
+            {
+                return ("3", "小贩", 663, 302);
+            }
             else
             {
                 // 其他大图
@@ -419,6 +423,10 @@ namespace Mir2Assistant.Common.Functions
             if (mapId == "2")
             {
                 return ("2", "药铺老板", 506, 496);
+            }
+            if (mapId == "3")
+            {
+                return ("0153", "药店", 16, 9);
             }
             else
             {
@@ -483,6 +491,29 @@ namespace Mir2Assistant.Common.Functions
                     // case EquipPosition.RingLeft:
                     // case EquipPosition.RingRight:
                     //     return ("0141", "戒指店老板", 23, 23);
+                    default:
+                        return ("-1", "", 0, 0);
+                }
+            }
+             else if (mapId == "3")
+            {
+                // 固定为左下角 因为只有这全有买卖, 除了蜡烛
+                switch (position)
+                {
+                    case EquipPosition.Weapon:
+                        return ("0151", "武器", 10 ,15);
+                    case EquipPosition.Dress:
+                        return ("0155", "布店", 13, 11);
+                    case EquipPosition.Helmet:
+                        return ("0155", "头盔", 13, 11);
+                    case EquipPosition.Necklace:
+                        return ("0154", "项链", 6, 16);
+                    case EquipPosition.ArmRingLeft:
+                    case EquipPosition.ArmRingRight:
+                        return ("0154", "手镯", 12, 10);
+                    case EquipPosition.RingLeft:
+                    case EquipPosition.RingRight:
+                        return ("0154", "戒指", 6, 16);
                     default:
                         return ("-1", "", 0, 0);
                 }
@@ -591,6 +622,37 @@ namespace Mir2Assistant.Common.Functions
                 await RefreshPackages(gameInstance);
             }
         }
+
+        public async static Task BuyLaoLan(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
+        {
+            if (gameInstance.CharacterStatus.Level < 11)
+            {
+                return;
+            }
+            var nearHome = PickNearHomeMap(gameInstance);
+            var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
+            // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
+            // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
+            if(items.Count > 0)
+            {
+                return;
+            }
+            gameInstance.GameInfo($"购买{npcName}的地牢逃脱卷");
+
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                // 背包里可能留了N个/ 先修完再买
+                // 查找
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@buy");
+                await Task.Delay(500);
+                await BuyImmediate(gameInstance!, "地牢逃脱卷", 1);
+                await Task.Delay(1000);
+            }
+        }
+        
         
         public async static Task RepairAllBagsEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
@@ -612,7 +674,7 @@ namespace Mir2Assistant.Common.Functions
                 //}
 
                 // 找背包内的对应的东西, 目前是1 , 保留多个的能力
-              
+
                 gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
                 // 找到对应的NPC
                 var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
