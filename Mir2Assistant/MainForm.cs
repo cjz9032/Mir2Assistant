@@ -632,7 +632,9 @@ namespace Mir2Assistant
 
                 if (exitsQuan < GameConstants.Items.megaBuyCount)
                 {
-                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MegaPotions[0], GameConstants.Items.megaBuyCount - exitsQuan);
+                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MegaPotions[
+                        instanceValue.CharacterStatus.Level >= 25 ? 1 : 0
+                    ], GameConstants.Items.megaBuyCount - exitsQuan);
                 }
             }
             // 等级太低没钱
