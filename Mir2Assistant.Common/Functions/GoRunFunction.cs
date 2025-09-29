@@ -1826,7 +1826,8 @@ public static class GoRunFunction
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
             await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance, 9011, new nint[] { });
             // var data = StringUtils.GenerateMixedData(
             //        item.Name,
             //        toIndex,
@@ -1905,22 +1906,20 @@ public static class GoRunFunction
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
             await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-            await Task.Delay(300);
+            await Task.Delay(500);
+            SendMirCall.Send(GameInstance, 9011, new nint[] { });
         }
-        // if (canDef)
-        // {
-        //     sendSpell(GameInstance, GameConstants.Skills.defUp, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-        // }
+        if (canDef)
+        {
+            sendSpell(GameInstance, GameConstants.Skills.defUp, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+        }
         if (canMageDef)
         {
             sendSpell(GameInstance, GameConstants.Skills.mageDefup, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         }
-        await Task.Delay(300);
+        await Task.Delay(500);
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
-        await Task.Delay(500);
-        await NpcFunction.autoReplaceEquipment(GameInstance, false);
-        await Task.Delay(500);
     }
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)

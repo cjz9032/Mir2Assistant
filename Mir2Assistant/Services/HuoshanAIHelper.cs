@@ -11,8 +11,9 @@ namespace Mir2Assistant.Services
         private const int MAX_MESSAGES = 50;
         // private const string API_KEY = "5e6d2940-a9e3-4125-98ac-f443d97e7437";
         private const string API_KEY = "a426e068-0c4d-4fe2-9de6-1faf340bbc65";
-        //private const string MODEL = "doubao-seed-1-6-flash-250615";
-        private const string MODEL = "kimi-k2-250905";
+        private const string MODEL2 = "doubao-seed-1-6-flash-250615";
+        private const string MODEL1 = "kimi-k2-250905";
+        private static readonly string[] MODELS = { MODEL1, MODEL2 };
 
         public class ChatMessage
         {
@@ -96,8 +97,8 @@ namespace Mir2Assistant.Services
 
                 var requestBody = new
                 {
-                    model = MODEL,
-                    messages = messages,
+                    model = MODELS[_random.Next(MODELS.Length)],
+                    messages,
                     max_tokens = 200,
                     temperature = 0.9,
                     parameters = new { enable_thinking = false }

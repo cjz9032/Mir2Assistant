@@ -565,7 +565,29 @@ namespace Mir2Assistant.Common.Functions
 
                 await Talk2(gameInstance!, "@buy");
                 await Task.Delay(500);
-                await BuyImmediate(gameInstance!, "护身符", BUY_COUNT - items.Count);
+                // await BuyImmediate(gameInstance!, "护身符", BUY_COUNT - items.Count);
+
+
+                nint[] data = MemoryUtils.PackStringsToData("护身符");
+                SendMirCall.Send(gameInstance, 3005, data);
+                await Task.Delay(1000);
+                // 判断是否存在
+
+                var memoryUtils = gameInstance.memoryUtils!;
+                var menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
+                (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
+                if (menuListLen > 0)
+                {
+                    for (int i = 0; i < BUY_COUNT - items.Count; i++)
+                    {
+                        var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
+                        memoryUtils.WriteInt(addr, 0);
+                        await Task.Delay(600);
+                        SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
+                        await Task.Delay(700);
+                    }
+                }
+
                 await RefreshPackages(gameInstance);
             }
         }
@@ -1271,6 +1293,8 @@ namespace Mir2Assistant.Common.Functions
                     await Task.Delay(600);
                     SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
                     await Task.Delay(1000);
+                    SendMirCall.Send(instance, 9011, new nint[] { });
+                    await Task.Delay(500);
                     ItemFunction.ReadBag(instance);
                 }
             }
