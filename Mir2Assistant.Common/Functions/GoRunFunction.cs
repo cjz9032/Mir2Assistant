@@ -1776,6 +1776,12 @@ public static class GoRunFunction
         {
             return;
         }
+        
+        var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
+        if(npc != null){
+            GameInstance.GameDebug("附近有NPC, 不需要辅助");
+            return;
+        }
         // 1. 先检查身边
         var myname = $"变异骷髅({GameInstance.AccountInfo.CharacterName})";
         var monster = GameInstance.Monsters.FirstOrDefault(o => !o.Value.isDead && o.Value.Name == myname);
@@ -1855,6 +1861,13 @@ public static class GoRunFunction
 
         if (!canDef && !canMageDef)
         {
+            return;
+        }
+
+
+        var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
+        if(npc != null){
+            GameInstance.GameDebug("附近有NPC, 不需要辅助");
             return;
         }
 
