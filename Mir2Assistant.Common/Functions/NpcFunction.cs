@@ -384,7 +384,7 @@ namespace Mir2Assistant.Common.Functions
             }
             // 土城
             // 蜈蚣
-            if (mapId.StartsWith("D6") || mapId.StartsWith("E7") || mapId.StartsWith("D5"))
+            if (mapId.StartsWith("D6") || mapId.StartsWith("E7") || mapId.StartsWith("D5") || mapId.StartsWith("015") || mapId.StartsWith("014"))
             {
                 home = "3";
             }

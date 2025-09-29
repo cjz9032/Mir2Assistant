@@ -1912,6 +1912,7 @@ public static class GoRunFunction
         if (canDef)
         {
             sendSpell(GameInstance, GameConstants.Skills.defUp, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+            await Task.Delay(1200);
         }
         if (canMageDef)
         {
