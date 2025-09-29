@@ -52,8 +52,13 @@ namespace Mir2Assistant.Common.Functions
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqType"]);
                         item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"]);
                         // 物品MinDef
-                        if (GameState.MirConfig["物品MinDef"] > 0)
+                        // 排除武器项链
+                        if (GameState.MirConfig["物品MinDef"] > 0
+                         && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Weapon
+                         && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Necklace)
                         {
+                            
+
                             item.MinDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinDef"]);
                             item.MaxDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MaxDef"]);
                             item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinMageDef"]);
