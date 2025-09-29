@@ -118,7 +118,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                
                 // 先随便 左手了
                 byte toIndex = item.stdModeToUseItemIndex[0];
-                if(toIndex == -1)
+                if(toIndex == 255)
                 {
                     Log.Error($"物品{item.Name}无法装备");
                     continue;
