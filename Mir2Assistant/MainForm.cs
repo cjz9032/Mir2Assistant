@@ -1095,7 +1095,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 25)
                                 {
-                                    hangMapId = "E402"; // D401 D421 E402
+                                    hangMapId = "D601"; // D601 D023
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
