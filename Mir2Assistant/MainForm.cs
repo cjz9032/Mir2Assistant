@@ -1146,7 +1146,7 @@ namespace Mir2Assistant
                                         // 排除药品, 
                                         // todo 扔掉红
                                         var isConsumer = GoRunFunction.whoIsConsumer(instanceValue!);
-                                        var miscs = instanceValue.Items.Where(o => !o.IsEmpty).ToList();
+                                        var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).ToList();
                                         var realLowEq = false;
                                         if (isConsumer == 2)
                                         {
