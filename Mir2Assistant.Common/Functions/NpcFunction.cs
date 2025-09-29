@@ -633,7 +633,7 @@ namespace Mir2Assistant.Common.Functions
             var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
             // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
-            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
+            var items = gameInstance.Items.Concat(gameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
             if(items.Count > 0)
             {
                 return;
