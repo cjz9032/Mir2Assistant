@@ -59,9 +59,10 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             bindingSource2.DataSource = skills;
             listBox1.DataSource = bindingSource1;
             listBox1.DisplayMember = "Display";
-            
+
             // 添加双击事件处理复制功能
-            listBox1.DoubleClick += (s, args) => {
+            listBox1.DoubleClick += (s, args) =>
+            {
                 if (listBox1.SelectedItem != null)
                 {
                     var npc = listBox1.SelectedItem as MonsterModel;
@@ -71,7 +72,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                     }
                 }
             };
-            
+
             GameInstance!.NewSysMsg += (flag, str) => this.Invoke(() => textBox2.Text = str);
         }
 
@@ -110,6 +111,16 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             {
                 NpcFunction.BuyImmediate(GameInstance!, textBox3.Text);
             }
+        }
+        
+         private async void button4_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = await NpcFunction.Talk2(GameInstance!, "@storages");
+            listBox2.Items.Clear();
+            NpcFunction.GetTalkCmds(textBox1.Text).ForEach(cmd =>
+            {
+                listBox2.Items.Add(cmd);
+            });
         }
     }
 }

@@ -40,6 +40,7 @@
             textBox2 = new TextBox();
             textBox3 = new TextBox();
             button2 = new Button();
+            button4 = new Button();
             ((System.ComponentModel.ISupportInitialize)bindingSource1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)bindingSource2).BeginInit();
             SuspendLayout();
@@ -129,6 +130,17 @@
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
+            // button4
+            // 
+            button4.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            button4.Location = new Point(400, 234);
+            button4.Name = "button4";
+            button4.Size = new Size(75, 23);
+            button4.TabIndex = 0;
+            button4.Text = "强存";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
+            // 
             // NPCForm
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -141,6 +153,7 @@
             Controls.Add(button2);
             Controls.Add(textBox3);
             Controls.Add(button3);
+            Controls.Add(button4);
             Controls.Add(button1);
             Name = "NPCForm";
             Text = "NPCForm";
@@ -161,6 +174,8 @@
         private System.Windows.Forms.Timer timer1;
         private TextBox textBox1;
         private Button button3;
+        private Button button4;
+
         private TextBox textBox2;
         private TextBox textBox3;
         private Button button2;
