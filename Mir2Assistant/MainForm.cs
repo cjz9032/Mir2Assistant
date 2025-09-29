@@ -1286,7 +1286,12 @@ namespace Mir2Assistant
                                     await NpcFunction.autoReplaceEquipment(instanceValue, false);
                                     // 有回城卷直接用
                                     var backHomeItems = GoRunFunction.findIdxInAllItems(instanceValue, "回城卷");
-                                    if(backHomeItems != null){
+                                    if (backHomeItems == null)
+                                    {
+                                        backHomeItems = GoRunFunction.findIdxInAllItems(instanceValue, "地牢逃脱卷");
+                                    }
+                                    if (backHomeItems != null)
+                                    {
                                         instanceValue.GameInfo("有回城卷, 直接用");
                                         NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
                                         await Task.Delay(1000);
