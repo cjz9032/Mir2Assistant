@@ -659,7 +659,7 @@ namespace Mir2Assistant.Common.Functions
             var nearHome = PickNearHomeMap(gameInstance);
             foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
             {
-                var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0
+                var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
                 // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
                  && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
                 if (items.Count == 0)
