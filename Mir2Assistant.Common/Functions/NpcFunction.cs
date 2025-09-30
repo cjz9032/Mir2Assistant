@@ -897,7 +897,8 @@ namespace Mir2Assistant.Common.Functions
                     }
                     break;
                 case EquipPosition.Helmet:
-                    if (role == RoleType.blade){
+                    if (role == RoleType.blade)
+                    {
                         if (level >= 10)
                         {
                             itemNames.Add("青铜头盔");
@@ -910,10 +911,17 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("道士头盔");
                         }
-                    } else {
+                        if (level >= 25)
+                        {
+                            itemNames.Add("骷髅头盔");
+                        }
+                    }
+                    else
+                    {
                         var isMage = role == RoleType.mage;
-                        if(isMage){
-                            if (level >= 14 )
+                        if (isMage)
+                        {
+                            if (level >= 14)
                             {
                                 // itemNames.Add("青铜头盔");
                                 // itemNames.Add("魔法头盔");
@@ -922,7 +930,9 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 itemNames.Add("道士头盔");
                             }
-                        }else{
+                        }
+                        else
+                        {
                             if (level >= 20)
                             {
                                 // itemNames.Add("青铜头盔");
@@ -933,7 +943,7 @@ namespace Mir2Assistant.Common.Functions
                                 itemNames.Add("道士头盔");
                             }
                         }
-                    
+
                     }
 
                 
