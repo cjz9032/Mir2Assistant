@@ -94,15 +94,15 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
             //bindingSource1.ResetBindings(false);
 
             listBox1.TopIndex = scrollOffset;
-            if (skills.Count != GameInstance.Skills.Count)
-            {
+            // if (skills.Count != GameInstance.Skills.Count)
+            // {
                 skills.Clear();
                 foreach (var item in GameInstance!.Skills)
                 {
                     skills.Add(item);
                 }
                 bindingSource2.ResetBindings(false);
-            }
+            // }
 
         }
 
