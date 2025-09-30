@@ -75,10 +75,9 @@ public static class GoRunFunction
                 && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
                 && (o.Value.Name.Contains("魔法药") ? (
                         instanceValue.AccountInfo.role == RoleType.taoist 
-                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.5))
-                        : false // (canTemp && CharacterStatus.Level > 17 && megaCount < (GameConstants.Items.megaBuyCount/2))
+                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.2))
+                        : false
                     ) : true)
-                // && (!(GameConstants.Items.MegaPotions.Contains(o.Value.Name) && megaCount > GameConstants.Items.megaBuyCount))
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
                 &&
                 (
@@ -1871,7 +1870,8 @@ public static class GoRunFunction
         public static async Task TryDefUps(MirGameInstanceModel GameInstance)
     {
         var canDef = CapbilityOfDefUp(GameInstance);
-        var canMageDef = CapbilityOfMageDefUp(GameInstance);
+        var canMageDef = false; // 飞蛾图才需要 目前没什么用, 或者批量僵尸
+        // CapbilityOfMageDefUp(GameInstance);
         // 暂时只 查看自己的属性
 
         if (!canDef && !canMageDef)
@@ -2049,7 +2049,7 @@ public static class GoRunFunction
         if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
         {
             var lans = findIdxInAllItems(GameInstance, "魔法药", true);
-            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount)
+            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount * 1.2)
             {
                 NpcFunction.EatIndexItem(GameInstance, lans[0]);
             }
