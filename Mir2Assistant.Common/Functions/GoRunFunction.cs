@@ -1101,6 +1101,14 @@ public static class GoRunFunction
                             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                             return false;
                         }
+                        if (consume0)
+                        {
+                            // 很容易就退出 因为是引怪
+                            if (monTried > 10)
+                            {
+                                break;
+                            }
+                        }
                         CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
