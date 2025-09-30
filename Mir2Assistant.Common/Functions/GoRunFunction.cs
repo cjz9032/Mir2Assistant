@@ -1094,7 +1094,7 @@ public static class GoRunFunction
                         }
                         // 检查是否被包围
                         var centerPoint = (ani.X, ani.Y);
-                        if (instanceValue.AccountInfo!.role != RoleType.mage && escapeTried < 3)
+                        if (instanceValue.AccountInfo!.role != RoleType.blade && escapeTried < 3)
                         {
                             var isEscaped = await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 2, cancellationToken: _cancellationToken);
                             if (isEscaped == 1)
