@@ -1030,13 +1030,11 @@ public static class GoRunFunction
                 // 保护消费者法师 但 随机性先找怪如有下属在旁边
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
 
-                var isNearBBCount = consume0 ? instanceValue.Monsters.Values.Count(o => o.stdAliveMon &&
-                (o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName))
-                // && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
-                 )
-                 
-                 : 0;
-                var isOutside = isNearBBCount > 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 20;
+                var isNearBBCount = consume0 ? instanceValue.Monsters.Values.Count(o => !o.isDead &&
+                    (o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName))
+                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
+                 ) : 0;
+                var isOutside = isNearBBCount >= 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 20;
                 if (!isOutside && consume0)
                 {
                     if (ani == null)
