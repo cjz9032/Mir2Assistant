@@ -2114,7 +2114,9 @@ public static class GoRunFunction
         var target = level >= 26 ? 3 : (level >= 23 ? 2 : 1);
         while (true)
         {
-            var skill = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId)!;
+            var skill = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId);
+            await Task.Delay(100);
+            if (skill == null) continue;
             if (skill.level >= target)
             {
                 break;
@@ -2184,9 +2186,9 @@ public static class GoRunFunction
             }
             // 检查是否已经在目标位置
             if (GameInstance.CharacterStatus.MapId != "3" ||
-             Math.Max(Math.Abs(GameInstance.CharacterStatus.X - 368), Math.Abs(GameInstance.CharacterStatus.Y - 359)) > 5)
+             Math.Max(Math.Abs(GameInstance.CharacterStatus.X - 368), Math.Abs(GameInstance.CharacterStatus.Y - 359)) > 3)
             {
-                if (!await PerformPathfinding(CancellationToken.None, GameInstance!, 368, 359, "3", 5))
+                if (!await PerformPathfinding(CancellationToken.None, GameInstance!, 368, 359, "3", 3))
                 {
                     return;
                 }
