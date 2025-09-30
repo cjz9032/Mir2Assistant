@@ -1956,20 +1956,14 @@ public static class GoRunFunction
         // TODO 打包这种还没算
         var bagItems2 = GameInstance.Items;
         var idx = bagItems2.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
-        if (idx.Count > 0)
-        {
-            return idx.Select(o => o.Index + 6).ToArray();
-        }
-        else
-        {
-            var quickItems = GameInstance.QuickItems;
-            var idx2 = quickItems.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
-            if (idx2.Count > 0)
-            {
-                return idx2.Select(o => o.Index).ToArray();
-            }
-        }
-        return null;
+        var bagIndices = idx.Select(o => o.Index + 6).ToList();
+
+        var quickItems = GameInstance.QuickItems;
+        var idx2 = quickItems.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
+        var quickIndices = idx2.Select(o => o.Index).ToList();
+
+        var allIndices = bagIndices.Concat(quickIndices).ToArray();
+        return allIndices.Length > 0 ? allIndices : null;
     }
 
     public static void TryEatDrug(MirGameInstanceModel GameInstance)
