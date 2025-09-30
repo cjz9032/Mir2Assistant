@@ -1,4 +1,4 @@
-﻿using Mir2Assistant.Common.Models;
+using Mir2Assistant.Common.Models;
 using Serilog; // 新增Serilog引用
 using System.Diagnostics; // 新增Stopwatch引用
 using Mir2Assistant.Common.Utils;
@@ -1018,8 +1018,10 @@ public static class GoRunFunction
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
-                // 保护消费者法师
-                if (whoIsConsumer(instanceValue!) == 0)  
+                // 保护消费者法师 但 随机性先找怪如有下属在旁边
+                var isNearBBCount = instanceValue.Monsters.Values.Count(o => o.stdAliveMon && o.Name.Contains(CharacterStatus.Name) && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10);
+                var isOutside = isNearBBCount > 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 10;
+                if (!isOutside && whoIsConsumer(instanceValue!) == 0)
                 {
                     if (ani == null)
                     {
