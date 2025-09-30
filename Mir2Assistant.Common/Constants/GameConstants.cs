@@ -14,6 +14,7 @@ public static class GameConstants
         public const int LightingSpellId = 11;
         public const int temptSpellId = 20;
         public const int mageDefup = 14;
+        public const int flashMove = 21;
         public const int defUp = 15;
         public const int HealSpellId = 2;
         public const int RecallBoneSpellId = 17;

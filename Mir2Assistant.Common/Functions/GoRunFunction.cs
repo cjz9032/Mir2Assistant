@@ -1671,10 +1671,15 @@ public static class GoRunFunction
     {
         return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.defUp) != null;
     }
+
+    public static bool CapbilityOfFlashMove(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.flashMove) != null;
+    }
     
     public static bool CapbilityOfMageDefUp(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.mageDefup) != null;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.mageDefup) != null;
     }
 
     public static bool CapbilityOfSekeleton(MirGameInstanceModel GameInstance)

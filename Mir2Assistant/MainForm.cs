@@ -1349,6 +1349,7 @@ namespace Mir2Assistant
                 var tryiedAttach = 0;
                 var samePosTimes = 0;
                 var lastPos = 0;
+                var lastExp = 0;
                 while (true)
                 {
                     // Log.Debug("开始后台自动处理");
@@ -1416,19 +1417,66 @@ namespace Mir2Assistant
                             }
 
                             if(CharacterStatus.X > 0){
-                                 if(Math.Abs(CharacterStatus.X - lastPos) < 3){
-                                        samePosTimes+=1;
-                                        lastPos = CharacterStatus.X;
-                                        if (samePosTimes == 10){
-                                            samePosTimes = 0;
-                                            lastPos = 0;
+                                lastExp = CharacterStatus.Exp;
+                                if (Math.Abs(CharacterStatus.X - lastPos) < 3 && CharacterStatus.Exp == lastExp)
+                                {
+                                    samePosTimes += 1;
+                                    if (samePosTimes == 10)
+                                    {
+                                        samePosTimes = 0;
+                                        var ai = await HuoshanAIHelper.ChatAsync();
+                                        CharacterStatusFunction.AddChat(instance, ai);
+                                        await Task.Delay(1000);
+                                        // 查看是否发出去 
+                                        var needRestart = false;
+                                        if (!instance.chats.Any(chat => chat.Contains(ai)))
+                                        {
+                                            needRestart = true;
+                                        }
+                                        else
+                                        {
+                                            // 卡位, 看职业
+                                            if (GoRunFunction.CapbilityOfFlashMove(instance))
+                                            {
+                                                // try move
+                                                var tryiedMove = 0;
+                                                var isSSMove = false;
+                                                while (true)
+                                                {
+                                                    GoRunFunction.sendSpell(instance, GameConstants.Skills.flashMove, CharacterStatus.X, CharacterStatus.Y, 0);
+                                                    await Task.Delay(1000);
+                                                    if (Math.Abs(CharacterStatus.X - lastPos) > 3)
+                                                    {
+                                                        isSSMove = true;
+                                                        break;
+                                                    }
+                                                    tryiedMove++;
+                                                    if (tryiedMove > 20) break;
+                                                }
+                                                if (!isSSMove)
+                                                {
+                                                    needRestart = true;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                needRestart = true;
+                                            }
+                                        }
+                                        
+                                        if (needRestart)
+                                        {
                                             await RestartGameProcess(instance);
                                             continue;
                                         }
-                                 }else{
-                                        lastPos = CharacterStatus.X;
-                                        samePosTimes=0;
-                                 }
+                                    }
+                                }
+                                else
+                                {
+                                    samePosTimes = 0;
+                                }
+
+                                lastPos = CharacterStatus.X;
                             }
 
                             if (CharacterStatus.CurrentHP == instance.lastHP)
