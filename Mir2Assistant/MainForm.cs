@@ -95,7 +95,7 @@ namespace Mir2Assistant
             Log.Debug("已注册热键: Delete");
             // todo 目前还好, 就是自动的runner对所有生效
             autoAtBackgroundFast();
-            autoAtBackground();
+            // autoAtBackground(); //特殊任务取消
             // RefreshDataGrid();
             Task.Run(async () =>
             {
