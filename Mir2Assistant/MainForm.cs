@@ -1207,7 +1207,7 @@ namespace Mir2Assistant
                                                 instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
                                             }
                                         }
-                                        var isFull = miscs.Count > 38;
+                                        var isFull = miscs.Count > 44;
                                         if (isFull)
                                         {
                                             instanceValue.GameInfo("满包 回家");
