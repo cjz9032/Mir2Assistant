@@ -1625,7 +1625,10 @@ namespace Mir2Assistant
                         if (instance.CharacterStatus.CurrentHP > 0)
                         {
                             GoRunFunction.TryEatDrug(instance);
-                            GoRunFunction.TryHealPeople(instance);
+                            if (!BBTask)
+                            {
+                                GoRunFunction.TryHealPeople(instance);
+                            }
                         }
                     }
                     catch (Exception ex)
