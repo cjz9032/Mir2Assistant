@@ -1099,7 +1099,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 25)
                                 {
-                                    hangMapId = "D601"; // D601 D023
+                                    hangMapId = "E605"; // D601 D023 E605 连接
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
