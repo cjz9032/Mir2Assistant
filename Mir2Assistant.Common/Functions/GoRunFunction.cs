@@ -2220,6 +2220,14 @@ public static class GoRunFunction
                 await Task.Delay(500);
                 SendMirCall.Send(GameInstance, 9011, new nint[] { });
                 await Task.Delay(300);
+
+                var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
+                if (useItem2 == null)
+                {
+                    await Task.Delay(1000);
+                    continue;
+                }
+                
             }
             sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
             await Task.Delay(1000);
