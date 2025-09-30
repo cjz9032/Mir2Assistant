@@ -1463,7 +1463,9 @@ public static class GoRunFunction
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
-                if(isAcross){
+                var whileList = new List<string>(){"0132"};
+                if(isAcross && whileList.Contains(replaceMap)){
+                    // 注意很多不需要, 用白名单
                     int N = 3; // 你指定的每次尝试的方向数量
                     int maxCount = 9 / N; // 根据 N 动态计算 goNodes.Count 的最大值
                     if( goNodes.Count < maxCount){
