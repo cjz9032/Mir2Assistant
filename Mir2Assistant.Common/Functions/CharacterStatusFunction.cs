@@ -50,6 +50,12 @@ public static class CharacterStatusFunction
             status.MaxMageDef = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物MaxMageDef偏移"]));
         }
 
+        if (GameState.MirConfig["人物Exp偏移"] > 0)
+        {
+            status.Exp = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物Exp偏移"]));
+            status.MaxExp = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物MaxExp偏移"]));
+        }
+
         if (GameState.MirConfig["金地"] != 0)
         {
             status.coin = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["金地"], 0, GameState.MirConfig["金币偏移"]));
