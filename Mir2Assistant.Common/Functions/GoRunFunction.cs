@@ -2222,7 +2222,7 @@ public static class GoRunFunction
                 await Task.Delay(300);
             }
             sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-            await Task.Delay(300);
+            await Task.Delay(1000);
         }
 
     }
