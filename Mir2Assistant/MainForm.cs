@@ -21,6 +21,8 @@ namespace Mir2Assistant
         private string gameDirectory = "";
         private string encodeArgMainLarge = "";
         private string encodeArgOtherSmall = "";
+        private bool BBTask = true;
+
         public MainForm()
         {
             InitializeComponent();
@@ -95,7 +97,10 @@ namespace Mir2Assistant
             Log.Debug("已注册热键: Delete");
             // todo 目前还好, 就是自动的runner对所有生效
             autoAtBackgroundFast();
-            // autoAtBackground(); //特殊任务取消
+            if (!BBTask)
+            {
+                autoAtBackground(); //特殊任务取消
+            }
             // RefreshDataGrid();
             Task.Run(async () =>
             {
@@ -815,7 +820,10 @@ namespace Mir2Assistant
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
                         // 插入特殊任务
-                        await GoRunFunction.upgradeBBSkill(instanceValue);
+                        if (BBTask)
+                        {
+                            await GoRunFunction.upgradeBBSkill(instanceValue);
+                        }
 
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
