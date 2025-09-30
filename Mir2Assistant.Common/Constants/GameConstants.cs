@@ -153,7 +153,7 @@ public static class GameConstants
 
         public static readonly FrozenSet<string> JPSetFrozen =
             new[] { "祝福油", "山洞凭证", "半月弯刀", "困魔咒", "烈火剑法", "召唤神兽", "冰咆哮", "地狱雷光",
-                "魔法盾", "火墙", "神圣战甲术", "群体治疗术", "刺杀剑术", "野蛮冲撞", "圣言术" }.ToFrozenSet(StringComparer.Ordinal);
+                "魔法盾", "火墙", "神圣战甲术", "群体治疗术", "刺杀剑术", "野蛮冲撞", "圣言术", "极速神水", "战神油" }.ToFrozenSet(StringComparer.Ordinal);
 
         public static readonly List<string> SuperPotions =
       new List<string>
