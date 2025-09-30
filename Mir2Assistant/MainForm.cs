@@ -21,7 +21,7 @@ namespace Mir2Assistant
         private string gameDirectory = "";
         private string encodeArgMainLarge = "";
         private string encodeArgOtherSmall = "";
-        private bool BBTask = false;
+        private bool BBTask = true;
 
         public MainForm()
         {

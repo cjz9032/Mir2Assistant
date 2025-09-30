@@ -2165,7 +2165,7 @@ public static class GoRunFunction
             if (item2 == null)
             {
                 // 购买
-                var count = 34;
+                var count = 10;
                 GameInstance.GameInfo($"购买蓝{count}个");
                 var (npcMap, npcName, x, y) = NpcFunction.PickDrugNpcByMap(GameInstance, "SKILLBB");
                 bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
@@ -2176,6 +2176,9 @@ public static class GoRunFunction
                     await Task.Delay(500);
                     // 已经检测过存在了, 只看是否为空先
                     await NpcFunction.BuyImmediate(GameInstance, "魔法药(小量)", count);
+                    await NpcFunction.RefreshPackages(GameInstance);
+
+                    await NpcFunction.BuyImmediate(GameInstance, "魔法药(中量)", count);
                     await NpcFunction.RefreshPackages(GameInstance);
                 }
             }
