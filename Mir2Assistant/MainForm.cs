@@ -74,8 +74,8 @@ namespace Mir2Assistant
                 encodeArgMainLarge = @"kfOoahYhb3fG+gA4fSangPnDCxTkr4MFKyoW9LH4W28SVhlJvRGmm3gS9BTJKj1XXKvbBY2jXq7Oijy5Ndyrl26OkaL1VZhHlhVKhSCUYve1TH9GgI4qZyM4JQPJeGhjP37oFxARRsxzev4HbOsulCkXoRO0uL5VGX7T5vIiCZRE9nhbDDW4H34zLNXwBQGoml/S2EcHXUyIndJnOMyddNYzS1zAJFKTPwhE6mOZXoIhO2cOuNhGVepTwwsJDAiPg68l5nHGkAG7SGqD2JP5GALD/LP7noJKKjFT3Y+fo4gvF4YR+U0fMwyDPu8kkpZ3/V3AOUpFHJvBoAd878ebSCCKxEYvgKFN/W0J1UzoN4wzeoX9zR/GjiENNDH/EYf9/GutWxwxMm9IcXHWnnTnffdoxxLaWX95NEyCLtEi7+7fF2gM1YTIAwG3Nyd26oj3WkabRDygpttgLbVpLKuffRFiuvoJdGIYkcjF2uC/mK4lXGupfWN9Ieh1Mpr4lk8O90FMLHwVOVTdGxYva+N91uCw3hzpRrJaojwCWLVfPHJznl+7emqylU0l9/4dzdNfdpSKDryBlGg1hqHGGXgQ5RJ02VMNeQSHpqflOx/XuSjaNvKUTsqnl55iP2gQ4ntEM4hM9WBjeX6/guFChBXVDet6rwXMf7GZJvQIpg3btjFjcMKrXqyWhdFaNmz9uabWf4neA8C06+y8aBcPDgEQX7Uin98WLKTHKKb00AZYxNuT2yfTOzzJavnCn2kSGmj8sk5I1kZr8dTcVo2gdC77o8kCuY4dtGbqOExFv6RFNtrIwywUv6pSFN9DsSvKWzwiJwjn+2YqzZxJitB1t07y8ByRygWbvpCqmb9jqS+MWX9zn/ZGnb61JjJVFZDdHUyq1URBz+Q1tOj8bJ1o5aGi3cQbG0v00oH66+uOXzVXNlHbkDy6Y5nyUBY39TLHFelJDlBgI68D6QLx21rwk3nzV2HqTbQX+4JaJMCkH0xd3GLbh8QV2M5u6gDWfr+MXyWM";
                 encodeArgOtherSmall = @"4V/1bwu8lqrZMQVVO1BIYDHyVWUSBU7O08Cx4QUu4TRozkhjtCiplv/eCIDhcjJ9ZbfM2+f7XHWNpGdCVOgKjqnEHHweuCVM3AldA0HoF0IPD70w9Xd8WYRe3SnhSlS409969oAOQRrSOqNvCAWjZYt/ICyYM6igVotv9RzLSL3azgJZN/qdECOu7KCnxeva/XBAixA7h3XBvMggke6e698XwXFs0ISyNrSj+oFvw8rk02uRodUagCowmh8cGib9QpcFxrK1TuUJKgRbqK03QcN+pLSxrq8e+UwtamASEFM3wnQPB6K+pMtOZOkcrr8+Kd7klYlXBRrYbT8hvYQ8eF0WgbOEN4KzThDOXMa0INxVX94UxemyUhXIGJGOAN3yIWhy9jYBR9PbZ+yFvtTo0Alz5GmAvQV2zONMZeeI9RleWewtwRBjMwraS8XCwJfHgyS6nZNmEfVQmULQmCC2Ow9MSFbYBloawb9aNqBgS2esl6djUA3y4+ozQjcW9AdN+WJMeWYUAQGIkQ7GVYQFi5LiXYmmev7WvezzjXin7NtYoRKkTMPtnfqLTwHBueeO5adtlz2RlgN5cte47l6fBgsTh23OHcJqT8cuJv99C9deLIDWFNY1/+8HFw8X2fPJvVgJNRJKMULWV4iQ3KgmU75ZLp+QAxTGJrQA5bicxCU30mjIaY+vCD2HPznaUugskIBLSWk4q47lDR0e8DtqH/Bf00rW0s/ymd9CouAufsDWw2tRIHD+iFaFZc5UoLCHpuZK77neQNjrydJyg6077Hrxf5yZOfdlUzUWKTzdgblCAMLXApPX1TSNedsrwgBpP55O0CLaEgr4l5xPFwPtYAX289hd6JLmopEehIzrFPyJc2awmn5A/ST2wukLdySweiKjShHk2BWRXYYkxxI0xM4pIFEIkPujKWimzNeXfSMeKrjb+TGbIQDauvVMhUhMHqZ8mu33XeaQezUyfSttDjpTjzGpaxVEcoRtb/QLHGBGY9GrpLMWpu1FbeyJHeUv";
             }
-            
-            
+
+
 
         }
 
@@ -97,14 +97,15 @@ namespace Mir2Assistant
             autoAtBackgroundFast();
             autoAtBackground();
             // RefreshDataGrid();
-            Task.Run(async () => {
-               while (true)
-               {
-                   this.Invoke(new Action(() => RefreshDataGrid()));
-                   await Task.Delay(30_000);
-               }
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    this.Invoke(new Action(() => RefreshDataGrid()));
+                    await Task.Delay(30_000);
+                }
             });
-          
+
         }
 
         private void LoadAccountList()
@@ -141,18 +142,19 @@ namespace Mir2Assistant
         {
             try
             {
-               Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
-               string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions { 
-                   WriteIndented = true,
-                   Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-               });
-               File.WriteAllText(configFilePath, json, System.Text.Encoding.UTF8);
-               Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
+                Log.Debug("开始保存账号列表，共 {AccountCount} 个账号", accountList.Count);
+                string json = JsonSerializer.Serialize(accountList, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                });
+                File.WriteAllText(configFilePath, json, System.Text.Encoding.UTF8);
+                Log.Information("账号列表保存成功，路径: {ConfigFilePath}", configFilePath);
             }
             catch (Exception ex)
             {
-               Log.Error(ex, "保存账号列表失败");
-            //    MessageBox.Show($"保存账号列表失败: {ex.Message}");
+                Log.Error(ex, "保存账号列表失败");
+                //    MessageBox.Show($"保存账号列表失败: {ex.Message}");
             }
         }
 
@@ -185,7 +187,7 @@ namespace Mir2Assistant
 
             dataGridViewAccounts.DataSource = null;
             dataGridViewAccounts.DataSource = new BindingSource { DataSource = accountViews };
-            
+
             // 恢复列顺序和位置
             if (columnOrder.Count > 0)
             {
@@ -246,14 +248,15 @@ namespace Mir2Assistant
             return false;
         }
 
-        private void beforeClose(MirGameInstanceModel gameInstance){
-             // 如果有关联的辅助窗口，先解除挂钩并关闭
+        private void beforeClose(MirGameInstanceModel gameInstance)
+        {
+            // 如果有关联的辅助窗口，先解除挂钩并关闭
             gameInstance.GameInfo("准备关闭游戏资源，账号: {Account}, PID: {ProcessId}", gameInstance.AccountInfo.Account, gameInstance.MirPid);
             gameInstance.GameDebug("解除DLL挂钩并关闭辅助窗口");
             DllInject.Unhook(gameInstance);
             if (gameInstance.AssistantForm != null && gameInstance.AssistantForm.IsHandleCreated && !gameInstance.AssistantForm.IsDisposed)
             {
-                try 
+                try
                 {
                     if (gameInstance.AssistantForm.InvokeRequired)
                     {
@@ -327,7 +330,8 @@ namespace Mir2Assistant
             KillGameProcess(gameInstance);
             var isSuccess = await StartGameProcess(gameInstance);
             gameInstance.isRestarting = false;
-            if(!isSuccess){
+            if (!isSuccess)
+            {
                 gameInstance.GameWarning("重启游戏进程失败，账号: {Account}", gameInstance.AccountInfo.Account);
                 await RestartGameProcess(gameInstance);
             }
@@ -410,10 +414,12 @@ namespace Mir2Assistant
                             await Task.Delay(3000);
                             // 写标题
                             var insIdx = GameState.GameInstances.IndexOf(gameInstance);
-                            ChangeTitleByProcess(hwnd,$"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+                            ChangeTitleByProcess(hwnd, $"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
                         }
                         return !gameInstance.CharacterStatus.isEnhanceDead;
-                    }else{
+                    }
+                    else
+                    {
                         return false;
                     }
                 }
@@ -430,7 +436,7 @@ namespace Mir2Assistant
                 // MessageBox.Show($"绑定游戏进程失败: {ex.Message}");
             }
         }
-        
+
         // 导入Windows API函数
         // 导入Windows API用于设置窗口标题
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -444,7 +450,7 @@ namespace Mir2Assistant
         /// <returns>是否修改成功</returns>
         public static bool ChangeTitleByProcess(IntPtr mainWindowHandle, string newTitle)
         {
-          
+
             if (mainWindowHandle == IntPtr.Zero)
             {
                 Console.WriteLine("无法获取窗口句柄（可能是控制台程序或无窗口进程）");
@@ -543,10 +549,10 @@ namespace Mir2Assistant
                 RestartGameProcess(GameState.GameInstances.FirstOrDefault(g => g.AccountInfo?.Account == account.Account)!);
                 await Task.Delay(8000);
             }
-             
-                // sllep 
-                // await Task.Delay(20_000);
-             
+
+            // sllep 
+            // await Task.Delay(20_000);
+
         }
 
         private void btnCloseAll_Click(object sender, EventArgs e)
@@ -573,32 +579,42 @@ namespace Mir2Assistant
         //     }
         // }
 
-      private async Task buyBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+        private async Task buyBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             var bookName = "";
-            if (instanceValue.AccountInfo.role == RoleType.blade ){
-                if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 
-                && instanceValue.Skills.FirstOrDefault(o=>o.Id == 3) == null
-                ){
+            if (instanceValue.AccountInfo.role == RoleType.blade)
+            {
+                if (instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >= 7
+                && instanceValue.Skills.FirstOrDefault(o => o.Id == 3) == null
+                )
+                {
                     bookName = "基本剑术";
                 }
             }
-            else if (instanceValue.AccountInfo.role == RoleType.taoist ){
-                if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=7 && !GoRunFunction.CapbilityOfHeal(instanceValue)){
+            else if (instanceValue.AccountInfo.role == RoleType.taoist)
+            {
+                if (instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >= 7 && !GoRunFunction.CapbilityOfHeal(instanceValue))
+                {
                     bookName = "治愈术";
                 }
-                   if(instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >=9 && instanceValue.Skills.FirstOrDefault(o=>o.Id == 4) == null){
+                if (instanceValue.CharacterStatus.coin > 500 && instanceValue.CharacterStatus.Level >= 9 && instanceValue.Skills.FirstOrDefault(o => o.Id == 4) == null)
+                {
                     bookName = "精神力战法";
                 }
-            }else if(instanceValue.AccountInfo.role == RoleType.mage){
-                if(instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >=18 && !GoRunFunction.CapbilityOfTemptation(instanceValue)){
+            }
+            else if (instanceValue.AccountInfo.role == RoleType.mage)
+            {
+                if (instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >= 18 && !GoRunFunction.CapbilityOfTemptation(instanceValue))
+                {
                     bookName = "诱惑之光";
                 }
             }
-            if(bookName != ""){
+            if (bookName != "")
+            {
                 await NpcFunction.BuyBook(instanceValue, bookName);
                 var book = instanceValue.Items.Where(o => !o.IsEmpty && o.Name == bookName).FirstOrDefault();
-                if(book != null){
+                if (book != null)
+                {
                     book.Name = "";
                     book.IsEmpty = true;
                     NpcFunction.EatBookItem(instanceValue!, book.Id);
@@ -606,7 +622,7 @@ namespace Mir2Assistant
                 }
             }
         }
-        
+
         private async Task sellBooks(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             await NpcFunction.sellAllBook(instanceValue);
@@ -715,7 +731,7 @@ namespace Mir2Assistant
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
 
 
-            
+
             // 买书, 治愈基本
             await buyBooks(instanceValue, _cancellationToken);
             // 卖书所有
@@ -742,7 +758,8 @@ namespace Mir2Assistant
             // 买地牢
             await NpcFunction.BuyLaoLan(instanceValue, _cancellationToken);
             // 全搞完 回血
-            while(instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.9){
+            while (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.9)
+            {
                 instanceValue.GameInfo("回血中, 当前血量: {CurrentHP}, 当前魔法: {CurrentMP}", instanceValue.CharacterStatus.CurrentHP, instanceValue.CharacterStatus.CurrentMP);
                 await Task.Delay(30_000);
             }
@@ -751,19 +768,19 @@ namespace Mir2Assistant
         private static async Task findNoobNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 283, 608, "0", 6,true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 283, 608, "0", 6, true, 10);
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "助手阿妍");
             }
         }
 
-      
-        
-         private static async Task findMeatNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+
+
+        private static async Task findMeatNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 293, 604, "0", 6, true, 10);
-            
+
             if (pathFound)
             {
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
@@ -783,7 +800,7 @@ namespace Mir2Assistant
                 }
                 try
                 {
-                    instance.IsBotRunning = true;   
+                    instance.IsBotRunning = true;
                     if (!instance.IsAttached)
                     {
                         //Log.Debug("实例 {Account} 未附加，跳过", instance.AccountInfo?.Account);
@@ -940,9 +957,10 @@ namespace Mir2Assistant
                                 // ["0113"] = "高级道士之家",
                                 // ["01132"] = "任务地图",
 
-                                 // 精武馆老板
-                                if(instanceValue.AccountInfo.role == RoleType.blade){
-                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10,10, "0114", 6, true, 20);
+                                // 精武馆老板
+                                if (instanceValue.AccountInfo.role == RoleType.blade)
+                                {
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0114", 6, true, 20);
                                     if (pathFound)
                                     {
                                         await NpcFunction.ClickNPC(instanceValue, "高级");
@@ -958,8 +976,9 @@ namespace Mir2Assistant
                                         SaveAccountList();
                                     }
                                 }
-                                else if (instanceValue.AccountInfo.role == RoleType.taoist){
-                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10,10, "0113", 6, true, 20);
+                                else if (instanceValue.AccountInfo.role == RoleType.taoist)
+                                {
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0113", 6, true, 20);
                                     if (pathFound)
                                     {
                                         await NpcFunction.ClickNPC(instanceValue, "高级");
@@ -975,10 +994,10 @@ namespace Mir2Assistant
                                         SaveAccountList();
                                     }
                                 }
-                              
-                               
 
-                             
+
+
+
 
                             }
                         }
@@ -1049,7 +1068,7 @@ namespace Mir2Assistant
                                 act.TaskSub0Step = 5;
                                 SaveAccountList();
                             }
-                             if (act.TaskSub0Step == 5)
+                            if (act.TaskSub0Step == 5)
                             {
                                 // 继续找肉 5 5
                                 await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
@@ -1062,7 +1081,7 @@ namespace Mir2Assistant
                                 SaveAccountList();
                             }
                         }
-                      
+
                         if (CharacterStatus.Level >= 1)
                         {
                             // todo 跨地图
@@ -1275,7 +1294,7 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = true;
-                                while(instanceValue.CharacterStatus.isEnhanceDead)
+                                while (instanceValue.CharacterStatus.isEnhanceDead)
                                 {
                                     instanceValue.GameInfo("等待上线再回家");
                                     await Task.Delay(6_0000);
@@ -1329,7 +1348,8 @@ namespace Mir2Assistant
             });
         }
         // TODO behavior tree for the main level up loop
-        private async void autoForeGround(){
+        private async void autoForeGround()
+        {
             // while(true){
             //     // 先写2个新手任务
             //     // 避免太频繁 先写1000
@@ -1341,7 +1361,7 @@ namespace Mir2Assistant
 
         private async void autoAtBackground()
         {
-           
+
             var instances = GameState.GameInstances;
             instances.ForEach(async instance =>
             {
@@ -1362,17 +1382,21 @@ namespace Mir2Assistant
                             // 
                             //Log.Debug("实例 {Account} 未附加，跳过后台处理", instance.AccountInfo?.Account);
                             tryiedAttach++;
-                            if(tryiedAttach >= 10){
+                            if (tryiedAttach >= 10)
+                            {
                                 var ss = await RestartGameProcess(instance);
-                                if(ss){
+                                if (ss)
+                                {
                                     tryiedAttach = 0;
                                 }
                             }
                             continue;
-                        }else{
+                        }
+                        else
+                        {
                             tryiedAttach = 0;
                         }
-                        
+
                         // Log.Debug("刷新实例 {Account} 状态", instance.AccountInfo?.Account);
                         instance.RefreshAll();
                         // todo ref方法 避免重复调用
@@ -1394,33 +1418,43 @@ namespace Mir2Assistant
                         if (CharacterStatus.CurrentHP > 0)
                         {
                             // 用用再说
-                            if(GameState.gamePath == "Client.exe"){
+                            if (GameState.gamePath == "Client.exe")
+                            {
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 95);
-                            }else{
+                            }
+                            else
+                            {
                                 CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }
                             if (instance.AccountInfo!.role == RoleType.blade)
                             {
-                                if(GameState.gamePath == "Client.exe"){
+                                if (GameState.gamePath == "Client.exe")
+                                {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 950);
-                                }else{
+                                }
+                                else
+                                {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
                             }
-                            else if(instance.AccountInfo.role == RoleType.mage && instance.CharacterStatus.Level > 20)
+                            else if (instance.AccountInfo.role == RoleType.mage && instance.CharacterStatus.Level > 20)
                             {
                                 CharacterStatusFunction.AdjustAttackSpeed(instance, 2000);
                             }
-                            else if(instance.CharacterStatus.Level < 7)
+                            else if (instance.CharacterStatus.Level < 7)
                             {
-                                if(GameState.gamePath == "Client.exe"){
+                                if (GameState.gamePath == "Client.exe")
+                                {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
-                                }else{
+                                }
+                                else
+                                {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
                             }
 
-                            if(CharacterStatus.X > 0){
+                            if (CharacterStatus.X > 0)
+                            {
                                 lastExp = CharacterStatus.Exp;
                                 if (Math.Abs(CharacterStatus.X - lastPos) < 3 && CharacterStatus.Exp == lastExp)
                                 {
@@ -1467,7 +1501,7 @@ namespace Mir2Assistant
                                                 needRestart = true;
                                             }
                                         }
-                                        
+
                                         if (needRestart)
                                         {
                                             await RestartGameProcess(instance);
@@ -1556,18 +1590,19 @@ namespace Mir2Assistant
                     }
                 }
             });
-             
+
         }
-        
-          private async void autoAtBackgroundFast(){
+
+        private async void autoAtBackgroundFast()
+        {
             // 其他中断并行需要考虑 
             while (true)
             {
-        
+
                 var instances = GameState.GameInstances;
                 instances.ForEach(instance =>
                 {
-                    try 
+                    try
                     {
                         if (!instance.IsAttached)
                         {

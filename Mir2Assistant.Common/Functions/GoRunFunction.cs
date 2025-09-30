@@ -14,7 +14,7 @@ namespace Mir2Assistant.Common.Functions;
 public static class GoRunFunction
 {
     public static MapConnectionService mapConnectionService = new MapConnectionService();
-    
+
     /// <summary>
     /// 通用捡取方法
     /// </summary>
@@ -31,11 +31,11 @@ public static class GoRunFunction
         var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
-        var superCount = miscs.Count(o => o.stdMode == 0 &&GameConstants.Items.SuperPotions.Contains(o.Name));
+        var superCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.SuperPotions.Contains(o.Name));
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
-        var maxWeapon =  (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.keepWeaponCount * 4 : GameConstants.Items.keepWeaponCount;
+        var maxWeapon = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.keepWeaponCount * 4 : GameConstants.Items.keepWeaponCount;
 
         var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
         var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.keepClothCount * 4 : GameConstants.Items.keepClothCount;
@@ -53,10 +53,11 @@ public static class GoRunFunction
         var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
-        while(allTimes < 2){
+        while (allTimes < 2)
+        {
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                    !instanceValue.pickupItemIds.Contains(o.Value.Id)    && 
+                    !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
                     !curinItems.Contains(o.Value.Name)
                 // 不是自己的 但是是别人的 不拿
                 && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
@@ -64,8 +65,8 @@ public static class GoRunFunction
                 &&
                 (
                     (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
-                        ((clothCount <  maxCloth) ?
-                        (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女")) 
+                        ((clothCount < maxCloth) ?
+                        (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
                         : false)
                     : true
                 )
@@ -74,8 +75,8 @@ public static class GoRunFunction
                 // 药
                 && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
                 && (o.Value.Name.Contains("魔法药") ? (
-                        instanceValue.AccountInfo.role == RoleType.taoist 
-                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount*1.2))
+                        instanceValue.AccountInfo.role == RoleType.taoist
+                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
                         : false
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
@@ -93,7 +94,7 @@ public static class GoRunFunction
             {
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
-                
+
                 var triedGoPick = 0;
                 var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
                 while (!pathFound && triedGoPick < maxTriedGoPick)
@@ -118,7 +119,8 @@ public static class GoRunFunction
                         await Task.Delay(200);
                     }
                 }
-                if(pathFound){
+                if (pathFound)
+                {
                     ItemFunction.Pickup(instanceValue);
                     await Task.Delay(300);
                     pickedAny = true;
@@ -131,62 +133,62 @@ public static class GoRunFunction
         return pickedAny;
     }
 
-         /// <summary>
-     /// 通用屠挖肉方法
-     /// </summary>
-     /// <param name="instanceValue">游戏实例</param>
-     /// <param name="maxBagCount">背包物品数量上限，默认32</param>
-     /// <param name="searchRadius">搜索半径，默认13格</param>
-     /// <param name="maxTries">每个尸体最大尝试次数，默认20</param>
-     /// <param name="cancellationToken">取消令牌</param>
-     /// <returns>是否成功屠宰了尸体</returns>
-     public static async Task<bool> PerformButchering(MirGameInstanceModel instanceValue,
-         int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
-     {
+    /// <summary>
+    /// 通用屠挖肉方法
+    /// </summary>
+    /// <param name="instanceValue">游戏实例</param>
+    /// <param name="maxBagCount">背包物品数量上限，默认32</param>
+    /// <param name="searchRadius">搜索半径，默认13格</param>
+    /// <param name="maxTries">每个尸体最大尝试次数，默认20</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>是否成功屠宰了尸体</returns>
+    public static async Task<bool> PerformButchering(MirGameInstanceModel instanceValue,
+        int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
+    {
         var allowButch = new List<string> { "鸡", "鹿", "羊" }; // "毒蜘蛛", "蝎子", "洞蛆",
-       
 
-         var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
-         if (miscs.Count() >= maxBagCount)
-         {
-             return false; // 背包太满，不进行屠宰
-         }
-         
-         var CharacterStatus = instanceValue.CharacterStatus!;
-         var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched 
-             && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRadius)
-             .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
-             
-         bool butcheredAny = false;
-         
-         foreach (var body in bodys)
-         {
-             instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
-             bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1, 30);
-             if (pathFound)
-             {
-                 // 要持续屠宰, 直到尸体消失, 最大尝试次数
-                 var tried = 0;
-                 while (tried < maxTries)
-                 {
-                     SendMirCall.Send(instanceValue, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                     await Task.Delay(500);
-                     MonsterFunction.ReadMonster(instanceValue);
-                     if (body.isButched)
-                     {
-                         butcheredAny = true;
-                         break;
-                     }
-                     tried++;
-                 }
-             }
-         }
-         
-         return butcheredAny;
-     }
 
-     /// <summary>
-     /// 通用躲避方法
+        var miscs = instanceValue.Items.Where(o => !o.IsEmpty);
+        if (miscs.Count() >= maxBagCount)
+        {
+            return false; // 背包太满，不进行屠宰
+        }
+
+        var CharacterStatus = instanceValue.CharacterStatus!;
+        var bodys = instanceValue.Monsters.Values.Where(o => o.isDead && allowButch.Contains(o.Name) && !o.isButched
+            && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRadius)
+            .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)));
+
+        bool butcheredAny = false;
+
+        foreach (var body in bodys)
+        {
+            instanceValue.GameDebug("准备屠宰: {Name}, 位置: ({X}, {Y})", body.Name, body.X, body.Y);
+            bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, body.X, body.Y, "", 2, true, 1, 30);
+            if (pathFound)
+            {
+                // 要持续屠宰, 直到尸体消失, 最大尝试次数
+                var tried = 0;
+                while (tried < maxTries)
+                {
+                    SendMirCall.Send(instanceValue, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
+                    await Task.Delay(500);
+                    MonsterFunction.ReadMonster(instanceValue);
+                    if (body.isButched)
+                    {
+                        butcheredAny = true;
+                        break;
+                    }
+                    tried++;
+                }
+            }
+        }
+
+        return butcheredAny;
+    }
+
+    /// <summary>
+    /// 通用躲避方法
     /// </summary>
     /// <param name="instanceValue">游戏实例</param>
     /// <param name="centerPoint">中心点坐标</param>
@@ -196,40 +198,40 @@ public static class GoRunFunction
     /// <param name="maxMonstersNearby">身边允许的最大怪物数量，超过此数量才躲避，默认为0（即有怪就躲）</param>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>是否成功躲避</returns>
-    public static async Task<int> PerformEscape(MirGameInstanceModel instanceValue, (int x, int y) centerPoint, 
-        int dangerDistance = 1, (int min, int max) safeDistance = default, int searchRadius = 10, 
+    public static async Task<int> PerformEscape(MirGameInstanceModel instanceValue, (int x, int y) centerPoint,
+        int dangerDistance = 1, (int min, int max) safeDistance = default, int searchRadius = 10,
         int maxMonstersNearby = 0, CancellationToken cancellationToken = default)
     {
         if (safeDistance == default) safeDistance = (2, 3);
-        
+
         var escapeStopwatch = System.Diagnostics.Stopwatch.StartNew();
-        
+
         // 危险点 - 所有活着的怪物
         var dangerPoints = instanceValue.Monsters.Values.Where(o => o.stdAliveMon).Select(o => (o.X, o.Y));
-        
+
         // 检查身边怪物数量是否超过阈值
         var characterPos = (instanceValue.CharacterStatus!.X, instanceValue.CharacterStatus.Y);
-        var nearbyMonstersCount = dangerPoints.Count(dp => 
+        var nearbyMonstersCount = dangerPoints.Count(dp =>
             Math.Max(Math.Abs(dp.Item1 - characterPos.Item1), Math.Abs(dp.Item2 - characterPos.Item2)) <= dangerDistance);
-            
+
         if (nearbyMonstersCount <= maxMonstersNearby)
         {
             return -1; // 身边怪物数量未超过阈值，不需要躲避
         }
-        
+
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
-        
+
         // 地图障碍点数据
         var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue);
         var localObstacles = getLocalObstacles(instanceValue, centerPoint.x, centerPoint.y, searchRadius);
-        
+
         // 其他障碍点数据，比如玩家和怪物
         var actorObstacles = instanceValue.Monsters.Values.Where(o => !o.isDead).Select(o => (o.X, o.Y));
         var obstacles = localObstacles.Concat(actorObstacles).ToHashSet();
-        
+
         // 计算逃跑点
         var escapePoints = new List<(int x, int y, int distance)>();
-        
+
         for (int y = centerPoint.y - searchRadius; y <= centerPoint.y + searchRadius; y++)
         {
             for (int x = centerPoint.x - searchRadius; x <= centerPoint.x + searchRadius; x++)
@@ -260,7 +262,7 @@ public static class GoRunFunction
                 Math.Max(Math.Abs(dp.Item1 - ep.x), Math.Abs(dp.Item2 - ep.y))
             ).Min())
             .ThenBy(ep => ep.distance);
-            
+
         foreach (var ep in allEscapePoints)
         {
             var pathDistance = measureGenGoPath(instanceValue, ep.x, ep.y);
@@ -286,7 +288,7 @@ public static class GoRunFunction
             return 0;
         }
     }
-    
+
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
     {
 
@@ -370,7 +372,7 @@ public static class GoRunFunction
             // 地图0 有个bug 特殊处理几个点
             if (id == "0" && GameState.gamePath == "ZC.H.exe")
             {
-                var bugPoints = new (int, int)[] { 
+                var bugPoints = new (int, int)[] {
                     (266,198),
                     (267,197),
                     (268,196),
@@ -411,12 +413,13 @@ public static class GoRunFunction
             (width, height, var cachedObstacles) = data;
             obstacles = new byte[cachedObstacles.Length];
             Array.Copy(cachedObstacles, 0, obstacles, 0, cachedObstacles.Length);
-        }   
+        }
 
         // obstacles 前2个int 32是宽高
         return (width, height, (byte[])obstacles.Clone());
     }
-    public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize){
+    public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize)
+    {
         var localObstacles = new List<(int x, int y)>();
         var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(gameInstance!);
         for (int y = centerY - halfSize; y <= centerY + halfSize; y++)
@@ -492,12 +495,15 @@ public static class GoRunFunction
 
             if (candidatePoints.Count > 0)
             {
-                if(blurRange == 1){
+                if (blurRange == 1)
+                {
                     // 基本是单点扩 所以用基本测距
-                    var selectedPoint = candidatePoints.OrderBy(ep => Math.Max(Math.Abs(myX - ep.X), Math.Abs(myY- ep.Y))).FirstOrDefault();
+                    var selectedPoint = candidatePoints.OrderBy(ep => Math.Max(Math.Abs(myX - ep.X), Math.Abs(myY - ep.Y))).FirstOrDefault();
                     targetX = selectedPoint.X;
                     targetY = selectedPoint.Y;
-                }else{
+                }
+                else
+                {
                     // 从前3个点中随机选择一个（如果不足3个则在现有点中随机选择）
                     var random = new Random();
                     //var topPoints = candidatePoints.Take(Math.Min(5, candidatePoints.Count)).ToList();
@@ -505,7 +511,7 @@ public static class GoRunFunction
                     targetX = selectedPoint.X;
                     targetY = selectedPoint.Y;
                 }
-         
+
                 // gameInstance.GameDebug($"从{candidatePoints.Count}个最佳点中随机选择目标点: ({targetX}, {targetY})");
             }
 
@@ -755,8 +761,9 @@ public static class GoRunFunction
         }
         return monsPos;
     }
-    
-    public static (int, int)[] GenMobCleanPairs(MirGameInstanceModel instanceValue, string mapId){
+
+    public static (int, int)[] GenMobCleanPairs(MirGameInstanceModel instanceValue, string mapId)
+    {
         var CharacterStatus = instanceValue.CharacterStatus!;
         var patrolSteps = 10;
         var portalStartX = 0;
@@ -806,16 +813,16 @@ public static class GoRunFunction
                 fixedPoints.Add((point[0], point[1]));
             }
         }
-      
+
 
         instanceValue.GameInfo($"共生成 地图 {CharacterStatus.MapId} 的 {fixedPoints.Count} 个固定巡逻点 from {portalStartX} to {portalEndX} from {portalStartY} to {portalEndY}");
 
         // 转换为数组
         return fixedPoints.ToArray();
     }
-    
+
     // 1为中间态 可打可不打 武器爆了也不管
-        public static byte whoIsConsumer(MirGameInstanceModel instanceValue)
+    public static byte whoIsConsumer(MirGameInstanceModel instanceValue)
     {
         if (instanceValue.AccountInfo.IsMainControl) return 2;
         if (instanceValue.AccountInfo.role == RoleType.mage)
@@ -856,10 +863,11 @@ public static class GoRunFunction
             patrolPairs = GenMobCleanPairs(instanceValue, mapId);
         }
 
-        if(instanceValue.AccountInfo.IsMainControl){
+        if (instanceValue.AccountInfo.IsMainControl)
+        {
             instanceValue.GameDebug("开始巡逻攻击，巡逻点数量: {Count}", patrolPairs.Length);
         }
-      
+
 
         // 等级高了不打鸡鹿
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
@@ -896,11 +904,11 @@ public static class GoRunFunction
 
         while (true)
         {
-		    if (instanceValue.CharacterStatus!.isEnhanceDead)
-			{
-				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
-				return false;
-			}
+            if (instanceValue.CharacterStatus!.isEnhanceDead)
+            {
+                instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                return false;
+            }
             // instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
@@ -933,15 +941,18 @@ public static class GoRunFunction
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     // instanceValue.GameInfo("跟随 in init: {X}, {Y}", px, py);
                     // 判断主任是否太远, 不同图可以认为太远, 或者是距离过长也是
-                    var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
+                    var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                     || Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > 30) ? 999 : 30;
                     // 距离之内不要乱跑 但是为了防卡死 偶尔东东
-                    if(
+                    if (
                         Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) < 10 &&
                         new Random().Next(100) < 90
-                    ){
+                    )
+                    {
                         await Task.Delay(1000);
-                    }else{
+                    }
+                    else
+                    {
                         bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
                     }
                 }
@@ -963,11 +974,11 @@ public static class GoRunFunction
             while (true)
             {
                 CharacterStatus = instanceValue.CharacterStatus;
-				if (instanceValue.CharacterStatus!.isEnhanceDead)
-				{
-					instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
-					return false;
-				}
+                if (instanceValue.CharacterStatus!.isEnhanceDead)
+                {
+                    instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                    return false;
+                }
                 await Task.Delay(100);
                 monsterTried++;
                 if (monsterTried > 100)
@@ -1005,16 +1016,17 @@ public static class GoRunFunction
                     {
                         // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                         var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
-                        var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
-                                ||  diffFar > 30) ? 999 : 30;
+                        var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
+                                || diffFar > 30) ? 999 : 30;
                         var atksThan = diffFar > 12 ? 12 : 0;
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
-                        if(isSS){
+                        if (isSS)
+                        {
                             break;
                         }
                     }
                 }
-                 // 查看存活怪物 并且小于距离10个格子
+                // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
@@ -1043,7 +1055,7 @@ public static class GoRunFunction
                     }
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
-                    
+
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
@@ -1062,7 +1074,8 @@ public static class GoRunFunction
                         {
                             sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
                         }
-                    } else if (canLight && ani.CurrentHP > 50)
+                    }
+                    else if (canLight && ani.CurrentHP > 50)
                     // todo 间歇有蓝才搞
                     {
                         sendSpell(instanceValue!, GameConstants.Skills.LightingSpellId, ani.X, ani.Y, ani.Id);
@@ -1070,7 +1083,7 @@ public static class GoRunFunction
                     continue;
                 }
                 // 保护消费者
-               
+
                 if (ani != null)
                 {
                     instanceValue.GameDebug("发现目标怪物: {Name}, 位置: ({X}, {Y}), 距离: {Distance}",
@@ -1083,11 +1096,11 @@ public static class GoRunFunction
                     var escapeTried = 0;
                     while (true)
                     {
-						if (instanceValue.CharacterStatus!.isEnhanceDead)
-						{
-							instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
-							return false;
-						}
+                        if (instanceValue.CharacterStatus!.isEnhanceDead)
+                        {
+                            instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                            return false;
+                        }
                         CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
@@ -1097,11 +1110,12 @@ public static class GoRunFunction
                             {
                                 // instanceValue.GameInfo("跟随 in monster: {X}, {Y}", px, py);
                                 var diffFar = Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y));
-                                var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId 
-                                ||  diffFar > 30) ? 999 : 30;
+                                var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
+                                || diffFar > 30) ? 999 : 30;
                                 var atksThan = diffFar > 12 ? 12 : 0;
                                 var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
-                                if(isSS){
+                                if (isSS)
+                                {
                                     break;
                                 }
                             }
@@ -1114,7 +1128,9 @@ public static class GoRunFunction
                             if (isEscaped == 1)
                             {
                                 break;
-                            }else if (isEscaped == 0){
+                            }
+                            else if (isEscaped == 0)
+                            {
                                 escapeTried++;
                                 await Task.Delay(200);
                                 continue;
@@ -1184,8 +1200,8 @@ public static class GoRunFunction
             {
                 break;
             }
-          
-         
+
+
             // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
             curP += direction;
             if (curP >= patrolPairs.Length)
@@ -1203,9 +1219,9 @@ public static class GoRunFunction
         return true;
 
     }
-    
 
-  public static async Task<bool> SimpleAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+
+    public static async Task<bool> SimpleAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
     {
 
         if (instanceValue.CharacterStatus!.isEnhanceDead)
@@ -1217,11 +1233,11 @@ public static class GoRunFunction
 
         while (true)
         {
-		    if (instanceValue.CharacterStatus!.isEnhanceDead)
-			{
-				instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
-				return false;
-			}
+            if (instanceValue.CharacterStatus!.isEnhanceDead)
+            {
+                instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
+                return false;
+            }
             await Task.Delay(100);
 
             if (instanceValue.CharacterStatus!.isEnhanceDead)
@@ -1236,7 +1252,7 @@ public static class GoRunFunction
                 .OrderBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
-            
+
             if (ani != null)
             {
                 while (true)
@@ -1270,7 +1286,7 @@ public static class GoRunFunction
                     {
                         break;
                     }
-                    
+
                 }
             }
             else
@@ -1282,13 +1298,15 @@ public static class GoRunFunction
 
     }
 
-    public static int measureGenGoPath (MirGameInstanceModel GameInstance, int tx, int ty){
+    public static int measureGenGoPath(MirGameInstanceModel GameInstance, int tx, int ty)
+    {
         try
         {
             // 身边不用寻
             int myX = GameInstance!.CharacterStatus!.X;
             int myY = GameInstance!.CharacterStatus!.Y;
-            if(Math.Abs(tx - myX) < 2 && Math.Abs(ty - myY) < 2){
+            if (Math.Abs(tx - myX) < 2 && Math.Abs(ty - myY) < 2)
+            {
                 return 0;
             }
             var monsPos = GetMonsPos(GameInstance!);
@@ -1302,14 +1320,15 @@ public static class GoRunFunction
         return 999;
     }
 
-    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken) {
+    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken)
+    {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (whoIsConsumer(GameInstance!) == 2)  
+        if (whoIsConsumer(GameInstance!) == 2)
         {
             var searchRds = 7;
             var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
-            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) && 
+            var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
              Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
             ).ToList();
             if (monsters.Count > attacksThan)
@@ -1451,7 +1470,8 @@ public static class GoRunFunction
                 return false;
             }
 
-            if(goNodes.Count > maxPathLength){
+            if (goNodes.Count > maxPathLength)
+            {
                 GameInstance.GameWarning("寻路路径太长:{Retries} ", goNodes.Count);
                 return false;
             }
@@ -1477,13 +1497,15 @@ public static class GoRunFunction
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
-                var whileList = new List<string>(){"0132"};
-                if(isAcross && whileList.Contains(replaceMap)){
+                var whileList = new List<string>() { "0132" };
+                if (isAcross && whileList.Contains(replaceMap))
+                {
                     // 注意很多不需要, 用白名单
                     int N = 3; // 你指定的每次尝试的方向数量
                     int maxCount = 9 / N; // 根据 N 动态计算 goNodes.Count 的最大值
-                    if( goNodes.Count < maxCount){
-                         var lastN = goNodes[goNodes.Count - 1];
+                    if (goNodes.Count < maxCount)
+                    {
+                        var lastN = goNodes[goNodes.Count - 1];
                         // 剩下8个格子 尝试8个方向
                         int[] dx = { 0, 0, 1, 1, 1, 0, -1, -1, -1 };
                         int[] dy = { 0, -1, -1, 0, 1, 1, 1, 0, -1 };
@@ -1685,24 +1707,24 @@ public static class GoRunFunction
 
     public static bool CapbilityOfHeal(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == 2) != null;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == 2) != null;
     }
 
     public static bool CapbilityOfTemptation(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 20) != null;
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 20) != null;
     }
-    
+
     public static bool CapbilityOfDefUp(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.defUp) != null;
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.defUp) != null;
     }
 
     public static bool CapbilityOfFlashMove(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == GameConstants.Skills.flashMove) != null;
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.flashMove) != null;
     }
-    
+
     public static bool CapbilityOfMageDefUp(MirGameInstanceModel GameInstance)
     {
         return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.mageDefup) != null;
@@ -1716,7 +1738,7 @@ public static class GoRunFunction
 
     public static bool CapbilityOfLighting(MirGameInstanceModel GameInstance)
     {
-        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o=>o.Id == 11) != null;
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 11) != null;
     }
 
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
@@ -1736,7 +1758,7 @@ public static class GoRunFunction
         foreach (var instance in instances)
         {
             // 只取这个实例里对应自己账号的玩家信息和宝宝信息
-            var selfMonsters = instance.Monsters.Values.Where(m => 
+            var selfMonsters = instance.Monsters.Values.Where(m =>
                 (m.TypeStr == "玩家" && m.Name == instance.AccountInfo.CharacterName) ||  // 玩家自己
                 (m.TypeStr == "(怪)" && m.Name.Contains(instance.AccountInfo.CharacterName))  // 玩家的宝宝
             );
@@ -1807,9 +1829,10 @@ public static class GoRunFunction
         {
             return;
         }
-        
+
         var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
-        if(npc != null){
+        if (npc != null)
+        {
             GameInstance.GameDebug("附近有NPC, 不需要辅助");
             return;
         }
@@ -1878,13 +1901,13 @@ public static class GoRunFunction
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
         await Task.Delay(300);
-        await NpcFunction.autoReplaceEquipment(GameInstance, false);  
+        await NpcFunction.autoReplaceEquipment(GameInstance, false);
         await Task.Delay(500);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
 
 
-        public static async Task TryDefUps(MirGameInstanceModel GameInstance)
+    public static async Task TryDefUps(MirGameInstanceModel GameInstance)
     {
         var canDef = CapbilityOfDefUp(GameInstance);
         var canMageDef = false; // 飞蛾图才需要 目前没什么用, 或者批量僵尸
@@ -1898,7 +1921,8 @@ public static class GoRunFunction
 
 
         var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
-        if(npc != null){
+        if (npc != null)
+        {
             GameInstance.GameDebug("附近有NPC, 不需要辅助");
             return;
         }
@@ -1913,11 +1937,11 @@ public static class GoRunFunction
         {
             if (item2.IsEmpty) continue;
 
-            totalMaxDef     += item2.MaxDef;
+            totalMaxDef += item2.MaxDef;
             totalMaxMageDef += item2.MaxMageDef;
         }
 
-        
+
         var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
         var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
 
@@ -2065,9 +2089,10 @@ public static class GoRunFunction
                 NpcFunction.EatIndexItem(GameInstance, lans[0]);
             }
         }
-         // 清理红
+        // 清理红
         var heals = findIdxInAllItems(GameInstance, "金创药", true);
-        if(heals != null && heals.Length > GameConstants.Items.healBuyCount){
+        if (heals != null && heals.Length > GameConstants.Items.healBuyCount)
+        {
             NpcFunction.EatIndexItem(GameInstance, heals[0]);
         }
     }
