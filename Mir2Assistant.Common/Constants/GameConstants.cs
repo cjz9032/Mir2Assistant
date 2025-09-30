@@ -134,7 +134,7 @@ public static class GameConstants
         public static readonly int megaBuyCount = 20; // todo by level
         public static readonly int superPickCount = 3;
         public static readonly int healBuyCount = 4;
-        public static readonly int keepWeaponCount = 3;
+        public static readonly int keepWeaponCount = 2;
         public static readonly int keepClothCount = 2;
         public static readonly List<string> MegaPotions =
         new List<string>
