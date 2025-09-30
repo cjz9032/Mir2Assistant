@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using Mir2Assistant.Common.Models;
 
 namespace Mir2Assistant.Common.Constants;
@@ -57,15 +58,15 @@ public static class GameConstants
     }
 
     public static readonly string[] allowM10 = new string[] { "鹿", "羊", "鸡" };
-    public static readonly string[] allowTemp = new string[] { "洞蛆", "威思而小虫", "蜈蚣" ,"黑色恶蛆" };
- 
-    
-    
+    public static readonly string[] allowTemp = new string[] { "洞蛆", "威思而小虫", "蜈蚣", "黑色恶蛆" };
 
 
-    
-        public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
-    public static readonly string[] allow22 = new string[] { "半兽人","森林雪人",  "毒蜘蛛" , "威思而小虫" };
+
+
+
+
+    public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
+    public static readonly string[] allow22 = new string[] { "半兽人", "森林雪人", "毒蜘蛛", "威思而小虫" };
     public static readonly string[] allowMonsters = new string[]  {   "食人花", "虎蛇" , "红蛇","半兽战士", "半兽勇士", "蝎子"
             , "洞蛆", "蝙蝠", "骷髅", "骷髅战将", "掷斧骷髅", "骷髅战士", "骷髅精灵", "僵尸","山洞蝙蝠", "尸王",
         "蜈蚣", "黑色恶蛆", "跳跳蜂", "钳虫", "巨型蠕虫" };
@@ -73,19 +74,19 @@ public static class GameConstants
     public static string[] GetAllowMonsters(int level, RoleType role)
     {
         var offset = role == RoleType.blade ? -2 : 0;
-       
-        if (level < (NoobLevel+offset))
+
+        if (level < (NoobLevel + offset))
         {
             var temp = allowM10.Concat(allow15).ToList();
             return temp.ToArray();
         }
-        else if (level < MidLevel+offset)
+        else if (level < MidLevel + offset)
         {
             var temp = allowM10.Concat(allow15).Concat(allow22).ToList();
             return temp.ToArray();
-              
+
         }
-        else if (level < 16+offset)
+        else if (level < 16 + offset)
         {
             return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
         }
@@ -98,36 +99,36 @@ public static class GameConstants
 
     public static class Items
     {
-           public static readonly string[] weaponList = new string[] { 
-            "鹤嘴锄"	,
-            "裁决之杖"	,
-            "骨玉权杖"	,
-            "海魂"	,
-            "炼狱"	,
-            "魔杖"	,
-            "偃月"	,
-            "木剑"	,
-            "铁剑"	,
-            "青铜剑"	,
-            "凝霜"	,
-            "短剑"	,
-            "青铜斧"	,
-            "匕首"	,
-            "井中月"	,
-            "银蛇"	,
-            "修罗"	,
-            "凌风"	,
-            "破魂"	,
-            "斩马刀"	,
-            "乌木剑"	,
-            "八荒"	,
-            "半月"	,
-            "降魔"	,
-            "无极棍"	,
-            "血饮"	,
-            "祈祷之刃"	,
-            "命运之刃"	,
-            "龙纹剑"	,
+        public static readonly string[] weaponList = new string[] {
+            "鹤嘴锄"   ,
+            "裁决之杖"  ,
+            "骨玉权杖"  ,
+            "海魂"    ,
+            "炼狱"    ,
+            "魔杖"    ,
+            "偃月"    ,
+            "木剑"    ,
+            "铁剑"    ,
+            "青铜剑"   ,
+            "凝霜"    ,
+            "短剑"    ,
+            "青铜斧"   ,
+            "匕首"    ,
+            "井中月"   ,
+            "银蛇"    ,
+            "修罗"    ,
+            "凌风"    ,
+            "破魂"    ,
+            "斩马刀"   ,
+            "乌木剑"   ,
+            "八荒"    ,
+            "半月"    ,
+            "降魔"    ,
+            "无极棍"   ,
+            "血饮"    ,
+            "祈祷之刃"  ,
+            "命运之刃"  ,
+            "龙纹剑"   ,
     };
         public static readonly int megaBuyCount = 16;
         public static readonly int superPickCount = 3;
@@ -148,6 +149,10 @@ public static class GameConstants
 
         };
 
+
+        public static readonly FrozenSet<string> JPSetFrozen =
+            new[] { "祝福油", "山洞凭证", "半月弯刀", "困魔咒", "烈火剑法", "召唤神兽", "冰咆哮", "地狱雷光",
+                "魔法盾", "火墙", "神圣战甲术", "群体治疗术", "刺杀剑术", "野蛮冲撞", "圣言术" }.ToFrozenSet(StringComparer.Ordinal);
 
         public static readonly List<string> SuperPotions =
       new List<string>
@@ -206,14 +211,14 @@ public static class GameConstants
             "青铜头盔",
            };
 
-                 private static readonly List<string> binItemsMid =
-           new List<string>
-           {
+        private static readonly List<string> binItemsMid =
+  new List<string>
+  {
             "牛角戒指",
             "金项链",
             "钢手镯",
             "铁剑",
-           };
+  };
         public static List<string> GetBinItems(int level, RoleType role)
         {
             if (level < 14)
@@ -223,11 +228,13 @@ public static class GameConstants
             if (level < 20)
             {
                 var temp = binItems.Concat(binItemsNoob).ToList();
-                if(role == RoleType.mage){
+                if (role == RoleType.mage)
+                {
                     temp.Remove("六角戒指");
                     temp.Remove("琥珀项链");
                 }
-                if(role == RoleType.blade){
+                if (role == RoleType.blade)
+                {
                     temp.Remove("八荒");
                 }
                 return temp.ToList();
@@ -270,4 +277,4 @@ public static class GameConstants
         ["钳虫"] = 31,
         ["楔蛾"] = 32
     };
-} 
+}
