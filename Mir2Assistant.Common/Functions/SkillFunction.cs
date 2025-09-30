@@ -36,8 +36,9 @@ public static class SkillFunction
                     Id = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(addr, 0x8)),
                     Addr = memoryUtils.ReadToInt(addr),
                     Name = memoryUtils.ReadToString(memoryUtils.GetMemoryAddress(addr, 0xA+1), nameLength),
-                    points = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x4)),
-                    maxPoints = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(addr, 0x24))
+                    points = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(addr, 0x4)),
+                    level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(addr, 0x1)), // 
+                    maxPoints = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(addr, 0x28)) // 0x24??
                 };
                 gameInstance.Skills.Add(skill);
             }

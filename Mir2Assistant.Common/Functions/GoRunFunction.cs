@@ -2104,4 +2104,123 @@ public static class GoRunFunction
             NpcFunction.EatIndexItem(GameInstance, heals[0]);
         }
     }
+
+
+    public static async Task upgradeBBSkill(MirGameInstanceModel GameInstance)
+    {
+        if (!CapbilityOfSekeleton(GameInstance)) return;
+        GameInstance.GameDebug("升级骨法");
+        var level = GameInstance.CharacterStatus.Level;
+        var target = level >= 26 ? 3 : (level >= 23 ? 2 : 1);
+        while (true)
+        {
+            var skill = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId)!;
+            if (skill.level >= target)
+            {
+                break;
+            }
+            // 没钱也退出
+            if (GameInstance.CharacterStatus.coin < 50000)
+            {
+                break;
+            }
+            // 专用商人 更方便, 也就是土的药和F
+            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+            if (item == null)
+            {
+                // 购买
+                var count = 3;
+                GameInstance.GameInfo($"购买护身符{count}个");
+                var (npcMap, npcName, x, y) = NpcFunction.PickMiscNpcByMap(GameInstance, "SKILLBB");
+                bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
+                if (pathFound)
+                {
+                    await NpcFunction.ClickNPC(GameInstance!, npcName);
+                    await NpcFunction.Talk2(GameInstance!, "@buy");
+
+                    nint[] data = MemoryUtils.PackStringsToData("护身符");
+                    SendMirCall.Send(GameInstance, 3005, data);
+                    await Task.Delay(1000);
+                    // 判断是否存在
+
+                    var memoryUtils = GameInstance.memoryUtils!;
+                    var menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
+                    (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
+                    if (menuListLen > 0)
+                    {
+                        for (int i = 0; i < count; i++)
+                        {
+                            var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
+                            memoryUtils.WriteInt(addr, 0);
+                            await Task.Delay(600);
+                            SendMirCall.Send(GameInstance, 3006, new nint[] { 0 });
+                            await Task.Delay(700);
+                        }
+                    }
+
+                    await NpcFunction.RefreshPackages(GameInstance);
+                }
+            }
+            var item2 = GameInstance.Items.Concat(GameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).FirstOrDefault();
+            if (item2 == null)
+            {
+                // 购买
+                var count = 34;
+                GameInstance.GameInfo($"购买蓝{count}个");
+                var (npcMap, npcName, x, y) = NpcFunction.PickDrugNpcByMap(GameInstance, "SKILLBB");
+                bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
+                if (pathFound)
+                {
+                    await NpcFunction.ClickNPC(GameInstance!, npcName);
+                    await NpcFunction.Talk2(GameInstance!, "@buy");
+                    await Task.Delay(500);
+                    // 已经检测过存在了, 只看是否为空先
+                    await NpcFunction.BuyImmediate(GameInstance, "魔法药(小量)", count);
+                    await NpcFunction.RefreshPackages(GameInstance);
+                }
+            }
+            // 检查是否已经在目标位置
+            if (GameInstance.CharacterStatus.MapId != "3" ||
+             Math.Max(Math.Abs(GameInstance.CharacterStatus.X - 368), Math.Abs(GameInstance.CharacterStatus.Y - 359)) > 5)
+            {
+                if (!await PerformPathfinding(CancellationToken.None, GameInstance!, 368, 359, "3", 5))
+                {
+                    return;
+                }
+            }
+            // 查看骷髅是否损失
+            while (true)
+            {
+                var monster = GameInstance.Monsters.Values.FirstOrDefault(o => !o.isDead && o.TypeStr == "(怪)" && o.Name.Contains($"({GameInstance.AccountInfo.CharacterName})"));
+                if (monster == null)
+                {
+                    break;
+                }
+                await Task.Delay(300);
+            }
+
+            var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
+            // 先自动换符咒
+            if (useItem == null)
+            {
+                var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+                if (itemF == null)
+                {
+                    continue;
+                }
+                // 会自动
+                nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+                nint bagGridIndex = itemF.Index;
+                SendMirCall.Send(GameInstance, 9011, new nint[] { });
+                await Task.Delay(600);
+                SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
+                await Task.Delay(500);
+                SendMirCall.Send(GameInstance, 9011, new nint[] { });
+                await Task.Delay(300);
+            }
+            sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+            await Task.Delay(300);
+        }
+
+    }
 }

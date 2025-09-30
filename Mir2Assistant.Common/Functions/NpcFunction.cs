@@ -406,6 +406,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("3", "小贩", 663, 302);
             }
+            else if (mapId == "SKILLBB")
+            {
+                return ("3", "流浪", 349, 334);
+            }
             else
             {
                 // 其他大图
@@ -427,6 +431,10 @@ namespace Mir2Assistant.Common.Functions
             if (mapId == "3")
             {
                 return ("0153", "药店", 16, 9);
+            }
+            if (mapId == "SKILLBB")
+            {
+                return ("3", "药", 359, 336);
             }
             else
             {

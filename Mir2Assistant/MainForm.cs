@@ -814,6 +814,9 @@ namespace Mir2Assistant
                         var instanceValue = instance;
                         var act = instanceValue.AccountInfo;
                         var _cancellationTokenSource = new CancellationTokenSource();
+                        // 插入特殊任务
+                        await GoRunFunction.upgradeBBSkill(instanceValue);
+
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
