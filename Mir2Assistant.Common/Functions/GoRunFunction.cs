@@ -987,7 +987,9 @@ public static class GoRunFunction
                     // todo 测试是否有效
                     if (checker(instanceValue!))
                     {
-                        break;
+                        // 2层要直接return 
+                        // break;
+                        return true;
                     }
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > followDetectDistance)
