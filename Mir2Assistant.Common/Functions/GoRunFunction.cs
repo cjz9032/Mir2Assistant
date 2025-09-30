@@ -984,6 +984,11 @@ public static class GoRunFunction
                 // 检测距离
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
+                    // todo 测试是否有效
+                    if (checker(instanceValue!))
+                    {
+                        break;
+                    }
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > followDetectDistance)
                     {
