@@ -1146,9 +1146,9 @@ public static class GoRunFunction
                         }
                     }
                     // 5格内没怪 可以捡取
-                    var existAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
+                    var existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
-                    if (existAni == null)
+                    if (existAni2 == null)
                     {
                         await PerformPickup(instanceValue, _cancellationToken);
                         await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
