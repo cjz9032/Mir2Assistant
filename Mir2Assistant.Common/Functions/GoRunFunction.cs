@@ -35,7 +35,7 @@ public static class GoRunFunction
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
-        var maxWeapon =  (instanceValue.AccountInfo.role == RoleType.blade && CharacterStatus.Level > 20) ? GameConstants.Items.keepWeaponCount * 2 : GameConstants.Items.keepWeaponCount;
+        var maxWeapon =  (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.keepWeaponCount * 2 : GameConstants.Items.keepWeaponCount;
 
         var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
         var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.keepClothCount * 2 : GameConstants.Items.keepClothCount;
