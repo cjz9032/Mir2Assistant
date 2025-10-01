@@ -115,7 +115,7 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
         
          private async void button4_Click(object sender, EventArgs e)
         {
-            textBox1.Text = await NpcFunction.Talk2(GameInstance!, "@storages");
+            textBox1.Text = await NpcFunction.Talk2(GameInstance!, "@exit");
             listBox2.Items.Clear();
             NpcFunction.GetTalkCmds(textBox1.Text).ForEach(cmd =>
             {

@@ -578,11 +578,11 @@ namespace Mir2Assistant.Common.Functions
                         await Task.Delay(1000);
                         await RefreshPackages(gameInstance);
                     }
+                    await Talk2Exit(gameInstance!);
                     // trigger takeon 
                     await autoReplaceEquipment(gameInstance, false);
                 }
             }
-            await Talk2Exit(gameInstance!);
         }
 
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
@@ -713,10 +713,10 @@ namespace Mir2Assistant.Common.Functions
                         await RepairItem(gameInstance, item);
                         await Task.Delay(1000);
                     }
+                    await Talk2Exit(gameInstance!);
                     await RefreshPackages(gameInstance);
                 }
             }
-            await Talk2Exit(gameInstance!);
         }
 
         public async static Task sellLJEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
@@ -769,13 +769,13 @@ namespace Mir2Assistant.Common.Functions
                     await Talk2(gameInstance!, "@sell");
                     await Task.Delay(500);
                     await SellItems(gameInstance, lists);
+                    await Talk2Exit(gameInstance!);
                 }
                 else
                 {
                     gameInstance.GameInfo($"出售失败 {npcName}的{position}装备");
                 }
             }
-            await Talk2Exit(gameInstance!);
             await RefreshPackages(gameInstance);
         }
 
@@ -1168,11 +1168,11 @@ namespace Mir2Assistant.Common.Functions
                             }
                         }
                     }
+                    await Talk2Exit(gameInstance!);
                     // trigger takeon 
                     await autoReplaceEquipment(gameInstance, false);
                 }
             }
-            await Talk2Exit(gameInstance!);
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string itemName, int count)
         {
