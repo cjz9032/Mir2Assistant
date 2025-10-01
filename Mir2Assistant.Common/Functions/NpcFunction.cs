@@ -647,7 +647,8 @@ namespace Mir2Assistant.Common.Functions
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
             // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
             var items = gameInstance.Items.Concat(gameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
-            if (items.Count > 0)
+            var NEED = 3;
+            if (items.Count >= NEED)
             {
                 return;
             }
@@ -661,7 +662,7 @@ namespace Mir2Assistant.Common.Functions
                 await ClickNPC(gameInstance!, npcName);
                 await Talk2(gameInstance!, "@buy");
                 await Task.Delay(500);
-                await BuyImmediate(gameInstance!, "地牢逃脱卷", 2);
+                await BuyImmediate(gameInstance!, "地牢逃脱卷", NEED - items.Count);
                 await Task.Delay(1000);
             }
         }
