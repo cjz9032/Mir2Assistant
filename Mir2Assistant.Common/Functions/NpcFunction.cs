@@ -1409,6 +1409,7 @@ namespace Mir2Assistant.Common.Functions
                         nint toIndex = index;
                         nint bagGridIndex = final.Index;
                         var fid = final.Id;
+                        var fname = final.Name;
                         SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
                         await Task.Delay(1000);
                         SendMirCall.Send(instance, 9011, new nint[] { });
@@ -1424,7 +1425,7 @@ namespace Mir2Assistant.Common.Functions
                         {
                             SendMirCall.Send(instance, 9011, new nint[] { });
                             await Task.Delay(1000);
-                            instance.GameInfo("穿上更好的装备失败: {Name}, 位置 {index} 重试试试", final.Name, index);
+                            instance.GameInfo("穿上更好的装备失败: {Name} {name2}, 位置 {index} 重试试试", final.Name, fname, index);
                         }
                     }
                 }
