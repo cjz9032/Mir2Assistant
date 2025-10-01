@@ -1804,11 +1804,12 @@ public static class GoRunFunction
             // 道士回调
             // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
             // 延迟回调
+            var cdp = GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 15 : 1);
             Task.Delay(10_000).ContinueWith(t =>
             {
                 var people = allMonsInClients.Where(o =>
                 // not in cd
-                !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + GameConstants.Skills.HealPeopleCD &&
+                !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
                 // 活着
                 o.CurrentHP > 0 &&
                 !o.isDead
