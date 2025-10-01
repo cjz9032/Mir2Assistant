@@ -845,7 +845,10 @@ namespace Mir2Assistant
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
+                        { 
+                            instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                        }
 
                         // 新手任务
                         // todo 目前是5
@@ -1172,6 +1175,22 @@ namespace Mir2Assistant
                                     hangMapId = "1";
                                 }
 
+                                if (!instanceValue.AccountInfo.IsMainControl)
+                                {
+                                    while (true)
+                                    {
+                                        if (!instances[0].isHomePreparing)
+                                        {
+                                            instanceValue.GameInfo("主号已经开始GO 0 exit");
+                                            break;
+                                        }
+                                        instanceValue.GameInfo("等主号 0");
+                                        await Task.Delay(10_000);
+                                    }
+                                }
+
+
+
                                 instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
 
                                 instanceValue.isHomePreparing = false;
@@ -1379,6 +1398,7 @@ namespace Mir2Assistant
 
 
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                    instanceValue.isHomePreparing = false;
                                     // 等待主号
                                     if (!instanceValue.AccountInfo.IsMainControl)
                                     {
@@ -1386,6 +1406,7 @@ namespace Mir2Assistant
                                         {
                                             if (!instances[0].isHomePreparing)
                                             {
+                                                instanceValue.GameInfo("主号已经开始GO exit");
                                                 break;
                                             }
                                             await Task.Delay(10_000);
