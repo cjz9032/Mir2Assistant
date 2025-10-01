@@ -1698,7 +1698,7 @@ public static class GoRunFunction
         return await TaskWrapper.Wait(() => gameInstance.CharacterStatus!.MapName == mapName, timeout);
     }
 
-    public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0)
+    public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0, bool half = false)
     {
         // check mp -- spell map
         var cost = GameConstants.MagicSpellMap[spellId];
@@ -1708,6 +1708,7 @@ public static class GoRunFunction
         }
         // fs x 2
         var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 1600 : 1200;
+        fsBase = half ? fsBase / 2 : fsBase;
         if (GameInstance.spellLastTime + fsBase > Environment.TickCount)
         {
             return false;
@@ -1903,12 +1904,6 @@ public static class GoRunFunction
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
             await Task.Delay(500);
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
-            // var data = StringUtils.GenerateMixedData(
-            //        item.Name,
-            //        toIndex,
-            //        item.Id
-            // );
-            // SendMirCall.Send(GameInstance!, 3023, data);
             await Task.Delay(300);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
@@ -1993,14 +1988,36 @@ public static class GoRunFunction
             await Task.Delay(500);
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
         }
+        // 其他actor都接近, 就一起放
+        // 查找所有的人
+        var instances = GameState.GameInstances;
+        var allAccountNames = instances.Select(i => i.AccountInfo.CharacterName).ToList();
+        var myteamMembersPos = GameInstance.Monsters.Values.Where(o => o.isDead == false
+        && Math.Abs(o.X - GameInstance.CharacterStatus.X) < 10 && Math.Abs(o.Y - GameInstance.CharacterStatus.Y) < 10 &&
+            (allAccountNames.Contains(o.Name) || (o.Name.Contains("(") && allAccountNames.Any(name => o.Name.Contains(name)))))
+            .Select(o => (o.X, o.Y)).ToList();
+
+        // 使用最多3个正方形覆盖最多的队友位置
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var optimalSquares = FindOptimalSquareCoverage(myteamMembersPos, 3, 3); // 3格范围的正方形
+        stopwatch.Stop();
+        GameInstance.GameDebug("最优算法耗时: {ElapsedMs}ms, 队友数: {TeamCount}, 找到正方形: {SquareCount}",
+            stopwatch.ElapsedMilliseconds, myteamMembersPos.Count, optimalSquares.Count);
         if (canDef)
         {
-            sendSpell(GameInstance, GameConstants.Skills.defUp, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-            await Task.Delay(1200);
+            foreach (var square in optimalSquares)
+            {
+                sendSpell(GameInstance, GameConstants.Skills.defUp, square.CenterX, square.CenterY, 0, true);
+                await Task.Delay(800);
+            }
         }
         if (canMageDef)
         {
-            sendSpell(GameInstance, GameConstants.Skills.mageDefup, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+            foreach (var square in optimalSquares)
+            {
+                sendSpell(GameInstance, GameConstants.Skills.mageDefup, square.CenterX, square.CenterY, 0, true);
+                await Task.Delay(800);
+            }
         }
         await Task.Delay(500);
         // 再自动换回
@@ -2236,11 +2253,74 @@ public static class GoRunFunction
                     await Task.Delay(1000);
                     continue;
                 }
-                
+
             }
             sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
             await Task.Delay(1000);
         }
 
+    }
+
+    public static List<(int CenterX, int CenterY, int Size)> FindOptimalSquareCoverage(List<(int X, int Y)> points, int maxSquares, int squareSize)
+    {
+        // 最优算法：暴力搜索所有可能的正方形组合
+        var bestCombination = new List<(int CenterX, int CenterY, int Size)>();
+        var maxCoverage = 0;
+
+        // 生成所有可能的正方形中心位置（基于输入点）
+        var candidateSquares = points.Select(p => (p.X, p.Y, squareSize)).ToList();
+
+        // 搜索所有可能的1-3个正方形组合
+        for (int numSquares = 1; numSquares <= Math.Min(maxSquares, candidateSquares.Count); numSquares++)
+        {
+            foreach (var combination in GetCombinations(candidateSquares, numSquares))
+            {
+                var coverage = CalculateTotalCoverage(combination, points, squareSize);
+                if (coverage > maxCoverage)
+                {
+                    maxCoverage = coverage;
+                    bestCombination = combination.ToList();
+                }
+            }
+        }
+
+        return bestCombination;
+    }
+
+    public static IEnumerable<IEnumerable<T>> GetCombinations<T>(IEnumerable<T> elements, int k)
+    {
+        return k == 0 ? new[] { new T[0] } :
+            elements.SelectMany((e, i) =>
+                GetCombinations(elements.Skip(i + 1), k - 1).Select(c => (new[] { e }).Concat(c)));
+    }
+
+    public static int CalculateTotalCoverage(IEnumerable<(int CenterX, int CenterY, int Size)> squares, List<(int X, int Y)> points, int squareSize)
+    {
+        var coveredPoints = new HashSet<(int X, int Y)>();
+
+        foreach (var square in squares)
+        {
+            var squarePoints = GetPointsInSquare(square, squareSize);
+            foreach (var point in points)
+            {
+                if (squarePoints.Contains(point))
+                {
+                    coveredPoints.Add(point);
+                }
+            }
+        }
+
+        return coveredPoints.Count;
+    }
+
+    public static IEnumerable<(int X, int Y)> GetPointsInSquare((int CenterX, int CenterY, int Size) square, int squareSize)
+    {
+        for (int x = square.CenterX - squareSize / 2; x <= square.CenterX + squareSize / 2; x++)
+        {
+            for (int y = square.CenterY - squareSize / 2; y <= square.CenterY + squareSize / 2; y++)
+            {
+                yield return (x, y);
+            }
+        }
     }
 }
