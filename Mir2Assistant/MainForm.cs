@@ -733,7 +733,7 @@ namespace Mir2Assistant
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
             // 卖所有
-            await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
+            // await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
 
 
 
@@ -755,6 +755,7 @@ namespace Mir2Assistant
             // save, 该带的极品已经带了, 可以存了, 书记也存
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && (o.IsGodly || GameConstants.Items.JPSetFrozen.Contains(o.Name))).ToArray());
             // 卖所有
+            await NpcFunction.autoReplaceEquipment(instanceValue, false);
             await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
             await buyDrugs(instanceValue, _cancellationToken);
             await NpcFunction.sellDrugs(instanceValue, "太阳水");
