@@ -1101,6 +1101,11 @@ public static class GoRunFunction
                             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                             return false;
                         }
+                        if (checker(instanceValue!))
+                        {
+                            instanceValue.GameWarning("测试打怪中途跑路");
+                            return true;
+                        }
                         if (consume0)
                         {
                             // 很容易就退出 因为是引怪
