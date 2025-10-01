@@ -927,7 +927,7 @@ public static class GoRunFunction
             {
                 if (checker(instanceValue!))
                 {
-                    break;
+                    return true;
                 }
                 // 从是跟随
                 if (instanceValue.AccountInfo.IsMainControl)
@@ -953,6 +953,10 @@ public static class GoRunFunction
                     }
                     else
                     {
+                        if (checker(instanceValue!))
+                        {
+                            return true;
+                        }
                         bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
                     }
                 }
@@ -1001,16 +1005,16 @@ public static class GoRunFunction
                 //     }
                 //     continue;
                 // }
+                // todo 测试是否有效
+                if (!forceSkip && checker(instanceValue!))
+                {
+                    // 2层要直接return 
+                    // break;
+                    return true;
+                }
                 // 检测距离
                 if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
                 {
-                    // todo 测试是否有效
-                    if (checker(instanceValue!))
-                    {
-                        // 2层要直接return 
-                        // break;
-                        return true;
-                    }
                     (px, py) = (mainInstance.CharacterStatus.X, mainInstance.CharacterStatus.Y);
                     if (Math.Max(Math.Abs(px - CharacterStatus.X), Math.Abs(py - CharacterStatus.Y)) > followDetectDistance)
                     {
@@ -1101,7 +1105,7 @@ public static class GoRunFunction
                             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                             return false;
                         }
-                        if (checker(instanceValue!))
+                        if (!forceSkip && checker(instanceValue!))
                         {
                             instanceValue.GameWarning("测试打怪中途跑路");
                             return true;
@@ -1196,10 +1200,7 @@ public static class GoRunFunction
                 // {
 
                 // }
-                if (checker(instanceValue!))
-                {
-                    break;
-                }
+              
             }
 
             // 使用通用捡取方法
