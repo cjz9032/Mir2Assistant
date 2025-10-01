@@ -2008,16 +2008,16 @@ public static class GoRunFunction
         {
             foreach (var square in optimalSquares)
             {
-                sendSpell(GameInstance, GameConstants.Skills.defUp, square.CenterX, square.CenterY, 0, true);
-                await Task.Delay(800);
+                sendSpell(GameInstance, GameConstants.Skills.defUp, square.CenterX, square.CenterY, 0);
+                await Task.Delay(1200);
             }
         }
         if (canMageDef)
         {
             foreach (var square in optimalSquares)
             {
-                sendSpell(GameInstance, GameConstants.Skills.mageDefup, square.CenterX, square.CenterY, 0, true);
-                await Task.Delay(800);
+                sendSpell(GameInstance, GameConstants.Skills.mageDefup, square.CenterX, square.CenterY, 0);
+                await Task.Delay(1200);
             }
         }
         await Task.Delay(500);
