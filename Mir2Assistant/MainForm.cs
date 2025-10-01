@@ -1599,8 +1599,15 @@ namespace Mir2Assistant
                                         // 查看是否发出去 
                                         if (!instance.chats.Any(chat => chat.Contains(ai)))
                                         {
-                                            await RestartGameProcess(instance);
-                                            continue;
+
+                                            ai = await HuoshanAIHelper.ChatAsync();
+                                            CharacterStatusFunction.AddChat(instance, ai);
+                                            await Task.Delay(1000);
+                                            if (!instance.chats.Any(chat => chat.Contains(ai)))
+                                            {
+                                                await RestartGameProcess(instance);
+                                                continue;
+                                            }
                                         }
                                         else
                                         {
