@@ -1470,7 +1470,7 @@ namespace Mir2Assistant
                                 if (Math.Abs(CharacterStatus.X - lastPos) < 3 && CharacterStatus.Exp == lastExp)
                                 {
                                     samePosTimes += 1;
-                                    if (samePosTimes == 6)
+                                    if (samePosTimes == 15)
                                     {
                                         samePosTimes = 0;
                                         var ai = await HuoshanAIHelper.ChatAsync();
