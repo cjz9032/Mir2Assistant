@@ -1379,6 +1379,18 @@ namespace Mir2Assistant
 
 
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                    // 等待主号
+                                    if (!instanceValue.AccountInfo.IsMainControl)
+                                    {
+                                        while (true)
+                                        {
+                                            if (!instances[0].isHomePreparing)
+                                            {
+                                                break;
+                                            }
+                                            await Task.Delay(10_000);
+                                        }
+                                    }
                                 }
                                 else
                                 {
