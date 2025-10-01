@@ -1,3 +1,110 @@
+// 全新takeon装备
+
+
+// swap
+        MovingItem.Index := idx;
+        MovingItem.Item := ItemArr[idx];
+        ItemArr[idx].s.Name := '';
+
+        WaitingUseItem := MovingItem;
+
+// ref
+procedure TFrmDlg.SwapBujuk (idx: integer);
+var
+  where: integer;
+  TempSender: TObject;
+  i: Integer;
+begin
+  if ItemArr[idx].s.StdMode <> 25 then
+    Exit;
+
+  WaitingUseItem.Item := ItemArr[idx];
+  WaitingUseItem.Index := U_ARMRINGL;
+  FrmMain.SendTakeOnItem(U_ARMRINGL, ItemArr[idx].MakeIndex, ItemArr[idx].s.Name);
+  ItemArr[idx].s.Name := '';
+end;
+
+
+  SM_TAKEON_OK:
+    begin
+      Myself.Feature := msg.Recog;
+      Myself.FeatureChanged;
+          // 2003/03/15 物品库存扩张
+      if WaitingUseItem.Index in [0..U_TRANS] then       //8->12
+        UseItems[WaitingUseItem.Index] := WaitingUseItem.Item;
+      //g_DuraWarning[WaitingUseItem.Index].TAKEON_OK := True;
+      WaitingUseItem.Item.S.Name := '';
+    end;
+
+FState.TFrmDlg.SwapBujuk
+005D2180        push        ebp
+005D2181        mov         ebp,esp
+005D2183        add         esp,0FFFFFFE8
+005D2186        push        esi
+005D2187        push        edi
+005D2188        xor         ecx,ecx
+005D218A        mov         dword ptr [ebp-18],ecx
+005D218D        mov         dword ptr [ebp-8],edx
+005D2190        mov         dword ptr [ebp-4],eax
+005D2193        xor         eax,eax
+005D2195        push        ebp
+005D2196        push        5D223D
+005D219B        push        dword ptr fs:[eax]
+005D219E        mov         dword ptr fs:[eax],esp
+005D21A1        mov         eax,dword ptr [ebp-8]
+005D21A4        shl         eax,4
+005D21A7        mov         edx,dword ptr ds:[67A548];^gvar_00752EE8:Pointer
+005D21AD        cmp         byte ptr [edx+eax*8+0F],19
+005D21B2>       jne         005D2227
+005D21B4        mov         eax,dword ptr [ebp-8]
+005D21B7        shl         eax,4
+005D21BA        mov         edx,dword ptr ds:[67A548];^gvar_00752EE8:Pointer
+005D21C0        mov         ecx,dword ptr ds:[67A3E8];^gvar_007561F4
+005D21C6        lea         esi,[edx+eax*8] // ItemArr[idx];
+005D21C9        lea         edi,[ecx+4] // 
+005D21CC        mov         ecx,20
+005D21D1        rep movs    dword ptr [edi],dword ptr [esi]
+005D21D3        mov         eax,[0067A3E8];^gvar_007561F4
+005D21D8        mov         dword ptr [eax],5
+005D21DE        lea         eax,[ebp-18]
+005D21E1        mov         edx,dword ptr [ebp-8]
+005D21E4        shl         edx,4
+005D21E7        mov         ecx,dword ptr ds:[67A548];^gvar_00752EE8:Pointer
+005D21ED        lea         edx,[ecx+edx*8]
+005D21F0        call        @UStrFromString
+005D21F5        mov         eax,dword ptr [ebp-18]
+005D21F8        push        eax
+005D21F9        mov         eax,dword ptr [ebp-8]
+005D21FC        shl         eax,4
+005D21FF        mov         edx,dword ptr ds:[67A548];^gvar_00752EE8:Pointer
+005D2205        mov         ecx,dword ptr [edx+eax*8+74]
+005D2209        mov         eax,[00679EBC];^gvar_007524B4:TFrmMain
+005D220E        mov         eax,dword ptr [eax]
+005D2210        mov         dl,5
+005D2212        call        0064401C
+005D2217        mov         eax,dword ptr [ebp-8]
+005D221A        shl         eax,4
+005D221D        mov         edx,dword ptr ds:[67A548];^gvar_00752EE8:Pointer
+005D2223        mov         byte ptr [edx+eax*8],0
+005D2227        xor         eax,eax
+005D2229        pop         edx
+005D222A        pop         ecx
+005D222B        pop         ecx
+005D222C        mov         dword ptr fs:[eax],edx
+005D222F        push        5D2244
+005D2234        lea         eax,[ebp-18]
+005D2237        call        @UStrClr
+005D223C        ret
+005D223D>       jmp         @HandleFinally
+005D2242>       jmp         005D2234
+005D2244        pop         edi
+005D2245        pop         esi
+005D2246        mov         esp,ebp
+005D2248        pop         ebp
+005D2249        ret
+
+
+
 吃 -- fromkeypress
 
 23D914

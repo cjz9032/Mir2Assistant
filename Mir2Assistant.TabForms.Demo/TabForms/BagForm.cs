@@ -110,30 +110,39 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
 
         private async void btnTakeOn_Click(object sender, EventArgs e)
         {
-            SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
+            //SendMirCall.Send(GameInstance!, 9010, new nint[] {  });
             await Task.Delay(500);
             var selectedItems = GetSelectedItems();
             foreach (var item in selectedItems)
             {
-               
+
                 // 先随便 左手了
                 byte toIndex = item.stdModeToUseItemIndex[0];
-                if(toIndex == 255)
+                if (toIndex == 255)
                 {
                     Log.Error($"物品{item.Name}无法装备");
                     continue;
                 }
-      
+
                 var data = Common.Utils.StringUtils.GenerateMixedData(
-                    item.Name,    
-                    toIndex, 
-                    item.Id   
+                    item.Name,
+                    toIndex,
+                    item.Id
                 );
+                var toPt = GameInstance!.CharacterStatus.useItems[toIndex].addr;
+                var tt = item.addr - 0x400000;
+                int fromPtVal =  GameInstance!.memoryUtils.ReadToInt(tt);
+
                 SendMirCall.Send(GameInstance!, 3023, data);
+                await Task.Delay(500);
+                // 尝试搞个大的
+                //GameInstance!.memoryUtils.WriteInt(toPt, fromPtVal);
+                // GameInstance!.memoryUtils.WriteByte(item.addr, 0);
+
             }
 
             await Task.Delay(500);
-            SendMirCall.Send(GameInstance!, 9010, new nint[] { });
+            //SendMirCall.Send(GameInstance!, 9010, new nint[] { });
         }
 
         private void BagForm_Load(object sender, EventArgs e)
