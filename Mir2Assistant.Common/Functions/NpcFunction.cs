@@ -121,6 +121,13 @@ namespace Mir2Assistant.Common.Functions
             });
         }
 
+        public static async Task Talk2Exit(MirGameInstanceModel gameInstance)
+        {
+            nint[] data = MemoryUtils.PackStringsToData("@exit");
+            SendMirCall.Send(gameInstance, 3002, data);
+            await Task.Delay(500);
+        }
+
         // 文字没用
         // public static async Task<string> Talk2Text(MirGameInstanceModel gameInstance, string text)
         // {
@@ -181,6 +188,7 @@ namespace Mir2Assistant.Common.Functions
                     SendMirCall.Send(gameInstance, 3006, new nint[] { i });
                     await Task.Delay(300);
                 }
+                await Talk2Exit(gameInstance!);
             }
 
         }
@@ -574,6 +582,7 @@ namespace Mir2Assistant.Common.Functions
                     await autoReplaceEquipment(gameInstance, false);
                 }
             }
+            await Talk2Exit(gameInstance!);
         }
 
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
@@ -707,6 +716,7 @@ namespace Mir2Assistant.Common.Functions
                     await RefreshPackages(gameInstance);
                 }
             }
+            await Talk2Exit(gameInstance!);
         }
 
         public async static Task sellLJEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
@@ -765,6 +775,7 @@ namespace Mir2Assistant.Common.Functions
                     gameInstance.GameInfo($"出售失败 {npcName}的{position}装备");
                 }
             }
+            await Talk2Exit(gameInstance!);
             await RefreshPackages(gameInstance);
         }
 
@@ -1157,14 +1168,11 @@ namespace Mir2Assistant.Common.Functions
                             }
                         }
                     }
-
-
                     // trigger takeon 
                     await autoReplaceEquipment(gameInstance, false);
                 }
             }
-
-
+            await Talk2Exit(gameInstance!);
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string itemName, int count)
         {
@@ -1181,6 +1189,7 @@ namespace Mir2Assistant.Common.Functions
 
                 // 已经检测过存在了, 只看是否为空先
                 await BuyImmediate(gameInstance, itemName, count);
+                await Talk2Exit(gameInstance!);
             }
         }
 
@@ -1201,6 +1210,7 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
 
                 await SellItems(gameInstance, lists);
+                await Talk2Exit(gameInstance!);
             }
         }
 
@@ -1219,6 +1229,7 @@ namespace Mir2Assistant.Common.Functions
 
                 // 已经检测过存在了, 只看是否为空先
                 await BuyImmediate(gameInstance, itemName, 1);
+                await Talk2Exit(gameInstance!);
             }
         }
 
@@ -1239,6 +1250,7 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
 
                 await SellItems(gameInstance, lists);
+                await Talk2Exit(gameInstance!);
             }
         }
 
@@ -1261,8 +1273,9 @@ namespace Mir2Assistant.Common.Functions
                 );
 
                 SendMirCall.Send(gameInstance!, 3015, data);
-                await Task.Delay(200);
+                await Task.Delay(500);
             }
+            await Talk2Exit(gameInstance!);
 
             await RefreshPackages(gameInstance);
 
