@@ -1067,7 +1067,7 @@ public static class GoRunFunction
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
                         && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
                         && GameConstants.allowTemp.Contains(o.Name)
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10)
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
                         .FirstOrDefault();
                         if (mytop != null)
@@ -1773,6 +1773,8 @@ public static class GoRunFunction
             allMonsInClients.AddRange(selfMonsters);
         }
 
+        var ESTIMATED_HEAL = GameInstance.CharacterStatus.Level * 2;
+
         var people = allMonsInClients.Where(o =>
             // not in cd
             !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + GameConstants.Skills.HealPeopleCD &&
@@ -1780,14 +1782,14 @@ public static class GoRunFunction
             o.CurrentHP > 0 &&
             !o.isDead
             // 低血量
-            && ((o.CurrentHP < o.MaxHP * 0.7) || o.CurrentHP < 10)
+            && ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.5))
             // 距离足够
             && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
             && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
         .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
-        .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.7))
+        .ThenBy(o => o.CurrentHP)
         .FirstOrDefault();
 
         if (people == null)
