@@ -845,7 +845,7 @@ namespace Mir2Assistant
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
-                        { 
+                        {
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
@@ -1202,6 +1202,8 @@ namespace Mir2Assistant
                                 {
                                     isLostGoHome = false;
                                     exitForSwichMap = false;
+                                    // todo 要出门再用
+                                    await GoRunFunction.BeStatusSlaveIfHas(instanceValue, true);
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
                                         exitForSwichMap = false;
@@ -1260,7 +1262,7 @@ namespace Mir2Assistant
                                         // N级以下不配
                                         var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
                                         && (isConsumer == 2)
-                                        && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
+                                        && ((instanceValue.CharacterStatus.Level < 11 ? instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3 : true)
                                         && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
 
 
@@ -1298,7 +1300,7 @@ namespace Mir2Assistant
                                         if (isOtherLowHp)
                                         {
                                             instanceValue.GameInfo("副号HP太低了, 回家");
-                                        }   
+                                        }
                                         if (realLowEq)
                                         {
                                             instanceValue.GameInfo("主号耐久太低, 回家");
@@ -1363,6 +1365,7 @@ namespace Mir2Assistant
                                 if (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl)
                                 {
                                     instanceValue.GameInfo("开始回家");
+                                    var isEscapeCave = false;
                                     // 考虑到可能手上没东西了, 先强制把low极品穿上, 跑路回家
                                     await NpcFunction.autoReplaceEquipment(instanceValue, false);
                                     // 有回城卷直接用
@@ -1375,7 +1378,13 @@ namespace Mir2Assistant
                                     {
                                         instanceValue.GameInfo("有回城卷, 直接用");
                                         NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
+                                        isEscapeCave = true;
                                         await Task.Delay(1000);
+                                    }
+
+                                    if (isEscapeCave)
+                                    {
+                                        await GoRunFunction.CallbackAndBeStatusSlaveIfHas(instanceValue, false);
                                     }
 
                                     for (int i = 0; i < 20; i++)

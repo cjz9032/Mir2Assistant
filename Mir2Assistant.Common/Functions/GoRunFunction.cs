@@ -1838,6 +1838,46 @@ public static class GoRunFunction
         // 道士调整攻速
         CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
+    public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
+    {
+        CharacterStatusFunction.ClearChats(GameInstance);
+        CharacterStatusFunction.AddChat(GameInstance, "@rest");
+        await Task.Delay(800);
+        CharacterStatusFunction.ReadChats(GameInstance, true);
+        if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
+        {
+            // 开始召回
+            for(int i = 0; i < 30; i++)
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+                await Task.Delay(500);
+            }
+            CharacterStatusFunction.ReadChats(GameInstance, true);
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
+            if (lastChatState.Contains(attack ? "休息" : "攻击"))
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+            }
+        }
+    }
+
+    public static async Task BeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
+    {
+        CharacterStatusFunction.ClearChats(GameInstance);
+        CharacterStatusFunction.AddChat(GameInstance, "@rest");
+        await Task.Delay(800);
+        CharacterStatusFunction.ReadChats(GameInstance, true);
+        if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
+        {
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
+            if (lastChatState.Contains(attack ? "休息" : "攻击"))
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+            }
+        }
+    } 
+
+
 
     // todo 自动召唤要考虑, 原状态是什么 是不是要恢复, 现在都到攻击状态
 
