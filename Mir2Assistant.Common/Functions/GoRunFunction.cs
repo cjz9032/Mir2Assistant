@@ -53,11 +53,11 @@ public static class GoRunFunction
         var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
-        while (allTimes < 2)
+        while (allTimes < 3)
         {
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                    !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
+                    // !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
                     !curinItems.Contains(o.Value.Name)
                 // 不是自己的 但是是别人的 不拿
                 && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
@@ -105,26 +105,26 @@ public static class GoRunFunction
 
                 var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
                 // 极品满就扔东西 -- todo 还有 自定义极品
-                if (drop.Value.IsGodly && miscs2.Count() == 40)
-                {
-                    // 扔东西
-                    // 挑选一个扔, 一般扔药
-                    var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
-                        GameConstants.Items.MegaPotions.Contains(o.Name)
-                    );
-                    if (needDropItem != null)
-                    {
-                        // + 6
-                        NpcFunction.EatIndexItem(instanceValue, needDropItem.Index + 6, true);
-                        await Task.Delay(200);
-                    }
-                }
+                // if (drop.Value.IsGodly && miscs2.Count() == 40)
+                // {
+                //     // 扔东西
+                //     // 挑选一个扔, 一般扔药
+                //     var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
+                //         GameConstants.Items.MegaPotions.Contains(o.Name)
+                //     );
+                //     if (needDropItem != null)
+                //     {
+                //         // + 6
+                //         NpcFunction.EatIndexItem(instanceValue, needDropItem.Index + 6, true);
+                //         await Task.Delay(200);
+                //     }
+                // }
                 if (pathFound)
                 {
                     ItemFunction.Pickup(instanceValue);
                     await Task.Delay(300);
                     pickedAny = true;
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
             }
         }
