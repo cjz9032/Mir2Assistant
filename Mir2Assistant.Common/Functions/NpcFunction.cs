@@ -1397,16 +1397,36 @@ namespace Mir2Assistant.Common.Functions
                 if (final != null)
                 {
                     instance.GameInfo("找到更好的装备: {Name}, 准备更换到位置 {Index}", final.Name, index);
-                    // 装回检查的位置
-                    nint toIndex = index;
-                    nint bagGridIndex = final.Index;
-                    SendMirCall.Send(instance, 9011, new nint[] { });
-                    await Task.Delay(600);
-                    SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
-                    await Task.Delay(1000);
-                    SendMirCall.Send(instance, 9011, new nint[] { });
-                    await Task.Delay(500);
-                    ItemFunction.ReadBag(instance);
+                    var times = 0;
+                    while (true)
+                    {
+                        times++;
+                        if (times > 3)
+                        {
+                            break;
+                        }
+                        // 装回检查的位置
+                        nint toIndex = index;
+                        nint bagGridIndex = final.Index;
+                        var fid = final.Id;
+                        SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
+                        await Task.Delay(1000);
+                        SendMirCall.Send(instance, 9011, new nint[] { });
+                        await Task.Delay(500);
+                        ItemFunction.ReadBag(instance);
+                        // 查看有没穿上
+                        var useItemAfter = instance.CharacterStatus.useItems[index];
+                        if (useItemAfter.Id == fid)
+                        {
+                            instance.GameInfo("穿上更好的装备: {Name}, 位置 {index}", final.Name, index);
+                        }
+                        else
+                        {
+                            SendMirCall.Send(instance, 9011, new nint[] { });
+                            await Task.Delay(1000);
+                            instance.GameInfo("穿上更好的装备失败: {Name}, 位置 {index} 重试试试", final.Name, index);
+                        }
+                    }
                 }
             }
 

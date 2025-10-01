@@ -1941,8 +1941,6 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 9011, new nint[] { });
-            await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
             await Task.Delay(500);
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
@@ -2024,8 +2022,6 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 9011, new nint[] { });
-            await Task.Delay(600);
             SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
             await Task.Delay(500);
             SendMirCall.Send(GameInstance, 9011, new nint[] { });
@@ -2282,8 +2278,6 @@ public static class GoRunFunction
                 // 会自动
                 nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
                 nint bagGridIndex = itemF.Index;
-                SendMirCall.Send(GameInstance, 9011, new nint[] { });
-                await Task.Delay(600);
                 SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
                 await Task.Delay(500);
                 SendMirCall.Send(GameInstance, 9011, new nint[] { });
