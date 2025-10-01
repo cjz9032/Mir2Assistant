@@ -1243,6 +1243,9 @@ namespace Mir2Assistant
                                         && (isConsumer == 2)
                                         && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
                                         && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+
+
+                                        var isOtherLowHp = instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.1 || instanceValue.CharacterStatus.CurrentHP < 20);
                                         // 主号没药
 
 
@@ -1273,11 +1276,15 @@ namespace Mir2Assistant
                                         {
                                             instanceValue.GameInfo("主号太低了, 回家");
                                         }
+                                        if (isOtherLowHp)
+                                        {
+                                            instanceValue.GameInfo("副号HP太低了, 回家");
+                                        }   
                                         if (realLowEq)
                                         {
                                             instanceValue.GameInfo("主号耐久太低, 回家");
                                         }
-                                        var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen;
+                                        var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen || isOtherLowHp;
                                         // 太久没经验可以switchMap
                                         // TODO 看exp比例, 只做时间
 
