@@ -365,7 +365,7 @@ namespace Mir2Assistant.Common.Functions
 
         public static string PickNearHomeMap(MirGameInstanceModel gameInstance)
         {
-            if (new string[] { "0", "2", "3" }.Contains(gameInstance.CharacterStatus.MapId))
+            if (new string[] { "0", "3" }.Contains(gameInstance.CharacterStatus.MapId)) // except 2
             {
                 return gameInstance.CharacterStatus.MapId;
             }
@@ -378,9 +378,13 @@ namespace Mir2Assistant.Common.Functions
                 home = "DM001";
             }
             // 毒蛇山谷
+            if (mapId.StartsWith("2"))
+            {
+                home = "3";
+            }
             if (mapId.StartsWith("D42") || mapId.StartsWith("E6"))
             {
-                home = "2";
+                home = "3";
             }
             // 土城
             // 蜈蚣
