@@ -824,10 +824,28 @@ namespace Mir2Assistant
                         {
                             await GoRunFunction.upgradeBBSkill(instanceValue);
                         }
-
+                        // 无怪就等待回血
+                        for(int i = 0; i < 20; i++)
+                        {
+                            // 有怪就跑
+                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                            {
+                                break;
+                            }
+                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
+                            {
+                                instanceValue.GameInfo("等待回血");
+                                await Task.Delay(5_000);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                            
                         // 新手任务
                         // todo 目前是5
                         if (CharacterStatus.Level <= 16 && act.TaskMain0Step < 7) // 6
