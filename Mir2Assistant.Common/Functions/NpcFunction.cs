@@ -820,6 +820,10 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("琥珀项链");
                         }
+                        if (level >= 26)
+                        {
+                            itemNames.Add("白金项链");
+                        }
                         if (level >= 24)
                         {
                             itemNames.Add("放大镜");
@@ -908,6 +912,10 @@ namespace Mir2Assistant.Common.Functions
                         if (level >= 20)
                         {
                             itemNames.Add("蛇眼戒指");
+                        }
+                        if (level >= 26)
+                        {
+                            itemNames.Add("生铁戒指");
                         }
                     }
                     break;
