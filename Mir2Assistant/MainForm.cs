@@ -1527,24 +1527,33 @@ namespace Mir2Assistant
                                             // 卡位, 看职业
                                             if (GoRunFunction.CapbilityOfFlashMove(instance))
                                             {
-                                                // try move
-                                                var tryiedMove = 0;
-                                                var isSSMove = false;
-                                                while (true)
+                                                var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
+                                                if (backHomeItems == null)
                                                 {
-                                                    GoRunFunction.sendSpell(instance, GameConstants.Skills.flashMove, CharacterStatus.X, CharacterStatus.Y, 0);
-                                                    await Task.Delay(1000);
-                                                    if (Math.Abs(CharacterStatus.X - lastPos) > 3)
+                                                    // try move
+                                                    var tryiedMove = 0;
+                                                    var isSSMove = false;
+                                                    while (true)
                                                     {
-                                                        isSSMove = true;
-                                                        break;
+                                                        GoRunFunction.sendSpell(instance, GameConstants.Skills.flashMove, CharacterStatus.X, CharacterStatus.Y, 0);
+                                                        await Task.Delay(1000);
+                                                        if (Math.Abs(CharacterStatus.X - lastPos) > 3)
+                                                        {
+                                                            isSSMove = true;
+                                                            break;
+                                                        }
+                                                        tryiedMove++;
+                                                        if (tryiedMove > 20) break;
                                                     }
-                                                    tryiedMove++;
-                                                    if (tryiedMove > 20) break;
+                                                    if (!isSSMove)
+                                                    {
+                                                        needRestart = true;
+                                                    }
                                                 }
-                                                if (!isSSMove)
+                                                else
                                                 {
-                                                    needRestart = true;
+                                                    NpcFunction.EatIndexItem(instance, backHomeItems[0]);
+                                                    await Task.Delay(1000);
                                                 }
                                             }
                                             else

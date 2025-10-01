@@ -661,7 +661,7 @@ namespace Mir2Assistant.Common.Functions
                 await ClickNPC(gameInstance!, npcName);
                 await Talk2(gameInstance!, "@buy");
                 await Task.Delay(500);
-                await BuyImmediate(gameInstance!, "地牢逃脱卷", 1);
+                await BuyImmediate(gameInstance!, "地牢逃脱卷", 2);
                 await Task.Delay(1000);
             }
         }
