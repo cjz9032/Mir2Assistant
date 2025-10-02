@@ -1254,6 +1254,35 @@ namespace Mir2Assistant.Common.Functions
             }
         }
 
+        public async static Task takeOn(MirGameInstanceModel gameInstance, nint itemsIdx, nint toIndex)
+        {
+            if (toIndex == 255)
+            {
+                Log.Error($"255 无法装备");
+                return;
+            }
+            var item = gameInstance.QuickItems.Concat(gameInstance.Items).Where(o => !o.IsEmpty).ToList()[itemsIdx];
+            if (item == null)
+            {
+                Log.Error($"物品{itemsIdx} 无法找到");
+                return;
+            }
+            // todo check属性点
+            var toPt = GameState.MirConfig["WAITING_USE_ITEM_ADDR"];
+            var copySize = GameState.MirConfig["物品SIZE"] / 4; // size
+            var data = StringUtils.GenerateMixedData(
+                item.Name,
+                toIndex,
+                item.Id,
+                item.addr,
+                toPt,
+                copySize
+            );
+
+            SendMirCall.Send(gameInstance!, 3023, data);
+            await Task.Delay(800);
+        }
+
 
         public async static Task SaveItem(MirGameInstanceModel gameInstance, string npcName, int x, int y, ItemModel[] items, string mapId = "")
         {
@@ -1410,9 +1439,7 @@ namespace Mir2Assistant.Common.Functions
                         nint bagGridIndex = final.Index;
                         var fid = final.Id;
                         var fname = final.Name;
-                        SendMirCall.Send(instance, 3021, new nint[] { bagGridIndex, toIndex });
-                        await Task.Delay(1000);
-                        SendMirCall.Send(instance, 9011, new nint[] { });
+                        await takeOn(instance, bagGridIndex, toIndex);
                         await Task.Delay(500);
                         ItemFunction.ReadBag(instance);
                         // 查看有没穿上

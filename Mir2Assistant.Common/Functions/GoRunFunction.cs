@@ -1943,18 +1943,14 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-            await Task.Delay(500);
-            SendMirCall.Send(GameInstance, 9011, new nint[] { });
+            await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
             await Task.Delay(300);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(300);
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
-        await Task.Delay(300);
-        await NpcFunction.autoReplaceEquipment(GameInstance, false);
-        await Task.Delay(500);
+        await Task.Delay(800);
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
 
@@ -2024,9 +2020,7 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-            await Task.Delay(500);
-            SendMirCall.Send(GameInstance, 9011, new nint[] { });
+            await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
         }
         // 其他actor都接近, 就一起放
         // 查找所有的人
@@ -2280,11 +2274,7 @@ public static class GoRunFunction
                 // 会自动
                 nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
                 nint bagGridIndex = itemF.Index;
-                SendMirCall.Send(GameInstance, 3021, new nint[] { bagGridIndex, toIndex });
-                await Task.Delay(500);
-                SendMirCall.Send(GameInstance, 9011, new nint[] { });
-                await Task.Delay(300);
-
+                await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
                 var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
                 if (useItem2 == null)
                 {
