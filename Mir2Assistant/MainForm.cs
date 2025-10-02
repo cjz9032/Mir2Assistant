@@ -1627,8 +1627,8 @@ namespace Mir2Assistant
                                         else
                                         {
                                             // 卡位, 看职业
-                                            if (GoRunFunction.CapbilityOfFlashMove(instance))
-                                            {
+                                            // if (GoRunFunction.CapbilityOfFlashMove(instance))
+                                            // {
                                                 var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
                                                 if (backHomeItems == null)
                                                 {
@@ -1657,11 +1657,11 @@ namespace Mir2Assistant
                                                     NpcFunction.EatIndexItem(instance, backHomeItems[0]);
                                                     await Task.Delay(1000);
                                                 }
-                                            }
-                                            else
-                                            {
-                                                needRestart = true;
-                                            }
+                                            // }
+                                            // else
+                                            // {
+                                            //     needRestart = true;
+                                            // }
                                         }
 
                                         if (needRestart)
