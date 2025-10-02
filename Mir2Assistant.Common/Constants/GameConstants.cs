@@ -70,15 +70,15 @@ public static class GameConstants
 
  public static string[] GetAllowTemp(int level)
         {
-            if (level < 25)
+            if (level <= 25)
             {
                 return allowTemp24;
             }
-            else if (level < 27)
+            else if (level <= 26)
             {
                 return allowTemp26;
             }
-            else if (level < 30)
+            else if (level <= 29)
             {
                 return allowTemp29;
             }
