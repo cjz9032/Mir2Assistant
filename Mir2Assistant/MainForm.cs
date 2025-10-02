@@ -835,7 +835,7 @@ namespace Mir2Assistant
                             }
                             if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
                             {
-                                instanceValue.GameInfo("等待回血");
+                                instanceValue.GameInfo("等待回血 0");
                                 await Task.Delay(5_000);
                             }
                             else
