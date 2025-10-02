@@ -1,4 +1,12 @@
 // 全新takeon装备
+pushad
+pushfd
+mov         ecx,0x20
+mov esi, 0x7531E8        
+mov edi, 0x752768
+rep movs    dword ptr [edi],dword ptr [esi]
+popfd
+popad
 
 
 // swap

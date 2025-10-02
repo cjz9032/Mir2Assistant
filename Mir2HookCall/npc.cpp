@@ -164,9 +164,28 @@ void takeOff2(DelphiString* name, int idx, int id) {
 
 }
 
-void takeOn2(DelphiString* name, int idx, int id) {
+void takeOn2(DelphiString* name, int idx, int id, int fromAddr, int toAddr, int copySize) {
 	auto nameData = name->data;
 	_asm{
+		
+		
+		pushad
+		pushfd
+		mov ecx, copySize
+		mov esi, fromAddr
+		mov edi, toAddr
+		lea edi,[edi+4]
+		rep movs dword ptr [edi],dword ptr [esi]
+
+		mov edi, toAddr
+		mov ecx, idx
+		mov dword ptr [edi], ecx
+		
+		mov esi, fromAddr
+		mov byte ptr [esi], 0
+		popfd
+		popad
+
 		pushad
 		pushfd
 
@@ -181,6 +200,7 @@ void takeOn2(DelphiString* name, int idx, int id) {
 
 		popfd
 		popad
+
 	}
 
 }
@@ -530,7 +550,10 @@ void Npc::process(int code, int* data)
 			DelphiString* name = CreateDelphiString(str, length);
 			int idx = data[length + 1];
 			int id = data[length + 2];
-			takeOn2(name, idx, id);
+			int fromAddr = data[length + 3];
+			int toAddr = data[length + 4];
+			int copySize = data[length + 5];
+			takeOn2(name, idx, id,fromAddr,toAddr, copySize);
 			delete name;
 		});
 		break;

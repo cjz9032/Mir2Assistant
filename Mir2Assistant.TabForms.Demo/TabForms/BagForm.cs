@@ -14,7 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Serilog; // 新增Serilog引用
-using Serilog.Sinks.Debug; // 添加Debug sink引用
+using Serilog.Sinks.Debug;
+using Mir2Assistant.Common; // 添加Debug sink引用
 
 namespace Mir2Assistant.TabForms.Demo.TabForms
 {
@@ -124,14 +125,18 @@ namespace Mir2Assistant.TabForms.Demo.TabForms
                     continue;
                 }
 
+                var toPt = GameState.MirConfig["WAITING_USE_ITEM_ADDR"];
+                var copySize = GameState.MirConfig["物品SIZE"] / 4; // size
                 var data = Common.Utils.StringUtils.GenerateMixedData(
                     item.Name,
                     toIndex,
-                    item.Id
+                    item.Id,
+                    item.addr,
+                    toPt,
+                    copySize
                 );
-                var toPt = GameInstance!.CharacterStatus.useItems[toIndex].addr;
-                var tt = item.addr - 0x400000;
-                int fromPtVal =  GameInstance!.memoryUtils.ReadToInt(tt);
+                // var tt = item.addr - 0x400000;
+                // int fromPtVal =  GameInstance!.memoryUtils.ReadToInt(tt);
 
                 SendMirCall.Send(GameInstance!, 3023, data);
                 await Task.Delay(500);

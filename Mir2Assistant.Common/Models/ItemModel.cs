@@ -80,6 +80,7 @@ namespace Mir2Assistant.Common.Models
             {22, new byte[] {7, 8}},
             {23, new byte[] {7, 8}},
             {24, new byte[] {5, 6}},
+            {25, new byte[] {5}},
             {26, new byte[] {5, 6}},
             {30, new byte[] {2}}
         };
