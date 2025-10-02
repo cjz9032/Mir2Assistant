@@ -1066,13 +1066,14 @@ public static class GoRunFunction
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
                     // 如果是法师 可以抽陀螺
+                    var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
                     if (canTemp)
                     {
                         // 寻找陀螺
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
                         && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
-                        && GameConstants.allowTemp.Contains(o.Name)
+                        && temps.Contains(o.Name)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
                         .FirstOrDefault();
