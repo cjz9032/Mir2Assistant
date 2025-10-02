@@ -829,7 +829,7 @@ namespace Mir2Assistant
                         for (int i = 0; i < 20; i++)
                         {
                             // 有怪就跑
-                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Min(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
                             {
                                 break;
                             }
@@ -845,7 +845,17 @@ namespace Mir2Assistant
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         var isMainInHome = !instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing;
-                        if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || isMainInHome || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
+                        var basicInHome = new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null;
+                        if (isMainInHome && !basicInHome)
+                        {
+                            var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
+                            if (backHomeItems != null)
+                            {
+                                NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
+                                await Task.Delay(1000);
+                            }
+                        }
+                        if (isMainInHome || basicInHome)
                         {
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
@@ -1443,7 +1453,7 @@ namespace Mir2Assistant
                                     for (int i = 0; i < 20; i++)
                                     {
                                         // 有怪就跑
-                                        if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Min(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                                        if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
                                         {
                                             break;
                                         }
