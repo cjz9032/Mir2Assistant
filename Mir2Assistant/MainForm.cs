@@ -844,7 +844,8 @@ namespace Mir2Assistant
                             }
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
-                        if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
+                        var isMainInHome = !instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing;
+                        if (new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || isMainInHome || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null)
                         {
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
