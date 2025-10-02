@@ -1784,7 +1784,7 @@ public static class GoRunFunction
         }
 
         var ESTIMATED_HEAL = GameInstance.CharacterStatus.Level * 2;
-        var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 15.0 : 1));
+        var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 20.0 : 1));
 
         var people = allMonsInClients.Where(o =>
             // not in cd
