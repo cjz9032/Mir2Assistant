@@ -1959,23 +1959,13 @@ public static class GoRunFunction
     public static async Task TryDefUps(MirGameInstanceModel GameInstance)
     {
         var canDef = CapbilityOfDefUp(GameInstance);
-        var canMageDef = false; // 飞蛾图才需要 目前没什么用, 或者批量僵尸
-        // CapbilityOfMageDefUp(GameInstance);
-        // 暂时只 查看自己的属性
-
+        var canMageDef = CapbilityOfMageDefUp(GameInstance);
         if (!canDef && !canMageDef)
         {
             return;
         }
 
-
-        var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
-        if (npc != null)
-        {
-            GameInstance.GameDebug("附近有NPC, 不需要辅助");
-            return;
-        }
-
+        // 暂时只 查看自己的属性
         var maxDef = GameInstance.CharacterStatus.MaxDef;
         var maxMageDef = GameInstance.CharacterStatus.MaxMageDef;
 
@@ -1996,33 +1986,46 @@ public static class GoRunFunction
 
         canDef = canDef && (totalMaxDef + bodyMaxDef == maxDef);
         canMageDef = canMageDef && (totalMaxMageDef + bodyMaxMageDef == maxMageDef);
+        if (!canDef && !canMageDef)
+        {
+            return;
+        }
+
+        var aMons = GameInstance.Monsters.Values.FirstOrDefault(o => o.stdAliveMon);
+        if (aMons == null)
+        {
+            GameInstance.GameDebug("附近无怪, 不需要辅助");
+            return;
+        }
+
+        if (canMageDef)
+        {
+            // 查看是否有怪 电浆40 , 蛾39, 火焰沃玛31
+            var apprs = new int[] { 40, 39, 31 };
+            canMageDef = GameInstance.Monsters.Values.FirstOrDefault(o => apprs.Contains(o.Appr)) != null;
+        }
 
         if (!canDef && !canMageDef)
         {
             return;
         }
 
-
         // 查看有没沪深不然浪费魔法
         ItemModel? item = null;
-        var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-        if (useItem == null)
+        var useItem = GameInstance.CharacterStatus.useItems[(int)EquipPosition.ArmRingLeft];
+        bool isWearFuShen = useItem.IsEmpty && useItem.stdMode == 25;
+        if (!(isWearFuShen))
         {
             item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
             if (item == null)
             {
                 return;
             }
-        }
-        // 检查完
-        // 先自动换符咒
-        if (useItem == null)
-        {
-            // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
             await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
         }
+      
         // 其他actor都接近, 就一起放
         // 查找所有的人
         var instances = GameState.GameInstances;
