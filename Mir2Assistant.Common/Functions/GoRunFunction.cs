@@ -1116,7 +1116,7 @@ public static class GoRunFunction
                         if (consume0)
                         {
                             // 很容易就退出 因为是引怪
-                            if (monTried > 10)
+                            if (monTried > 6)
                             {
                                 break;
                             }
