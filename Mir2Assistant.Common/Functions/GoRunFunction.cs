@@ -1118,6 +1118,7 @@ public static class GoRunFunction
                             // 很容易就退出 因为是引怪
                             if (monTried > 6)
                             {
+                                MonsterFunction.SlayingMonsterCancel(instanceValue!);
                                 break;
                             }
                         }
