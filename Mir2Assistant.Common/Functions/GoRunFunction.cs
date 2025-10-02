@@ -1943,7 +1943,7 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
+            await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
             await Task.Delay(300);
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
@@ -2020,7 +2020,7 @@ public static class GoRunFunction
             // 会自动
             nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
-            await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
+            await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
         }
         // 其他actor都接近, 就一起放
         // 查找所有的人
@@ -2274,7 +2274,7 @@ public static class GoRunFunction
                 // 会自动
                 nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
                 nint bagGridIndex = itemF.Index;
-                await NpcFunction.takeOn(GameInstance, bagGridIndex, toIndex);
+                await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
                 var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
                 if (useItem2 == null)
                 {

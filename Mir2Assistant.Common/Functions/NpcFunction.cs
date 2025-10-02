@@ -1261,7 +1261,7 @@ namespace Mir2Assistant.Common.Functions
                 Log.Error($"255 无法装备");
                 return;
             }
-            var item = gameInstance.QuickItems.Concat(gameInstance.Items).Where(o => !o.IsEmpty).ToList()[itemsIdx];
+            var item = gameInstance.QuickItems.Concat(gameInstance.Items).Where(o => !o.IsEmpty).ToList()[(int)itemsIdx];
             if (item == null)
             {
                 Log.Error($"物品{itemsIdx} 无法找到");
@@ -1439,7 +1439,7 @@ namespace Mir2Assistant.Common.Functions
                         nint bagGridIndex = final.Index;
                         var fid = final.Id;
                         var fname = final.Name;
-                        await takeOn(instance, bagGridIndex, toIndex);
+                        await takeOn(instance, bagGridIndex+6, toIndex);
                         await Task.Delay(500);
                         ItemFunction.ReadBag(instance);
                         // 查看有没穿上
