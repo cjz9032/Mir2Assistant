@@ -57,7 +57,7 @@ public static class GoRunFunction
         {
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                    // !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
+                    !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
                     !curinItems.Contains(o.Value.Name)
                 // 不是自己的 但是是别人的 不拿
                 && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
@@ -124,7 +124,9 @@ public static class GoRunFunction
                     ItemFunction.Pickup(instanceValue);
                     await Task.Delay(300);
                     pickedAny = true;
-                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    // 
+                    // 一定时间范围内
+                    instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
             }
         }
