@@ -829,7 +829,7 @@ namespace Mir2Assistant
                         for (int i = 0; i < 20; i++)
                         {
                             // 有怪就跑
-                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Min(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
                             {
                                 break;
                             }
@@ -1442,7 +1442,7 @@ namespace Mir2Assistant
                                     for (int i = 0; i < 20; i++)
                                     {
                                         // 有怪就跑
-                                        if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                                        if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Min(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
                                         {
                                             break;
                                         }
