@@ -1261,7 +1261,7 @@ namespace Mir2Assistant.Common.Functions
                 Log.Error($"255 无法装备");
                 return;
             }
-            var item = gameInstance.QuickItems.Concat(gameInstance.Items).Where(o => !o.IsEmpty).ToList()[(int)itemsIdx];
+            var item = gameInstance.QuickItems.Concat(gameInstance.Items).ToList()[(int)itemsIdx];
             if (item == null)
             {
                 Log.Error($"物品{itemsIdx} 无法找到");
