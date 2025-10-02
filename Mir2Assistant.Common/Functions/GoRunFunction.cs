@@ -1203,7 +1203,7 @@ public static class GoRunFunction
                 // {
 
                 // }
-              
+
             }
 
             // 使用通用捡取方法
@@ -1850,7 +1850,7 @@ public static class GoRunFunction
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
             // 开始召回
-            for(int i = 0; i < 30; i++)
+            for (int i = 0; i < 30; i++)
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
                 await Task.Delay(500);
@@ -1878,7 +1878,7 @@ public static class GoRunFunction
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
             }
         }
-    } 
+    }
 
 
 
@@ -2025,7 +2025,7 @@ public static class GoRunFunction
             nint bagGridIndex = item!.Index;
             await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
         }
-      
+
         // 其他actor都接近, 就一起放
         // 查找所有的人
         var instances = GameState.GameInstances;
@@ -2061,6 +2061,27 @@ public static class GoRunFunction
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
+
+    public static (int, int) CCBBCount(MirGameInstanceModel GameInstance)
+    {
+        var allMonsIdInClients = new HashSet<int>();
+        var names = new List<string>();
+        names = GameState.GameInstances.Select(i => i.AccountInfo.CharacterName).ToList();
+        var mages = GameState.GameInstances.Where(i => i.AccountInfo.role == RoleType.mage && i.CharacterStatus.Level >= 24).ToList();
+        foreach (var instance in mages)
+        {
+            var selfMonsters = instance.Monsters.Values.Where(m =>
+                (!m.isDead) &&
+                m.TypeStr == "(怪)" && m.Name.Contains("(")
+                && names.Any(name => m.Name.Contains(name))  // 玩家的宝宝 (name)
+            );
+            allMonsIdInClients.UnionWith(selfMonsters.Select(m => m.Id));
+        }
+        var targetCount = mages.Count * 5;
+
+        return (allMonsIdInClients.Count, targetCount);
+    }
+
 
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
     {
