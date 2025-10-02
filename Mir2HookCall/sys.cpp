@@ -98,21 +98,21 @@ void addChat(DelphiString* chat)
 	}
 }
 
-void clearChat(){
-	__asm {
-	pushad
-	pushfd
-		mov eax, DRAW_SCREEN_ADDR
-		mov eax, [eax]
-		mov eax, [eax]
-		add eax, 0x1C
-		mov eax, [eax]
-		mov esi, DELPHI_STRINGLIST_CLEAR_CALL
-		call esi
-	popfd
-	popad
-	}
-}
+// void clearChat(){
+// 	__asm {
+// 	pushad
+// 	pushfd
+// 		mov eax, DRAW_SCREEN_ADDR
+// 		mov eax, [eax]
+// 		mov eax, [eax]
+// 		add eax, 0x1C
+// 		mov eax, [eax]
+// 		mov esi, DELPHI_STRINGLIST_CLEAR_CALL
+// 		call esi
+// 	popfd
+// 	popad
+// 	}
+// }
 
 
 void cancelItemMoving(){
@@ -286,9 +286,9 @@ void Sys::process(int code, int* data)
 			delete chat;
 		});
 		break;
-	case 9201:
-			clearChat();
-		break;
+	// case 9201:
+	// 		clearChat();
+	// 	break;
 	case 9999: //执行任务ASM代码
 		any_call(data);
 		break;

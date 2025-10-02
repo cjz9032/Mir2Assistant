@@ -115,7 +115,10 @@ public static class CharacterStatusFunction
 
     public static void ClearChats(MirGameInstanceModel gameInstance)
     {
-        SendMirCall.Send(gameInstance, 9201, new nint[] { 0 });
+        var memoryUtils = gameInstance.memoryUtils!;
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["TDrawScreen"], 0x28), 0);
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["TDrawScreen"], 0x1C, 0x30), 0);
+        memoryUtils.WriteInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["TDrawScreen"], 0x24, 0x8), 0);
     }
 
 
