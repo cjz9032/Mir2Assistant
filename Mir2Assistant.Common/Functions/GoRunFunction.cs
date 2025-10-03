@@ -113,6 +113,10 @@ public static class GoRunFunction
                         weaponCount < maxWeapon ? true : false
                     )) : true
                 )
+                &&
+                (
+                    Math.Abs(o.Value.X - CharacterStatus.X) < 15 && Math.Abs(o.Value.Y - CharacterStatus.Y) < 15
+                )
                 ))
                 .OrderBy(o => o.Value.IsGodly ? 0 : 1)
                 .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
