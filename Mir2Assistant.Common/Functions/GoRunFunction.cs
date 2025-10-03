@@ -23,7 +23,7 @@ public static class GoRunFunction
             );
 
             SendMirCall.Send(instanceValue, 3032, data);
-            instanceValue.memoryUtils.WriteByte(item.addr + 1, 0);
+            instanceValue.memoryUtils.WriteByte(item.addr, 0);
             await Task.Delay(500);
         
     }
