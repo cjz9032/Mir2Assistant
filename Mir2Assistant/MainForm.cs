@@ -1241,7 +1241,7 @@ namespace Mir2Assistant
                                         }
                                         var isBBReadyStatusChanged = false;
                                         // BB由主号随机性检查 避免过多
-                                        if (instanceValue.AccountInfo.IsMainControl && slaveEnabled && new Random().Next(100) < 20)
+                                        if (instanceValue.AccountInfo.IsMainControl && slaveEnabled && new Random().Next(100) < 50)
                                         {
                                             var (cCount, allCount) = GoRunFunction.CCBBCount(instanceValue);
                                             if (hangMapId == slaveFromMap)
@@ -1264,7 +1264,7 @@ namespace Mir2Assistant
                                                     }
                                                     else
                                                     {
-                                                        if (DateTime.Now - BBLackTime > TimeSpan.FromMinutes(10))
+                                                        if (DateTime.Now - BBLackTime > TimeSpan.FromMinutes(5))
                                                         {
                                                             hangMapBBReady = false;
                                                             instanceValue.GameInfo($"BB 缺少10分钟, 当前 {cCount} / {allCount}");
