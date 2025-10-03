@@ -585,6 +585,39 @@ namespace Mir2Assistant.Common.Functions
             await RefreshPackages(gameInstance);
         }
 
+
+        public async static Task RepairSingleBodyEquipment(MirGameInstanceModel gameInstance, EquipPosition position)
+        {
+            var nearHome = PickNearHomeMap(gameInstance);
+
+            var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
+            var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
+            if (!needRep)
+            {
+                return;
+            }
+
+            gameInstance.GameInfo($"修理{npcName}的{position}装备");
+            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@repair");
+                await Task.Delay(500);
+                var taked = await TakeOffItem(gameInstance, (EquipPosition)position);
+                if (taked != null)
+                {
+                    await RepairItem(gameInstance, taked);
+                    await Task.Delay(1000);
+                }
+                await Talk2Exit(gameInstance!);
+                // trigger takeon 
+                await autoReplaceEquipment(gameInstance, false);
+            }
+            // 修不需要
+            // await RefreshPackages(gameInstance);
+        }
+
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             if (!GoRunFunction.CapbilityOfSekeleton(gameInstance))
@@ -718,7 +751,46 @@ namespace Mir2Assistant.Common.Functions
             }
             await RefreshPackages(gameInstance);
         }
+        public async static Task RepairSingleBagsEquipment(MirGameInstanceModel gameInstance, EquipPosition position, CancellationToken _cancellationToken)
+        {
+            var nearHome = PickNearHomeMap(gameInstance);
 
+            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
+            // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
+                && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
+            if (items.Count == 0)
+            {
+                return;
+            }
+            // bug 要所有的 先不管
+            // var needRep = CheckNeedRep(gameInstance, items[0]);
+            //if (!needRep)
+            //{
+            //    continue;
+            //}
+
+            // 找背包内的对应的东西, 目前是1 , 保留多个的能力
+
+            gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
+            // 找到对应的NPC
+            var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
+            gameInstance.GameInfo($"修理背包内保留的{npcName}的{position}装备");
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@repair");
+                await Task.Delay(500);
+                foreach (var item in items)
+                {
+                    await RepairItem(gameInstance, item);
+                    await Task.Delay(1000);
+                }
+                await Talk2Exit(gameInstance!);
+            }
+            // 好像也不需要
+            // await RefreshPackages(gameInstance);
+        }
         public async static Task sellLJEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             var nearHome = PickNearHomeMap(gameInstance);
@@ -777,6 +849,65 @@ namespace Mir2Assistant.Common.Functions
                 }
             }
             await RefreshPackages(gameInstance);
+        }
+
+         public async static Task sellSingleLJEquipment(MirGameInstanceModel gameInstance, EquipPosition position, CancellationToken _cancellationToken)
+        {
+            var nearHome = PickNearHomeMap(gameInstance);
+            // 找到所有的装备除了极品 NPC分组去卖了, 
+            var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty && !o.IsGodly
+             && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
+             && o.stdModeToUseItemIndex[0] == (byte)position
+              && o.stdMode != 30);
+            // .GroupBy(o => ); // 可以只0, 因为是同一个NPC
+          
+            var lists = ljequipment.ToList();
+            // 可以保留武器和衣服, 因为最容易破, 其他都卖了
+            if (position == EquipPosition.Weapon || position == EquipPosition.Dress)
+            {
+                // 找到推荐的
+                var preferItems = preferStdEquipment(gameInstance, position);
+                if (preferItems != null && preferItems.Count > 0)
+                {
+                    var prefs = preferItems;
+                    // 保留多个最好的装备，最多3个
+                    var keepItems = new List<ItemModel>();
+                    foreach (var preferName in prefs)
+                    {
+                        var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.keepWeaponCount).ToList();
+                        keepItems.AddRange(foundItems);
+                        if (keepItems.Count >= GameConstants.Items.keepWeaponCount) break;
+                    }
+
+                    // 如果找到了要保留的装备，从卖出列表中移除
+                    foreach (var keepItem in keepItems.Take(GameConstants.Items.keepWeaponCount))
+                    {
+                        lists.Remove(keepItem);
+                        gameInstance.GameInfo($"保留备用{position}: {keepItem.Name} (IsGodly: {keepItem.IsGodly})");
+                    }
+                }
+            }
+            // 保留完可能就空了 跳过该轮
+            if (lists.Count == 0)
+            {
+                return;
+            }
+            var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, position, nearHome, "sell");
+
+            gameInstance.GameInfo($"出售{npcName}的{position}装备");
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            if (pathFound)
+            {
+                await ClickNPC(gameInstance!, npcName);
+                await Talk2(gameInstance!, "@sell");
+                await Task.Delay(500);
+                await SellItems(gameInstance, lists);
+                await Talk2Exit(gameInstance!);
+            }
+            else
+            {
+                gameInstance.GameInfo($"出售失败 {npcName}的{position}装备");
+            }
         }
 
         public static List<string> preferStdEquipment(MirGameInstanceModel gameInstance, EquipPosition position, int? levelParam = null, RoleType? roleParam = null)
@@ -878,7 +1009,7 @@ namespace Mir2Assistant.Common.Functions
 
                     if (level >= 26)
                     {
-                            itemNames.Add("金手镯");
+                        itemNames.Add("金手镯");
                     }
                     break;
                 case EquipPosition.RingLeft:
@@ -1128,60 +1259,69 @@ namespace Mir2Assistant.Common.Functions
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
                 if (lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon)) continue;
-                if (preferBuyItems == null || preferBuyItems.Count == 0)
+                // 看看修不修 卖不卖 , 
+                // 买或不买 都可能修
+                // 修
+                if (preferBuyItems != null && preferBuyItems.Count > 0)
                 {
-                    continue;
-                }
-                var nearHome = PickNearHomeMap(gameInstance);
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
-                gameInstance.GameInfo($"购买{position}装备");
-                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
-                if (pathFound)
-                {
-
-
-                    var memoryUtils = gameInstance.memoryUtils!;
-                    var menuListLen = 0;
-                    await ClickNPC(gameInstance!, npcName);
-                    await Talk2(gameInstance!, "@buy");
-                    await Task.Delay(800);
-
-                    // 从高到低找 , 找不到就用前面的
-                    for (int i = 0; i < preferBuyItems.Count; i++)
+                    var nearHome = PickNearHomeMap(gameInstance);
+                    var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
+                    gameInstance.GameInfo($"购买{position}装备");
+                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+                    if (pathFound)
                     {
-                        // 已经检测过存在了, 只看是否为空先
-                        var name = preferBuyItems[i];
-                        var exists = await CheckExistsInBags(gameInstance, name);
-                        if (exists)
-                        {
-                            break;
-                        }
+                        var memoryUtils = gameInstance.memoryUtils!;
+                        var menuListLen = 0;
+                        await ClickNPC(gameInstance!, npcName);
+                        await Talk2(gameInstance!, "@buy");
+                        await Task.Delay(800);
 
-                        nint[] data = MemoryUtils.PackStringsToData(name);
-                        SendMirCall.Send(gameInstance, 3005, data);
-                        await Task.Delay(1000);
-                        // 判断是否存在
-                        menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
-                        (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
-                        if (menuListLen > 0)
+                        // 从高到低找 , 找不到就用前面的
+                        for (int i = 0; i < preferBuyItems.Count; i++)
                         {
-                            var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
-                            memoryUtils.WriteInt(addr, 0);
-                            await Task.Delay(600);
-                            SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
-                            await Task.Delay(700);
-
-                            var ss = await CheckExistsInBags(gameInstance, name);
-                            if (ss)
+                            // 已经检测过存在了, 只看是否为空先
+                            var name = preferBuyItems[i];
+                            var exists = await CheckExistsInBags(gameInstance, name);
+                            if (exists)
                             {
                                 break;
                             }
+
+                            nint[] data = MemoryUtils.PackStringsToData(name);
+                            SendMirCall.Send(gameInstance, 3005, data);
+                            await Task.Delay(1000);
+                            // 判断是否存在
+                            menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
+                            (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
+                            if (menuListLen > 0)
+                            {
+                                var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
+                                memoryUtils.WriteInt(addr, 0);
+                                await Task.Delay(600);
+                                SendMirCall.Send(gameInstance, 3006, new nint[] { 0 });
+                                await Task.Delay(700);
+
+                                var ss = await CheckExistsInBags(gameInstance, name);
+                                if (ss)
+                                {
+                                    break;
+                                }
+                            }
                         }
+                        await Talk2Exit(gameInstance!);
+                        // trigger takeon 
+                        await autoReplaceEquipment(gameInstance, false);
+                        await RefreshPackages(gameInstance);
                     }
-                    await Talk2Exit(gameInstance!);
-                    // trigger takeon 
-                    await autoReplaceEquipment(gameInstance, false);
                 }
+
+                // 修
+                await RepairSingleBodyEquipment(gameInstance, (EquipPosition)position);
+                await RefreshPackages(gameInstance);
+                await RepairSingleBagsEquipment(gameInstance, (EquipPosition)position, CancellationToken.None);
+                await RefreshPackages(gameInstance);
+                await sellSingleLJEquipment(gameInstance, (EquipPosition)position, CancellationToken.None);
+                await RefreshPackages(gameInstance);
             }
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string itemName, int count)
@@ -1449,7 +1589,7 @@ namespace Mir2Assistant.Common.Functions
                         nint bagGridIndex = final.Index;
                         var fid = final.Id;
                         var fname = final.Name;
-                        await takeOn(instance, bagGridIndex+6, toIndex);
+                        await takeOn(instance, bagGridIndex + 6, toIndex);
                         await Task.Delay(500);
                         ItemFunction.ReadBag(instance);
                         // 查看有没穿上

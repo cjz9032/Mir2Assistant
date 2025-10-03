@@ -732,33 +732,18 @@ namespace Mir2Assistant
             // 确保到家了, 到家先把极品穿起来, 这样不会被购买替换了, 然后被维修
             // trigger takeon 
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
-            // 卖所有
-            // await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
-
-
-
             // 买书, 治愈基本
             await buyBooks(instanceValue, _cancellationToken);
             // 卖书所有
             await sellBooks(instanceValue, _cancellationToken);
             // 买了再修
             await NpcFunction.buyAllEquipment(instanceValue, _cancellationToken);
-            // 重复修 保证没被换
-            // 修所有
-            await NpcFunction.RepairAllEquipment(instanceValue, _cancellationToken);
-            // 保留装可能还在, 所以修背包内的
-            await NpcFunction.RepairAllBagsEquipment(instanceValue, _cancellationToken);
-            // 修所有
-            await NpcFunction.RepairAllEquipment(instanceValue, _cancellationToken);
             // 把极品先穿 不然会被存
             await NpcFunction.autoReplaceEquipment(instanceValue, false);
             // save, 该带的极品已经带了, 可以存了, 书记也存
             await NpcFunction.SaveItem(instanceValue, "远程老板", 0, 0, instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && (o.IsGodly || GameConstants.Items.JPSetFrozen.Contains(o.Name))).ToArray());
-            // 卖所有
-            await NpcFunction.autoReplaceEquipment(instanceValue, false);
-            await NpcFunction.sellLJEquipment(instanceValue, _cancellationToken);
-            await buyDrugs(instanceValue, _cancellationToken);
             await NpcFunction.sellDrugs(instanceValue, "太阳水");
+            await buyDrugs(instanceValue, _cancellationToken);
             // 修沪深只有道士
             await NpcFunction.BuyRepairAllFushen(instanceValue, _cancellationToken);
             // 买地牢
