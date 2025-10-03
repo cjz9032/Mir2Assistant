@@ -875,6 +875,11 @@ namespace Mir2Assistant.Common.Functions
                             // itemNames.Add("坚固手套");
                         }
                     }
+
+                    if (level >= 26)
+                    {
+                            itemNames.Add("金手镯");
+                    }
                     break;
                 case EquipPosition.RingLeft:
                 case EquipPosition.RingRight:
@@ -929,6 +934,11 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("生铁戒指");
                         }
+                    }
+                    if (level >= 26)
+                    {
+                        itemNames.Add("金戒指");
+                        itemNames.Add("降妖除魔戒指");
                     }
                     break;
                 case EquipPosition.Helmet:

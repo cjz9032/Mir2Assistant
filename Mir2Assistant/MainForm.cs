@@ -1330,7 +1330,7 @@ namespace Mir2Assistant
                                         && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
 
 
-                                        var isOtherLowHp = instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.1 || (instanceValue.CharacterStatus.MaxHP > 40 && instanceValue.CharacterStatus.CurrentHP < 20));
+                                        var isOtherLowHp = instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.2 || (instanceValue.CharacterStatus.MaxHP > 50 && instanceValue.CharacterStatus.CurrentHP < 25));
                                         // 主号没药
 
 
