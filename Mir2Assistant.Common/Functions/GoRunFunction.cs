@@ -2067,8 +2067,8 @@ public static class GoRunFunction
     {
         var allMonsIdInClients = new HashSet<int>();
         var names = new List<string>();
-        names = GameState.GameInstances.Select(i => i.AccountInfo.CharacterName).ToList();
         var mages = GameState.GameInstances.Where(i => i.AccountInfo.role == RoleType.mage && i.CharacterStatus.Level >= 24).ToList();
+        names = mages.Select(i => i.AccountInfo.CharacterName).ToList();
         foreach (var instance in mages)
         {
             var selfMonsters = instance.Monsters.Values.Where(m =>
