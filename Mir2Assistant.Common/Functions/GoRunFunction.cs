@@ -30,7 +30,7 @@ public static class GoRunFunction
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
         var curinItems = GameConstants.Items.GetBinItems(instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
-        var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && curinItems.Contains(o.Name)).ToList();
+        var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && curinItems.Contains(o.Name)).ToList();
         foreach (var item in items)
         {
             await DropItem(instanceValue, item);
