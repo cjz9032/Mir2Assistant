@@ -196,10 +196,10 @@ public static class GameConstants
             "召唤骷髅",
             "灵魂火符",
             "幽灵盾",
-            "肉",
-            "护身符",
+            // "肉",
+            // "护身符",
             "随机传送卷",
-            "鸡肉",
+            // "鸡肉",
             "食人树叶",
             "木剑",
             "布衣(男)",
@@ -217,9 +217,6 @@ public static class GameConstants
             "小手镯",
             "银手镯",
             // lj书
-            "治愈术",
-            "基本剑术",
-            "火球术",
      };
         // 新手装
 
@@ -253,9 +250,9 @@ public static class GameConstants
             {
                 return binItems;
             }
+            var temp = binItems.Concat(binItemsNoob).ToList();
             if (level < 20)
             {
-                var temp = binItems.Concat(binItemsNoob).ToList();
                 if (role == RoleType.mage)
                 {
                     temp.Remove("六角戒指");
@@ -267,7 +264,12 @@ public static class GameConstants
                 }
                 return temp.ToList();
             }
-            return binItems.Concat(binItemsNoob).Concat(binItemsMid).ToList();
+
+            if (role != RoleType.taoist)
+            {
+                temp.Add("护身符");
+            }
+            return temp.Concat(binItemsMid).ToList();
         }
     }
 
