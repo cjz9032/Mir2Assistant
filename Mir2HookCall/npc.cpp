@@ -431,6 +431,28 @@ void pickUp(){
 	
 }
 
+void drop(DelphiString* name, int id){
+	auto nameData = name->data;
+
+	__asm {
+		pushad
+		pushfd
+
+		mov ecx, id   
+		mov edx, nameData
+		mov eax, [FRMMAIN_ADDR] // gvar_:TFrmMain
+		mov eax, [eax]
+		mov esi, MIR_DROP_DIRECT_CALL
+		call esi
+		
+		popfd
+		popad
+	}
+	
+}
+
+
+
 void sendSpell(int spellId, int x, int y, int targetId){
 	__asm {
 		pushad
@@ -562,6 +584,14 @@ void Npc::process(int code, int* data)
 		break;
 	case 3031: // 捡取
 		pickUp();
+		break;
+	case 3032: // 
+		ProcessWideString(data, [data](const wchar_t* str, int length) {
+			DelphiString* name = CreateDelphiString(str, length);
+			int id = data[length + 1];
+			drop(name,id);
+			delete name;
+		});
 		break;
 	case 3100: // 魔法
 		sendSpell(data[0], data[1], data[2], data[3]);

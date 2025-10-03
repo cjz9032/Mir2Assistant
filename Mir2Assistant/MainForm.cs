@@ -1759,6 +1759,7 @@ namespace Mir2Assistant
                             if (!instance.isHomePreparing)
                             {
                                 await NpcFunction.autoReplaceEquipment(instance);
+                                await GoRunFunction.DropBinItems(instance);
                                 await GoRunFunction.TryAliveRecallMob(instance);
                                 await GoRunFunction.TryDefUps(instance);
                             }

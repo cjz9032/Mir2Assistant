@@ -15,6 +15,32 @@ public static class GoRunFunction
 {
     public static MapConnectionService mapConnectionService = new MapConnectionService();
 
+    public static async Task DropItem(MirGameInstanceModel instanceValue, ItemModel item)
+    {
+            var data = StringUtils.GenerateMixedData(
+                item.Name,
+                item.Id
+            );
+
+            SendMirCall.Send(instanceValue, 3032, data);
+            instanceValue.memoryUtils.WriteByte(item.addr + 1, 0);
+            await Task.Delay(500);
+        
+    }
+    public static async Task DropBinItems(MirGameInstanceModel instanceValue)
+    {
+        var curinItems = GameConstants.Items.GetBinItems(instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && curinItems.Contains(o.Name)).ToList();
+        foreach (var item in items)
+        {
+            await DropItem(instanceValue, item);
+        }
+        if (items.Count > 0)
+        {
+            await NpcFunction.RefreshPackages(instanceValue);
+        }
+    }
+
     /// <summary>
     /// 通用捡取方法
     /// </summary>
