@@ -1264,10 +1264,10 @@ namespace Mir2Assistant
                                                     }
                                                     else
                                                     {
-                                                        if (DateTime.Now - BBLackTime > TimeSpan.FromMinutes(30))
+                                                        if (DateTime.Now - BBLackTime > TimeSpan.FromMinutes(10))
                                                         {
                                                             hangMapBBReady = false;
-                                                            instanceValue.GameInfo($"BB 缺少30分钟, 当前 {cCount} / {allCount}");
+                                                            instanceValue.GameInfo($"BB 缺少10分钟, 当前 {cCount} / {allCount}");
                                                             isBBReadyStatusChanged = true;
                                                         }
                                                     }
