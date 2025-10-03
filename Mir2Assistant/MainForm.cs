@@ -836,6 +836,8 @@ namespace Mir2Assistant
                             var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
                             if (backHomeItems != null)
                             {
+                                // 如挂->地牢回家
+                                instanceValue.GameInfo("如挂被中断->地牢回家");
                                 NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
                                 await Task.Delay(1000);
                             }
@@ -1424,7 +1426,7 @@ namespace Mir2Assistant
                                     }
                                     if (backHomeItems != null)
                                     {
-                                        instanceValue.GameInfo("有回城卷, 直接用");
+                                        instanceValue.GameInfo("有回城/地牢, 直接用 从中间打怪而来");
                                         NpcFunction.EatIndexItem(instanceValue, backHomeItems[0]);
                                         isEscapeCave = true;
                                         await Task.Delay(1000);
@@ -1650,6 +1652,7 @@ namespace Mir2Assistant
                                                 }
                                                 else
                                                 {
+                                                    instance.GameInfo("samePos被发现 有地牢逃脱卷, 直接用");
                                                     NpcFunction.EatIndexItem(instance, backHomeItems[0]);
                                                     await Task.Delay(1000);
                                                 }
