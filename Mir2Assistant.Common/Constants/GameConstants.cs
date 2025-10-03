@@ -178,6 +178,7 @@ public static class GameConstants
      new List<string>
      {
             "火球术",
+            "大火球",
             "治愈术",
             "基本剑术",
             "精神力战法",
