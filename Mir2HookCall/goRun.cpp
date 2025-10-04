@@ -62,7 +62,7 @@ void GoRun::process(int code, int* data)
 {
 	switch (code)
 	{
-	case 1001:
+	case 1000:
 		sendMsgLimited(data[0], data[1], data[2], data[3], data[4], data[5]);
 	case 1001:
 		run(data[0], data[1], data[2], data[3], data[4], data[5]);
