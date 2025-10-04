@@ -255,5 +255,65 @@ namespace Mir2Assistant.Tests.MapConnectionFinding
             var avgExtremeTicks = (double)extremeStopwatch.ElapsedTicks / extremeCount;
             System.Console.WriteLine($"缓存查询 {extremeCount} 次: 平均 {avgExtremeTicks:F1} ticks ({avgExtremeTicks / 10000:F2}ms)");
         }
+
+        [Fact]
+        public void TestSquareCoverageAlgorithm()
+        {
+            System.Console.WriteLine("\n=== 正方形覆盖算法测试 ===");
+
+            // 测试用例1: 单点
+            var points1 = new List<(int X, int Y)> { (5, 5) };
+            var result1 = Mir2Assistant.Common.Functions.GoRunFunction.FindOptimalSquareCoverage(points1, 1, 3);
+            var coverage1 = Mir2Assistant.Common.Functions.GoRunFunction.CalculateTotalCoverage(result1, points1, 3);
+            System.Console.WriteLine($"单点测试: 覆盖 {coverage1}/{points1.Count} 个点");
+            Assert.Equal(points1.Count, coverage1);
+
+            // 测试用例2: 一条线上的点
+            var points2 = new List<(int X, int Y)> { (1, 1), (2, 1), (3, 1), (4, 1), (5, 1) };
+            var result2 = Mir2Assistant.Common.Functions.GoRunFunction.FindOptimalSquareCoverage(points2, 2, 3);
+            var coverage2 = Mir2Assistant.Common.Functions.GoRunFunction.CalculateTotalCoverage(result2, points2, 3);
+            System.Console.WriteLine($"线性点测试: 覆盖 {coverage2}/{points2.Count} 个点，使用 {result2.Count} 个正方形");
+            Assert.Equal(points2.Count, coverage2);
+
+            // 测试用例3: 聚集的点
+            var points3 = new List<(int X, int Y)> { (5, 5), (5, 6), (6, 5), (6, 6) };
+            var result3 = Mir2Assistant.Common.Functions.GoRunFunction.FindOptimalSquareCoverage(points3, 1, 3);
+            var coverage3 = Mir2Assistant.Common.Functions.GoRunFunction.CalculateTotalCoverage(result3, points3, 3);
+            System.Console.WriteLine($"聚集点测试: 覆盖 {coverage3}/{points3.Count} 个点，使用 {result3.Count} 个正方形");
+            Assert.Equal(points3.Count, coverage3);
+
+            // 测试用例4: 分散的点
+            var points4 = new List<(int X, int Y)> { (0, 0), (1, 2), (8, 6), (6, 6) };
+            var result4 = Mir2Assistant.Common.Functions.GoRunFunction.FindOptimalSquareCoverage(points4, 3, 3);
+            var coverage4 = Mir2Assistant.Common.Functions.GoRunFunction.CalculateTotalCoverage(result4, points4, 3);
+            System.Console.WriteLine($"分散点测试: 覆盖 {coverage4}/{points4.Count} 个点，使用 {result4.Count} 个正方形");
+            Assert.Equal(points4.Count, coverage4);
+        }
+
+        [Fact]
+        public void TestIsPointInSquare()
+        {
+            System.Console.WriteLine("\n=== 点在正方形内测试 ===");
+
+            var square = (CenterX: 5, CenterY: 5, Size: 3);
+            
+            // 应该在内部的点
+            var insidePoints = new[] { (5, 5), (4, 4), (6, 6), (3, 5), (7, 5) };
+            foreach (var point in insidePoints)
+            {
+                bool result = Mir2Assistant.Common.Functions.GoRunFunction.IsPointInSquare(point, square, 3);
+                System.Console.WriteLine($"点({point.Item1},{point.Item2}) 在正方形内: {result}");
+                Assert.True(result);
+            }
+
+            // 应该在外部的点
+            var outsidePoints = new[] { (2, 5), (8, 5), (5, 2), (5, 8) };
+            foreach (var point in outsidePoints)
+            {
+                bool result = Mir2Assistant.Common.Functions.GoRunFunction.IsPointInSquare(point, square, 3);
+                System.Console.WriteLine($"点({point.Item1},{point.Item2}) 在正方形外: {!result}");
+                Assert.False(result);
+            }
+        }
     }
-} 
+}

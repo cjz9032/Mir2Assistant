@@ -2404,23 +2404,45 @@ public static class GoRunFunction
 
     public static List<(int CenterX, int CenterY, int Size)> FindOptimalSquareCoverage(List<(int X, int Y)> points, int maxSquares, int squareSize)
     {
-        // 最优算法：暴力搜索所有可能的正方形组合
+        if (points.Count == 0) return new List<(int CenterX, int CenterY, int Size)>();
+
         var bestCombination = new List<(int CenterX, int CenterY, int Size)>();
         var maxCoverage = 0;
+        int halfSize = squareSize / 2;
 
-        // 生成所有可能的正方形中心位置（基于输入点）
-        var candidateSquares = points.Select(p => (p.X, p.Y, squareSize)).ToList();
-
-        // 搜索所有可能的1-3个正方形组合
-        for (int numSquares = 1; numSquares <= Math.Min(maxSquares, candidateSquares.Count); numSquares++)
+        // 生成候选正方形中心位置：考虑每个点周围可能的最优位置
+        var candidateSquares = new HashSet<(int X, int Y, int Size)>();
+        
+        foreach (var point in points)
         {
-            foreach (var combination in GetCombinations(candidateSquares, numSquares))
+            // 为每个点生成可能的正方形中心位置
+            for (int dx = -halfSize; dx <= halfSize; dx++)
+            {
+                for (int dy = -halfSize; dy <= halfSize; dy++)
+                {
+                    candidateSquares.Add((point.X + dx, point.Y + dy, squareSize));
+                }
+            }
+        }
+
+        var candidateList = candidateSquares.ToList();
+
+        // 搜索所有可能的1到maxSquares个正方形组合
+        for (int numSquares = 1; numSquares <= Math.Min(maxSquares, candidateList.Count); numSquares++)
+        {
+            foreach (var combination in GetCombinations(candidateList, numSquares))
             {
                 var coverage = CalculateTotalCoverage(combination, points, squareSize);
                 if (coverage > maxCoverage)
                 {
                     maxCoverage = coverage;
                     bestCombination = combination.ToList();
+                    
+                    // 如果已经覆盖所有点，提前退出
+                    if (coverage == points.Count)
+                    {
+                        return bestCombination;
+                    }
                 }
             }
         }
@@ -2439,19 +2461,28 @@ public static class GoRunFunction
     {
         var coveredPoints = new HashSet<(int X, int Y)>();
 
-        foreach (var square in squares)
+        foreach (var point in points)
         {
-            var squarePoints = GetPointsInSquare(square, squareSize);
-            foreach (var point in points)
+            foreach (var square in squares)
             {
-                if (squarePoints.Contains(point))
+                if (IsPointInSquare(point, square, squareSize))
                 {
                     coveredPoints.Add(point);
+                    break; // Point is covered, no need to check other squares
                 }
             }
         }
 
         return coveredPoints.Count;
+    }
+
+    public static bool IsPointInSquare((int X, int Y) point, (int CenterX, int CenterY, int Size) square, int squareSize)
+    {
+        int halfSize = squareSize / 2;
+        return point.X >= square.CenterX - halfSize && 
+               point.X <= square.CenterX + halfSize &&
+               point.Y >= square.CenterY - halfSize && 
+               point.Y <= square.CenterY + halfSize;
     }
 
     public static IEnumerable<(int X, int Y)> GetPointsInSquare((int CenterX, int CenterY, int Size) square, int squareSize)
