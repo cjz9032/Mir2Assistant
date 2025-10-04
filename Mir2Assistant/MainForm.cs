@@ -1530,6 +1530,7 @@ namespace Mir2Assistant
                 // 连续没有IsAttached, 尝试attached
                 var tryiedAttach = 0;
                 var samePosTimes = 0;
+                var sameExpTimes = 0;
                 var lastPos = 0;
                 var lastExp = 0;
                 while (true)
@@ -1617,75 +1618,83 @@ namespace Mir2Assistant
 
                             if (CharacterStatus.X > 0)
                             {
-                                lastExp = CharacterStatus.Exp;
-                                if (Math.Abs(CharacterStatus.X - lastPos) < 3 && CharacterStatus.Exp == lastExp)
+                                if(CharacterStatus.Exp == lastExp)
+                                {
+                                    sameExpTimes += 1;
+                                }
+                                else
+                                {
+                                    sameExpTimes = 0;
+                                }
+                                if (Math.Abs(CharacterStatus.X - lastPos) < 3)
                                 {
                                     samePosTimes += 1;
-                                    if (samePosTimes == 8)
-                                    {
-                                        samePosTimes = 0;
-                                        var ai = await HuoshanAIHelper.ChatAsync();
-                                        CharacterStatusFunction.AddChat(instance, ai);
-                                        await Task.Delay(1000);
-                                        // 查看是否发出去 
-                                        var needRestart = false;
-                                        if (!instance.chats.Any(chat => chat.Contains(ai)))
-                                        {
-                                            needRestart = true;
-                                        }
-                                        else
-                                        {
-                                            // 卡位, 看职业
-                                            // if (GoRunFunction.CapbilityOfFlashMove(instance))
-                                            // {
-                                                var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
-                                                if (backHomeItems == null)
-                                                {
-                                                    // try move
-                                                    var tryiedMove = 0;
-                                                    var isSSMove = false;
-                                                    while (true)
-                                                    {
-                                                        GoRunFunction.sendSpell(instance, GameConstants.Skills.flashMove, CharacterStatus.X, CharacterStatus.Y, 0);
-                                                        await Task.Delay(1000);
-                                                        if (Math.Abs(CharacterStatus.X - lastPos) > 3)
-                                                        {
-                                                            isSSMove = true;
-                                                            break;
-                                                        }
-                                                        tryiedMove++;
-                                                        if (tryiedMove > 20) break;
-                                                    }
-                                                    if (!isSSMove)
-                                                    {
-                                                        needRestart = true;
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    instance.GameInfo("samePos被发现 有地牢逃脱卷, 直接用");
-                                                    NpcFunction.EatIndexItem(instance, backHomeItems[0]);
-                                                    await Task.Delay(1000);
-                                                }
-                                            // }
-                                            // else
-                                            // {
-                                            //     needRestart = true;
-                                            // }
-                                        }
-
-                                        if (needRestart)
-                                        {
-                                            await RestartGameProcess(instance);
-                                            continue;
-                                        }
-                                    }
                                 }
                                 else
                                 {
                                     samePosTimes = 0;
                                 }
+                                var cct = 8;
+                                if (samePosTimes == cct && sameExpTimes == cct)
+                                {
+                                    samePosTimes = 0;
+                                    var ai = await HuoshanAIHelper.ChatAsync();
+                                    CharacterStatusFunction.AddChat(instance, ai);
+                                    await Task.Delay(1000);
+                                    // 查看是否发出去 
+                                    var needRestart = false;
+                                    if (!instance.chats.Any(chat => chat.Contains(ai)))
+                                    {
+                                        needRestart = true;
+                                    }
+                                    else
+                                    {
+                                        // 卡位, 看职业
+                                        // if (GoRunFunction.CapbilityOfFlashMove(instance))
+                                        // {
+                                        var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
+                                        if (backHomeItems == null)
+                                        {
+                                            // try move
+                                            var tryiedMove = 0;
+                                            var isSSMove = false;
+                                            while (true)
+                                            {
+                                                GoRunFunction.sendSpell(instance, GameConstants.Skills.flashMove, CharacterStatus.X, CharacterStatus.Y, 0);
+                                                await Task.Delay(1000);
+                                                if (Math.Abs(CharacterStatus.X - lastPos) > 3)
+                                                {
+                                                    isSSMove = true;
+                                                    break;
+                                                }
+                                                tryiedMove++;
+                                                if (tryiedMove > 20) break;
+                                            }
+                                            if (!isSSMove)
+                                            {
+                                                needRestart = true;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            instance.GameInfo("samePos被发现 有地牢逃脱卷, 直接用");
+                                            NpcFunction.EatIndexItem(instance, backHomeItems[0]);
+                                            await Task.Delay(1000);
+                                        }
+                                        // }
+                                        // else
+                                        // {
+                                        //     needRestart = true;
+                                        // }
+                                    }
 
+                                    if (needRestart)
+                                    {
+                                        await RestartGameProcess(instance);
+                                        continue;
+                                    }
+                                }
+                                lastExp = CharacterStatus.Exp;
                                 lastPos = CharacterStatus.X;
                             }
 
