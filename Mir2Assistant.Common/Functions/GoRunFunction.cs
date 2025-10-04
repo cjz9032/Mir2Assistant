@@ -1901,8 +1901,8 @@ public static class GoRunFunction
                 await Task.Delay(500);
             }
             CharacterStatusFunction.ReadChats(GameInstance, true);
-            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
-            if (lastChatState.Contains(attack ? "休息" : "攻击"))
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
+            if (lastChatState?.Contains(attack ? "休息" : "攻击") == true)
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
             }
@@ -1917,8 +1917,8 @@ public static class GoRunFunction
         CharacterStatusFunction.ReadChats(GameInstance, true);
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
-            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
-            if (lastChatState.Contains(attack ? "休息" : "攻击"))
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
+            if (lastChatState?.Contains(attack ? "休息" : "攻击") == true)
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
             }
@@ -1958,9 +1958,9 @@ public static class GoRunFunction
         CharacterStatusFunction.ReadChats(GameInstance, true);
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
-            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"))!;
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
             // 如果存在 最后状态要恢复回来
-            if (lastChatState.Contains("休息"))
+            if (lastChatState?.Contains("休息") == true)
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
                 // await Task.Delay(700);
