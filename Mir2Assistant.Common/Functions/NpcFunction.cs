@@ -821,13 +821,13 @@ namespace Mir2Assistant.Common.Functions
                         var keepItems = new List<ItemModel>();
                         foreach (var preferName in prefs)
                         {
-                            var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.keepWeaponCount).ToList();
+                            var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)).ToList();
                             keepItems.AddRange(foundItems);
-                            if (keepItems.Count >= GameConstants.Items.keepWeaponCount) break;
+                            if (keepItems.Count >= GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)) break;
                         }
 
                         // 如果找到了要保留的装备，从卖出列表中移除
-                        foreach (var keepItem in keepItems.Take(GameConstants.Items.keepWeaponCount))
+                        foreach (var keepItem in keepItems.Take(GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)))
                         {
                             lists.Remove(keepItem);
                             gameInstance.GameInfo($"保留备用{position}: {keepItem.Name} (IsGodly: {keepItem.IsGodly})");
@@ -887,13 +887,13 @@ namespace Mir2Assistant.Common.Functions
                     var keepItems = new List<ItemModel>();
                     foreach (var preferName in prefs)
                     {
-                        var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.keepWeaponCount).ToList();
+                        var foundItems = lists.Where(o => o.Name == preferName).Take(GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)).ToList();
                         keepItems.AddRange(foundItems);
-                        if (keepItems.Count >= GameConstants.Items.keepWeaponCount) break;
+                        if (keepItems.Count >= GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)) break;
                     }
 
                     // 如果找到了要保留的装备，从卖出列表中移除
-                    foreach (var keepItem in keepItems.Take(GameConstants.Items.keepWeaponCount))
+                    foreach (var keepItem in keepItems.Take(GameConstants.Items.getKeepWeaponCount(gameInstance.CharacterStatus.Level, gameInstance.AccountInfo.role)))
                     {
                         lists.Remove(keepItem);
                         gameInstance.GameInfo($"保留备用{position}: {keepItem.Name} (IsGodly: {keepItem.IsGodly})");
