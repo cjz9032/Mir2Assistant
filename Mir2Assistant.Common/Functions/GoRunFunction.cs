@@ -51,6 +51,14 @@ public static class GoRunFunction
     public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default)
     {
         if (instanceValue.isPickingWay) return false;
+        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+        var existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
+        Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
+        if (existAni2 != null)
+        {
+            return false;
+        }
+
         instanceValue.isPickingWay = true;
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
@@ -82,6 +90,12 @@ public static class GoRunFunction
 
         while (allTimes < 3)
         {
+            existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
+            Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
+            if (existAni2 != null)
+            {
+                break;
+            }
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
                     !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
@@ -123,6 +137,12 @@ public static class GoRunFunction
                 .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
             {
+                existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
+                Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
+                if (existAni2 != null)
+                {
+                    break;
+                }
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
 
@@ -153,7 +173,7 @@ public static class GoRunFunction
                 if (pathFound)
                 {
                     ItemFunction.Pickup(instanceValue);
-                    await Task.Delay(400);
+                    await Task.Delay(500);
                     pickedAny = true;
                     // 
                     // 一定时间范围内
