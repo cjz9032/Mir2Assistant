@@ -810,23 +810,10 @@ namespace Mir2Assistant
                         {
                             await GoRunFunction.upgradeBBSkill(instanceValue);
                         }
-                        // 无怪就等待回血
-                        for (int i = 0; i < 20; i++)
+                        // 会慢拿到结果
+                        if (!instanceValue.AccountInfo.IsMainControl)
                         {
-                            // 有怪就跑
-                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
-                            {
-                                break;
-                            }
-                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
-                            {
-                                instanceValue.GameInfo("等待回血 0");
-                                await Task.Delay(5_000);
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            await Task.Delay(3000);
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         var isMainInHome = !instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing;
@@ -847,6 +834,25 @@ namespace Mir2Assistant
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
+                        // 无怪就等待回血
+                        for (int i = 0; i < 20; i++)
+                        {
+                            // 有怪就跑
+                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                            {
+                                break;
+                            }
+                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
+                            {
+                                instanceValue.GameInfo("等待回血 0");
+                                await Task.Delay(5_000);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                       
 
                         // 新手任务
                         // todo 目前是5
