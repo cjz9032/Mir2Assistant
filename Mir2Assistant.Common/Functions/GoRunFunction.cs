@@ -422,8 +422,11 @@ public static class GoRunFunction
     public static void cici(MirGameInstanceModel gameInstance, byte dir)
     {
 
-        var fsBase = 1000;
-        if (gameInstance.bladeCiciLastTime + fsBase > Environment.TickCount)
+        if(gameInstance.AccountInfo.role != RoleType.blade)
+        {
+            return;
+        }
+        if (gameInstance.bladeCiciLastTime + 1000 > Environment.TickCount)
         {
             return;
         }
