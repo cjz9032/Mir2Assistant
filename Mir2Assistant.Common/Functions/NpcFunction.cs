@@ -795,7 +795,15 @@ namespace Mir2Assistant.Common.Functions
         {
             var nearHome = PickNearHomeMap(gameInstance);
             // 找到所有的装备除了极品 NPC分组去卖了, 
-            var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty && !o.IsGodly && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 30)
+            var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty &&
+
+            !(o.IsGodly && (o.reqType == 0 ? (
+                (o.reqPoints <= 20 ? (
+                    o.GodPts > 1
+                ) : true)
+            ) : true) )
+            
+             && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 30)
             .GroupBy(o => o.stdModeToUseItemIndex[0]); // 可以只0, 因为是同一个NPC
             foreach (var group in ljequipment)
             {
@@ -855,7 +863,12 @@ namespace Mir2Assistant.Common.Functions
         {
             var nearHome = PickNearHomeMap(gameInstance);
             // 找到所有的装备除了极品 NPC分组去卖了, 
-            var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty && !o.IsGodly
+            var ljequipment = gameInstance.Items.Where(o => !o.IsEmpty &&
+         !(o.IsGodly && (o.reqType == 0 ? (
+                (o.reqPoints <= 20 ? (
+                    o.GodPts > 1
+                ) : true)
+            ) : true) )
              && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
              && o.stdModeToUseItemIndex[0] == (byte)position
               && o.stdMode != 30);

@@ -107,7 +107,7 @@ namespace Mir2Assistant.Common.Models
         public int MinMageDef { get; set; }
         public int MaxMageDef { get; set; }
 
-        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode} {addr:x2}";
+        public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? $"（Jesus-{GodPts}）" : "")} {(IsLowDurability ? "LOW!!! " : "")}" + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode} {addr:x2}";
         public bool IsLowDurability => Duration > 0 ? (((double)Duration / MaxDuration) < 0.25) : false;
         public byte[] stdModeToUseItemIndex
         {
