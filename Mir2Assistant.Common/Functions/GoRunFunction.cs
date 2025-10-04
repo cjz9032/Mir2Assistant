@@ -1157,7 +1157,7 @@ public static class GoRunFunction
                     (o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName))
                     && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
                  ) : 0;
-                var isOutside = isNearBBCount >= 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 20;
+                var isOutside = isNearBBCount >= 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 33;
                 if (!isOutside && consume0)
                 {
                     if (ani == null)
@@ -1221,7 +1221,7 @@ public static class GoRunFunction
                         if (consume0)
                         {
                             // 很容易就退出 因为是引怪
-                            if (monTried > 6)
+                            if (monTried > 4)
                             {
                                 MonsterFunction.SlayingMonsterCancel(instanceValue!);
                                 break;
