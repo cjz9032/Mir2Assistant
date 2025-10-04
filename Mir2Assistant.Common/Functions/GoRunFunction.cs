@@ -159,6 +159,10 @@ public static class GoRunFunction
                     // 一定时间范围内
                     instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
+                else
+                {
+                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                }
             }
         }
 
