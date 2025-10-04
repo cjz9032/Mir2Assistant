@@ -235,8 +235,7 @@ public static class GameConstants
             "青铜剑",
             // "铁剑",
             "青铜头盔",
-            "魔鬼项链",
-            "蓝色水晶戒指",
+  
            };
 
         private static readonly List<string> binItemsMid =
@@ -246,6 +245,10 @@ public static class GameConstants
             "金项链",
             "钢手镯",
             "铁剑",
+            "短剑",
+            "青铜斧",
+            "魔鬼项链",
+            "蓝色水晶戒指",
   };
         public static List<string> GetBinItems(int level, RoleType role)
         {
@@ -254,6 +257,10 @@ public static class GameConstants
                 return binItems;
             }
             var temp = binItems.Concat(binItemsNoob).ToList();
+            if (role == RoleType.blade)
+            {
+                temp.Remove("八荒");
+            }
             if (level < 20)
             {
                 if (role == RoleType.mage)
@@ -261,13 +268,8 @@ public static class GameConstants
                     temp.Remove("六角戒指");
                     temp.Remove("琥珀项链");
                 }
-                if (role == RoleType.blade)
-                {
-                    temp.Remove("八荒");
-                }
                 return temp.ToList();
             }
-
             if (role != RoleType.taoist)
             {
                 temp.Add("护身符");
