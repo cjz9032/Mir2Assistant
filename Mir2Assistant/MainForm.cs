@@ -1353,7 +1353,7 @@ namespace Mir2Assistant
                                         {
                                             // 查找其他成员除了法师
                                             var otherMembers = instances.Where(t => t.AccountInfo.role != RoleType.mage).ToList();
-                                            var otherFull = otherMembers.Any(o => o.Items.Concat(o.QuickItems).Count() > 44);
+                                            var otherFull = otherMembers.Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty).Count() > 44);
                                             if (otherFull)
                                             {
                                                 isFull = true;
