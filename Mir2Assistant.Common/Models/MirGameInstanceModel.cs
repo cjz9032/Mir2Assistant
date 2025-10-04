@@ -9,6 +9,7 @@ public class MirGameInstanceModel
     public bool IsBotRunning { get; set; }
     public int MirPid { get; set; } //游戏pid
     public int spellLastTime { get; set; } //技能 cd
+    public int bladeCiciLastTime { get; set; } //武士cici cd
     public int eatItemLastTime { get; set; } //吃物品 cd
     public LimitedDictionary<int, int> healCD { get; set; } = new LimitedDictionary<int, int>();
     public uint MirThreadId { get; set; }//游戏主线程ID
@@ -121,6 +122,7 @@ public class MirGameInstanceModel
         //AccountInfo = new GameAccountModel();
         MirPid = 0;
         spellLastTime = 0;
+        bladeCiciLastTime = 0;
         eatItemLastTime = 0;
         MirThreadId = 0;
         sameHPtimes = 0;

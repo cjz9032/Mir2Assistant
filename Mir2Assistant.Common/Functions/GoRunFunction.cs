@@ -419,6 +419,23 @@ public static class GoRunFunction
         await Task.Delay(300);
     }
 
+    public static void cici(MirGameInstanceModel gameInstance, byte dir)
+    {
+
+        var fsBase = 1000;
+        if (gameInstance.bladeCiciLastTime + fsBase > Environment.TickCount)
+        {
+            return;
+        }
+        gameInstance.bladeCiciLastTime = Environment.TickCount;
+
+        // my
+        var myX = gameInstance!.CharacterStatus!.X;
+        var myY = gameInstance!.CharacterStatus!.Y;
+        SendMirCall.Send(gameInstance, 1000, new nint[] { myX, myY, dir, 0xbcb,
+        GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
+    }
+
 
 
 
@@ -1230,11 +1247,19 @@ public static class GoRunFunction
                             }
                         }
                         monTried++;
-                        MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
                         var diffX = Math.Abs(ani.X - CharacterStatus.X);
                         var diffY = Math.Abs(ani.Y - CharacterStatus.Y);
                         var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && (diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2);
+                        if (isCi)
+                        {
+                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                        }
+                        else
+                        {
+                            var ciciDir = GetDirectionFromDelta(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
+                            cici(instanceValue!, ciciDir);
+                        }
                         if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
@@ -2041,7 +2066,12 @@ public static class GoRunFunction
             return;
         }
 
-        // 暂时只 查看自己的属性
+        var instances = GameState.GameInstances;
+
+        // 查看所有人的属性, 只要不符合就可以开始发
+        
+        // instances.Any()
+
         var maxDef = GameInstance.CharacterStatus.MaxDef;
         var maxMageDef = GameInstance.CharacterStatus.MaxMageDef;
 
@@ -2104,7 +2134,6 @@ public static class GoRunFunction
 
         // 其他actor都接近, 就一起放
         // 查找所有的人
-        var instances = GameState.GameInstances;
         var allAccountNames = instances.Select(i => i.AccountInfo.CharacterName).ToList();
         var myteamMembersPos = GameInstance.Monsters.Values.Where(o => o.isDead == false
         && Math.Abs(o.X - GameInstance.CharacterStatus.X) < 10 && Math.Abs(o.Y - GameInstance.CharacterStatus.Y) < 10 &&
