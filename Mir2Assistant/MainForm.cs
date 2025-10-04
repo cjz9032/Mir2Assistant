@@ -1156,11 +1156,11 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
-                                    hangMapId = "E701"; // D601 D023 E605 连接
+                                    hangMapId = "E605"; // D601 D023 E605 连接
                                 }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {
-                                    hangMapId = "E701"; // D601 D023 E605 连接
+                                    hangMapId = "E605"; // D601 D023 E605 连接
                                 }
                                 else if (CharacterStatus.Level >= 25) // todo toaist
                                 {
