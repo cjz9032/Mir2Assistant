@@ -1349,10 +1349,10 @@ namespace Mir2Assistant
                                         // 道武满包才回
                                         var meFull = miscs.Count > 44;
                                         var isFull = false;
-                                        if (meFull)
+                                        if (meFull && instanceValue.AccountInfo.IsMainControl)
                                         {
                                             // 查找其他成员除了法师
-                                            var otherMembers = instances.Where(t => t.AccountInfo.role != RoleType.mage).ToList();
+                                            var otherMembers = instances.Where(t => t.AccountInfo.role != RoleType.mage && !t.AccountInfo.IsMainControl).ToList();
                                             var otherFull = otherMembers.Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty).Count() > 44);
                                             if (otherFull)
                                             {
