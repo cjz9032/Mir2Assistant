@@ -88,7 +88,7 @@ public static class GoRunFunction
         var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
-        while (allTimes < 3)
+        while (allTimes < 2)
         {
             existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
             Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
