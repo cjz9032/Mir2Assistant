@@ -1346,10 +1346,19 @@ namespace Mir2Assistant
                                                 instanceValue.GameInfo("沪深低耐久, 需要替换, 回家");
                                             }
                                         }
-                                        var isFull = miscs.Count > 44;
-                                        if (isFull)
+                                        // 道武满包才回
+                                        var meFull = miscs.Count > 44;
+                                        var isFull = false;
+                                        if (meFull)
                                         {
-                                            instanceValue.GameInfo("满包 回家");
+                                            // 查找其他成员除了法师
+                                            var otherMembers = instances.Where(t => t.AccountInfo.role != RoleType.mage).ToList();
+                                            var otherFull = otherMembers.Any(o => o.Items.Concat(o.QuickItems).Count() > 44);
+                                            if (otherFull)
+                                            {
+                                                isFull = true;
+                                                instanceValue.GameInfo("满包 回家");
+                                            }
                                         }
                                         if (lowMPMain)
                                         {

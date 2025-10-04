@@ -58,6 +58,8 @@ public static class GoRunFunction
         {
             return false;
         }
+        var isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Count() > 44;
+        if (isFull) return false;
 
         instanceValue.isPickingWay = true;
         var CharacterStatus = instanceValue.CharacterStatus!;
@@ -143,6 +145,8 @@ public static class GoRunFunction
                 {
                     break;
                 }
+                isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Count() > 44;
+                if (isFull) return false;
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
 
