@@ -1970,10 +1970,10 @@ public static class GoRunFunction
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
             // 开始召回
-            for (int i = 0; i < 30; i++)
+            for (int i = 0; i < 100; i++)
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
-                await Task.Delay(500);
+                await Task.Delay(300);
             }
             CharacterStatusFunction.ReadChats(GameInstance, true);
             var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
