@@ -426,7 +426,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if (gameInstance.bladeCiciLastTime + 1200 > Environment.TickCount)
+        if (gameInstance.bladeCiciLastTime + 1500 > Environment.TickCount)
         {
             return;
         }
