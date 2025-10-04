@@ -5,7 +5,8 @@ using Mir2Assistant.Common.Utils;
 using Mir2Assistant.Common.Constants;
 using Mir2Assistant.Common.Services;
 using Mir2Assistant.Common.Models.MapPathFinding;
-using Mir2Assistant.Common.Generated; // 新增Generated命名空间引用
+using Mir2Assistant.Common.Generated;
+using System.Threading.Tasks; // 新增Generated命名空间引用
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -380,13 +381,14 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
 
-    public static void GoTurn(MirGameInstanceModel gameInstance, byte dir)
+    public static async Task GoTurn(MirGameInstanceModel gameInstance, byte dir)
     {
         // my
         var myX = gameInstance!.CharacterStatus!.X;
         var myY = gameInstance!.CharacterStatus!.Y;
         SendMirCall.Send(gameInstance, 1000, new nint[] { myX, myY, dir, 0xbc2,
-         GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
+        GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
+        await Task.Delay(300);
     }
 
 
@@ -2106,7 +2108,14 @@ public static class GoRunFunction
     }
     public static async Task tryMagePushBlock(MirGameInstanceModel GameInstance)
     {
-        if ((GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 24) && new Random().Next(1, 100) > 50)
+        if ((GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 24))
+        {
+            return;
+        }
+        // random 
+        var dir = new Random().Next(0, 7);
+        await GoTurn(GameInstance, (byte)dir);
+        if (new Random().Next(1, 100) > 50)
         {
             return;
         }
