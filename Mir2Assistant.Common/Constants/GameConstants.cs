@@ -274,6 +274,11 @@ public static class GameConstants
             {
                 temp.Add("护身符");
             }
+            if (role != RoleType.mage)
+            {
+                temp.Add("生铁戒指");
+            }
+
             return temp.Concat(binItemsMid).ToList();
         }
     }
