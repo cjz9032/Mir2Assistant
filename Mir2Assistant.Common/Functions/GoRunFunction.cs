@@ -965,7 +965,7 @@ public static class GoRunFunction
             }
             // 不寻路模式, 其实就是只打怪, 需要抽象
             // 
-            var followDetectDistance = 6;
+            var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 5 : 9;
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
