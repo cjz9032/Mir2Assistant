@@ -426,7 +426,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if (gameInstance.bladeCiciLastTime + 1000 > Environment.TickCount)
+        if (gameInstance.bladeCiciLastTime + 2000 > Environment.TickCount)
         {
             return;
         }
@@ -1256,12 +1256,13 @@ public static class GoRunFunction
                         var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && (diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2);
                         if (isCi)
                         {
-                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                            var ciciDir = GetDirectionFromDelta(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
+                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            cici(instanceValue!, ciciDir);
                         }
                         else
                         {
-                            var ciciDir = GetDirectionFromDelta(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
-                            cici(instanceValue!, ciciDir);
+                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                         }
                         if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
