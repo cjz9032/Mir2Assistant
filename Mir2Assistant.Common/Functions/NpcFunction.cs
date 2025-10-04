@@ -996,7 +996,7 @@ namespace Mir2Assistant.Common.Functions
                     {
                         if (level >= 18)
                         {
-                            itemNames.Add("坚固手套");
+                            // itemNames.Add("坚固手套");
                         }
                     }
                     else if (role == RoleType.taoist)
@@ -1006,11 +1006,11 @@ namespace Mir2Assistant.Common.Functions
                             // itemNames.Add("坚固手套");
                         }
                     }
-
-                    if (level >= 26)
-                    {
-                        itemNames.Add("金手镯");
-                    }
+                    // todo 换图
+                    // if (level >= 30)
+                    // {
+                    //     itemNames.Add("金手镯");
+                    // }
                     break;
                 case EquipPosition.RingLeft:
                 case EquipPosition.RingRight:
@@ -1066,7 +1066,8 @@ namespace Mir2Assistant.Common.Functions
                             itemNames.Add("生铁戒指");
                         }
                     }
-                    if (level >= 26)
+                    // todo 换图
+                    if (level >= 26 && role == RoleType.taoist)
                     {
                         itemNames.Add("金戒指");
                         itemNames.Add("降妖除魔戒指");
