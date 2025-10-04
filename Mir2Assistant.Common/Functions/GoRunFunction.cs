@@ -2092,7 +2092,15 @@ public static class GoRunFunction
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
     }
-
+    public static async Task tryMagePushBlock(MirGameInstanceModel GameInstance)
+    {
+        if (GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 24)
+        {
+            return;
+        }
+        sendSpell(GameInstance, GameConstants.Skills.MagePush, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+        await Task.Delay(500);
+    }
     public static (int, int) CCBBCount(MirGameInstanceModel GameInstance)
     {
         var allMonsIdInClients = new HashSet<int>();

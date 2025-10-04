@@ -10,6 +10,7 @@ public static class GameConstants
 
     public static class Skills
     {
+        public const int MagePush = 8;
         public const int TemptationSpellId = 20;
         public const int LightingSpellId = 11;
         public const int temptSpellId = 20;
