@@ -1232,7 +1232,10 @@ public static class GoRunFunction
                         monTried++;
                         MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
-                        if (monTried > INIT_WAIT && Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)) > 1)
+                        var diffX = Math.Abs(ani.X - CharacterStatus.X);
+                        var diffY = Math.Abs(ani.Y - CharacterStatus.Y);
+                        var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && (diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2);
+                        if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30);
