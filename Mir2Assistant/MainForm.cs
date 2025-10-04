@@ -1148,11 +1148,15 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "1";
                                 }
-                                else if (CharacterStatus.Level >= 26)
+                                else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
-                                    hangMapId = "E605"; // D601 D023 E605 连接
+                                    hangMapId = "E701"; // D601 D023 E605 连接
                                 }
-                                else if (CharacterStatus.Level >= 25)
+                                else if (CharacterStatus.Level >= 27) // todo toaist
+                                {
+                                    hangMapId = "E701"; // D601 D023 E605 连接
+                                }
+                                else if (CharacterStatus.Level >= 25) // todo toaist
                                 {
                                     hangMapId = "D601";
                                 }
@@ -1195,7 +1199,8 @@ namespace Mir2Assistant
                                 // var slaveExitForSwichMap = false;
                                 var slaveFromMap = "E605";
                                 var slaveToMap = "E701";
-                                var slaveEnabled = (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
+                                 // todo (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
+                                var slaveEnabled = false;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
@@ -1750,6 +1755,7 @@ namespace Mir2Assistant
                                 await GoRunFunction.DropBinItems(instance);
                                 await GoRunFunction.TryAliveRecallMob(instance);
                                 await GoRunFunction.TryDefUps(instance);
+                                await GoRunFunction.tryMagePushBlock(instance);
                             }
                         }
                     }
