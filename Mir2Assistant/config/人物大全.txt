@@ -70,6 +70,8 @@ ZC.H+23A5CE - 0F8DE6000000         - jnl ZC.H+23A6BA
 -- 跑步CALL 特征码
 ZC.H+23A677 - 66BAC50B            - mov dx,0BC5 { 3013 } C3 C4 C5 3011 3012 3013
 
+SendMsg=5DE978
+
 call 005DEA34
 UpdateMsg=5D206C 5DEA34 特征码 81 38 B80B0000       
 

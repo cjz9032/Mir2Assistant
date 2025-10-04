@@ -1,0 +1,79 @@
+procedure TFrmMain.SendDropItem(name: string; itemserverindex: integer);
+var
+  msg: TDefaultMessage;
+begin
+  msg := MakeDefaultMsg(CM_DROPITEM, itemserverindex, 0, 0, 0);
+  SendSocket(EncodeMessage(msg) + EncodeString(name));
+end;
+
+
+_Unit101.sub_00643DE0
+00643DE0        push        ebp
+00643DE1        mov         ebp,esp
+00643DE3        add         esp,0FFFFFFCC
+00643DE6        push        ebx
+00643DE7        xor         ebx,ebx
+00643DE9        mov         dword ptr [ebp-28],ebx
+00643DEC        mov         dword ptr [ebp-2C],ebx
+00643DEF        mov         dword ptr [ebp-30],ebx
+00643DF2        mov         dword ptr [ebp-34],ebx
+00643DF5        mov         dword ptr [ebp-0C],ecx
+00643DF8        mov         dword ptr [ebp-8],edx
+00643DFB        mov         dword ptr [ebp-4],eax
+00643DFE        mov         eax,dword ptr [ebp-8]
+00643E01        call        @UStrAddRef
+00643E06        xor         eax,eax
+00643E08        push        ebp
+00643E09        push        643EA4
+00643E0E        push        dword ptr fs:[eax]
+00643E11        mov         dword ptr fs:[eax],esp
+00643E14        push        0
+00643E16        push        0
+00643E18        push        0C8
+00643E1D        lea         eax,[ebp-24]
+00643E20        push        eax
+00643E21        xor         ecx,ecx
+00643E23        mov         edx,dword ptr [ebp-0C]
+00643E26        mov         eax,3E8
+00643E2B        call        00536E50
+00643E30        lea         edx,[ebp-2C]
+00643E33        lea         eax,[ebp-24]
+00643E36        call        00537478
+00643E3B        lea         eax,[ebp-2C]
+00643E3E        push        eax
+00643E3F        lea         eax,[ebp-34]
+00643E42        mov         edx,dword ptr [ebp-8]
+00643E45        mov         ecx,0
+00643E4A        call        @LStrFromUStr
+00643E4F        mov         eax,dword ptr [ebp-34]
+00643E52        lea         edx,[ebp-30]
+00643E55        call        005375AC
+00643E5A        mov         edx,dword ptr [ebp-30]
+00643E5D        pop         eax
+00643E5E        call        @LStrCat
+00643E63        mov         edx,dword ptr [ebp-2C]
+00643E66        lea         eax,[ebp-28]
+00643E69        call        @UStrFromLStr
+00643E6E        mov         edx,dword ptr [ebp-28]
+00643E71        mov         eax,dword ptr [ebp-4]
+00643E74        call        00642428
+00643E79        xor         eax,eax
+00643E7B        pop         edx
+00643E7C        pop         ecx
+00643E7D        pop         ecx
+00643E7E        mov         dword ptr fs:[eax],edx
+00643E81        push        643EAB
+00643E86        lea         eax,[ebp-34]
+00643E89        mov         edx,3
+00643E8E        call        @LStrArrayClr
+00643E93        lea         eax,[ebp-28]
+00643E96        call        @UStrClr
+00643E9B        lea         eax,[ebp-8]
+00643E9E        call        @UStrClr
+00643EA3        ret
+00643EA4>       jmp         @HandleFinally
+00643EA9>       jmp         00643E86
+00643EAB        pop         ebx
+00643EAC        mov         esp,ebp
+00643EAE        pop         ebp
+00643EAF        ret
