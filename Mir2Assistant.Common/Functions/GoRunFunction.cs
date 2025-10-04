@@ -152,7 +152,7 @@ public static class GoRunFunction
                 if (pathFound)
                 {
                     ItemFunction.Pickup(instanceValue);
-                    await Task.Delay(300);
+                    await Task.Delay(400);
                     pickedAny = true;
                     // 
                     // 一定时间范围内
@@ -379,6 +379,18 @@ public static class GoRunFunction
 
         SendMirCall.Send(gameInstance, 1001, new nint[] { nextX, nextY, dir, typePara, GameState.MirConfig["角色基址"], GameState.MirConfig["UpdateMsg"] });
     }
+
+    public static void GoTurn(MirGameInstanceModel gameInstance, byte dir)
+    {
+        // my
+        var myX = gameInstance!.CharacterStatus!.X;
+        var myY = gameInstance!.CharacterStatus!.Y;
+        SendMirCall.Send(gameInstance, 1000, new nint[] { myX, myY, dir, 0xbc2,
+         GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
+    }
+
+
+
 
     public static void openDoor(MirGameInstanceModel gameInstance, int x, int y)
     {
