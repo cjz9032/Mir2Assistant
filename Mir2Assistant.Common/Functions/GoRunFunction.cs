@@ -995,7 +995,7 @@ public static class GoRunFunction
                         new Random().Next(100) < 90
                     )
                     {
-                        await Task.Delay(1000);
+                        await Task.Delay(500);
                     }
                     else
                     {
