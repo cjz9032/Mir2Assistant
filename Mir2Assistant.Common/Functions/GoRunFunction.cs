@@ -426,7 +426,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if (gameInstance.bladeCiciLastTime + 2000 > Environment.TickCount)
+        if (gameInstance.bladeCiciLastTime + 1200 > Environment.TickCount)
         {
             return;
         }
@@ -669,6 +669,19 @@ public static class GoRunFunction
         if (dx == -1 && dy == 1) return 5;      // 左下
         if (dx == -1 && dy == 0) return 6;      // 左
         if (dx == -1 && dy == -1) return 7;     // 左上
+        return 0;
+    }
+
+    private static byte GetDirectionFromDelta2(int dx, int dy)
+    {
+        if (dx == 0 && dy == -2) return 0;      // 上
+        if (dx == 2 && dy == -2) return 1;      // 右上
+        if (dx == 2 && dy == 0) return 2;       // 右
+        if (dx == 2 && dy == 2) return 3;       // 右下
+        if (dx == 0 && dy == 2) return 4;       // 下
+        if (dx == -2 && dy == 2) return 5;      // 左下
+        if (dx == -2 && dy == 0) return 6;      // 左
+        if (dx == -2 && dy == -2) return 7;     // 左上
         return 0;
     }
 
@@ -1256,8 +1269,10 @@ public static class GoRunFunction
                         var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && (diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2);
                         if (isCi)
                         {
-                            var ciciDir = GetDirectionFromDelta(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
+                            var ciciDir = GetDirectionFromDelta2(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            // log 方向位置 debug
+                            Log.Debug("cici {Dir} {X} {Y} mon: {Name} {x} {y}", ciciDir, CharacterStatus.X, CharacterStatus.Y, ani.Name, ani.X, ani.Y);
                             cici(instanceValue!, ciciDir);
                         }
                         else
