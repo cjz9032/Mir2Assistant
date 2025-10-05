@@ -1438,9 +1438,9 @@ namespace Mir2Assistant
                                     await Task.Delay(6_0000);
                                     continue;
                                 }
-                                var waitingButNotHome = hadWaiting &&
+                                var waitingButNotHome = hadWaiting ?
                                 !(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null) &&
-                                instances[0].isHomePreparing;
+                                instances[0].isHomePreparing : true;
                                 
                                 if (!waitingButNotHome && (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl))
                                 {
