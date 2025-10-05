@@ -336,6 +336,11 @@ namespace Mir2Assistant.Common.Functions
                 // 空了就不用修了
                 return false;
             }
+             if (item.MaxDuration == item.Duration)
+            {
+                // 精度不够 可能误判, 但是不管
+                return false;
+            }
             if (item.Duration < 20 || ((double)item.Duration / (double)item.MaxDuration) < 0.8)
             {
                 return true;
@@ -755,7 +760,9 @@ namespace Mir2Assistant.Common.Functions
         {
             var nearHome = PickNearHomeMap(gameInstance);
 
-            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
+            var items = gameInstance.Items.Where(o => !o.IsEmpty
+            && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
+            && CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position])
             // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
                 && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
             if (items.Count == 0)
