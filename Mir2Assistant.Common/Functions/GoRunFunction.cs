@@ -1143,19 +1143,11 @@ public static class GoRunFunction
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
 
-                var nearBBCount = consume0 ? instanceValue.Monsters.Values.Count(o => !o.isDead &&
-                    o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName)
-                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
-                 ) : 0;
-                // 继续诱惑 还是火球
-                var isFullBB = (consume0 && canTemp) ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+        
+            
 
                 // 查看存活怪物 并且小于距离10个格子
-                var temps = consume0 ? GameConstants.GetAllowTemp(CharacterStatus.Level) : [];
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
-                // consumer0 处于诱惑不打指定
-                ((consume0  && canTemp) ? (isFullBB ? true : !temps.Contains(o.Name)) : true)
-                &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 (cleanAll || allowMonsters.Contains(o.Name))
@@ -1172,21 +1164,32 @@ public static class GoRunFunction
                 {
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
+                    if (ani == null)
+                    {
+                        break;
+                    }
+                    // 继续诱惑 还是火球
+                    var nearBBCount = instanceValue.Monsters.Values.Count(o => !o.isDead &&
+                    o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName)
+                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
+                    var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+                    var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
+                   
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
                     // 如果是法师 可以抽陀螺
                     var hasTempedMon = false;
-                    // 寻找陀螺
-                    var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                    && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
-                    && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
-                    && temps.Contains(o.Name)
-                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
-                    .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
-                    .FirstOrDefault();
                     if (canTemp && !isFullBB)
                     {
+                        // 寻找陀螺
+                        var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                        && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
+                        && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
+                        && temps.Contains(o.Name)
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                        .FirstOrDefault();
                         if (mytop != null)
                         {
                             hasTempedMon = true;
@@ -1196,15 +1199,28 @@ public static class GoRunFunction
                     if (!hasTempedMon)
                     // 搞
                     {
-                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.5 && ani != null)
+                        var mageAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                        // consumer0 处于诱惑不打指定
+                        (isFullBB ? true : !temps.Contains(o.Name))
+                        &&
+                        allowMonsters.Contains(o.Name)
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12 
+                        && (o.Appr == 40 ? true : o.CurrentHP > 20)
+                        )
+                        // 还要把鹿羊鸡放最后
+                        .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
+                        .Where(o => o.Distance <= 30)
+                        .OrderBy(o => o.Monster.Appr == 40 ?  (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
+                        .ThenBy(o => o.Distance * -1)
+                        .Select(o => o.Monster)
+                        .FirstOrDefault();
+                        
+                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.5 && mageAni != null)
                         {
-                            sendSpell(instanceValue!, GameConstants.Skills.fireBall, ani.X, ani.Y, ani.Id);
+                            sendSpell(instanceValue!, mageAni.Appr == 40 ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                         }
                     }
-                    if (ani == null && mytop == null)
-                    {
-                        break;
-                    }
+               
                     continue;
                 }
                 // 保护消费者
