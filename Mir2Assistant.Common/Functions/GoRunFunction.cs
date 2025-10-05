@@ -2080,7 +2080,7 @@ public static class GoRunFunction
         // TODO 这个可能不是每次需要 再说, TODO 还有需要召回需求, 进门需求 回家 很多
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
-        await Task.Delay(800);
+        await Task.Delay(1000);
         CharacterStatusFunction.ReadChats(GameInstance, true);
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
