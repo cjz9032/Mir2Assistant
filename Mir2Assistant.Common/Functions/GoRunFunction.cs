@@ -1136,7 +1136,8 @@ public static class GoRunFunction
                 //     continue;
                 // }
                 // todo 测试是否有效
-                if (!forceSkip && checker(instanceValue!))
+                // !forceSkip && 测试打怪退出在cleanMobs 这样才能飞走
+                if (checker(instanceValue!))
                 {
                     // 2层要直接return 
                     // break;
@@ -1528,6 +1529,10 @@ public static class GoRunFunction
             ).Count();
                     // 怪物死了剩余一半就可以通过
                     if (existsCount <= attacksThan / 3)
+                    {
+                        return true;
+                    }
+                    if (instanceValue.CharacterStatus.MaxHP > 50 ? instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.25 : instanceValue.CharacterStatus.CurrentHP < 10)
                     {
                         return true;
                     }
