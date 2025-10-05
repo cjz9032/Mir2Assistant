@@ -929,6 +929,7 @@ namespace Mir2Assistant.Common.Functions
             var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
             var level = levelParam ?? gameInstance.CharacterStatus.Level;
             var role = roleParam ?? gameInstance.AccountInfo.role;
+            var todoSwitch = true;
             // 自动推荐装备
             switch (position)
             {
@@ -1020,10 +1021,10 @@ namespace Mir2Assistant.Common.Functions
                         }
                     }
                     // todo 换图
-                    // if (level >= 30)
-                    // {
-                    //     itemNames.Add("金手镯");
-                    // }
+                    if (level >= 26 && todoSwitch)
+                    {
+                        itemNames.Add("金手镯");
+                    }
                     break;
                 case EquipPosition.RingLeft:
                 case EquipPosition.RingRight:
