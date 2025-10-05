@@ -653,7 +653,7 @@ namespace Mir2Assistant
                     }
                 });
 
-                var buyC = isBladeNeed ? GameConstants.Items.megaBuyCount/3 : GameConstants.Items.megaBuyCount
+                var buyC = isBladeNeed ? GameConstants.Items.megaBuyCount / 3 : GameConstants.Items.megaBuyCount;
 
                 if (exitsQuan < buyC)
                 {
