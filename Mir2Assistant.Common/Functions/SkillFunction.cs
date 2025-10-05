@@ -24,8 +24,9 @@ public static class SkillFunction
             if(GameState.MirConfig["技能基址"] == 0) return;
             var memoryUtils = gameInstance!.memoryUtils!;
             var count = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 8));
-            //if(count == gameInstance.Skills.Count) return;
-            gameInstance.Skills.Clear();
+            if(count == gameInstance.Skills.Count && new Random().Next(0, 100) > 10) return;
+            
+            var newSkills = new List<SkillModel>();
             for (int i = 0; i < count; i++)
             {
                 var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["技能基址"], 0x4, i * 0x4);
@@ -40,11 +41,28 @@ public static class SkillFunction
                     level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(addr, 0x1)), // 
                     maxPoints = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(addr, 0x28)) // 0x24??
                 };
-                gameInstance.Skills.Add(skill);
+                newSkills.Add(skill);
+            }
+            
+            // Update existing skills or add new ones
+            foreach (var newSkill in newSkills)
+            {
+                var existingSkill = gameInstance.Skills.FirstOrDefault(s => s.Id == newSkill.Id);
+                if (existingSkill != null)
+                {
+                    // Update existing skill
+                    existingSkill.Addr = newSkill.Addr;
+                    existingSkill.Name = newSkill.Name;
+                    existingSkill.points = newSkill.points;
+                    existingSkill.level = newSkill.level;
+                    existingSkill.maxPoints = newSkill.maxPoints;
+                }
+                else
+                {
+                    // Add new skill
+                    gameInstance.Skills.Add(newSkill);
+                }
             }
         });
     }
-
-
-
 }
