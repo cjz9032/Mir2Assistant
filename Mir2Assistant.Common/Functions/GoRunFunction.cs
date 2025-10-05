@@ -435,6 +435,8 @@ public static class GoRunFunction
         // my
         var myX = gameInstance!.CharacterStatus!.X;
         var myY = gameInstance!.CharacterStatus!.Y;
+        Log.Debug("cici {Dir} {X} {Y}", dir, myX, myY);
+
         SendMirCall.Send(gameInstance, 1000, new nint[] { myX, myY, dir, 0xbcb,
         GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
     }
@@ -1272,7 +1274,6 @@ public static class GoRunFunction
                             var ciciDir = GetDirectionFromDelta2(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             // log 方向位置 debug
-                            Log.Debug("cici {Dir} {X} {Y} mon: {Name} {x} {y}", ciciDir, CharacterStatus.X, CharacterStatus.Y, ani.Name, ani.X, ani.Y);
                             cici(instanceValue!, ciciDir);
                         }
                         else

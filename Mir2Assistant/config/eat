@@ -137,6 +137,12 @@ call 63D914
 popfd
 popad
 
+TargetInSwordLongAttackRange 0063EBF4
+刀刀刺杀2个 boAutoLongHit g_boEveryHitAssassinate
+      <LastState Value="1" RealAddress="006789CC"/>
+      <LastState Value="1" RealAddress="00677276"/>
+
+
 
 
 procedure TfrmMain.EatItem(idx: Integer);
