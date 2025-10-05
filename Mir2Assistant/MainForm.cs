@@ -1154,10 +1154,11 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                else if (friends.Count > 0)
-                                {
-                                    hangMapId = "1";
-                                }
+                                // todo temp for high
+                                //else if (friends.Count > 0)
+                                //{
+                                //    hangMapId = "1";
+                                //}
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
                                     hangMapId = "E605"; // D601 D023 E605 连接
