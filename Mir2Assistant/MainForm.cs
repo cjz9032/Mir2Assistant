@@ -1426,13 +1426,19 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = true;
+                                var hadWaiting = false;
                                 while (instanceValue.CharacterStatus.isEnhanceDead)
                                 {
+                                    hadWaiting = true;
                                     instanceValue.GameInfo("等待上线再回家");
                                     await Task.Delay(6_0000);
                                     continue;
                                 }
-                                if (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl)
+                                var waitingButNotHome = hadWaiting &&
+                                !(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null) &&
+                                instances[0].isHomePreparing;
+                                
+                                if (!waitingButNotHome && (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl))
                                 {
                                     instanceValue.GameInfo("开始回家");
                                     var isEscapeCave = false;
