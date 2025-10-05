@@ -38,6 +38,9 @@ public class MirGameInstanceModel
 
     // 攻击过的怪物ID名单, 高性能检索
     public LimitedHashSet<int> attackedMonsterIds { get; set; } = new LimitedHashSet<int>(100);
+    // 法师专打名单过的怪物ID名单
+    public LimitedDictionary<int, int> mageDrawAttentionMonsterCD { get; set; } = new LimitedDictionary<int, int>();
+
 
     public bool IsReadingMonsters = false;
     public bool IsReadingItems = false;

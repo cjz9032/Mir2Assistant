@@ -1009,7 +1009,7 @@ public static class GoRunFunction
         var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
-        // var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
+        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
 
         while (true)
         {
@@ -1202,9 +1202,11 @@ public static class GoRunFunction
                         var mageAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                         // consumer0 处于诱惑不打指定
                         (isFullBB ? true : !temps.Contains(o.Name))
-                        &&
-                        allowMonsters.Contains(o.Name)
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12 
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
+                        && (o.Appr == 40
+                            ?true
+                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + 3000))
+                        && allowMonsters.Contains(o.Name)
                         && (o.Appr == 40 ? true : o.CurrentHP > 20)
                         )
                         // 还要把鹿羊鸡放最后
@@ -1217,7 +1219,8 @@ public static class GoRunFunction
                         
                         if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.5 && mageAni != null)
                         {
-                            sendSpell(instanceValue!, mageAni.Appr == 40 ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
+                            instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
+                            sendSpell(instanceValue!, mageAni.Appr == 40 && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                         }
                     }
                
