@@ -1914,7 +1914,7 @@ public static class GoRunFunction
             o.CurrentHP > 0 &&
             !o.isDead
             // 低血量
-            && ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.6))
+            && ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.65))
             // 距离足够
             && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
             && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
