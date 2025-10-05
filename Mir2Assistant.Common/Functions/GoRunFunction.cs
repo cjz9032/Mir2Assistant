@@ -138,7 +138,9 @@ public static class GoRunFunction
                         instanceValue.AccountInfo.role == RoleType.taoist
                         ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
                         : (
-                            isBladeNeed ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
+                            false
+                            // 半月还不行
+                            // isBladeNeed ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
                         )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
