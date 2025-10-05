@@ -83,6 +83,7 @@ public static class GoRunFunction
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
         var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
+        var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
         var superCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.SuperPotions.Contains(o.Name));
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
@@ -136,7 +137,9 @@ public static class GoRunFunction
                 && (o.Value.Name.Contains("魔法药") ? (
                         instanceValue.AccountInfo.role == RoleType.taoist
                         ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
-                        : false
+                        : (
+                            isBladeNeed ? (megaCount < 8) : false
+                        )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
                 &&
