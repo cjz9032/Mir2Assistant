@@ -100,6 +100,8 @@
     #define MIR_GROUP_ONE_CALL 0x646630
     #define MIR_GROUP_TWO_CALL 0x645FF4
     #define MIR_CHAT_CALL 0x6434A0
+    #define MIR_CAN_NEXT_HIT_CALL 0x64722C
+    #define MIR_CAN_NEXT_ACT_CALL 0x6471B8
     #define MIR_SendClientMessage_CALL 0x642524
     #define MIR_GRID_FOO_ADDR 0x7432F4
     #define MIR_DMenuBuyClick_CALL 0x5B112C

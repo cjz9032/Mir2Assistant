@@ -426,7 +426,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if (gameInstance.bladeCiciLastTime + 1800 > Environment.TickCount)
+        if (gameInstance.bladeCiciLastTime + 1500 > Environment.TickCount)
         {
             return;
         }
@@ -437,7 +437,7 @@ public static class GoRunFunction
         var myY = gameInstance!.CharacterStatus!.Y;
         Log.Debug("cici {Dir} {X} {Y}", dir, myX, myY);
 
-        SendMirCall.Send(gameInstance, 1000, new nint[] { myX, myY, dir, 0xbcb,
+        SendMirCall.Send(gameInstance, 1002, new nint[] { myX, myY, dir, 0xbcb,
         GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
     }
 
@@ -1009,7 +1009,7 @@ public static class GoRunFunction
         var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
         var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
-        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
+        // var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
 
         while (true)
         {
@@ -1139,8 +1139,23 @@ public static class GoRunFunction
                         }
                     }
                 }
+               
+                // 保护消费者法师 诱惑/火球
+                var consume0 = whoIsConsumer(instanceValue!) == 0;
+
+                var nearBBCount = consume0 ? instanceValue.Monsters.Values.Count(o => !o.isDead &&
+                    o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName)
+                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
+                 ) : 0;
+                // 继续诱惑 还是火球
+                var isFullBB = (consume0 && canTemp) ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+
                 // 查看存活怪物 并且小于距离10个格子
+                var temps = consume0 ? GameConstants.GetAllowTemp(CharacterStatus.Level) : [];
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                // consumer0 处于诱惑不打指定
+                ((consume0  && canTemp) ? (isFullBB ? true : !temps.Contains(o.Name)) : true)
+                &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 (cleanAll || allowMonsters.Contains(o.Name))
@@ -1152,47 +1167,43 @@ public static class GoRunFunction
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
-                // 保护消费者法师 但 随机性先找怪如有下属在旁边
-                var consume0 = whoIsConsumer(instanceValue!) == 0;
-
-                var isNearBBCount = consume0 ? instanceValue.Monsters.Values.Count(o => !o.isDead &&
-                    (o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName))
-                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 10
-                 ) : 0;
-                var isOutside = isNearBBCount >= 3 && CharacterStatus.CurrentHP > (CharacterStatus.MaxHP / 2) && new Random().Next(100) < 33;
-                if (!isOutside && consume0)
+                
+                if (consume0)
                 {
-                    if (ani == null)
-                    {
-                        break;
-                    }
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
-
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
                     // 如果是法师 可以抽陀螺
-                    var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
-                    if (canTemp)
+                    var hasTempedMon = false;
+                    // 寻找陀螺
+                    var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                    && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
+                    && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
+                    && temps.Contains(o.Name)
+                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                    .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                    .FirstOrDefault();
+                    if (canTemp && !isFullBB)
                     {
-                        // 寻找陀螺
-                        var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                        && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
-                        && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
-                        && temps.Contains(o.Name)
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
-                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
-                        .FirstOrDefault();
                         if (mytop != null)
                         {
+                            hasTempedMon = true;
                             sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
                         }
                     }
-                    else if (canLight && ani.CurrentHP > 50)
-                    // todo 间歇有蓝才搞
+                    if (!hasTempedMon)
+                    // 搞
                     {
-                        sendSpell(instanceValue!, GameConstants.Skills.LightingSpellId, ani.X, ani.Y, ani.Id);
+                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.5 && ani != null)
+                        {
+                            sendSpell(instanceValue!, GameConstants.Skills.fireBall, ani.X, ani.Y, ani.Id);
+                        }
+                    }
+                    if (ani == null && mytop == null)
+                    {
+                        break;
                     }
                     continue;
                 }
@@ -1219,15 +1230,6 @@ public static class GoRunFunction
                         {
                             instanceValue.GameWarning("测试打怪中途跑路");
                             return true;
-                        }
-                        if (consume0)
-                        {
-                            // 很容易就退出 因为是引怪
-                            if (monTried > 4)
-                            {
-                                MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                                break;
-                            }
                         }
                         CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
