@@ -40,6 +40,22 @@ public static class GoRunFunction
         {
             await NpcFunction.RefreshPackages(instanceValue);
         }
+
+        // 清理战士蓝
+        if (instanceValue.AccountInfo.role == RoleType.blade)
+        {
+            var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
+            var keep = instanceValue.CharacterStatus.Level < 28 ? 0 : 4;
+            var dropItems = items2.Skip(keep).ToList();
+            foreach (var item in dropItems)
+            {
+                await DropItem(instanceValue, item);
+            }
+            if (dropItems.Count > 0)
+            {
+                await NpcFunction.RefreshPackages(instanceValue);
+            }
+        }
     }
 
     /// <summary>
@@ -2323,15 +2339,6 @@ public static class GoRunFunction
                 return;
             }
             NpcFunction.EatIndexItem(GameInstance, resIdx);
-        }
-        // 清理战士蓝
-        if (GameInstance.AccountInfo.role == RoleType.blade && GameInstance.CharacterStatus.Level < 28)
-        {
-            var lans = findIdxInAllItems(GameInstance, "魔法药", true);
-            if (lans != null)
-            {
-                NpcFunction.EatIndexItem(GameInstance, lans[0]);
-            }
         }
         // 清理道士蓝
         if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
