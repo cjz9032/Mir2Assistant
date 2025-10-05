@@ -45,7 +45,7 @@ public static class GoRunFunction
         if (instanceValue.AccountInfo.role == RoleType.blade)
         {
             var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
-            var keep = instanceValue.CharacterStatus.Level < 28 ? 0 : 8;
+            var keep = instanceValue.CharacterStatus.Level < 28 ? 0 : (GameConstants.Items.megaBuyCount * 0.6);
             var dropItems = items2.Skip(keep).ToList();
             foreach (var item in dropItems)
             {
@@ -138,7 +138,7 @@ public static class GoRunFunction
                         instanceValue.AccountInfo.role == RoleType.taoist
                         ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
                         : (
-                            isBladeNeed ? (megaCount < 8) : false
+                            isBladeNeed ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
                         )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
