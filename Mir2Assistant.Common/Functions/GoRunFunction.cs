@@ -1220,13 +1220,15 @@ public static class GoRunFunction
                     if (!hasTempedMon)
                     // 搞
                     {
+                        // 
+                        var hasJS = instanceValue.Monsters.Any(o => o.Value.Name == "僵尸");
                         var mageAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                         // consumer0 处于诱惑不打指定
                         (isFullBB ? true : !temps.Contains(o.Name))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                         && (o.Appr == 40
                             ?true
-                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + 3000))
+                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 10_000 : 5000)))
                         && allowMonsters.Contains(o.Name)
                         && (o.Appr == 40 ? true : o.CurrentHP > 20)
                         )
