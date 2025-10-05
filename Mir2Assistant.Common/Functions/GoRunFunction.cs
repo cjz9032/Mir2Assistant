@@ -1228,7 +1228,7 @@ public static class GoRunFunction
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                         && (o.Appr == 40
                             ?true
-                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 10_000 : 11000)))
+                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
                         && (o.Appr == 40 ? true : o.CurrentHP > 20)
                         )
@@ -1240,15 +1240,15 @@ public static class GoRunFunction
                         .Select(o => o.Monster)
                         .FirstOrDefault();
                         
-                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.5 && mageAni != null)
-                        {
-                            instanceValue.mageDrawAttentionMonsterCD.TryGetValue(mageAni.Id, out var cd2);
-                            if (cd2 > 0 && (Environment.TickCount - cd2 < 4000))
+                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
+                        { 
+                            var isDJS = mageAni.Appr == 40;
+                            if (isDJS ? true :  Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 5000))
                             {
+                                sendSpell(instanceValue!, isDJS && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                 instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
+                                instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
                             }
-                            instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
-                            sendSpell(instanceValue!, mageAni.Appr == 40 && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                         }
                     }
                

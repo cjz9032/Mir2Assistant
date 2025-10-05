@@ -40,6 +40,7 @@ public class MirGameInstanceModel
     public LimitedHashSet<int> attackedMonsterIds { get; set; } = new LimitedHashSet<int>(100);
     // 法师专打名单过的怪物ID名单
     public LimitedDictionary<int, int> mageDrawAttentionMonsterCD { get; set; } = new LimitedDictionary<int, int>();
+    public int mageDrawAttentionGlobalCD { get; set; } //技能 cd
 
 
     public bool IsReadingMonsters = false;
