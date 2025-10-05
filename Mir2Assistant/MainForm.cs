@@ -637,8 +637,10 @@ namespace Mir2Assistant
         {
             var lowCoin = instanceValue.CharacterStatus.coin < 3000;
             if (lowCoin) return;
-            // 目前只有道士买魔法, 
-            if (GoRunFunction.CapbilityOfHeal(instanceValue))
+            // 目前只有道士武买魔法
+            var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
+
+            if (GoRunFunction.CapbilityOfHeal(instanceValue) || isBladeNeed)
             {
                 var items = GameConstants.Items.MegaPotions;
                 var exitsQuan = 0;
@@ -651,11 +653,13 @@ namespace Mir2Assistant
                     }
                 });
 
-                if (exitsQuan < GameConstants.Items.megaBuyCount)
+                var buyC = isBladeNeed ? GameConstants.Items.megaBuyCount/3 : GameConstants.Items.megaBuyCount
+
+                if (exitsQuan < buyC)
                 {
                     await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MegaPotions[
                         instanceValue.CharacterStatus.Level >= 25 ? 1 : 0
-                    ], GameConstants.Items.megaBuyCount - exitsQuan);
+                    ], buyC - exitsQuan);
                 }
             }
             // 等级太低没钱
