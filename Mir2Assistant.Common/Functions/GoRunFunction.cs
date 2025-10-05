@@ -1994,6 +1994,7 @@ public static class GoRunFunction
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
                 await Task.Delay(300);
             }
+            await Task.Delay(1000);
             CharacterStatusFunction.ReadChats(GameInstance, true);
             var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
             if (lastChatState?.Contains(attack ? "休息" : "攻击") == true)
@@ -2007,7 +2008,7 @@ public static class GoRunFunction
     {
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
-        await Task.Delay(800);
+        await Task.Delay(1000);
         CharacterStatusFunction.ReadChats(GameInstance, true);
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
