@@ -1738,6 +1738,7 @@ namespace Mir2Assistant
                                             await Task.Delay(1000);
                                             if (!instance.chats.Any(chat => chat.Contains(ai)))
                                             {
+                                                instance.GameInfo("sameHP detected and ai not found");
                                                 await RestartGameProcess(instance);
                                                 continue;
                                             }
@@ -1750,8 +1751,9 @@ namespace Mir2Assistant
                                     }
                                     else
                                     {
-                                        await RestartGameProcess(instance);
-                                        continue;
+                                        // todo what?
+                                        // await RestartGameProcess(instance);
+                                        // continue;
                                     }
 
                                 }
