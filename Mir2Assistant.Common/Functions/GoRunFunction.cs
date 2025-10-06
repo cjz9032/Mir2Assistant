@@ -1245,7 +1245,7 @@ public static class GoRunFunction
                         if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
                         { 
                             var isDJS = mageAni.Appr == 40;
-                            if (isDJS ? true :  Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 5000))
+                            if (isDJS ? true :  Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 8000))
                             {
                                 sendSpell(instanceValue!, isDJS && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                 instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
