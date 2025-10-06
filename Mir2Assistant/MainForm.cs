@@ -1218,8 +1218,8 @@ namespace Mir2Assistant
                                 // var slaveExitForSwichMap = false;
                                 var slaveFromMap = "E605";
                                 var slaveToMap = "E701";
-                                var todoSwitch = true;
-                                var slaveEnabled = todoSwitch && (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
+                                var todoSwitch = true; // todoSwitch && (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
+                                var slaveEnabled = true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
