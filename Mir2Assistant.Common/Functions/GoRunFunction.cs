@@ -1209,6 +1209,10 @@ public static class GoRunFunction
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
                         && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
+                        // || (
+                        //     // 或者是旁边没人砍 也允许
+
+                        // ))
                         && temps.Contains(o.Name)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
@@ -1238,7 +1242,7 @@ public static class GoRunFunction
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                         .Where(o => o.Distance <= 30)
                         .OrderBy(o => o.Monster.Appr != 40 ?  (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
-                        .ThenBy(o => o.Distance * -1)
+                        .ThenBy(o => 100 - o.Distance)
                         .Select(o => o.Monster)
                         .FirstOrDefault();
                         
