@@ -1440,8 +1440,10 @@ namespace Mir2Assistant
                                     continue;
                                 }
                                 var waitingButNotHome = hadWaiting ?
-                                (!(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null) &&
-                                instances[0].isHomePreparing) : true;
+                                (!(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null))
+                                // todo 副号可以单独准备, 不需要管主号
+                                //  && instances[0].isHomePreparing
+                                  : true;
                                 
                                 if (waitingButNotHome && (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl))
                                 {
