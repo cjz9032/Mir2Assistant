@@ -1133,6 +1133,14 @@ namespace Mir2Assistant
 
                             // 目前死循环
                             var hangMapBBReady = false;
+                            var (cCount, allCount) = GoRunFunction.CCBBCount(instanceValue);
+                            // 避免一直呆下去, 走人
+                            if (cCount >= allCount * 0.8)
+                            {
+                                hangMapBBReady = true;
+                                instanceValue.GameInfo($"BB 初始化 找到所有{allCount}");
+                            }
+                            
                             while (true)
                             {
                                 CharacterStatus = instance.CharacterStatus!;
@@ -1444,7 +1452,7 @@ namespace Mir2Assistant
                                 // todo 副号可以单独准备, 不需要管主号
                                 //  && instances[0].isHomePreparing
                                   : true;
-                                
+
                                 if (waitingButNotHome && (instanceValue.CharacterStatus.isEnhanceDead || isLostGoHome || !instanceValue.AccountInfo.IsMainControl))
                                 {
                                     instanceValue.GameInfo("开始回家");

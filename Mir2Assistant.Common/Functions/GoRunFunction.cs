@@ -1236,13 +1236,13 @@ public static class GoRunFunction
                             ?true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 ? true : o.CurrentHP > 20)
+                        && (o.Appr == 40 ? true : (o.CurrentHP == 0 || o.CurrentHP > 20))
                         )
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                         .Where(o => o.Distance <= 30)
                         .OrderBy(o => o.Monster.Appr != 40 ?  (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
-                        .ThenBy(o => 100 - o.Distance)
+                        .ThenBy(o => o.Distance * -1)
                         .Select(o => o.Monster)
                         .FirstOrDefault();
                         
