@@ -1178,7 +1178,7 @@ public static class GoRunFunction
                 // 还要把鹿羊鸡放最后
                 .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                 .Where(o => o.Distance <= 30)
-                .OrderBy(o => o.Monster.Appr == 40 ?  (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
+                .OrderBy(o => o.Monster.Appr == 40 ? 0 : (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1))
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
