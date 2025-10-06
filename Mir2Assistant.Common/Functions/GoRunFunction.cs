@@ -76,6 +76,7 @@ public static class GoRunFunction
         }
         var isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
         if (isFull) return false;
+        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
 
         instanceValue.isPickingWay = true;
         var CharacterStatus = instanceValue.CharacterStatus!;
@@ -138,9 +139,9 @@ public static class GoRunFunction
                         instanceValue.AccountInfo.role == RoleType.taoist
                         ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
                         : (
-                            false
-                            // 半月还不行
-                            // isBladeNeed ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
+                            // false
+                            // 半月还不行 isBladeNeed
+                            canLight ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
                         )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
