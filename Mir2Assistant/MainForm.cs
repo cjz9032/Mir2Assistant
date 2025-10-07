@@ -375,7 +375,7 @@ namespace Mir2Assistant
                         // 如果是主控，显示辅助窗口
                         if (account.IsMainControl)
                         {
-                            gameInstance.AssistantForm.Show();
+                            // gameInstance.AssistantForm.Show();
                             gameInstance.GameInfo("辅助窗口已显示，账号: {Account}", account.Account);
                         }
 
