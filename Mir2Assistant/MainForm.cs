@@ -1271,11 +1271,14 @@ namespace Mir2Assistant
                                             exchangedExp = 0;
                                         }
                                         // 每间隔5分钟记录一次exp, 以判断是否需要切换地图
-                                        if (exchangedEnabled && DateTime.Now - exchangedExpTime > TimeSpan.FromMinutes(5))
+                                        if (exchangedEnabled && DateTime.Now - exchangedExpTime > TimeSpan.FromMinutes(3))
                                         {
                                             // 经验太少 TODO 根据等级, 
                                             // 升级 EXP可能不准确
-                                            if (exchangedExp < instanceValue.CharacterStatus.Exp && (instanceValue.CharacterStatus.Exp - exchangedExp < 2000))
+                                            // 3分钟收益
+                                            var exp3m = instanceValue.CharacterStatus.Exp - exchangedExp;
+                                            instanceValue.GameInfo("Exp3m: {Exp}", exp3m);
+                                            if (exchangedExp < instanceValue.CharacterStatus.Exp && exp3m < 1500)
                                             {
                                                 exitForSwichMap = true;
                                             }
