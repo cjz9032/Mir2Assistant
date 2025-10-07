@@ -755,6 +755,11 @@ namespace Mir2Assistant
             // 全搞完 回血
             while (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.9 || instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.9)
             {
+                // 有怪就跑
+                if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                {
+                    break;
+                }
                 instanceValue.GameInfo("回血中, 当前血量: {CurrentHP}, 当前魔法: {CurrentMP}", instanceValue.CharacterStatus.CurrentHP, instanceValue.CharacterStatus.CurrentMP);
                 await Task.Delay(30_000);
             }
