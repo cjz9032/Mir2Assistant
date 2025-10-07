@@ -936,7 +936,7 @@ namespace Mir2Assistant.Common.Functions
             var genderStr = gameInstance.AccountInfo.Gender == 1 ? "(男)" : "(女)";
             var level = levelParam ?? gameInstance.CharacterStatus.Level;
             var role = roleParam ?? gameInstance.AccountInfo.role;
-            var todoSwitch = true;
+            var todoSwitch = false;
             // 自动推荐装备
             switch (position)
             {

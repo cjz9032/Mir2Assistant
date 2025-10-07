@@ -108,7 +108,7 @@ public static class GoRunFunction
         var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
-        while (allTimes < 2)
+        while (allTimes < 1)
         {
             existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
             Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
@@ -1054,12 +1054,12 @@ public static class GoRunFunction
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
+            if (checker(instanceValue!))
+            {
+                return true;
+            }
             if (!forceSkip)
             {
-                if (checker(instanceValue!))
-                {
-                    return true;
-                }
                 // 从是跟随
                 if (instanceValue.AccountInfo.IsMainControl)
                 {
@@ -1091,6 +1091,10 @@ public static class GoRunFunction
                         bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
                     }
                 }
+            }
+            if (checker(instanceValue!))
+            {
+                return true;
             }
 
             // 5格内没怪 可以捡取
@@ -1279,7 +1283,8 @@ public static class GoRunFunction
                             instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
                             return false;
                         }
-                        if (!forceSkip && checker(instanceValue!))
+                        // todo !forceSkip &&
+                        if (checker(instanceValue!))
                         {
                             instanceValue.GameWarning("测试打怪中途跑路");
                             return true;
@@ -1547,6 +1552,53 @@ public static class GoRunFunction
         }
     }
 
+    public static bool CheckIfSurrounded(MirGameInstanceModel GameInstance)
+    {
+        var (width, height, obstacles) = retriveMapObstacles(GameInstance!);
+        var myX = GameInstance!.CharacterStatus!.X;
+        var myY = GameInstance!.CharacterStatus!.Y;
+        
+        // 添加怪物位置作为障碍点，就像genGoPath中的处理方式
+        var monsPos = GetMonsPos(GameInstance!);
+        var obstacleData = new byte[obstacles.Length];
+        Array.Copy(obstacles, obstacleData, obstacles.Length);
+        
+        foreach (var pos in monsPos)
+        {
+            int monX = pos[0];
+            int monY = pos[1];
+            if (monX >= 0 && monX < width && monY >= 0 && monY < height)
+            {
+                obstacleData[monY * width + monX] = 1;
+            }
+        }
+        
+        // 检查周围8个方向是否都是障碍物
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // 跳过中心点（角色当前位置）
+                
+                var x = myX + dx;
+                var y = myY + dy;
+                
+                // 边界检查：如果超出地图边界，也算作障碍物
+                if (x < 0 || x >= width || y < 0 || y >= height)
+                {
+                    continue; // 边界算作障碍物，继续检查下一个方向
+                }
+                
+                // 如果找到一个非障碍物位置，则未被完全包围
+                if (obstacleData[y * width + x] != 1)
+                {
+                    return false;
+                }
+            }
+        }
+        return true; // 所有8个方向都是障碍物，被包围
+    }
+
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
           bool nearBlur = true,
@@ -1644,7 +1696,7 @@ public static class GoRunFunction
             }
 
             stopwatchTotal.Stop();
-            if (stopwatchTotal.ElapsedMilliseconds > 10)
+            if (stopwatchTotal.ElapsedMilliseconds > 100)
             {
                 GameInstance.GameDebug("寻路: {Time} 毫秒", stopwatchTotal.ElapsedMilliseconds);
             }
@@ -1652,7 +1704,10 @@ public static class GoRunFunction
 
             if (goNodes.Count == 0)
             {
-                await cleanMobs(GameInstance, attacksThan, true, cancellationToken);
+                // 查看被包围, 8个点都是1障碍
+                if(CheckIfSurrounded(GameInstance)){
+                    await cleanMobs(GameInstance, attacksThan, true, cancellationToken);
+                }
                 await PerformPickup(GameInstance, cancellationToken);
                 // 加个重试次数3次
                 await Task.Delay(200);
