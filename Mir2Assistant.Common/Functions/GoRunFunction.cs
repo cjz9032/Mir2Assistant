@@ -146,7 +146,8 @@ public static class GoRunFunction
                         : (
                             // false
                             // 半月还不行 isBladeNeed
-                            canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
+                            // canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
+                            false
                         )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
