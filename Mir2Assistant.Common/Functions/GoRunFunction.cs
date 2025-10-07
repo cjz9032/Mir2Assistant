@@ -1983,7 +1983,7 @@ public static class GoRunFunction
                         var isJumpSuccess = false;
                         foreach (var jumpSteps in new[] { 1, 2, 5, 8,14 })
                         {
-                            await Task.Delay(100, cancellationToken);
+                            await Task.Delay(50, cancellationToken);
                             if (callback(GameInstance))
                             {
                                 return false;
@@ -2001,7 +2001,7 @@ public static class GoRunFunction
                             catch (Exception ex)
                             {
                                 GameInstance!.GameError("寻路异常" + ex.Message);
-                                await Task.Delay(100);
+                                await Task.Delay(50);
                                 if (GameInstance.CharacterStatus!.isEnhanceDead)
                                 {
                                     await Task.Delay(60_000);
@@ -2021,7 +2021,7 @@ public static class GoRunFunction
                                     var localTried = 0;
                                     while (localTried < 6)
                                     {
-                                        await Task.Delay(100, cancellationToken);
+                                        await Task.Delay(50, cancellationToken);
                                         if (callback(GameInstance))
                                         {
                                             return false;
