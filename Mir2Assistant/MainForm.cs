@@ -1226,6 +1226,7 @@ namespace Mir2Assistant
                                     // 查找BB, 100%
                                 }
                                 var exchangedEnabled = true;
+                                var exchangedIdx = 0;
                                 var exchangedMap = new[] { "E605", "D601" };
                                 if (exchangedEnabled)
                                 {
@@ -1260,12 +1261,12 @@ namespace Mir2Assistant
                                             return true;
                                         }
                                         // 进入图中
-                                        if (exchangedEnabled && exchangedExpTime == null && exchangedMap.Contains(hangMapId))
+                                        if (exchangedEnabled && exchangedExpTime == null && exchangedMap[exchangedIdx] == hangMapId)
                                         {
                                             exchangedExpTime = DateTime.Now;
                                             exchangedExp = instanceValue.CharacterStatus.Exp;
                                         }
-                                        else
+                                        else if(!exchangedMap.Contains(hangMapId))
                                         {
                                             exchangedExpTime = null;
                                             exchangedExp = 0;
@@ -1276,7 +1277,7 @@ namespace Mir2Assistant
                                             // 经验太少 TODO 根据等级, 
                                             // 升级 EXP可能不准确
                                             // 3分钟收益
-                                            var exp1minBase = 500;
+                                            var exp1minBase = 120;
                                             var diffmin = (DateTime.Now - exchangedExpTime).Value.TotalMinutes;
                                             var exp3m = instanceValue.CharacterStatus.Exp - exchangedExp;
                                             instanceValue.GameInfo("Exp3m: {Exp} / {DiffMin}", exp3m, diffmin);
@@ -1441,7 +1442,8 @@ namespace Mir2Assistant
                                         else if (exitForSwichMap)
                                         {
                                             // todo list
-                                            hangMapId = CharacterStatus.MapId == exchangedMap[0] ? exchangedMap[1] : exchangedMap[0];
+                                            exchangedIdx = 1 - exchangedIdx;
+                                            hangMapId = exchangedMap[exchangedIdx];
                                             instanceValue.GameInfo("换图->" + hangMapId);
                                             return true;
                                         }
