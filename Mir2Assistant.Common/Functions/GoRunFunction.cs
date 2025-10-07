@@ -2199,7 +2199,7 @@ public static class GoRunFunction
             // 只取这个实例里对应自己账号的玩家信息和宝宝信息
             var selfMonsters = instance.Monsters.Values.Where(m =>
                 (m.isSelf) ||
-                (m.isTeams)
+                (m.isMyMons)
             );
             allMonsInClients.AddRange(selfMonsters);
         }
