@@ -1272,12 +1272,12 @@ namespace Mir2Assistant
                                             exchangedExp = 0;
                                         }
                                         // 每间隔5分钟记录一次exp, 以判断是否需要切换地图
-                                        if (exchangedEnabled && exchangedExpTime != null && (DateTime.Now - exchangedExpTime) > TimeSpan.FromMinutes(3))
+                                        if (exchangedEnabled && exchangedExpTime != null && (DateTime.Now - exchangedExpTime) > TimeSpan.FromMinutes(5))
                                         {
                                             // 经验太少 TODO 根据等级, 
                                             // 升级 EXP可能不准确
                                             // 3分钟收益
-                                            var exp1minBase = 120;
+                                            var exp1minBase = 100;
                                             var diffmin = (DateTime.Now - exchangedExpTime).Value.TotalMinutes;
                                             var exp3m = instanceValue.CharacterStatus.Exp - exchangedExp;
                                             instanceValue.GameInfo("Exp3m: {Exp} / {DiffMin}", exp3m, diffmin);
