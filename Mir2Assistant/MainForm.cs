@@ -1290,11 +1290,8 @@ namespace Mir2Assistant
                                             {
                                                 exitForSwichMap = true;
                                             }
-                                            else
-                                            {
-                                                exchangedExpTime = DateTime.Now;
-                                                exchangedExp = instanceValue.CharacterStatus.Exp;
-                                            }
+                                            exchangedExpTime = DateTime.Now;
+                                            exchangedExp = instanceValue.CharacterStatus.Exp;
                                         }
 
                                         var isBBReadyStatusChanged = false;
@@ -1446,7 +1443,6 @@ namespace Mir2Assistant
                                         }
                                         else if (exitForSwichMap)
                                         {
-                                            // todo list
                                             exchangedIdx = 1 - exchangedIdx;
                                             hangMapId = exchangedMap[exchangedIdx];
                                             instanceValue.GameInfo("换图->" + hangMapId);
