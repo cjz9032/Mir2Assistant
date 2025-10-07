@@ -1154,7 +1154,7 @@ public static class GoRunFunction
             // 无怪退出
             while (true)
             {
-                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.stdAliveMon && o.Name.Contains("(") &&
+                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isMyMons &&
                 Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 7).Count() > 3;
 
                 CharacterStatus = instanceValue.CharacterStatus;
@@ -1232,8 +1232,8 @@ public static class GoRunFunction
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
-                var slashRemainHP = 45;
-                var drawBBRemainHP = 15;
+                var slashRemainHP = 60;
+                var drawBBRemainHP = 20;
 
 
 
@@ -1263,13 +1263,18 @@ public static class GoRunFunction
                 {
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
+                    var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
                     if (ani == null)
                     {
                         break;
                     }
+                    var nearBBCount = instanceValue.Monsters.Values.Count(o => !o.isDead &&
+                        o.isMyMons
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
+                    var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
                     // 围绕跑一下
                     if (
-                        new Random().Next(100) < 80) {
+                        isFullBB && new Random().Next(100) < 80) {
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 6, true, 0, 30, 0,
                         (instanceValue) =>
                         {
@@ -1290,10 +1295,6 @@ public static class GoRunFunction
                     }
 
                     // 继续诱惑 还是火球
-                    var nearBBCount = instanceValue.Monsters.Values.Count(o => !o.isDead &&
-                    o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName)
-                    && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
-                    var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
                     var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
 
                     // 使用通用躲避方法
@@ -1313,12 +1314,12 @@ public static class GoRunFunction
                         // 寻找陀螺
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
-                        && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP)
-                        // || (
-                        //     // 或者是旁边没人砍 也允许
-
-                        // ))
                         && temps.Contains(o.Name)
+                        && (o.CurrentHP == 0 || o.CurrentHP == o.MaxHP
+                        || (
+                            // 或者是旁边没人砍 也允许
+                          !teamsXY.Any(((int x, int y) t) => Math.Min(Math.Abs(t.x - o.X), Math.Abs(t.y - o.Y)) == 1)
+                        ))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
                         .FirstOrDefault();
@@ -1467,6 +1468,17 @@ public static class GoRunFunction
                                 break;
                             }
                             ani = ani3;
+                            // 补刀用
+                            if (
+                                !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                                (ani.CurrentHP > 0
+                                    ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
+                                : true) : true)
+                                : true)
+                            ) {
+                                MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                                break;
+                            }
                         }
                         await Task.Delay(200);
                         // todo 优化
@@ -2173,8 +2185,8 @@ public static class GoRunFunction
         {
             // 只取这个实例里对应自己账号的玩家信息和宝宝信息
             var selfMonsters = instance.Monsters.Values.Where(m =>
-                (m.TypeStr == "玩家" && m.Name == instance.AccountInfo.CharacterName) ||  // 玩家自己
-                (m.TypeStr == "(怪)" && m.Name.Contains(instance.AccountInfo.CharacterName))  // 玩家的宝宝
+                (m.isSelf) ||
+                (m.isTeams)
             );
             allMonsInClients.AddRange(selfMonsters);
         }
@@ -2416,7 +2428,7 @@ public static class GoRunFunction
         ItemModel? item = null;
         var useItem = GameInstance.CharacterStatus.useItems[(int)EquipPosition.ArmRingLeft];
         bool isWearFuShen = useItem.IsEmpty && useItem.stdMode == 25;
-        if (!(isWearFuShen))
+        if (!isWearFuShen)
         {
             item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
             if (item == null)
@@ -2430,10 +2442,8 @@ public static class GoRunFunction
 
         // 其他actor都接近, 就一起放
         // 查找所有的人
-        var allAccountNames = instances.Select(i => i.AccountInfo.CharacterName).ToList();
-        var myteamMembersPos = GameInstance.Monsters.Values.Where(o => o.isDead == false
-        && Math.Abs(o.X - GameInstance.CharacterStatus.X) < 10 && Math.Abs(o.Y - GameInstance.CharacterStatus.Y) < 10 &&
-            (allAccountNames.Contains(o.Name) || (o.Name.Contains("(") && allAccountNames.Any(name => o.Name.Contains(name)))))
+        var myteamMembersPos = GameInstance.Monsters.Values.Where(o => !o.isDead && o.isTeams
+        && Math.Abs(o.X - GameInstance.CharacterStatus.X) < 10 && Math.Abs(o.Y - GameInstance.CharacterStatus.Y) < 10)
             .Select(o => (o.X, o.Y)).ToList();
 
         // 使用最多3个正方形覆盖最多的队友位置
@@ -2486,11 +2496,7 @@ public static class GoRunFunction
         names = mages.Select(i => i.AccountInfo.CharacterName).ToList();
         foreach (var instance in mages)
         {
-            var selfMonsters = instance.Monsters.Values.Where(m =>
-                (!m.isDead) &&
-                m.TypeStr == "(怪)" && m.Name.Contains("(")
-                && names.Any(name => m.Name.Contains(name))  // 玩家的宝宝 (name)
-            );
+            var selfMonsters = instance.Monsters.Values.Where(m =>!m.isDead && m.isTeamMons  );
             allMonsIdInClients.UnionWith(selfMonsters.Select(m => m.Id));
         }
         var targetCount = mages.Count * 5;

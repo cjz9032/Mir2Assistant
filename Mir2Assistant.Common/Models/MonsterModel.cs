@@ -17,6 +17,11 @@ namespace Mir2Assistant.Common.Models
         public bool isDead { get; set; }
         public bool isButched { get; set; }
         public short Appr { get; set; }
+        public bool isTeams { get; set; }
+        public bool isSelf { get; set; }
+        public bool isTeamMem { get; set; }
+        public bool isTeamMons { get; set; }
+        public bool isMyMons { get; set; }
         public string TypeStr
         {
             get
@@ -47,7 +52,7 @@ namespace Mir2Assistant.Common.Models
         /// 行会
         /// </summary>
         public string? Guild { get; set; }
-        public bool stdAliveMon => !isDead && TypeStr == "(怪)" && !Name!.Contains(")");
+        public bool stdAliveMon => !isDead && TypeStr == "(怪)" && !isTeamMons;
 
         public string Display => $"{$"{X},{Y}",-8}{TypeStr}{(isDead ? "死" : "")} {(isButched ? "已屠宰" : "")} {Name} {Appr} {Addr:x2} {Id:x2}";
     }
