@@ -1333,14 +1333,14 @@ public static class GoRunFunction
                     // 搞
                     {
                         // 
-                        var hasJS = instanceValue.Monsters.Any(o => o.Value.Name == "僵尸");
+                        var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40);
                         var mageAni = dianJS ?? (instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                         // consumer0 处于诱惑不打指定
                         (isFullBB ? true : !temps.Contains(o.Name))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                         && (o.Appr == 40
                             ? true
-                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 20_000 : 11000)))
+                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
                         && (o.Appr == 40 ? true : (o.CurrentHP == 0 || o.CurrentHP > drawBBRemainHP))
                         )
@@ -1356,7 +1356,7 @@ public static class GoRunFunction
                         if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
                         {
                             var isDJS = mageAni.Appr == 40;
-                            if (isDJS ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 8000))
+                            if (isDJS ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasDJS ? 15000 : 8000))
                             {
                                 sendSpell(instanceValue!, isDJS && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                 instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
