@@ -810,7 +810,7 @@ namespace Mir2Assistant.Common.Functions
                 ) : true)
             ) : true) )
             
-             && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 30)
+             && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 25 && o.stdMode != 30)
             .GroupBy(o => o.stdModeToUseItemIndex[0]); // 可以只0, 因为是同一个NPC
             foreach (var group in ljequipment)
             {
