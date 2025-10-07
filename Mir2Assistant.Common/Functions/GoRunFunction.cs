@@ -1074,7 +1074,25 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0, 9999, 0, checker);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0, 9999, 0,
+                            (instanceValue) =>
+                            {
+                                if (checker(instanceValue))
+                                {
+                                    return true;
+                                }
+                                var temp = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+                                var monsters = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name) &&
+                                Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
+                                ).ToList();
+                                if (monsters.Count > 0)
+                                {
+                                    return true;
+                                }
+                                // 自定义
+                                return false;
+                            }
+                         );
                 }
                 else
                 {
@@ -1576,7 +1594,7 @@ public static class GoRunFunction
         return 999;
     }
 
-    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken)
+    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken,  Func<MirGameInstanceModel, bool> checker)
     {
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)
@@ -1591,16 +1609,16 @@ public static class GoRunFunction
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
                 {
+                    if(checker(instanceValue))
+                    {
+                        return true;
+                    }
                     // 重读怪物
                     var existsCount = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
              Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
             ).Count();
                     // 怪物死了剩余一半就可以通过
                     if (existsCount <= attacksThan / 3)
-                    {
-                        return true;
-                    }
-                    if (instanceValue.CharacterStatus.MaxHP > 50 ? instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.25 : instanceValue.CharacterStatus.CurrentHP < 10)
                     {
                         return true;
                     }
@@ -1774,7 +1792,7 @@ public static class GoRunFunction
                 // 查看被包围, 8个点都是1障碍
                 if (CheckIfSurrounded(GameInstance))
                 {
-                    await cleanMobs(GameInstance, attacksThan, true, cancellationToken);
+                    await cleanMobs(GameInstance, attacksThan, true, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 加个重试次数3次
@@ -1811,7 +1829,7 @@ public static class GoRunFunction
                 }
                 if (CheckIfSurrounded(GameInstance))
                 {
-                    await cleanMobs(GameInstance, attacksThan, false, cancellationToken);
+                    await cleanMobs(GameInstance, attacksThan, false, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题
