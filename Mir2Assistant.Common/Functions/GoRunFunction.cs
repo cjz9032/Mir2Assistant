@@ -1392,6 +1392,16 @@ public static class GoRunFunction
                             instanceValue.GameWarning("测试打怪中途跑路");
                             return true;
                         }
+                        if (
+                            !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                            (ani.CurrentHP > 0
+                                ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
+                            : true) : true)
+                            : true)
+                        ) {
+                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            break;
+                        }
                         CharacterStatus = instanceValue.CharacterStatus;
                         // 检测距离
                         if (!instanceValue.AccountInfo.IsMainControl && !forceSkip)
