@@ -1981,7 +1981,7 @@ public static class GoRunFunction
                         }
                         // 尝试跳到后面的点
                         var isJumpSuccess = false;
-                        foreach (var jumpSteps in new[] { 1, 2, 3, 4, 5, 10, 11, 15 })
+                        foreach (var jumpSteps in new[] { 1, 2, 5, 8,14 })
                         {
                             await Task.Delay(100, cancellationToken);
                             if (callback(GameInstance))
@@ -2255,7 +2255,7 @@ public static class GoRunFunction
             });
             return;
         }
-        GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
+        // GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
