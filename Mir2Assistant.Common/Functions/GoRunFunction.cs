@@ -1264,7 +1264,6 @@ public static class GoRunFunction
                 {
                     // 一直等到无怪,  TODO 测试主从, 优先测从
                     await Task.Delay(200);
-                    var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
                     if (ani == null)
                     {
                         break;
@@ -1312,6 +1311,7 @@ public static class GoRunFunction
 
                     if (canTemp && !isFullBB && dianJS == null)
                     {
+                        var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
                         // 寻找陀螺
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
