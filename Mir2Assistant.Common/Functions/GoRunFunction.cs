@@ -1154,8 +1154,8 @@ public static class GoRunFunction
             // 无怪退出
             while (true)
             {
-                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isMyMons &&
-                Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 7).Count() > 3;
+                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
+                Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
 
                 CharacterStatus = instanceValue.CharacterStatus;
                 if (instanceValue.CharacterStatus!.isEnhanceDead)
@@ -1392,6 +1392,8 @@ public static class GoRunFunction
                             instanceValue.GameWarning("测试打怪中途跑路");
                             return true;
                         }
+                        enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
+                         Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
                         if (
                             !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                             (ani.CurrentHP > 0
