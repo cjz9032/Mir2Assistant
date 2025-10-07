@@ -1140,7 +1140,7 @@ namespace Mir2Assistant
                                 hangMapBBReady = true;
                                 instanceValue.GameInfo($"BB 初始化 找到所有{allCount}");
                             }
-                            
+
                             while (true)
                             {
                                 CharacterStatus = instance.CharacterStatus!;
@@ -1225,8 +1225,14 @@ namespace Mir2Assistant
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
                                     // 查找BB, 100%
                                 }
+                                var exchangedEnabled = true;
+                                var exchangedMap = new[] { "E605", "D601" };
+                                if (exchangedEnabled)
+                                {
+                                    hangMapId = exchangedMap[0];
+                                }
 
-                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.CurrentHP}");
+                                instanceValue.GameInfo($"准备开工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.Exp} --  {CharacterStatus.CurrentHP}");
 
                                 var isLostGoHome = false;
                                 // var lastTimeExp = 0;
@@ -1234,13 +1240,16 @@ namespace Mir2Assistant
                                 while (true)
                                 {
                                     isLostGoHome = false;
-                                    // var exitForSwichMap = false;
+                                    var exitForSwichMap = false;
+                                    DateTime? exchangedExpTime = null;
+                                    int exchangedExp = 0;
+
                                     // todo 要出门再用
                                     DateTime? BBLackTime = null;
                                     await GoRunFunction.BeStatusSlaveIfHas(instanceValue, true);
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                        // exitForSwichMap = false;
+                                        exitForSwichMap = false;
                                         // 小号跟随回家
                                         if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
                                         {
@@ -1250,6 +1259,33 @@ namespace Mir2Assistant
                                         {
                                             return true;
                                         }
+                                        // 进入图中
+                                        if (exchangedEnabled && exchangedExpTime == null && exchangedMap.Contains(hangMapId))
+                                        {
+                                            exchangedExpTime = DateTime.Now;
+                                            exchangedExp = instanceValue.CharacterStatus.Exp;
+                                        }
+                                        else
+                                        {
+                                            exchangedExpTime = null;
+                                            exchangedExp = 0;
+                                        }
+                                        // 每间隔5分钟记录一次exp, 以判断是否需要切换地图
+                                        if (exchangedEnabled && DateTime.Now - exchangedExpTime > TimeSpan.FromMinutes(5))
+                                        {
+                                            // 经验太少 TODO 根据等级, 
+                                            // 升级 EXP可能不准确
+                                            if (exchangedExp < instanceValue.CharacterStatus.Exp && (instanceValue.CharacterStatus.Exp - exchangedExp < 2000))
+                                            {
+                                                exitForSwichMap = true;
+                                            }
+                                            else
+                                            {
+                                                exchangedExpTime = DateTime.Now;
+                                                exchangedExp = instanceValue.CharacterStatus.Exp;
+                                            }
+                                        }
+
                                         var isBBReadyStatusChanged = false;
                                         // BB由主号随机性检查 避免过多
                                         if (instanceValue.AccountInfo.IsMainControl && slaveEnabled && new Random().Next(100) < 50)
@@ -1391,50 +1427,31 @@ namespace Mir2Assistant
                                         }
                                         var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen || isOtherLowHp || isBBReadyStatusChanged;
                                         // 换图 -- 找怪和打怪
-
-                                        // int currentMinute = DateTime.Now.Minute;
-                                        // if (CharacterStatus.MapId == "E402" && (currentMinute / 10) % 2 == 0 && hangMapId == "E402")
-                                        // {
-                                        //     // exitForSwichMap = true;
-                                        // }
-                                        // else if (CharacterStatus.MapId == "E401" && (currentMinute / 10) % 2 == 1 && hangMapId == "E401")
-                                        // {
-                                        //     // exitForSwichMap = true;
-                                        // }
-
-
                                         if (final)
                                         {
                                             // 但是优先强制回
                                             isLostGoHome = true;
-                                            // exitForSwichMap = false;
+                                            exitForSwichMap = false;
                                         }
-                                        // else if (exitForSwichMap)
-                                        // {
-                                        //     // todo list
-                                        //     instanceValue.GameInfo("换图 E402/3");
-                                        //     if (CharacterStatus.MapId == "E402")
-                                        //     {
-                                        //         hangMapId = "E401";
-                                        //     }
-                                        //     else if (CharacterStatus.MapId == "E401")
-                                        //     {
-                                        //         hangMapId = "E402";
-                                        //     }
-                                        //     return true;
-                                        // }
+                                        else if (exitForSwichMap)
+                                        {
+                                            // todo list
+                                            hangMapId = CharacterStatus.MapId == exchangedMap[0] ? exchangedMap[1] : exchangedMap[0];
+                                            instanceValue.GameInfo("换图->" + hangMapId);
+                                            return true;
+                                        }
                                         return final;
                                     }, hangMapId);
                                     await Task.Delay(500);
 
-                                    // if (exitForSwichMap)
-                                    // {
-                                    //     continue;
-                                    // }
-                                    // else
-                                    // {
-                                    break;
-                                    // }
+                                    if (exitForSwichMap)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
                                 }
 
 
@@ -1519,6 +1536,8 @@ namespace Mir2Assistant
                                     instanceValue.GameInfo("意外回家 取消");
                                     await Task.Delay(1000);
                                 }
+
+                                instanceValue.GameInfo($"结束一轮收工 hangMapId: {hangMapId} my status{CharacterStatus.Level} {CharacterStatus.Exp} --  {CharacterStatus.CurrentHP}");
                             }
                             // act.TaskSub0Step = 6;
                             // SaveAccountList();
