@@ -18,15 +18,15 @@ public static class GoRunFunction
 
     public static async Task DropItem(MirGameInstanceModel instanceValue, ItemModel item)
     {
-            var data = StringUtils.GenerateMixedData(
-                item.Name,
-                item.Id
-            );
+        var data = StringUtils.GenerateMixedData(
+            item.Name,
+            item.Id
+        );
 
-            SendMirCall.Send(instanceValue, 3032, data);
-            instanceValue.memoryUtils.WriteByte(item.addr, 0);
-            await Task.Delay(500);
-        
+        SendMirCall.Send(instanceValue, 3032, data);
+        instanceValue.memoryUtils.WriteByte(item.addr, 0);
+        await Task.Delay(500);
+
     }
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
@@ -453,7 +453,7 @@ public static class GoRunFunction
     public static void cici(MirGameInstanceModel gameInstance, byte dir)
     {
 
-        if(gameInstance.AccountInfo.role != RoleType.blade)
+        if (gameInstance.AccountInfo.role != RoleType.blade)
         {
             return;
         }
@@ -1074,7 +1074,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0, 9999, 0 , checker);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0, 9999, 0, checker);
                 }
                 else
                 {
@@ -1097,7 +1097,23 @@ public static class GoRunFunction
                         {
                             return true;
                         }
-                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi, 0, checker);
+                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi, 0,
+                            (instanceValue) =>
+                            {
+                                if (checker(instanceValue))
+                                {
+                                    return true;
+                                }
+                                // 自定义
+                                var OFFSET_TO_COMP = 10;
+                                if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - px) > OFFSET_TO_COMP ||
+                                Math.Abs(GameState.GameInstances[0].CharacterStatus.Y - py) > OFFSET_TO_COMP)
+                                {
+                                    return true;
+                                }
+                                return false;
+                            }
+                         );
                     }
                 }
             }
@@ -1168,19 +1184,36 @@ public static class GoRunFunction
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                                 || diffFar > 30) ? 999 : 30;
                         var atksThan = diffFar > 12 ? 12 : 0;
-                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi , 0, checker);
+                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0,
+                         (instanceValue) =>
+                            {
+                                if (checker(instanceValue))
+                                {
+                                    return true;
+                                }
+                                // 自定义
+                                var OFFSET_TO_COMP = 10;
+                                if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - px) > OFFSET_TO_COMP ||
+                                Math.Abs(GameState.GameInstances[0].CharacterStatus.Y - py) > OFFSET_TO_COMP)
+                                {
+                                    return true;
+                                }
+                                return false;
+                            }
+                         );
+
                         if (isSS)
                         {
                             break;
                         }
                     }
                 }
-               
+
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
 
-        
-            
+
+
 
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
@@ -1195,7 +1228,7 @@ public static class GoRunFunction
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
-                
+
                 if (consume0)
                 {
                     // 一直等到无怪,  TODO 测试主从, 优先测从
@@ -1210,7 +1243,7 @@ public static class GoRunFunction
                     && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
                     var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
                     var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
-                   
+
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
@@ -1246,7 +1279,7 @@ public static class GoRunFunction
                         (isFullBB ? true : !temps.Contains(o.Name))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                         && (o.Appr == 40
-                            ?true
+                            ? true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
                         && (o.Appr == 40 ? true : (o.CurrentHP == 0 || o.CurrentHP > 20))
@@ -1254,15 +1287,15 @@ public static class GoRunFunction
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                         .Where(o => o.Distance <= 30)
-                        .OrderBy(o => o.Monster.Appr != 40 ?  (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
+                        .OrderBy(o => o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
                         .ThenBy(o => o.Distance * -1)
                         .Select(o => o.Monster)
                         .FirstOrDefault();
-                        
+
                         if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
-                        { 
+                        {
                             var isDJS = mageAni.Appr == 40;
-                            if (isDJS ? true :  Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 8000))
+                            if (isDJS ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasJS ? 15000 : 8000))
                             {
                                 sendSpell(instanceValue!, isDJS && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                 instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
@@ -1270,7 +1303,7 @@ public static class GoRunFunction
                             }
                         }
                     }
-               
+
                     continue;
                 }
                 // 保护消费者
@@ -1310,7 +1343,23 @@ public static class GoRunFunction
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                                 || diffFar > 30) ? 999 : 30;
                                 var atksThan = diffFar > 12 ? 12 : 0;
-                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0, checker);
+                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0, 
+                                   (instanceValue) =>
+                                    {
+                                        if (checker(instanceValue))
+                                        {
+                                            return true;
+                                        }
+                                        // 自定义
+                                        var OFFSET_TO_COMP = 10;
+                                        if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - px) > OFFSET_TO_COMP ||
+                                        Math.Abs(GameState.GameInstances[0].CharacterStatus.Y - py) > OFFSET_TO_COMP)
+                                        {
+                                            return true;
+                                        }
+                                        return false;
+                                    }
+                                );
                                 if (isSS)
                                 {
                                     break;
@@ -1352,7 +1401,7 @@ public static class GoRunFunction
                         if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30, 0 , checker);
+                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30, 0, checker);
                             instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
                             if (ani3 == null)
                             {
@@ -1566,12 +1615,12 @@ public static class GoRunFunction
         var (width, height, obstacles) = retriveMapObstacles(GameInstance!);
         var myX = GameInstance!.CharacterStatus!.X;
         var myY = GameInstance!.CharacterStatus!.Y;
-        
+
         // 添加怪物位置作为障碍点，就像genGoPath中的处理方式
         var monsPos = GetMonsPos(GameInstance!);
         var obstacleData = new byte[obstacles.Length];
         Array.Copy(obstacles, obstacleData, obstacles.Length);
-        
+
         foreach (var pos in monsPos)
         {
             int monX = pos[0];
@@ -1581,23 +1630,23 @@ public static class GoRunFunction
                 obstacleData[monY * width + monX] = 1;
             }
         }
-        
+
         // 检查周围8个方向是否都是障碍物
         for (int dx = -1; dx <= 1; dx++)
         {
             for (int dy = -1; dy <= 1; dy++)
             {
                 if (dx == 0 && dy == 0) continue; // 跳过中心点（角色当前位置）
-                
+
                 var x = myX + dx;
                 var y = myY + dy;
-                
+
                 // 边界检查：如果超出地图边界，也算作障碍物
                 if (x < 0 || x >= width || y < 0 || y >= height)
                 {
                     continue; // 边界算作障碍物，继续检查下一个方向
                 }
-                
+
                 // 如果找到一个非障碍物位置，则未被完全包围
                 if (obstacleData[y * width + x] != 1)
                 {
@@ -1760,7 +1809,8 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                if(CheckIfSurrounded(GameInstance)){
+                if (CheckIfSurrounded(GameInstance))
+                {
                     await cleanMobs(GameInstance, attacksThan, false, cancellationToken);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
@@ -2244,7 +2294,7 @@ public static class GoRunFunction
         var instances = GameState.GameInstances;
 
         // 查看所有人的属性, 只要不符合就可以开始发
-        
+
         // instances.Any()
 
         var maxDef = GameInstance.CharacterStatus.MaxDef;
@@ -2610,7 +2660,7 @@ public static class GoRunFunction
 
         // 生成候选正方形中心位置：考虑每个点周围可能的最优位置
         var candidateSquares = new HashSet<(int X, int Y, int Size)>();
-        
+
         foreach (var point in points)
         {
             // 为每个点生成可能的正方形中心位置
@@ -2635,7 +2685,7 @@ public static class GoRunFunction
                 {
                     maxCoverage = coverage;
                     bestCombination = combination.ToList();
-                    
+
                     // 如果已经覆盖所有点，提前退出
                     if (coverage == points.Count)
                     {
@@ -2677,9 +2727,9 @@ public static class GoRunFunction
     public static bool IsPointInSquare((int X, int Y) point, (int CenterX, int CenterY, int Size) square, int squareSize)
     {
         int halfSize = squareSize / 2;
-        return point.X >= square.CenterX - halfSize && 
+        return point.X >= square.CenterX - halfSize &&
                point.X <= square.CenterX + halfSize &&
-               point.Y >= square.CenterY - halfSize && 
+               point.Y >= square.CenterY - halfSize &&
                point.Y <= square.CenterY + halfSize;
     }
 
