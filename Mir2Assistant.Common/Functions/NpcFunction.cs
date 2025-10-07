@@ -878,7 +878,7 @@ namespace Mir2Assistant.Common.Functions
             ) : true) )
              && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
              && o.stdModeToUseItemIndex[0] == (byte)position
-              && o.stdMode != 30);
+              && o.stdMode != 30 && o.stdMode != 25);
             // .GroupBy(o => ); // 可以只0, 因为是同一个NPC
           
             var lists = ljequipment.ToList();
