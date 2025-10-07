@@ -20431,6 +20431,7 @@ namespace Mir2Assistant.Common.Generated
             },
             ["E605"] = new int[][]
             {
+                // mod
                 new int[] { 13, 70 },
                 new int[] { 22, 80 },
                 new int[] { 32, 88 },
