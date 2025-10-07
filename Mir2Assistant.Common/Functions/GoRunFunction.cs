@@ -1501,7 +1501,7 @@ public static class GoRunFunction
                             break;
                         }
                         ani = ani2;
-                        if (ani.isDead || monTried > 150)
+                        if (ani.isDead || ani.isTeams || monTried > 150)
                         {
                             // instanceValue.attackedMonsterIds.Add(ani.Id);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
