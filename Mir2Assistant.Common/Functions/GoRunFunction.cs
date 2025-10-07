@@ -1232,7 +1232,7 @@ public static class GoRunFunction
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
-                var slashRemainHP = 60;
+                var slashRemainHP = 80;
                 var drawBBRemainHP = 20;
 
 
