@@ -45,7 +45,7 @@ public static class GoRunFunction
         if (instanceValue.AccountInfo.role == RoleType.blade)
         {
             var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
-            var keep = (int)(instanceValue.CharacterStatus.Level < 28 ? 0 : (GameConstants.Items.megaBuyCount * 0.6));
+            var keep = (int)(instanceValue.CharacterStatus.Level < 28 ? 0 : (GameConstants.Items.mageBuyCount * 0.6));
             var dropItems = items2.Skip(keep).ToList();
             foreach (var item in dropItems)
             {
@@ -83,7 +83,7 @@ public static class GoRunFunction
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
-        var megaCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+        var mageCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
@@ -97,7 +97,7 @@ public static class GoRunFunction
         var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * 8 : GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
-        var ccc = GameConstants.Items.megaBuyCount;
+        var ccc = GameConstants.Items.mageBuyCount;
         // 武器表
         // 筛选可捡取的物品
 
@@ -142,11 +142,11 @@ public static class GoRunFunction
                 && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
                 && (o.Value.Name.Contains("魔法药") ? (
                         instanceValue.AccountInfo.role == RoleType.taoist
-                        ? (CharacterStatus.Level > 7 && megaCount < (GameConstants.Items.megaBuyCount * 1.2))
+                        ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
                         : (
                             // false
                             // 半月还不行 isBladeNeed
-                            canLight ? (megaCount < GameConstants.Items.megaBuyCount * 0.6) : false
+                            canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
                         )
                     ) : true)
                 && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
@@ -2600,7 +2600,7 @@ public static class GoRunFunction
         if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
         {
             var lans = findIdxInAllItems(GameInstance, "魔法药", true);
-            if (lans != null && lans.Length > GameConstants.Items.megaBuyCount * 1.2)
+            if (lans != null && lans.Length > GameConstants.Items.mageBuyCount * 1.2)
             {
                 NpcFunction.EatIndexItem(GameInstance, lans[0]);
             }
