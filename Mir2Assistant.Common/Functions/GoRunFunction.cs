@@ -466,7 +466,6 @@ public static class GoRunFunction
         // my
         var myX = gameInstance!.CharacterStatus!.X;
         var myY = gameInstance!.CharacterStatus!.Y;
-        Log.Debug("cici {Dir} {X} {Y}", dir, myX, myY);
 
         SendMirCall.Send(gameInstance, 1002, new nint[] { myX, myY, dir, 0xbcb,
         GameState.MirConfig["角色基址"], GameState.MirConfig["SendMsg"] });
@@ -1155,6 +1154,9 @@ public static class GoRunFunction
             // 无怪退出
             while (true)
             {
+                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.stdAliveMon && o.Name.Contains("(") &&
+                Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 7).Count() > 3;
+
                 CharacterStatus = instanceValue.CharacterStatus;
                 if (instanceValue.CharacterStatus!.isEnhanceDead)
                 {
@@ -1229,6 +1231,9 @@ public static class GoRunFunction
 
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
+                var slasher = whoIsConsumer(instanceValue!) > 0;
+                var slashRemainHP = 45;
+                var drawBBRemainHP = 15;
 
 
 
@@ -1237,6 +1242,13 @@ public static class GoRunFunction
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
+                // 补刀用
+                (slasher && o.Appr != 40 ? (enoughBBCanHit ?
+                (o.CurrentHP > 0
+                    ? (o.CurrentHP > slashRemainHP || o.MaxHP < slashRemainHP)
+                : true) : true) 
+                : true) &&
+
                 (cleanAll || allowMonsters.Contains(o.Name))
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds)
                 // 还要把鹿羊鸡放最后
@@ -1255,6 +1267,28 @@ public static class GoRunFunction
                     {
                         break;
                     }
+                    // 围绕跑一下
+                    if (
+                        new Random().Next(100) < 80) {
+                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 6, true, 0, 30, 0,
+                        (instanceValue) =>
+                        {
+                            if (checker(instanceValue))
+                            {
+                                return true;
+                            }
+                            // 自定义
+                            var OFFSET_TO_COMP = 10;
+                            if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - px) > OFFSET_TO_COMP ||
+                            Math.Abs(GameState.GameInstances[0].CharacterStatus.Y - py) > OFFSET_TO_COMP)
+                            {
+                                return true;
+                            }
+                            return false;
+                        }
+                        );
+                    }
+
                     // 继续诱惑 还是火球
                     var nearBBCount = instanceValue.Monsters.Values.Count(o => !o.isDead &&
                     o.TypeStr == "(怪)" && o.Name.Contains(instanceValue.AccountInfo.CharacterName)
@@ -1267,7 +1301,14 @@ public static class GoRunFunction
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
                     // 如果是法师 可以抽陀螺
                     var hasTempedMon = false;
-                    if (canTemp && !isFullBB)
+
+
+                    var dianJS = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && (o.Appr == 40)
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                        // 还要把鹿羊鸡放最后
+                        .FirstOrDefault();
+
+                    if (canTemp && !isFullBB && dianJS == null)
                     {
                         // 寻找陀螺
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
@@ -1292,7 +1333,7 @@ public static class GoRunFunction
                     {
                         // 
                         var hasJS = instanceValue.Monsters.Any(o => o.Value.Name == "僵尸");
-                        var mageAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                        var mageAni = dianJS ?? (instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                         // consumer0 处于诱惑不打指定
                         (isFullBB ? true : !temps.Contains(o.Name))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
@@ -1300,15 +1341,16 @@ public static class GoRunFunction
                             ? true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 ? true : (o.CurrentHP == 0 || o.CurrentHP > 20))
+                        && (o.Appr == 40 ? true : (o.CurrentHP == 0 || o.CurrentHP > drawBBRemainHP))
                         )
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                         .Where(o => o.Distance <= 30)
                         .OrderBy(o => o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
-                        .ThenBy(o => o.Distance * -1)
+                        // .ThenBy(o => o.Distance * -1)
+                        .ThenBy(o => o.Monster.CurrentHP == 0 ? 9999 : o.Monster.CurrentHP)
                         .Select(o => o.Monster)
-                        .FirstOrDefault();
+                        .FirstOrDefault());
 
                         if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
                         {
@@ -1361,7 +1403,7 @@ public static class GoRunFunction
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                                 || diffFar > 30) ? 999 : 30;
                                 var atksThan = diffFar > 12 ? 12 : 0;
-                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0, 
+                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0,
                                    (instanceValue) =>
                                     {
                                         if (checker(instanceValue))
@@ -1409,7 +1451,6 @@ public static class GoRunFunction
                         {
                             var ciciDir = GetDirectionFromDelta2(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            // log 方向位置 debug
                             cici(instanceValue!, ciciDir);
                         }
                         else
@@ -1438,6 +1479,17 @@ public static class GoRunFunction
                         if (ani.isDead || monTried > 150)
                         {
                             // instanceValue.attackedMonsterIds.Add(ani.Id);
+                            MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                            break;
+                        }
+                        // 补刀用
+                        if (
+                            !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                            (ani.CurrentHP > 0
+                                ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
+                            : true) : true)
+                            : true)
+                        ) {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             break;
                         }
@@ -1531,6 +1583,7 @@ public static class GoRunFunction
             {
                 while (true)
                 {
+                    if (ani == null) break;
                     if (instanceValue.CharacterStatus!.isEnhanceDead)
                     {
                         instanceValue.GameWarning("角色已死亡，无法执行巡逻攻击");
