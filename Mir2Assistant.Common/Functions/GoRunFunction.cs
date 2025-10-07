@@ -64,7 +64,7 @@ public static class GoRunFunction
     /// <param name="instanceValue">游戏实例</param>
     /// <param name="cancellationToken">取消令牌</param>
     /// <returns>是否成功捡取到物品</returns>
-    public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default)
+    public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default, Func<MirGameInstanceModel, bool>? callback = null)
     {
         if (instanceValue.isPickingWay) return false;
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
@@ -74,6 +74,7 @@ public static class GoRunFunction
         {
             return false;
         }
+        callback = callback ?? ((instanceValue) => true);
         var isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
         if (isFull) return false;
         var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
@@ -115,6 +116,10 @@ public static class GoRunFunction
             if (existAni2 != null)
             {
                 break;
+            }
+            if (callback(instanceValue))
+            {
+                return false;
             }
             allTimes++;
             var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
@@ -161,6 +166,10 @@ public static class GoRunFunction
                 .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
             foreach (var drop in drops)
             {
+                if (callback(instanceValue))
+                {
+                    return false;
+                }
                 existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
                 Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
                 if (existAni2 != null)
@@ -170,14 +179,14 @@ public static class GoRunFunction
                 isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
                 if (isFull) return false;
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
-                bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30);
+                bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30, 0, callback);
 
                 var triedGoPick = 0;
                 var maxTriedGoPick = drop.Value.IsGodly ? 9 : 2;
                 while (!pathFound && triedGoPick < maxTriedGoPick)
                 {
                     triedGoPick++;
-                    pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30);
+                    pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30, 0, callback);
                 }
 
                 var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
@@ -1065,7 +1074,7 @@ public static class GoRunFunction
                 {
                     // 主人是点位
                     (px, py) = patrolPairs[curP];
-                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0);
+                    bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mapId, 4, true, 0, 9999, 0 , checker);
                 }
                 else
                 {
@@ -1088,7 +1097,7 @@ public static class GoRunFunction
                         {
                             return true;
                         }
-                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi);
+                        bool _whateverPathFound = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, 12, soFarGezi, 0, checker);
                     }
                 }
             }
@@ -1102,7 +1111,7 @@ public static class GoRunFunction
             Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
             if (existAni == null)
             {
-                await PerformPickup(instanceValue, _cancellationToken);
+                await PerformPickup(instanceValue, _cancellationToken, checker);
                 // await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
 
             }
@@ -1159,7 +1168,7 @@ public static class GoRunFunction
                         var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                                 || diffFar > 30) ? 999 : 30;
                         var atksThan = diffFar > 12 ? 12 : 0;
-                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
+                        var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi , 0, checker);
                         if (isSS)
                         {
                             break;
@@ -1301,7 +1310,7 @@ public static class GoRunFunction
                                 var soFarGezi = (instanceValue.CharacterStatus.MapId != mainInstance.CharacterStatus.MapId
                                 || diffFar > 30) ? 999 : 30;
                                 var atksThan = diffFar > 12 ? 12 : 0;
-                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi);
+                                var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 4, true, atksThan, soFarGezi, 0, checker);
                                 if (isSS)
                                 {
                                     break;
@@ -1343,7 +1352,7 @@ public static class GoRunFunction
                         if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30);
+                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30, 0 , checker);
                             instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
                             if (ani3 == null)
                             {
@@ -1371,7 +1380,7 @@ public static class GoRunFunction
                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
                     if (existAni2 == null)
                     {
-                        await PerformPickup(instanceValue, _cancellationToken);
+                        await PerformPickup(instanceValue, _cancellationToken, checker);
                         await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
 
                     }
@@ -1388,7 +1397,7 @@ public static class GoRunFunction
             }
 
             // 使用通用捡取方法
-            await PerformPickup(instanceValue, _cancellationToken);
+            await PerformPickup(instanceValue, _cancellationToken, checker);
 
             // 使用通用屠挖肉方法
             await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
@@ -1604,7 +1613,8 @@ public static class GoRunFunction
           bool nearBlur = true,
           int attacksThan = 3,
           int maxPathLength = 9999,
-          int retries = 0
+          int retries = 0,
+          Func<MirGameInstanceModel, bool>? callback = null
         )
     {
         if (cancellationToken.IsCancellationRequested)
@@ -1617,6 +1627,10 @@ public static class GoRunFunction
             GameInstance.GameWarning("角色已死亡，无法执行寻路");
             await Task.Delay(5_000);
             return false;
+        }
+        if (callback == null)
+        {
+            callback = (GameInstance) => false;
         }
         CharacterStatusFunction.GetInfo(GameInstance!);
         MonsterFunction.ReadMonster(GameInstance!);
@@ -1674,7 +1688,7 @@ public static class GoRunFunction
             if (GameInstance.CharacterStatus.MapId != connection.From.MapId)
             {
                 // reset
-                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
+                return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1, callback);
             }
 
             var stopwatchTotal = new System.Diagnostics.Stopwatch();
@@ -1704,18 +1718,23 @@ public static class GoRunFunction
 
             if (goNodes.Count == 0)
             {
+                if (callback(GameInstance))
+                {
+                    return false;
+                }
                 // 查看被包围, 8个点都是1障碍
-                if(CheckIfSurrounded(GameInstance)){
+                if (CheckIfSurrounded(GameInstance))
+                {
                     await cleanMobs(GameInstance, attacksThan, true, cancellationToken);
                 }
-                await PerformPickup(GameInstance, cancellationToken);
+                await PerformPickup(GameInstance, cancellationToken, callback);
                 // 加个重试次数3次
                 await Task.Delay(200);
 
                 if (retries < 3)
                 {
                     GameInstance.GameWarning("寻路未找到路径，准备第 {Retry} 次重试", retries + 1);
-                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1);
+                    return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1, callback);
                 }
 
                 GameInstance.GameWarning("寻路最终未找到路径，已重试 {Retries} 次", retries);
@@ -1729,6 +1748,10 @@ public static class GoRunFunction
             }
             while (goNodes.Count > 0)
             {
+                if (callback(GameInstance))
+                {
+                    return false;
+                }
                 if (cancellationToken.IsCancellationRequested)
                 {
                     return false;
@@ -1737,8 +1760,10 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                await cleanMobs(GameInstance, attacksThan, false, cancellationToken);
-                await PerformPickup(GameInstance, cancellationToken);
+                if(CheckIfSurrounded(GameInstance)){
+                    await cleanMobs(GameInstance, attacksThan, false, cancellationToken);
+                }
+                await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题
                 // await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
 
@@ -1789,6 +1814,10 @@ public static class GoRunFunction
                     {
                         return false;
                     }
+                    if (callback(GameInstance))
+                    {
+                        return false;
+                    }
                     await Task.Delay(100, cancellationToken);
                     CharacterStatusFunction.FastUpdateXY(GameInstance!);
                     MonsterFunction.ReadMonster(GameInstance!);
@@ -1810,6 +1839,10 @@ public static class GoRunFunction
                         foreach (var jumpSteps in new[] { 1, 2, 3, 4, 5, 10, 11, 15 })
                         {
                             await Task.Delay(100, cancellationToken);
+                            if (callback(GameInstance))
+                            {
+                                return false;
+                            }
                             if (goNodes.Count <= jumpSteps) continue;
 
                             // 获取跳跃目标点的坐标
@@ -1844,6 +1877,10 @@ public static class GoRunFunction
                                     while (localTried < 6)
                                     {
                                         await Task.Delay(100, cancellationToken);
+                                        if (callback(GameInstance))
+                                        {
+                                            return false;
+                                        }
                                         CharacterStatusFunction.FastUpdateXY(GameInstance!);
 
                                         // 检查是否成功移动到目标位置
@@ -1860,7 +1897,10 @@ public static class GoRunFunction
                                         break;
                                     }
                                 }
-
+                                if (callback(GameInstance))
+                                {
+                                    return false;
+                                }
                                 if (isJumpSuccess)
                                 {
                                     // 移除跳过的路径点和对应的位置信息
@@ -1880,13 +1920,13 @@ public static class GoRunFunction
                         {
                             // 失败了怎么办, 只能放弃先了
                             GameInstance.GameWarning($"寻路最终未找到 -- 跳点 再次尝试 NB");
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange + 1, nearBlur, attacksThan, maxPathLength, retries + 1, callback);
                             // return false;
                         }
                         else
                         {
                             // 跳出当前点, 并前进了N点, 但是用重装来恢复比较简单
-                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1);
+                            return await PerformPathfinding(cancellationToken, GameInstance, tx, ty, replaceMap, localBlurRange, nearBlur, attacksThan, maxPathLength, retries + 1, callback);
                         }
                     }
 
@@ -1908,7 +1948,7 @@ public static class GoRunFunction
             // 多图就需要等待
             if (isAcross)
             {
-                await Task.Delay(1000);
+                await Task.Delay(1500);
             }
         }
 
