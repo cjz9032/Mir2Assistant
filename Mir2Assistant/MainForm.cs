@@ -1282,7 +1282,7 @@ namespace Mir2Assistant
                                             // 经验太少 TODO 根据等级, 
                                             // 升级 EXP可能不准确
                                             // 3分钟收益
-                                            var exp1minBase = 80;
+                                            var exp1minBase = 60;
                                             var diffmin = (DateTime.Now - exchangedExpTime).Value.TotalMinutes;
                                             var exp3m = instanceValue.CharacterStatus.Exp - exchangedExp;
                                             instanceValue.GameInfo("Exp3m: {Exp} / {DiffMin}", exp3m, diffmin);
