@@ -1753,26 +1753,34 @@ namespace Mir2Assistant
                             if (CharacterStatus.CurrentHP == instance.lastHP)
                             {
                                 instance.sameHPtimes++;
-                                if (instance.sameHPtimes > 6)
+                                if (instance.sameHPtimes > 8)
                                 {
                                     // 掉线 怀疑掉线 用脱装备验证
                                     if (instance.CharacterStatus.CurrentHP > 1)
                                     {
-                                        var ai = await HuoshanAIHelper.ChatAsync();
-                                        CharacterStatusFunction.AddChat(instance, ai);
+                                        var ai1 = await HuoshanAIHelper.ChatAsync();
+                                        CharacterStatusFunction.AddChat(instance, ai1);
                                         await Task.Delay(1000);
                                         // 查看是否发出去 
-                                        if (!instance.chats.Any(chat => chat.Contains(ai)))
+                                        if (!instance.chats.Any(chat => chat.Contains(ai1)))
                                         {
 
-                                            ai = await HuoshanAIHelper.ChatAsync();
-                                            CharacterStatusFunction.AddChat(instance, ai);
+                                            var ai2 = await HuoshanAIHelper.ChatAsync();
+                                            CharacterStatusFunction.AddChat(instance, ai2);
                                             await Task.Delay(1000);
-                                            if (!instance.chats.Any(chat => chat.Contains(ai)))
+                                            if (!instance.chats.Any(chat => chat.Contains(ai1)) && !instance.chats.Any(chat => chat.Contains(ai2)))
                                             {
-                                                instance.GameInfo("sameHP detected and ai not found");
-                                                await RestartGameProcess(instance);
-                                                continue;
+
+                                                var ai3 = await HuoshanAIHelper.ChatAsync();
+                                                CharacterStatusFunction.AddChat(instance, ai3);
+                                                await Task.Delay(2000);
+                                                if (!instance.chats.Any(chat => chat.Contains(ai1)) && !instance.chats.Any(chat => chat.Contains(ai2) && !instance.chats.Any(chat => chat.Contains(ai3))))
+                                                {
+                                                    instance.GameInfo("sameHP detected and ai not found");
+                                                    await RestartGameProcess(instance);
+                                                    continue;
+                                                }
+
                                             }
                                         }
                                         else
