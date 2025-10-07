@@ -1233,7 +1233,7 @@ public static class GoRunFunction
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
                 var slashRemainHP = 80;
-                var drawBBRemainHP = 20;
+                var drawBBRemainHP = 25;
 
 
 
