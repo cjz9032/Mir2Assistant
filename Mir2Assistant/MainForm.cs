@@ -642,7 +642,7 @@ namespace Mir2Assistant
 
             if (GoRunFunction.CapbilityOfHeal(instanceValue) || isBladeNeed)
             {
-                var items = GameConstants.Items.MegaPotions;
+                var items = GameConstants.Items.MagePotions;
                 var exitsQuan = 0;
                 items.ForEach(item =>
                 {
@@ -657,7 +657,7 @@ namespace Mir2Assistant
 
                 if (exitsQuan < buyC)
                 {
-                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MegaPotions[
+                    await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.MagePotions[
                         instanceValue.CharacterStatus.Level >= 25 ? 1 : 0
                     ], buyC - exitsQuan);
                 }

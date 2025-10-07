@@ -196,7 +196,7 @@ public static class GoRunFunction
                 //     // 扔东西
                 //     // 挑选一个扔, 一般扔药
                 //     var needDropItem = miscs2.FirstOrDefault(o => GameConstants.Items.HealPotions.Contains(o.Name) ||
-                //         GameConstants.Items.MegaPotions.Contains(o.Name)
+                //         GameConstants.Items.MagePotions.Contains(o.Name)
                 //     );
                 //     if (needDropItem != null)
                 //     {
@@ -2407,8 +2407,8 @@ public static class GoRunFunction
         }
 
 
-        var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
-        var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMegaDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
+        var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMageDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
+        var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMageDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
 
         canDef = canDef && (totalMaxDef + bodyMaxDef == maxDef);
         canMageDef = canMageDef && (totalMaxMageDef + bodyMaxMageDef == maxMageDef);
@@ -2575,7 +2575,7 @@ public static class GoRunFunction
         {
             // 找蓝药 太阳水
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
-            var items = GameConstants.Items.MegaPotions;
+            var items = GameConstants.Items.MagePotions;
             int resIdx = -1;
             if (veryLow)
             {

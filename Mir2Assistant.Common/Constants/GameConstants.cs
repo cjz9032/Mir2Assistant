@@ -46,7 +46,7 @@ public static class GameConstants
     }
 
     // 根据等级返回道士（Toast）身体魔御区间（最小值, 最大值）
-    public static (int min, int max) GetToastBodyMegaDefByLevel(int level)
+    public static (int min, int max) GetToastBodyMageDefByLevel(int level)
     {
         if (level <= 0) return (0, 1);
         if (level <= 5) return (0, 1);    // 1-5  -> 0-1
@@ -145,7 +145,7 @@ public static class GameConstants
             "命运之刃"  ,
             "龙纹剑"   ,
     };
-        public static readonly int megaBuyCount = 20; // todo by level
+        public static readonly int megaBuyCount = 30; // todo by level
         public static readonly int superPickCount = 3;
         public static readonly int healBuyCount = 4;
         // public static readonly int keepWeaponCount = 2;
@@ -158,7 +158,7 @@ public static class GameConstants
         {
             return level >= 22 ? 1 : 2;
         }
-        public static readonly List<string> MegaPotions =
+        public static readonly List<string> MagePotions =
         new List<string>
         {
             "魔法药(小量)",
