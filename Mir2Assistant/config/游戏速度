@@ -128,8 +128,8 @@ _Unit101.sub_006471B8
 006471F4        pop         eax
 006471F5>       jge         0064721E
 006471F7        mov         eax,[00752764];gvar_00752764
-006471FC        test        byte ptr [eax+27],4
-00647200>       jne         00647208
+006471FC        test        byte ptr [eax+27],4 // 麻痹可动
+00647200>       jne         00647208 -> jmp
 00647202        mov         byte ptr [ebp-5],1
 00647206>       jmp         00647222
 00647208        mov         eax,[0067A028];^gvar_00678937
