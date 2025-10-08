@@ -2008,7 +2008,7 @@ public static class GoRunFunction
                         }
                         // 尝试跳到后面的点
                         var isJumpSuccess = false;
-                        foreach (var jumpSteps in new[] { 1, 2, 5, 8,14 })
+                        foreach (var jumpSteps in new[] { 1, 2, 3, 5, 8, 10,15 })
                         {
                             await Task.Delay(50, cancellationToken);
                             if (callback(GameInstance))
@@ -2028,7 +2028,7 @@ public static class GoRunFunction
                             catch (Exception ex)
                             {
                                 GameInstance!.GameError("寻路异常" + ex.Message);
-                                await Task.Delay(50);
+                                await Task.Delay(200);
                                 if (GameInstance.CharacterStatus!.isEnhanceDead)
                                 {
                                     await Task.Delay(60_000);

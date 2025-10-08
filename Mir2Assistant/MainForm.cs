@@ -1230,7 +1230,7 @@ namespace Mir2Assistant
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
                                     // 查找BB, 100%
                                 }
-                                var exchangedEnabled = false && instanceValue.AccountInfo.IsMainControl;
+                                var exchangedEnabled = true && instanceValue.AccountInfo.IsMainControl;
                                 var exchangedIdx = 0;
                                 var exchangedMap = new[] { "E605", "D601" };
                                 if (exchangedEnabled)
