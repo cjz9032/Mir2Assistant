@@ -1896,7 +1896,7 @@ public static class GoRunFunction
                 // 查看被包围, 8个点都是1障碍
                 if (CheckIfSurrounded(GameInstance))
                 {
-                    await cleanMobs(GameInstance, attacksThan, true, cancellationToken, callback);
+                    await cleanMobs(GameInstance, 0, true, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 加个重试次数3次
@@ -1933,7 +1933,7 @@ public static class GoRunFunction
                 }
                 if (CheckIfSurrounded(GameInstance))
                 {
-                    await cleanMobs(GameInstance, attacksThan, false, cancellationToken, callback);
+                    await cleanMobs(GameInstance, 0, false, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题
