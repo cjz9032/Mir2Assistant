@@ -1542,6 +1542,8 @@ namespace Mir2Assistant
                                 {
                                     instanceValue.isHomePreparing = false;
                                     instanceValue.GameInfo("意外回家 取消");
+                                    exchangedIdx = 0;
+                                    hangMapId = exchangedMap[0];
                                     await Task.Delay(1000);
                                 }
 
