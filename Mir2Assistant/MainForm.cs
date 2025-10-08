@@ -1174,11 +1174,11 @@ namespace Mir2Assistant
                                 //}
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
-                                    hangMapId = "E702"; // D601 D023 E605 连接E604
+                                    hangMapId = "E605"; // D601 D023 E605 连接E604
                                 }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {
-                                    hangMapId = "E702"; // D601 D023 E605 连接
+                                    hangMapId = "E605"; // D601 D023 E605 连接
                                 }
                                 else if (CharacterStatus.Level >= 25) // todo toaist
                                 {
@@ -1223,14 +1223,14 @@ namespace Mir2Assistant
                                 // var slaveExitForSwichMap = false;
                                 var slaveFromMap = "E605";
                                 var slaveToMap = "E701";
-                                var todoSwitch = true; // todoSwitch && (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
+                                var todoSwitch = false; // todoSwitch && (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
                                 var slaveEnabled = false;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
                                     // 查找BB, 100%
                                 }
-                                var exchangedEnabled = true && instanceValue.AccountInfo.IsMainControl;
+                                var exchangedEnabled = false && instanceValue.AccountInfo.IsMainControl;
                                 var exchangedIdx = 0;
                                 var exchangedMap = new[] { "E605", "D601" };
                                 if (exchangedEnabled)
