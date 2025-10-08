@@ -1174,11 +1174,11 @@ namespace Mir2Assistant
                                 //}
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
-                                    hangMapId = "E605"; // D601 D023 E605 连接E604
+                                    hangMapId = "E702"; // D601 D023 E605 连接E604
                                 }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {
-                                    hangMapId = "E605"; // D601 D023 E605 连接
+                                    hangMapId = "E702"; // D601 D023 E605 连接
                                 }
                                 else if (CharacterStatus.Level >= 25) // todo toaist
                                 {
@@ -1230,7 +1230,7 @@ namespace Mir2Assistant
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
                                     // 查找BB, 100%
                                 }
-                                var exchangedEnabled = true && instanceValue.AccountInfo.IsMainControl;
+                                var exchangedEnabled = false && instanceValue.AccountInfo.IsMainControl;
                                 var exchangedIdx = 0;
                                 var exchangedMap = new[] { "E605", "D601" };
                                 if (exchangedEnabled)
