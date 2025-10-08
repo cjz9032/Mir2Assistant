@@ -1975,7 +1975,7 @@ public static class GoRunFunction
                 }
 
                 var tried = 0;
-                var maxed = 9;
+                var maxed = 3;
                 while (true)
                 {
                     if (GameInstance.CharacterStatus!.isEnhanceDead)
@@ -2028,7 +2028,7 @@ public static class GoRunFunction
                             catch (Exception ex)
                             {
                                 GameInstance!.GameError("寻路异常" + ex.Message);
-                                await Task.Delay(200);
+                                await Task.Delay(50);
                                 if (GameInstance.CharacterStatus!.isEnhanceDead)
                                 {
                                     await Task.Delay(60_000);
@@ -2046,7 +2046,7 @@ public static class GoRunFunction
                                     var (targetX, targetY) = getNextPostion(GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, pathNode.dir, pathNode.steps);
                                     GoRunAlgorithm(GameInstance, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, pathNode.dir, pathNode.steps);
                                     var localTried = 0;
-                                    while (localTried < 6)
+                                    while (localTried < 3)
                                     {
                                         await Task.Delay(50, cancellationToken);
                                         if (callback(GameInstance))
@@ -2063,7 +2063,7 @@ public static class GoRunFunction
                                         }
                                         localTried++;
                                     }
-                                    if (localTried > 6)
+                                    if (localTried > 3)
                                     {
                                         isJumpSuccess = false;
                                         break;
