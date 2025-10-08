@@ -6,7 +6,8 @@ using Mir2Assistant.Common.Constants;
 using Mir2Assistant.Common.Services;
 using Mir2Assistant.Common.Models.MapPathFinding;
 using Mir2Assistant.Common.Generated;
-using System.Threading.Tasks; // 新增Generated命名空间引用
+using System.Threading.Tasks;
+using System.Collections.Concurrent; // 新增Generated命名空间引用
 
 namespace Mir2Assistant.Common.Functions;
 /// <summary>
@@ -57,16 +58,8 @@ public static class GoRunFunction
             }
         }
     }
-
-    /// <summary>
-    /// 通用捡取方法
-    /// </summary>
-    /// <param name="instanceValue">游戏实例</param>
-    /// <param name="cancellationToken">取消令牌</param>
-    /// <returns>是否成功捡取到物品</returns>
-    public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default, Func<MirGameInstanceModel, bool>? callback = null)
+    public static bool PickupInfoBasicCheck(MirGameInstanceModel instanceValue)
     {
-        if (instanceValue.isPickingWay) return false;
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
         var existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
         Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
@@ -74,12 +67,21 @@ public static class GoRunFunction
         {
             return false;
         }
-        callback = callback ?? ((instanceValue) => true);
         var isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
         if (isFull) return false;
-        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
+        return true;
+    }
 
-        instanceValue.isPickingWay = true;
+
+    public static List<KeyValuePair<int, DropItemModel>>? PreparePickupInfo(MirGameInstanceModel instanceValue)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        if (!PickupInfoBasicCheck(instanceValue))
+        {
+            return null;
+        }
+
+        // var canLight = CapbilityOfLighting(instanceValue);
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
@@ -97,88 +99,111 @@ public static class GoRunFunction
         var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * 8 : GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
-        var ccc = GameConstants.Items.mageBuyCount;
         // 武器表
         // 筛选可捡取的物品
-
-
-        bool pickedAny = false;
-        var allTimes = 0;
-
         var preferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99);
         var otherRole = instanceValue.AccountInfo.role == RoleType.blade ? RoleType.taoist : RoleType.blade;
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
+        var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
+                !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
+                !curinItems.Contains(o.Value.Name)
+            // 不是自己的 但是是别人的 不拿
+            && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
+            // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
+            &&
+            (
+                (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
+                    ((clothCount < maxCloth) ?
+                    (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
+                    : false)
+                : true
+            )
+            // 回城卷
+            && (o.Value.Name == "回城卷" ? huiCount < 2 : true)
+            // 药
+            && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
+            && (o.Value.Name.Contains("魔法药") ? (
+                    instanceValue.AccountInfo.role == RoleType.taoist
+                    ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
+                    : (
+                        // false
+                        // 半月还不行 isBladeNeed
+                        // canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
+                        false
+                    )
+                ) : true)
+            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
+            &&
+            (
+                // todo 更多属性获取drop更高效
+                GameConstants.Items.weaponList.Contains(o.Value.Name) ? (isMage ? false : (
+                    weaponCount < maxWeapon ? true : false
+                )) : true
+            )
+            &&
+            (
+                Math.Abs(o.Value.X - CharacterStatus.X) < 18 && Math.Abs(o.Value.Y - CharacterStatus.Y) < 18
+            )
+            ))
+            .OrderBy(o => o.Value.IsGodly ? 0 : 1)
+            .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y)).ToList();
+
+        stopwatch.Stop();
+        if(drops.Count > 0)
+        {
+            instanceValue.GameDebug($"PreparePickupInfo 执行完成，找到 {drops.Count} 个可拾取物品，耗时: {stopwatch.ElapsedMilliseconds}ms");
+        }
+        if(drops.Count == 0) {
+            return null;
+        }
+
+        return drops;
+
+    }
+
+    /// <summary>
+    /// 通用捡取方法
+    /// </summary>
+    /// <param name="instanceValue">游戏实例</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>是否成功捡取到物品</returns>
+    public static async Task<bool> PerformPickup(MirGameInstanceModel instanceValue, CancellationToken cancellationToken = default, Func<MirGameInstanceModel, bool>? callback = null)
+    {
+        if (instanceValue.isPickingWay) return false;
+        callback = callback ?? ((instanceValue) => true);
+        bool pickedAny = false;
+        var allTimes = 0;
+        var drops = PreparePickupInfo(instanceValue);
+        if(drops == null)
+        {
+            return false;
+        }
+
+        instanceValue.isPickingWay = true;
         while (allTimes < 1)
         {
-            existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
-            Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
-            if (existAni2 != null)
-            {
-                break;
-            }
             if (callback(instanceValue))
             {
+                instanceValue.isPickingWay = false;
                 return false;
             }
             allTimes++;
-            var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                    !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
-                    !curinItems.Contains(o.Value.Name)
-                // 不是自己的 但是是别人的 不拿
-                && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
-                // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
-                &&
-                (
-                    (o.Value.Name.Contains("男") || o.Value.Name.Contains("女")) ?
-                        ((clothCount < maxCloth) ?
-                        (instanceValue.AccountInfo.Gender == 0 ? !o.Value.Name.Contains("男") : !o.Value.Name.Contains("女"))
-                        : false)
-                    : true
-                )
-                // 回城卷
-                && (o.Value.Name == "回城卷" ? huiCount < 2 : true)
-                // 药
-                && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
-                && (o.Value.Name.Contains("魔法药") ? (
-                        instanceValue.AccountInfo.role == RoleType.taoist
-                        ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
-                        : (
-                            // false
-                            // 半月还不行 isBladeNeed
-                            // canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
-                            false
-                        )
-                    ) : true)
-                && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
-                &&
-                (
-                    // todo 更多属性获取drop更高效
-                    GameConstants.Items.weaponList.Contains(o.Value.Name) ? (isMage ? false : (
-                        weaponCount < maxWeapon ? true : false
-                    )) : true
-                )
-                &&
-                (
-                    Math.Abs(o.Value.X - CharacterStatus.X) < 15 && Math.Abs(o.Value.Y - CharacterStatus.Y) < 15
-                )
-                ))
-                .OrderBy(o => o.Value.IsGodly ? 0 : 1)
-                .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y));
+
             foreach (var drop in drops)
             {
                 if (callback(instanceValue))
                 {
+                    instanceValue.isPickingWay = false;
                     return false;
                 }
-                existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
-                Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).FirstOrDefault();
-                if (existAni2 != null)
+                if (!PickupInfoBasicCheck(instanceValue))
                 {
-                    break;
+                    instanceValue.GameDebug("放弃拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
+                    instanceValue.isPickingWay = false;
+                    return false;
                 }
-                isFull = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
-                if (isFull) return false;
+
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30, 0, callback);
 
@@ -217,7 +242,7 @@ public static class GoRunFunction
                 }
                 else
                 {
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
             }
         }
@@ -1039,8 +1064,8 @@ public static class GoRunFunction
         // 巡逻太多次了 有问题
         var mainInstance = GameState.GameInstances[0];
         var patrolTried = 0;
-        var canTemp = GoRunFunction.CapbilityOfTemptation(instanceValue);
-        var canLight = GoRunFunction.CapbilityOfLighting(instanceValue);
+        var canTemp = CapbilityOfTemptation(instanceValue);
+        var canLight = CapbilityOfLighting(instanceValue);
 
         while (true)
         {
@@ -1067,6 +1092,7 @@ public static class GoRunFunction
             {
                 return true;
             }
+            var isToPoint = false;
             if (!forceSkip)
             {
                 // 从是跟随
@@ -1090,9 +1116,15 @@ public static class GoRunFunction
                                     return true;
                                 }
                                 // 自定义
+                                var drops = PreparePickupInfo(instanceValue);
+                                if (drops != null)
+                                {
+                                    return true;
+                                }
                                 return false;
                             }
                          );
+                    isToPoint = true;
                 }
                 else
                 {
@@ -1129,11 +1161,18 @@ public static class GoRunFunction
                                 {
                                     return true;
                                 }
+                                 // 自定义
+                                var drops = PreparePickupInfo(instanceValue);
+                                if (drops != null)
+                                {
+                                    return true;
+                                }
                                 return false;
                             }
                          );
                     }
                 }
+                await PerformPickup(instanceValue, _cancellationToken, checker);
             }
             if (checker(instanceValue!))
             {
@@ -1141,15 +1180,7 @@ public static class GoRunFunction
             }
 
             // 5格内没怪 可以捡取
-            var existAni = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
-            Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
-            if (existAni == null)
-            {
-                await PerformPickup(instanceValue, _cancellationToken, checker);
-                // await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
-
-            }
-
+            await PerformPickup(instanceValue, _cancellationToken, checker);
 
             var monsterTried = 0;
             // 无怪退出
@@ -1520,14 +1551,8 @@ public static class GoRunFunction
                         }
                     }
                     // 5格内没怪 可以捡取
-                    var existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
-                    Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 5).FirstOrDefault();
-                    if (existAni2 == null)
-                    {
-                        await PerformPickup(instanceValue, _cancellationToken, checker);
-                        await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
-
-                    }
+                    await PerformPickup(instanceValue, _cancellationToken, checker);
+                    await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
                 }
                 else
                 {
@@ -1551,19 +1576,20 @@ public static class GoRunFunction
             {
                 break;
             }
-
-
-            // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
-            curP += direction;
-            if (curP >= patrolPairs.Length)
+            if (isToPoint)
             {
-                curP = patrolPairs.Length - 2; // 回到倒数第二个点
-                direction = -1; // 改变方向为反向
-            }
-            else if (curP < 0)
-            {
-                curP = 1; // 回到第二个点
-                direction = 1; // 改变方向为正向
+                // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
+                curP += direction;
+                if (curP >= patrolPairs.Length)
+                {
+                    curP = patrolPairs.Length - 2; // 回到倒数第二个点
+                    direction = -1; // 改变方向为反向
+                }
+                else if (curP < 0)
+                {
+                    curP = 1; // 回到第二个点
+                    direction = 1; // 改变方向为正向
+                }
             }
             continue;
         }
