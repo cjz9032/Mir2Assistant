@@ -1973,7 +1973,7 @@ public static class GoRunFunction
                 }
 
                 var tried = 0;
-                var maxed = 3;
+                var maxed = 9; // 别改
                 while (true)
                 {
                     if (GameInstance.CharacterStatus!.isEnhanceDead)

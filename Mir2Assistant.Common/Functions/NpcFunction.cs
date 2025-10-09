@@ -924,6 +924,7 @@ namespace Mir2Assistant.Common.Functions
                 await Task.Delay(500);
                 await SellItems(gameInstance, lists);
                 await Talk2Exit(gameInstance!);
+                await RefreshPackages(gameInstance);
             }
             else
             {
@@ -1340,11 +1341,8 @@ namespace Mir2Assistant.Common.Functions
 
                 // 修
                 await RepairSingleBodyEquipment(gameInstance, (EquipPosition)position);
-                await RefreshPackages(gameInstance);
                 await RepairSingleBagsEquipment(gameInstance, (EquipPosition)position, CancellationToken.None);
-                await RefreshPackages(gameInstance);
                 await sellSingleLJEquipment(gameInstance, (EquipPosition)position, CancellationToken.None);
-                await RefreshPackages(gameInstance);
             }
         }
         public async static Task BuyDrugs(MirGameInstanceModel gameInstance, string itemName, int count)
