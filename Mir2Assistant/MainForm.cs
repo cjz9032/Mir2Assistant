@@ -1685,7 +1685,7 @@ namespace Mir2Assistant
                                 {
                                     sameExpTimes = 0;
                                 }
-                                if (Math.Abs(CharacterStatus.X - lastPos) < 3)
+                                if (Math.Abs(CharacterStatus.X - lastPos) < 6)
                                 {
                                     samePosTimes += 1;
                                 }
