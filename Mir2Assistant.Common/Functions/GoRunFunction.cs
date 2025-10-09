@@ -1179,7 +1179,6 @@ public static class GoRunFunction
                 return true;
             }
 
-            // 5格内没怪 可以捡取
             await PerformPickup(instanceValue, _cancellationToken, checker);
 
             var monsterTried = 0;
@@ -1550,7 +1549,6 @@ public static class GoRunFunction
                             break;
                         }
                     }
-                    // 5格内没怪 可以捡取
                     await PerformPickup(instanceValue, _cancellationToken, checker);
                     await PerformButchering(instanceValue, maxBagCount: 32, searchRadius: 13, maxTries: 20, _cancellationToken);
                 }

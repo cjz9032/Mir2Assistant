@@ -617,10 +617,10 @@ namespace Mir2Assistant.Common.Functions
                 }
                 await Talk2Exit(gameInstance!);
                 // trigger takeon 
+                await RefreshPackages(gameInstance);
                 await autoReplaceEquipment(gameInstance, false);
             }
             // 修不需要
-            // await RefreshPackages(gameInstance);
         }
 
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
@@ -794,6 +794,7 @@ namespace Mir2Assistant.Common.Functions
                     await Task.Delay(1000);
                 }
                 await Talk2Exit(gameInstance!);
+                await RefreshPackages(gameInstance);
             }
             // 好像也不需要
             // await RefreshPackages(gameInstance);
