@@ -1490,7 +1490,7 @@ public static class GoRunFunction
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
                         var diffX = Math.Abs(ani.X - CharacterStatus.X);
                         var diffY = Math.Abs(ani.Y - CharacterStatus.Y);
-                        var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && (diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2);
+                        var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && ((diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2));
                         if (isCi)
                         {
                             var ciciDir = GetDirectionFromDelta2(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
