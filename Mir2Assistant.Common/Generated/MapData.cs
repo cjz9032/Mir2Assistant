@@ -1979,8 +1979,7 @@ namespace Mir2Assistant.Common.Generated
             },
             new int[][] // Index 129: D001
             {
-                // new int[] { 0, 148, 365, 147, 34 },
-                new int[] { 0, 149, 364, 147, 34 },
+                GameState.gamePath == "Client.exe" ?  new int[] { 0, 148, 365, 147, 34 }  : new int[] { 0, 149, 364, 147, 34 },
                 new int[] { 0, 150, 364, 147, 34 },
                 new int[] { 0, 148, 366, 147, 34 },
                 new int[] { 130, 30, 328, 34, 323 },
