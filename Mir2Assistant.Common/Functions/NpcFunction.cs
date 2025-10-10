@@ -336,7 +336,7 @@ namespace Mir2Assistant.Common.Functions
                 // 空了就不用修了
                 return false;
             }
-             if (item.MaxDuration == item.Duration)
+            if (item.MaxDuration == item.Duration)
             {
                 // 精度不够 可能误判, 但是不管
                 return false;
@@ -816,8 +816,8 @@ namespace Mir2Assistant.Common.Functions
                 (o.reqPoints <= 20 ? (
                     o.GodPts > 1
                 ) : true)
-            ) : true) )
-            
+            ) : true))
+
              && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 25 && o.stdMode != 30)
             .GroupBy(o => o.stdModeToUseItemIndex[0]); // 可以只0, 因为是同一个NPC
             foreach (var group in ljequipment)
@@ -874,7 +874,7 @@ namespace Mir2Assistant.Common.Functions
             await RefreshPackages(gameInstance);
         }
 
-         public async static Task sellSingleLJEquipment(MirGameInstanceModel gameInstance, EquipPosition position, CancellationToken _cancellationToken)
+        public async static Task sellSingleLJEquipment(MirGameInstanceModel gameInstance, EquipPosition position, CancellationToken _cancellationToken)
         {
             var nearHome = PickNearHomeMap(gameInstance);
             // 找到所有的装备除了极品 NPC分组去卖了, 
@@ -883,12 +883,12 @@ namespace Mir2Assistant.Common.Functions
                 (o.reqPoints <= 20 ? (
                     o.GodPts > 1
                 ) : true)
-            ) : true) )
+            ) : true))
              && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
              && o.stdModeToUseItemIndex[0] == (byte)position
               && o.stdMode != 30 && o.stdMode != 25);
             // .GroupBy(o => ); // 可以只0, 因为是同一个NPC
-          
+
             var lists = ljequipment.ToList();
             // 可以保留武器和衣服, 因为最容易破, 其他都卖了
             if (position == EquipPosition.Weapon || position == EquipPosition.Dress)
@@ -1044,13 +1044,17 @@ namespace Mir2Assistant.Common.Functions
                     break;
                 case EquipPosition.RingLeft:
                 case EquipPosition.RingRight:
-                    if (level >= 3)
+                    if (role != RoleType.mage)
                     {
-                        itemNames.Add("古铜戒指");
-                    }
-                    if (level >= 9)
-                    {
-                        itemNames.Add("牛角戒指");
+
+                        if (level >= 3)
+                        {
+                            itemNames.Add("古铜戒指");
+                        }
+                        if (level >= 9)
+                        {
+                            itemNames.Add("牛角戒指");
+                        }
                     }
                     if (role != RoleType.mage)
                     {
