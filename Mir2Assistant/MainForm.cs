@@ -1172,7 +1172,7 @@ namespace Mir2Assistant
                                 // todo temp for high
                                 else if (friends.Count > 0 && instanceValue.CharacterStatus.Level < 22)
                                 {
-                                   hangMapId = "0";
+                                   hangMapId = instanceValue.CharacterStatus.Level < 11 ? "0" : "1";
                                 }
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
