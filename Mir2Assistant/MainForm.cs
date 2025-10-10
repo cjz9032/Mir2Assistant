@@ -1172,7 +1172,7 @@ namespace Mir2Assistant
                                 // todo temp for high
                                 else if (friends.Count > 0 && instanceValue.CharacterStatus.Level < 22)
                                 {
-                                   hangMapId = instanceValue.CharacterStatus.Level < 11 ? "0" : "1";
+                                    hangMapId = "0";
                                 }
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
@@ -1644,7 +1644,7 @@ namespace Mir2Assistant
                             // 用用再说
                             if (GameState.gamePath == "Client.exe")
                             {
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 100);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
                             }
                             else
                             {
