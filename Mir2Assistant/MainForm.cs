@@ -1644,7 +1644,7 @@ namespace Mir2Assistant
                             // 用用再说
                             if (GameState.gamePath == "Client.exe")
                             {
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, 105);
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 110);
                             }
                             else
                             {
@@ -1654,7 +1654,7 @@ namespace Mir2Assistant
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 950);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
                                 }
                                 else
                                 {
