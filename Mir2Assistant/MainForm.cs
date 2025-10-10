@@ -40,7 +40,7 @@ namespace Mir2Assistant
             }
             var clg = "new";
             // 注释我
-            clg = "old";
+            // clg = "old";
 
             var cfgVer = "";
             if (clg == "new")
@@ -65,7 +65,7 @@ namespace Mir2Assistant
             if (cfgVer == "2.1.0.1230.ini")
             {
                 GameState.gamePath = @"Client.exe";
-                gameDirectory = @"G:\cq\cs";
+                gameDirectory = @"G:\cq\cs2";
                 encodeArgMainLarge = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
                 encodeArgOtherSmall = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
             }
@@ -779,7 +779,9 @@ namespace Mir2Assistant
 
         private static async Task findMeatNpc(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 293, 604, "0", 6, true, 10);
+            var isCS = GameState.gamePath == "Client.exe";
+
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, isCS ? 312 : 293, isCS ? 273 : 604, "0", 6, true, 10);
 
             if (pathFound)
             {
@@ -1168,10 +1170,10 @@ namespace Mir2Assistant
                                     hangMapId = "0";
                                 }
                                 // todo temp for high
-                                //else if (friends.Count > 0)
-                                //{
-                                //    hangMapId = "1";
-                                //}
+                                else if (friends.Count > 0 && instanceValue.CharacterStatus.Level < 22)
+                                {
+                                   hangMapId = "0";
+                                }
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
                                     hangMapId = "E605"; // D601 D023 E605 连接E604

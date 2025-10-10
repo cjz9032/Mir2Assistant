@@ -64,20 +64,20 @@ void longHitSendMessage(int x, int y, int dir, int typePara, int para, int addr)
 		pushfd  
 		// 先判断能不能
 		// CanNextAction
-		mov eax, [FRMMAIN_ADDR]
-		mov eax, [eax]
-		mov esi, MIR_CAN_NEXT_ACT_CALL
-		call esi
-		cmp eax, 0
-		je end
+		// mov eax, [FRMMAIN_ADDR]
+		// mov eax, [eax]
+		// mov esi, MIR_CAN_NEXT_ACT_CALL
+		// call esi
+		// cmp eax, 0
+		// je end
 		
 		// CanNextHit
-		mov eax, [FRMMAIN_ADDR]
-		mov eax, [eax]
-		mov esi, MIR_CAN_NEXT_HIT_CALL
-		call esi
-		cmp eax, 0
-		je end
+		// mov eax, [FRMMAIN_ADDR]
+		// mov eax, [eax]
+		// mov esi, MIR_CAN_NEXT_HIT_CALL
+		// call esi
+		// cmp eax, 0
+		// je end
 
 		mov eax, y
 		push eax

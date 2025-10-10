@@ -410,10 +410,11 @@ namespace Mir2Assistant.Common.Functions
 
         public static (string map, string npcName, int x, int y) PickMiscNpcByMap(MirGameInstanceModel gameInstance, string mapId)
         {
+            var isCS = GameState.gamePath == "Client.exe";
             // 根据当前所在地图, 找到最近的NPC
             if (mapId == "0")
             {
-                return ("0", "陈家铺老板", 641, 612);
+                return isCS ? ("0", "杂货", 375, 301) : ("0", "陈家铺老板", 641, 612);
             }
             else if (mapId == "2")
             {
@@ -437,9 +438,11 @@ namespace Mir2Assistant.Common.Functions
         public static (string map, string npcName, int x, int y) PickDrugNpcByMap(MirGameInstanceModel gameInstance, string mapId)
         {
             // 根据当前所在地图, 找到最近的NPC
+            var isCS = GameState.gamePath == "Client.exe";
+
             if (mapId == "0")
             {
-                return ("0", "边界村小店老板", 290, 611);
+                return isCS ? ("0", "老板", 322, 293) : ("0", "边界村小店老板", 290, 611);
             }
             if (mapId == "2")
             {
@@ -461,10 +464,12 @@ namespace Mir2Assistant.Common.Functions
         }
         public static (string map, string npcName, int x, int y) PickBookNpcByMap(MirGameInstanceModel gameInstance, string mapId)
         {
+            var isCS = GameState.gamePath == "Client.exe";
+
             // 根据当前所在地图, 找到最近的NPC
             if (mapId == "0")
             {
-                return ("0132", "书", 6, 18);
+                return isCS ? ("0", "书店", 325, 253) : ("0132", "书", 6, 18);
             }
             else
             {
@@ -475,6 +480,8 @@ namespace Mir2Assistant.Common.Functions
 
         public static (string map, string npcName, int x, int y) PickEquipNpcByMap(MirGameInstanceModel gameInstance, EquipPosition position, string mapId, string action = "buy")
         {
+            var isCS = GameState.gamePath == "Client.exe";
+
             // 根据当前所在地图, 找到最近的NPC
             if (mapId == "0")
             {
@@ -482,18 +489,18 @@ namespace Mir2Assistant.Common.Functions
                 switch (position)
                 {
                     case EquipPosition.Weapon:
-                        return ("0", "铁匠", 295, 608);
+                        return isCS ? ("0103", "老板", 14, 18) : ("0", "铁匠", 295, 608);
                     case EquipPosition.Dress:
                     case EquipPosition.Helmet:
-                        return ("0", "白家服装老板", 304, 608);
+                        return isCS ? ("0106", "安", 14, 18) : ("0", "白家服装老板", 304, 608);
                     case EquipPosition.Necklace:
-                        return ("0141", "项链店老板", 9, 10);
+                        return isCS ? ("0105", "项链", 7, 21) : ("0141", "项链店老板", 9, 10);
                     case EquipPosition.ArmRingLeft:
                     case EquipPosition.ArmRingRight:
-                        return ("0141", "手镯店老板", 16, 16);
+                        return isCS ? ("0105", "手镯", 14, 14) : ("0141", "手镯店老板", 16, 16);
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
-                        return ("0141", "戒指店老板", 23, 23);
+                        return isCS ? ("0105", "戒指", 18, 8) : ("0141", "戒指店老板", 23, 23);
                     default:
                         return ("-1", "", -1, -1);
                 }
@@ -685,7 +692,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task BuyLaoLan(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            if (gameInstance.CharacterStatus.Level < 11)
+            if (gameInstance.CharacterStatus.coin < 10000)
             {
                 return;
             }

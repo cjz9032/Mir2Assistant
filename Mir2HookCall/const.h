@@ -2,7 +2,7 @@
 
 
 // const.h
-// #define USE_VERSION_CS  // 注释这行就用第二个版本
+#define USE_VERSION_CS  // 注释这行就用第二个版本
 
 #ifdef USE_VERSION_CS
     #define MIR_BU_DAO_ADDR    0x000000
@@ -50,6 +50,7 @@
     #define MIR_SPELL_DIRECT_CALL 0x62FA94
     #define MIR_BUTCH_DIRECT_CALL 0x63026C
     #define MIR_PICKUP_DIRECT_CALL 0x62FCB8
+    #define MIR_DROP_DIRECT_CALL 0x62FBE8
     #define MIR_HK2_ADDR 0x2347A3
     #define MIR_HK5_ADDR 0x234493
     #define MIR_HK_BIOS_ADDR 0x22EF5C
@@ -100,8 +101,8 @@
     #define MIR_GROUP_ONE_CALL 0x646630
     #define MIR_GROUP_TWO_CALL 0x645FF4
     #define MIR_CHAT_CALL 0x6434A0
-    #define MIR_CAN_NEXT_HIT_CALL 0x64722C
-    #define MIR_CAN_NEXT_ACT_CALL 0x6471B8
+    // #define MIR_CAN_NEXT_HIT_CALL 0x64722C
+    // #define MIR_CAN_NEXT_ACT_CALL 0x6471B8
     #define MIR_SendClientMessage_CALL 0x642524
     #define MIR_GRID_FOO_ADDR 0x7432F4
     #define MIR_DMenuBuyClick_CALL 0x5B112C
