@@ -2056,6 +2056,7 @@ public static class GoRunFunction
                                         // 检查是否成功移动到目标位置
                                         if (GameInstance.CharacterStatus.X == targetX && GameInstance.CharacterStatus.Y == targetY)
                                         {
+                                            await Task.Delay(100, cancellationToken);
                                             isJumpSuccess = true;
                                             break;
                                         }
