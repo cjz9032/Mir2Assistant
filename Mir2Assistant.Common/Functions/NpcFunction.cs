@@ -1144,6 +1144,11 @@ namespace Mir2Assistant.Common.Functions
                         }
                         else
                         {
+                             if (level >= 14 && level < 16)
+                            {
+                                // itemNames.Add("青铜头盔");
+                                itemNames.Add("魔法头盔");
+                            }
                             if (level >= 20)
                             {
                                 // itemNames.Add("青铜头盔");
