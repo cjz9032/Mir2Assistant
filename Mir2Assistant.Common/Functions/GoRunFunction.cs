@@ -2056,10 +2056,6 @@ public static class GoRunFunction
                                         // 检查是否成功移动到目标位置
                                         if (GameInstance.CharacterStatus.X == targetX && GameInstance.CharacterStatus.Y == targetY)
                                         {
-                                            if (GameInstance.AccountInfo.role == RoleType.mage && GameState.gamePath == "Client.exe")
-                                            {
-                                                await Task.Delay(200, cancellationToken);
-                                            }
                                             isJumpSuccess = true;
                                             break;
                                         }
@@ -2108,6 +2104,10 @@ public static class GoRunFunction
                     {
                         if (nextX == newX && nextY == newY)
                         {
+                            if (GameInstance.AccountInfo.role == RoleType.mage && GameState.gamePath == "Client.exe")
+                            {
+                                await Task.Delay(200, cancellationToken);
+                            }
                             goNodes.RemoveAt(0);
                             break;
                         }
