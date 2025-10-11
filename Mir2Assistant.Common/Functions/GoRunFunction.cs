@@ -2565,15 +2565,14 @@ public static class GoRunFunction
     public static (int, int) CCBBCount(MirGameInstanceModel GameInstance)
     {
         var allMonsIdInClients = new HashSet<int>();
-        var names = new List<string>();
-        var mages = GameState.GameInstances.Where(i => i.AccountInfo.role == RoleType.mage && i.CharacterStatus.Level >= 24).ToList();
-        names = mages.Select(i => i.AccountInfo.CharacterName).ToList();
-        foreach (var instance in mages)
+        var all = GameState.GameInstances;
+        var exceptNames = all.Where(o => o.AccountInfo.role == RoleType.taoist).Select(o => o.AccountInfo.CharacterName).ToList();
+        foreach (var instance in all)
         {
-            var selfMonsters = instance.Monsters.Values.Where(m => !m.isDead && m.isTeamMons);
+            var selfMonsters = instance.Monsters.Values.Where(m => !m.isDead && m.isTeamMons && !exceptNames.Contains(m.Name));
             allMonsIdInClients.UnionWith(selfMonsters.Select(m => m.Id));
         }
-        var targetCount = mages.Count * 5;
+        var targetCount = all.Count * 5;
 
         return (allMonsIdInClients.Count, targetCount);
     }
