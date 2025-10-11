@@ -2569,10 +2569,10 @@ public static class GoRunFunction
         var exceptNames = all.Where(o => o.AccountInfo.role == RoleType.taoist).Select(o => o.AccountInfo.CharacterName).ToList();
         foreach (var instance in all)
         {
-            var selfMonsters = instance.Monsters.Values.Where(m => !m.isDead && m.isTeamMons && !exceptNames.Contains(m.Name));
+            var selfMonsters = instance.Monsters.Values.Where(m => !m.isDead && m.isTeamMons && !exceptNames.Any(o => m.Name.Contains(o)));
             allMonsIdInClients.UnionWith(selfMonsters.Select(m => m.Id));
         }
-        var targetCount = all.Count * 5;
+        var targetCount = all.Where(o => o.AccountInfo.role == RoleType.mage && o.CharacterStatus.Level >= 24).Count() * 5;
 
         return (allMonsIdInClients.Count, targetCount);
     }
