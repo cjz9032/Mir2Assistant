@@ -1129,7 +1129,12 @@ public static class GoRunFunction
                                 ).ToList();
                                 if (monsters.Count > 0)
                                 {
-                                    return true;
+                                    var fm = monsters[0];
+                                    var distance = measureGenGoPath(instanceValue!, fm.Value.X, fm.Value.Y);
+                                    if (distance <= 30)
+                                    {
+                                        return true;
+                                    }
                                 }
                                 // 自定义
                                 var drops = PreparePickupInfo(instanceValue);
