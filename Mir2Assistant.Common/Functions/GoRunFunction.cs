@@ -1135,7 +1135,7 @@ public static class GoRunFunction
                                 if (monsters.Count > 0)
                                 {
                                     var fm = monsters[0];
-                                    var distance = measureGenGoPath(instanceValue!, fm.X, fm.Y);
+                                    var distance = measureGenGoPath(instanceValue!, fm.Value.X, fm.Value.Y);
                                     if (distance <= 30)
                                     {
                                         return true;
