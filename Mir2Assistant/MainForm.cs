@@ -1309,7 +1309,7 @@ namespace Mir2Assistant
                                                     isBBReadyStatusChanged = true;
                                                 }
                                             }
-                                            else
+                                            else if (hangMapId == slaveToMap)
                                             {
                                                 if (cCount < allCount * 0.8)
                                                 {
@@ -1332,6 +1332,12 @@ namespace Mir2Assistant
                                                     BBLackTime = null;
                                                     // reset
                                                 }
+                                            }
+                                            else
+                                            {
+                                                hangMapBBReady = true;
+                                                instanceValue.GameInfo($"BB 找到所有{allCount} else");
+                                                isBBReadyStatusChanged = true;
                                             }
                                         }
 
