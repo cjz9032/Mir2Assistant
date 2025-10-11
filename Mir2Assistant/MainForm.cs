@@ -1224,7 +1224,7 @@ namespace Mir2Assistant
                                 instanceValue.isHomePreparing = false;
                                 var slaveFromMap = "E605";
                                 var slaveToMap = "E702";
-                                var slaveEnabled = CharacterStatus.Level >= 30 && true;
+                                var slaveEnabled = false; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
