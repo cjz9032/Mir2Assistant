@@ -1301,7 +1301,7 @@ public static class GoRunFunction
                 // 补刀用
                 (slasher && o.Appr != 40 ? (enoughBBCanHit ?
                 (o.CurrentHP > 0
-                    ? (o.CurrentHP > slashRemainHP || o.MaxHP < slashRemainHP)
+                    ? (o.CurrentHP > slashRemainHP || o.MaxHP < slashRemainHP || o.MaxHP >= 500)
                 : true) : true)
                 : true) &&
 
@@ -1399,7 +1399,7 @@ public static class GoRunFunction
                             ? true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 || o.Appr == 121 ? true : (o.CurrentHP == 0 || o.CurrentHP > drawBBRemainHP))
+                        && (o.Appr == 40 || o.Appr == 121 ? true : (o.CurrentHP == 0 || o.CurrentHP > drawBBRemainHP || o.MaxHP >= 500))
                         )
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
