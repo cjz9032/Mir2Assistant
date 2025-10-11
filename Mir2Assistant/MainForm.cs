@@ -1222,11 +1222,9 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = false;
-                                // var slaveExitForSwichMap = false;
                                 var slaveFromMap = "E605";
-                                var slaveToMap = "E701";
-                                var todoSwitch = false; // todoSwitch && (hangMapId == slaveToMap || hangMapId == slaveFromMap) && instanceValue.AccountInfo.IsMainControl;
-                                var slaveEnabled = false;
+                                var slaveToMap = "E702";
+                                var slaveEnabled = CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;

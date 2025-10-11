@@ -150,11 +150,12 @@ public static class GoRunFunction
             .ThenBy(o => measureGenGoPath(instanceValue, o.Value.X, o.Value.Y)).ToList();
 
         stopwatch.Stop();
-        if(drops.Count > 0)
+        if (drops.Count > 0)
         {
             instanceValue.GameDebug($"PreparePickupInfo 执行完成，找到 {drops.Count} 个可拾取物品，耗时: {stopwatch.ElapsedMilliseconds}ms");
         }
-        if(drops.Count == 0) {
+        if (drops.Count == 0)
+        {
             return null;
         }
 
@@ -175,7 +176,7 @@ public static class GoRunFunction
         bool pickedAny = false;
         var allTimes = 0;
         var drops = PreparePickupInfo(instanceValue);
-        if(drops == null)
+        if (drops == null)
         {
             return false;
         }
@@ -568,7 +569,7 @@ public static class GoRunFunction
                     (419,172)
                 };
                 }
-           
+
                 foreach (var point in bugPoints)
                 {
                     obstacles[point.Item2 * width + point.Item1] = 1;
@@ -1124,13 +1125,17 @@ public static class GoRunFunction
                                     return true;
                                 }
                                 var temp = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+
                                 var monsters = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name) &&
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
+                                ).OrderBy(o =>
+                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y))
                                 ).ToList();
+
                                 if (monsters.Count > 0)
                                 {
                                     var fm = monsters[0];
-                                    var distance = measureGenGoPath(instanceValue!, fm.Value.X, fm.Value.Y);
+                                    var distance = measureGenGoPath(instanceValue!, fm.X, fm.Y);
                                     if (distance <= 30)
                                     {
                                         return true;
@@ -1182,7 +1187,7 @@ public static class GoRunFunction
                                 {
                                     return true;
                                 }
-                                 // 自定义
+                                // 自定义
                                 var drops = PreparePickupInfo(instanceValue);
                                 if (drops != null)
                                 {
@@ -1298,7 +1303,7 @@ public static class GoRunFunction
                 (slasher && o.Appr != 40 ? (enoughBBCanHit ?
                 (o.CurrentHP > 0
                     ? (o.CurrentHP > slashRemainHP || o.MaxHP < slashRemainHP)
-                : true) : true) 
+                : true) : true)
                 : true) &&
 
                 (cleanAll || allowMonsters.Contains(o.Name))
@@ -1325,7 +1330,8 @@ public static class GoRunFunction
                     var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
                     // 围绕跑一下
                     if (
-                        isFullBB && new Random().Next(100) < 80) {
+                        isFullBB && new Random().Next(100) < 80)
+                    {
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 6, true, 0, 30, 0,
                         (instanceValue) =>
                         {
@@ -1367,9 +1373,9 @@ public static class GoRunFunction
                         var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
                         && temps.Contains(o.Name)
-                        && ((o.CurrentHP == 0 && o.MaxHP == 0)|| o.CurrentHP == o.MaxHP
+                        && ((o.CurrentHP == 0 && o.MaxHP == 0) || o.CurrentHP == o.MaxHP
                         || (
-                            // 或者是旁边没人砍 也允许
+                          // 或者是旁边没人砍 也允许
                           !teamsXY.Any(((int x, int y) t) => Math.Min(Math.Abs(t.x - o.X), Math.Abs(t.y - o.Y)) == 1)
                         ))
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
@@ -1452,7 +1458,8 @@ public static class GoRunFunction
                                 ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
                             : true) : true)
                             : true)
-                        ) {
+                        )
+                        {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             break;
                         }
@@ -1539,7 +1546,8 @@ public static class GoRunFunction
                                     ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
                                 : true) : true)
                                 : true)
-                            ) {
+                            )
+                            {
                                 MonsterFunction.SlayingMonsterCancel(instanceValue!);
                                 break;
                             }
@@ -1565,7 +1573,8 @@ public static class GoRunFunction
                                 ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
                             : true) : true)
                             : true)
-                        ) {
+                        )
+                        {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             break;
                         }
@@ -1717,7 +1726,7 @@ public static class GoRunFunction
         return 999;
     }
 
-    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken,  Func<MirGameInstanceModel, bool> checker)
+    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken, Func<MirGameInstanceModel, bool> checker)
     {
         // todo 法师暂时不要砍了 要配合2边一起改
         if (whoIsConsumer(GameInstance!) == 2)
@@ -1732,7 +1741,7 @@ public static class GoRunFunction
             {
                 await NormalAttackPoints(GameInstance, cancellationToken, true, (instanceValue) =>
                 {
-                    if(checker(instanceValue))
+                    if (checker(instanceValue))
                     {
                         return true;
                     }
@@ -2027,7 +2036,7 @@ public static class GoRunFunction
                         }
                         // 尝试跳到后面的点
                         var isJumpSuccess = false;
-                        foreach (var jumpSteps in new[] { 1, 2, 3, 5, 8, 10,15 })
+                        foreach (var jumpSteps in new[] { 1, 2, 3, 5, 8, 10, 15 })
                         {
                             await Task.Delay(100, cancellationToken);
                             if (callback(GameInstance))
@@ -2562,7 +2571,7 @@ public static class GoRunFunction
         names = mages.Select(i => i.AccountInfo.CharacterName).ToList();
         foreach (var instance in mages)
         {
-            var selfMonsters = instance.Monsters.Values.Where(m =>!m.isDead && m.isTeamMons  );
+            var selfMonsters = instance.Monsters.Values.Where(m => !m.isDead && m.isTeamMons);
             allMonsIdInClients.UnionWith(selfMonsters.Select(m => m.Id));
         }
         var targetCount = mages.Count * 5;
