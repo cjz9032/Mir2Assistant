@@ -1125,17 +1125,16 @@ public static class GoRunFunction
                                     return true;
                                 }
                                 var temp = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
-
                                 var monsters = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name) &&
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
                                 ).OrderBy(o =>
                                  Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y))
-                                ).ToList();
+                                ).FirstOrDefault();
 
-                                if (monsters.Count > 0)
+                                if (monsters.Value != null)
                                 {
-                                    var fm = monsters[0];
-                                    var distance = measureGenGoPath(instanceValue!, fm.Value.X, fm.Value.Y);
+                                    var fm = monsters.Value;
+                                    var distance = measureGenGoPath(instanceValue!, fm.X, fm.Y);
                                     if (distance <= 30)
                                     {
                                         return true;
