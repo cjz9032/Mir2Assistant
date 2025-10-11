@@ -522,9 +522,23 @@ public static class GoRunFunction
             obstacles = new byte[bytes.Length - 8];
             Array.Copy(bytes, 8, obstacles, 0, obstacles.Length);
             // 地图0 有个bug 特殊处理几个点
-            if (id == "0" && GameState.gamePath == "ZC.H.exe")
+            if (id == "0")
             {
-                var bugPoints = new (int, int)[] {
+                var bugPoints = new (int, int)[] { };
+                if (GameState.gamePath != "ZC.H.exe")
+                {
+                    bugPoints = new (int, int)[] {
+                    (418,171),
+                    (418,172),
+                    (417,171),
+                    (417,170),
+                    (416,170),
+                    (419,172)
+                    };
+                }
+                else
+                {
+                    bugPoints = new (int, int)[] {
                     (266,198),
                     (267,197),
                     (268,196),
@@ -553,6 +567,8 @@ public static class GoRunFunction
                     (416,170),
                     (419,172)
                 };
+                }
+           
                 foreach (var point in bugPoints)
                 {
                     obstacles[point.Item2 * width + point.Item1] = 1;
@@ -2107,6 +2123,10 @@ public static class GoRunFunction
                             if (GameInstance.AccountInfo.role == RoleType.mage && GameState.gamePath == "Client.exe")
                             {
                                 await Task.Delay(200, cancellationToken);
+                            }
+                            if (GameInstance.AccountInfo.role == RoleType.blade && GameState.gamePath == "Client.exe")
+                            {
+                                await Task.Delay(100, cancellationToken);
                             }
                             goNodes.RemoveAt(0);
                             break;

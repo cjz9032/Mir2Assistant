@@ -1191,13 +1191,13 @@ namespace Mir2Assistant
                                     hangMapId = "E402"; // D401 D421 E402
                                 }
 
-                                else if (CharacterStatus.Level >= 18)
+                                else if (CharacterStatus.Level >= 16)
                                 {
-                                    hangMapId = "D003";
+                                    hangMapId = GameState.gamePath == "Client.exe" ? "D401" : "D003";
                                 }
                                 else if (CharacterStatus.Level >= GameConstants.MidLevel) // 11
                                 {
-                                    hangMapId = "D001";
+                                    hangMapId = "1";
                                 }
                                 else if (CharacterStatus.Level >= 8)
                                 {
@@ -1645,7 +1645,7 @@ namespace Mir2Assistant
                             if (GameState.gamePath == "Client.exe")
                             {
                                 var sp = (instance.CharacterStatus.Level < 11 || instance.AccountInfo!.role == RoleType.mage) ? 110 : 95;
-                                CharacterStatusFunction.AdjustMoveSpeed(instance, sp);
+                                // CharacterStatusFunction.AdjustMoveSpeed(instance, sp);
                             }
                             else
                             {
@@ -1655,7 +1655,7 @@ namespace Mir2Assistant
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
+                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
                                 }
                                 else
                                 {
@@ -1670,7 +1670,7 @@ namespace Mir2Assistant
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
-                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
+                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
                                 }
                                 else
                                 {
