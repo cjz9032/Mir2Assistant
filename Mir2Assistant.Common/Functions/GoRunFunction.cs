@@ -42,19 +42,30 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(instanceValue);
         }
 
-        // 清理战士蓝
-        if (instanceValue.AccountInfo.role == RoleType.blade)
+        // 战士扔蓝
+        var mainInstance = GameState.GameInstances[0];
+        var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
+        if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5)
         {
             var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
-            var keep = (int)(instanceValue.CharacterStatus.Level < 28 ? 0 : (GameConstants.Items.mageBuyCount * 0.6));
-            var dropItems = items2.Skip(keep).ToList();
-            foreach (var item in dropItems)
+            var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
+            var rmc = 46 - mc;
+            if (rmc > 6)
             {
-                await DropItem(instanceValue, item);
-            }
-            if (dropItems.Count > 0)
-            {
-                await NpcFunction.RefreshPackages(instanceValue);
+
+                var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+                if (mageCount > 0)
+                {
+                    var dropItems = items2.Skip((int)(rmc * 0.5)).ToList();
+                    foreach (var item in dropItems)
+                    {
+                        await DropItem(instanceValue, item);
+                    }
+                    if (dropItems.Count > 0)
+                    {
+                        await NpcFunction.RefreshPackages(instanceValue);
+                    }
+                }
             }
         }
     }
@@ -135,7 +146,7 @@ public static class GoRunFunction
                     : (
                         // 半月还不行 isBladeNeed
                         (isMainFull && (isMageTemp || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * (isBladeNeed ? 0 : 0.6)) : false
-                        // false
+                    // false
                     )
                 ) : true)
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
@@ -1088,6 +1099,7 @@ public static class GoRunFunction
         var patrolTried = 0;
         var canTemp = CapbilityOfTemptation(instanceValue);
         var canLight = CapbilityOfLighting(instanceValue);
+        var canBaolie = CapbilityOfLighting(instanceValue);
 
         while (true)
         {
@@ -2244,6 +2256,11 @@ public static class GoRunFunction
     public static bool CapbilityOfLighting(MirGameInstanceModel GameInstance)
     {
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 11) != null;
+    }
+
+    public static bool CapbilityOfBaolie(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 23) != null;
     }
 
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
