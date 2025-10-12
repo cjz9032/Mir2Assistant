@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Diagnostics;
 
 namespace Mir2Assistant.Common.Utils;
 
@@ -10,54 +12,109 @@ namespace Mir2Assistant.Common.Utils;
 public static class MonsterCoverageUtils
 {
     /// <summary>
-    /// 找到一个3x3正方形的中心坐标，使其能覆盖至少N个怪物（优化版本）
+    /// 找到一个3x3正方形的中心坐标，使其能覆盖至少N个怪物（滑动窗口优化版本）
     /// </summary>
     /// <param name="monstersXY">怪物坐标列表，每个元素为(x, y)坐标</param>
     /// <param name="N">需要覆盖的最少怪物数量</param>
     /// <returns>返回3x3正方形的中心坐标(x, y)，如果找不到则返回(-1, -1)</returns>
     public static (int x, int y) FindOptimal3x3Square(List<(int x, int y)> monstersXY, int N)
     {
+        var stopwatch = Stopwatch.StartNew();
+        
         if (monstersXY == null || monstersXY.Count < N || N < 2 || N > 9)
         {
+            stopwatch.Stop();
+            Console.WriteLine($"FindOptimal3x3Square: 参数验证失败, 耗时: {stopwatch.ElapsedMilliseconds}ms");
             return (-1, -1);
         }
 
-        // 建立20x20网格索引，标记哪些位置有怪物
-        bool[,] grid = new bool[20, 20];
+        // 找到坐标范围
+        int minX = monstersXY.Min(m => m.x);
+        int maxX = monstersXY.Max(m => m.x);
+        int minY = monstersXY.Min(m => m.y);
+        int maxY = monstersXY.Max(m => m.y);
+
+        int width = maxX - minX + 1;
+        int height = maxY - minY + 1;
+
+        var gridBuildTime = Stopwatch.StartNew();
+        // 建立动态大小的网格索引
+        int[,] grid = new int[width, height];
         foreach (var monster in monstersXY)
         {
-            if (monster.x >= 0 && monster.x < 20 && monster.y >= 0 && monster.y < 20)
+            int gridX = monster.x - minX;
+            int gridY = monster.y - minY;
+            grid[gridX, gridY] = 1;
+        }
+        gridBuildTime.Stop();
+
+        var searchTime = Stopwatch.StartNew();
+        // 使用滑动窗口算法
+        // 对于小于3x3的网格，需要特殊处理
+        int maxStartY = Math.Max(0, height - 3);
+        int maxStartX = Math.Max(0, width - 3);
+
+        for (int startY = 0; startY <= maxStartY; startY++)
+        {
+            // 计算第一列的3x3窗口
+            int windowSum = 0;
+            for (int x = 0; x < 3 && x < width; x++)
             {
-                grid[monster.x, monster.y] = true;
+                for (int y = startY; y < startY + 3 && y < height; y++)
+                {
+                    windowSum += grid[x, y];
+                }
+            }
+
+            // 检查第一个窗口
+            if (windowSum >= N)
+            {
+                searchTime.Stop();
+                stopwatch.Stop();
+                Console.WriteLine($"FindOptimal3x3Square: 找到结果, 怪物数量: {monstersXY.Count}, 网格大小: {width}x{height}, " +
+                                $"网格构建: {gridBuildTime.ElapsedMilliseconds}ms, 搜索: {searchTime.ElapsedMilliseconds}ms, " +
+                                $"总耗时: {stopwatch.ElapsedMilliseconds}ms");
+                return (minX + 1, minY + startY + 1);
+            }
+
+            // 滑动窗口向右移动
+            for (int startX = 1; startX <= maxStartX; startX++)
+            {
+                // 移除最左列
+                for (int y = startY; y < startY + 3 && y < height; y++)
+                {
+                    windowSum -= grid[startX - 1, y];
+                }
+
+                // 添加最右列
+                for (int y = startY; y < startY + 3 && y < height; y++)
+                {
+                    if (startX + 2 < width)
+                    {
+                        windowSum += grid[startX + 2, y];
+                    }
+                }
+
+                // 检查当前窗口
+                if (windowSum >= N)
+                {
+                    searchTime.Stop();
+                    stopwatch.Stop();
+                    Console.WriteLine($"FindOptimal3x3Square: 找到结果, 怪物数量: {monstersXY.Count}, 网格大小: {width}x{height}, " +
+                                    $"网格构建: {gridBuildTime.ElapsedMilliseconds}ms, 搜索: {searchTime.ElapsedMilliseconds}ms, " +
+                                    $"总耗时: {stopwatch.ElapsedMilliseconds}ms");
+                    // 3x3窗口左上角在网格中是(startX, startY)，中心在网格中是(startX+1, startY+1)
+                    // 转换回原始坐标系：网格坐标(startX+1, startY+1) -> 原始坐标(minX+startX+1, minY+startY+1)
+                    return (minX + startX + 1, minY + startY + 1);
+                }
             }
         }
 
-        // 遍历所有可能的3x3正方形中心位置
-        for (int centerX = 1; centerX <= 18; centerX++)
-        {
-            for (int centerY = 1; centerY <= 18; centerY++)
-            {
-                int coveredCount = 0;
-                
-                // 检查3x3区域内的怪物数量（只需要9次查找）
-                for (int x = centerX - 1; x <= centerX + 1; x++)
-                {
-                    for (int y = centerY - 1; y <= centerY + 1; y++)
-                    {
-                        if (grid[x, y])
-                        {
-                            coveredCount++;
-                        }
-                    }
-                }
-                
-                // 如果覆盖的怪物数量达到要求，返回中心坐标
-                if (coveredCount >= N)
-                {
-                    return (centerX, centerY);
-                }
-            }
-        }
+        searchTime.Stop();
+        stopwatch.Stop();
+        Console.WriteLine($"FindOptimal3x3Square: 未找到结果, 怪物数量: {monstersXY.Count}, 网格大小: {width}x{height}, " +
+                        $"网格构建: {gridBuildTime.ElapsedMilliseconds}ms, 搜索: {searchTime.ElapsedMilliseconds}ms, " +
+                        $"总耗时: {stopwatch.ElapsedMilliseconds}ms");
         
         // 如果没有找到满足条件的位置
         return (-1, -1);

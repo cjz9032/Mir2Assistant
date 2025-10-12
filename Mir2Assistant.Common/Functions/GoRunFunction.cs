@@ -1107,7 +1107,7 @@ public static class GoRunFunction
         var patrolTried = 0;
         var canTemp = CapbilityOfTemptation(instanceValue);
         var canLight = CapbilityOfLighting(instanceValue);
-        var canBaolie = CapbilityOfLighting(instanceValue);
+        var canBaolie = CapbilityOfBaolie(instanceValue);
         // 
 
         while (true)
@@ -1431,35 +1431,58 @@ public static class GoRunFunction
                     if (!hasTempedMon)
                     // 搞
                     {
-                        // 
-                        var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40);
-                        var mageAni = dianJS ?? (instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
-                        // consumer0 处于诱惑不打指定
-                        (isFullBB ? true : !temps.Contains(o.Name))
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
-                        && (o.Appr == 40 || o.Appr == 121
-                            ? true
-                            : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
-                        && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
-                        )
-                        // 还要把鹿羊鸡放最后
-                        .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
-                        .Where(o => o.Distance <= 30)
-                        .OrderBy(o => o.Monster.MaxHP > 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
-                        // .ThenBy(o => o.Distance * -1)
-                        .ThenBy(o => o.Monster.CurrentHP == 0 ? 9999 : o.Monster.CurrentHP)
-                        .Select(o => o.Monster)
-                        .FirstOrDefault());
-
-                        if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
+                        var hadQun = false;
+                        if (canBaolie)
                         {
-                            var isPrefer = mageAni.Appr == 40 || mageAni.Appr == 121;
-                            if (isPrefer ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasDJS ? 15000 : 11000))
+                            // 有boss也优先群
+                            // if (hasBoss == null)
+                            // {
+
+                            // }
+                            var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                            // (isFullBB ? true : !temps.Contains(o.Name)) 无所谓 TODO 注意弓箭
+                            // && allowMonsters.Contains(o.Name) 要的就是清
+                            && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
+                            );
+
+                            var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 3);
+                            if (qunanis != (-1, -1))
                             {
-                                sendSpell(instanceValue!, isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
-                                instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
-                                instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
+                                sendSpell(instanceValue!, GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
+                                hadQun = true;
+                            }
+                        }
+                        if (!hadQun)
+                        {
+                            var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40);
+                            var mageAni = dianJS ?? (instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                            // consumer0 处于诱惑不打指定
+                            (isFullBB ? true : !temps.Contains(o.Name))
+                            && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
+                            && (o.Appr == 40 || o.Appr == 121
+                                ? true
+                                : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
+                            && allowMonsters.Contains(o.Name)
+                            && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
+                            )
+                            // 还要把鹿羊鸡放最后
+                            .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
+                            .Where(o => o.Distance <= 30)
+                            .OrderBy(o => o.Monster.MaxHP > 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
+                            // .ThenBy(o => o.Distance * -1)
+                            .ThenBy(o => o.Monster.CurrentHP == 0 ? 9999 : o.Monster.CurrentHP)
+                            .Select(o => o.Monster)
+                            .FirstOrDefault());
+
+                            if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
+                            {
+                                var isPrefer = mageAni.Appr == 40 || mageAni.Appr == 121;
+                                if (isPrefer ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasDJS ? 15000 : 11000))
+                                {
+                                    sendSpell(instanceValue!, isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
+                                    instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
+                                    instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
+                                }
                             }
                         }
                     }
