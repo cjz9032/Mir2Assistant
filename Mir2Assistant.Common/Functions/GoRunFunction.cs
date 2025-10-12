@@ -1359,9 +1359,15 @@ public static class GoRunFunction
                         o.isMyMons
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
                     var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+
+                    var hasBoss = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && o.MaxHP > 500
+                    // (o.Appr == 121)
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                        // 还要把鹿羊鸡放最后
+                        .FirstOrDefault();
                     // 围绕跑一下
                     if (
-                        isFullBB && new Random().Next(100) < 80)
+                        hasBoss == null && isFullBB && new Random().Next(100) < 80)
                     {
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 6, true, 0, 30, 0,
                         (instanceValue) =>
