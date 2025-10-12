@@ -1143,9 +1143,19 @@ public static class GoRunFunction
                                 {
                                     return true;
                                 }
+                                var slashRemainHP = 80;
+                                var slasher = whoIsConsumer(instanceValue!) > 0;
+                                var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
+                                    Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
+
                                 var temp = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
                                 var monsters = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name) &&
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
+                                && (slasher && o.Value.Appr != 40 ? (enoughBBCanHit ?
+                                    (o.Value.CurrentHP > 0
+                                        ? (o.Value.CurrentHP > slashRemainHP || o.Value.MaxHP < slashRemainHP || o.Value.MaxHP >= 500)
+                                    : true) : true)
+                                    : true) 
                                 ).OrderBy(o =>
                                  Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y))
                                 ).FirstOrDefault();
