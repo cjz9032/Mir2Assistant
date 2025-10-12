@@ -256,11 +256,10 @@ public static class GoRunFunction
                 if (pathFound)
                 {
                     ItemFunction.Pickup(instanceValue);
-                    await Task.Delay(500);
+                    await Task.Delay(800);
                     pickedAny = true;
-                    // 
                     // 一定时间范围内
-                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
                 else
                 {
@@ -1105,6 +1104,7 @@ public static class GoRunFunction
         var canTemp = CapbilityOfTemptation(instanceValue);
         var canLight = CapbilityOfLighting(instanceValue);
         var canBaolie = CapbilityOfLighting(instanceValue);
+        // 
 
         while (true)
         {
@@ -1158,7 +1158,7 @@ public static class GoRunFunction
                                     (o.Value.CurrentHP > 0
                                         ? ((o.Value.CurrentHP > slashRemainHP) || (o.Value.MaxHP < slashRemainHP) || (o.Value.MaxHP >= 500))
                                     : true) : true)
-                                    : true) 
+                                    : true)
                                 ).OrderBy(o =>
                                  Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y))
                                 ).FirstOrDefault();
