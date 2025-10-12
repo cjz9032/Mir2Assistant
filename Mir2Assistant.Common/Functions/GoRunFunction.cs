@@ -131,7 +131,7 @@ public static class GoRunFunction
                     ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
                     : (
                         // 半月还不行 isBladeNeed
-                        (isMainFull && (isMageTemp || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
+                        (isMainFull && (isMageTemp || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * (isBladeNeed ? 0.3 : 0.6)) : false
                         // false
                     )
                 ) : true)
