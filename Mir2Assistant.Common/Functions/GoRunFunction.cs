@@ -239,7 +239,7 @@ public static class GoRunFunction
                     pickedAny = true;
                     // 
                     // 一定时间范围内
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
                 else
                 {
@@ -2277,8 +2277,8 @@ public static class GoRunFunction
             // 低血量
             && ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.65))
             // 距离足够
-            && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
-            && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
+            && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11
+            && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11)
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
         .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
