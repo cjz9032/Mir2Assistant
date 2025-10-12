@@ -1362,7 +1362,17 @@ public static class GoRunFunction
                     var nearBBCount = instanceValue.Monsters.Values.Count(o => !o.isDead &&
                         o.isMyMons
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
-                    var isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+                    var _isFullBB = canTemp ? nearBBCount == (CharacterStatus.Level >= 24 ? 5 : (CharacterStatus.Level >= 18 ? 4 : 3)) : false;
+                    var isFullBB = false;
+                    if (_isFullBB)
+                    {
+                        isFullBB = true;
+                        instanceValue.mageFullBBtime = Environment.TickCount;
+                    }
+                    else if (instanceValue.mageFullBBtime > 0 && (Environment.TickCount - instanceValue.mageFullBBtime) < 300_000)
+                    {
+                        isFullBB = true;
+                    }
 
                     var hasBoss = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && o.MaxHP > 500
                     // (o.Appr == 121)

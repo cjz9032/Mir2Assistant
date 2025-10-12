@@ -28,7 +28,7 @@ public class MirGameInstanceModel
     public byte MonstersUpdateId = 0;
     public byte DropsItemsUpdateId = 0;
 
-    DateTime? mageFullBBtime = null;
+    public int mageFullBBtime = 0;
 
     /// <summary>
     /// 怪物
@@ -137,7 +137,7 @@ public class MirGameInstanceModel
         memoryUtils?.Dispose();
         isHomePreparing = false;
         isPickingWay = false;
-        mageFullBBtime = null;
+        mageFullBBtime = 0;
     }
 
     // 直接用属性pid来判断, 快但是可能不准, 后面需要确认是不是及时更新的, 及时就没问题
