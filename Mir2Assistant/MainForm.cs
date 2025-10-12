@@ -657,7 +657,7 @@ namespace Mir2Assistant
                 var buyC = GameConstants.Items.mageBuyCount;
                 if (isBladeNeed)
                 {
-                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.5);
+                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.8);
                 }
                 if (isMageNeed)
                 {
