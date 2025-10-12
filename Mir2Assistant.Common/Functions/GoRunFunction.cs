@@ -255,7 +255,7 @@ public static class GoRunFunction
                     pickedAny = true;
                     // 
                     // 一定时间范围内
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
                 else
                 {
