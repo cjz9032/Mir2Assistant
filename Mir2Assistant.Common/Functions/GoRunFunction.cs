@@ -44,28 +44,31 @@ public static class GoRunFunction
 
         // 战士扔蓝
         var mainInstance = GameState.GameInstances[0];
-        var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
-        if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5)
+        if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
-            var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
-            var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
-            var rmc = 46 - mc;
-            if (rmc > 6)
+            var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
+            if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5)
             {
-
-                var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
-                if (mageCount > 0)
+                var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
+                var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
+                var rmc = 46 - mc;
+                if (rmc > 6)
                 {
-                    // 进位
-                    var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.5);
-                    var dropItems = items2.Take((int)dropCount).ToList();
-                    foreach (var item in dropItems)
+
+                    var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+                    if (mageCount > 0)
                     {
-                        await DropItem(instanceValue, item);
-                    }
-                    if (dropItems.Count > 0)
-                    {
-                        await NpcFunction.RefreshPackages(instanceValue);
+                        // 进位
+                        var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.5);
+                        var dropItems = items2.Take((int)dropCount).ToList();
+                        foreach (var item in dropItems)
+                        {
+                            await DropItem(instanceValue, item);
+                        }
+                        if (dropItems.Count > 0)
+                        {
+                            await NpcFunction.RefreshPackages(instanceValue);
+                        }
                     }
                 }
             }
@@ -1153,7 +1156,7 @@ public static class GoRunFunction
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
                                 && (slasher && o.Value.Appr != 40 ? (enoughBBCanHit ?
                                     (o.Value.CurrentHP > 0
-                                        ? (o.Value.CurrentHP > slashRemainHP || o.Value.MaxHP < slashRemainHP || o.Value.MaxHP >= 500)
+                                        ? ((o.Value.CurrentHP > slashRemainHP) || (o.Value.MaxHP < slashRemainHP) || (o.Value.MaxHP >= 200))
                                     : true) : true)
                                     : true) 
                                 ).OrderBy(o =>
@@ -1330,7 +1333,7 @@ public static class GoRunFunction
                 // 补刀用
                 (slasher && o.Appr != 40 ? (enoughBBCanHit ?
                 (o.CurrentHP > 0
-                    ? (o.CurrentHP > slashRemainHP || o.MaxHP < slashRemainHP || o.MaxHP >= 500)
+                    ? ((o.CurrentHP > slashRemainHP) || (o.MaxHP < slashRemainHP) || (o.MaxHP >= 200))
                 : true) : true)
                 : true) &&
 
@@ -1428,7 +1431,7 @@ public static class GoRunFunction
                             ? true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 || o.Appr == 121 ? true : (o.CurrentHP == 0 || o.CurrentHP > drawBBRemainHP || o.MaxHP >= 500))
+                        && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 200)))
                         )
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
