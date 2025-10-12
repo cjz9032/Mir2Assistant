@@ -1584,7 +1584,7 @@ public static class GoRunFunction
                             if (
                                 !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                                 (ani.CurrentHP > 0
-                                    ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
+                                    ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP || ani.MaxHP >= 500)
                                 : true) : true)
                                 : true)
                             )
@@ -1611,7 +1611,7 @@ public static class GoRunFunction
                         if (
                             !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                             (ani.CurrentHP > 0
-                                ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
+                                ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP || ani.MaxHP >= 500)
                             : true) : true)
                             : true)
                         )
