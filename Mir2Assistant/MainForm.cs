@@ -657,7 +657,7 @@ namespace Mir2Assistant
                 var buyC = GameConstants.Items.mageBuyCount;
                 if (isBladeNeed)
                 {
-                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.5);
+                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.1);
                 }
                 if (isMageNeed)
                 {
@@ -1185,7 +1185,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 30) // todo toaist
                                 {
-                                    hangMapId = "D612"; // D601 D023 E605 连接E604  , D605 北宽 , D613 生死大
+                                    hangMapId = "D613"; // D601 D023 E605 连接E604  , D605 北宽 , D613 生死大
                                 }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {

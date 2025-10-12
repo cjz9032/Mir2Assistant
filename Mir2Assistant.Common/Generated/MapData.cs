@@ -3002,10 +3002,11 @@ namespace Mir2Assistant.Common.Generated
             },
             new int[][] // Index 234: D611
             {
-                new int[] { 225, 32, 40, 177, 34 },
-                new int[] { 227, 32, 71, 155, 37 },
-                new int[] { 226, 55, 37, 186, 81 },
-                new int[] { 235, 59, 70, 12, 16 },
+                // 屏蔽
+                // new int[] { 225, 32, 40, 177, 34 },
+                // new int[] { 227, 32, 71, 155, 37 },
+                // new int[] { 226, 55, 37, 186, 81 },
+                // new int[] { 235, 59, 70, 12, 16 },
             },
             new int[][] // Index 235: D612
             {
