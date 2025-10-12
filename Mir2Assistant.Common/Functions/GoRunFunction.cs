@@ -56,7 +56,9 @@ public static class GoRunFunction
                 var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
                 if (mageCount > 0)
                 {
-                    var dropItems = items2.Skip((int)(rmc * 0.5)).ToList();
+                    // 进位
+                    var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.5);
+                    var dropItems = items2.Take((int)dropCount).ToList();
                     foreach (var item in dropItems)
                     {
                         await DropItem(instanceValue, item);
