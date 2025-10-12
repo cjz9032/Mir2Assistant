@@ -255,11 +255,15 @@ public static class GoRunFunction
                 // }
                 if (pathFound)
                 {
+                    await Task.Delay(200);
                     ItemFunction.Pickup(instanceValue);
-                    await Task.Delay(800);
+                    await Task.Delay(600);
+                    if (!(instanceValue.chats.LastOrDefault()?.Contains("时间") ?? true))
+                    {
+                        instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    }
                     pickedAny = true;
                     // 一定时间范围内
-                    instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
                 else
                 {
