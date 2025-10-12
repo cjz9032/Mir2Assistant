@@ -80,6 +80,9 @@ public static class GoRunFunction
         {
             return null;
         }
+        var mainInstance = GameState.GameInstances[0];
+        var isMainFull = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
+        var isMageTemp = instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus.Level >= 26;
 
         // var canLight = CapbilityOfLighting(instanceValue);
         var CharacterStatus = instanceValue.CharacterStatus!;
@@ -127,10 +130,9 @@ public static class GoRunFunction
                     instanceValue.AccountInfo.role == RoleType.taoist
                     ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
                     : (
-                        // false
                         // 半月还不行 isBladeNeed
-                        // canLight ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
-                        false
+                        (isMainFull && (isMageTemp || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * 0.6) : false
+                        // false
                     )
                 ) : true)
             && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
@@ -239,7 +241,7 @@ public static class GoRunFunction
                     pickedAny = true;
                     // 
                     // 一定时间范围内
-                    // instanceValue.pickupItemIds.Add(drop.Value.Id);
+                    instanceValue.pickupItemIds.Add(drop.Value.Id);
                 }
                 else
                 {
