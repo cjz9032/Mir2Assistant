@@ -60,7 +60,7 @@ public static class GoRunFunction
     }
     public static bool PickupInfoBasicCheck(MirGameInstanceModel instanceValue)
     {
-        var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
+        var enoughBBCanHit = instanceValue.AccountInfo.role != RoleType.blade && instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                 Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).Count() > 3;
 
         var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
