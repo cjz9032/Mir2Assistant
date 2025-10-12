@@ -1156,7 +1156,7 @@ public static class GoRunFunction
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
                                 && (slasher && o.Value.Appr != 40 ? (enoughBBCanHit ?
                                     (o.Value.CurrentHP > 0
-                                        ? ((o.Value.CurrentHP > slashRemainHP) || (o.Value.MaxHP < slashRemainHP) || (o.Value.MaxHP >= 200))
+                                        ? ((o.Value.CurrentHP > slashRemainHP) || (o.Value.MaxHP < slashRemainHP) || (o.Value.MaxHP >= 500))
                                     : true) : true)
                                     : true) 
                                 ).OrderBy(o =>
@@ -1333,7 +1333,7 @@ public static class GoRunFunction
                 // 补刀用
                 (slasher && o.Appr != 40 ? (enoughBBCanHit ?
                 (o.CurrentHP > 0
-                    ? ((o.CurrentHP > slashRemainHP) || (o.MaxHP < slashRemainHP) || (o.MaxHP >= 200))
+                    ? ((o.CurrentHP > slashRemainHP) || (o.MaxHP < slashRemainHP) || (o.MaxHP >= 500))
                 : true) : true)
                 : true) &&
 
@@ -1403,7 +1403,7 @@ public static class GoRunFunction
                         // 还要把鹿羊鸡放最后
                         .FirstOrDefault();
 
-                    if (canTemp && !isFullBB && dianJS == null)
+                    if (hasBoss == null && canTemp && !isFullBB && dianJS == null)
                     {
                         var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
                         // 寻找陀螺
@@ -1437,12 +1437,12 @@ public static class GoRunFunction
                             ? true
                             : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                         && allowMonsters.Contains(o.Name)
-                        && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 200)))
+                        && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
                         )
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                         .Where(o => o.Distance <= 30)
-                        .OrderBy(o => o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0)
+                        .OrderBy(o => o.Monster.MaxHP > 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
                         // .ThenBy(o => o.Distance * -1)
                         .ThenBy(o => o.Monster.CurrentHP == 0 ? 9999 : o.Monster.CurrentHP)
                         .Select(o => o.Monster)
