@@ -639,8 +639,9 @@ namespace Mir2Assistant
             if (lowCoin) return;
             // 目前只有道士武买魔法
             var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
+            var isMageNeed = instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus.Level >= 26;
 
-            if (GoRunFunction.CapbilityOfHeal(instanceValue) || isBladeNeed)
+            if (GoRunFunction.CapbilityOfHeal(instanceValue) || isBladeNeed || isMageNeed)
             {
                 var items = GameConstants.Items.MagePotions;
                 var exitsQuan = 0;
@@ -653,7 +654,15 @@ namespace Mir2Assistant
                     }
                 });
 
-                var buyC = isBladeNeed ? GameConstants.Items.mageBuyCount / 3 : GameConstants.Items.mageBuyCount;
+                var buyC = GameConstants.Items.mageBuyCount;
+                if (isBladeNeed)
+                {
+                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.5);
+                }
+                if (isMageNeed)
+                {
+                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.5);
+                }
 
                 if (exitsQuan < buyC)
                 {
