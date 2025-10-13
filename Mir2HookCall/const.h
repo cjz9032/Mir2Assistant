@@ -2,7 +2,7 @@
 
 
 // const.h
-// #define USE_VERSION_CS  // 注释这行就用第二个版本
+#define USE_VERSION_CS  // 注释这行就用第二个版本
 
 #ifdef USE_VERSION_CS
     #define MIR_BU_DAO_ADDR    0x000000
