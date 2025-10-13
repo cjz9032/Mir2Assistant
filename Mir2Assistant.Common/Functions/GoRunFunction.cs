@@ -2077,7 +2077,7 @@ public static class GoRunFunction
                 }
 
                 var tried = 0;
-                var maxed = 6; // 别改
+                var maxed = 10; // 别改
                 while (true)
                 {
                     if (GameInstance.CharacterStatus!.isEnhanceDead)
@@ -2208,13 +2208,22 @@ public static class GoRunFunction
                     {
                         if (nextX == newX && nextY == newY)
                         {
-                            if (GameInstance.AccountInfo.role == RoleType.mage && GameState.gamePath == "Client.exe")
-                            {
-                                await Task.Delay(200, cancellationToken);
-                            }
-                            if (GameInstance.AccountInfo.role == RoleType.blade && GameState.gamePath == "Client.exe")
+                           
+                            if (GameState.gamePath == "Client.exe")
                             {
                                 await Task.Delay(100, cancellationToken);
+                                if (GameInstance.AccountInfo.role == RoleType.mage)
+                                {
+                                    await Task.Delay(100, cancellationToken);
+                                }
+                            }
+                            // 查看是否反弹
+                            CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                            if (GameInstance.CharacterStatus!.X != nextX || GameInstance.CharacterStatus.Y != nextY)
+                            {
+                                GameInstance.GameWarning($"反弹");
+                                await Task.Delay(500, cancellationToken);
+                                continue;
                             }
                             goNodes.RemoveAt(0);
                             break;

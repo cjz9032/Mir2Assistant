@@ -1658,8 +1658,8 @@ namespace Mir2Assistant
                             // 用用再说
                             if (GameState.gamePath == "Client.exe")
                             {
-                                var sp = (instance.CharacterStatus.Level < 11 || instance.AccountInfo!.role == RoleType.mage) ? 110 : 95;
-                                // CharacterStatusFunction.AdjustMoveSpeed(instance, sp);
+                                // var sp = (instance.CharacterStatus.Level < 11 || instance.AccountInfo!.role == RoleType.mage) ? 110 : 95;
+                                CharacterStatusFunction.AdjustMoveSpeed(instance, 100);
                             }
                             else
                             {
@@ -1669,7 +1669,7 @@ namespace Mir2Assistant
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
-                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1100);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1150);
                                 }
                                 else
                                 {
@@ -1684,7 +1684,7 @@ namespace Mir2Assistant
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
-                                    // CharacterStatusFunction.AdjustAttackSpeed(instance, 1000);
+                                    CharacterStatusFunction.AdjustAttackSpeed(instance, 1150);
                                 }
                                 else
                                 {
