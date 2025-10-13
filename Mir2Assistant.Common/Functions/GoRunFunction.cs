@@ -1464,16 +1464,17 @@ public static class GoRunFunction
                         }
                         if (!hadQun)
                         {
+                            var canotTemp = CharacterStatus.Level < 24;
                             var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40);
                             var mageAni = dianJS ?? (instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                             // consumer0 处于诱惑不打指定
                             (isFullBB ? true : !temps.Contains(o.Name))
                             && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
-                            && (o.Appr == 40 || o.Appr == 121
+                            && (canotTemp || o.Appr == 40 || o.Appr == 121
                                 ? true
                                 : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                             && allowMonsters.Contains(o.Name)
-                            && (o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
+                            && (canotTemp || o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
                             )
                             // 还要把鹿羊鸡放最后
                             .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
@@ -1486,10 +1487,10 @@ public static class GoRunFunction
 
                             if (CharacterStatus.CurrentHP > CharacterStatus.MaxHP * 0.3 && mageAni != null)
                             {
-                                var isPrefer = mageAni.Appr == 40 || mageAni.Appr == 121;
+                                var isPrefer = canotTemp || mageAni.Appr == 40 || mageAni.Appr == 121;
                                 if (isPrefer ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasDJS ? 15000 : 11000))
                                 {
-                                    sendSpell(instanceValue!, isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
+                                    sendSpell(instanceValue!,  isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                     instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
                                     instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
                                 }
@@ -2224,6 +2225,7 @@ public static class GoRunFunction
 
                             if (GameInstance.CharacterStatus!.X != nextX || GameInstance.CharacterStatus.Y != nextY)
                             {
+                                await Task.Delay(200, cancellationToken);
                                 GameInstance.GameWarning($"反弹");
                                 var otherClientMonster = GameState.GameInstances
                                     .Where(t => t.AccountInfo.Account != GameInstance.AccountInfo.Account)
