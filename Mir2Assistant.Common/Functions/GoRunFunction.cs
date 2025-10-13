@@ -1325,7 +1325,7 @@ public static class GoRunFunction
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
                 var slashRemainHP = 80;
-                var drawBBRemainHP = 25;
+                var  drawBBRemainHP = 25;
 
 
 
@@ -1474,7 +1474,7 @@ public static class GoRunFunction
                                 ? true
                                 : (!instanceValue.mageDrawAttentionMonsterCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + (hasDJS ? 20_000 : 11000)))
                             && allowMonsters.Contains(o.Name)
-                            && (canotTemp || o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
+                            && (canotTemp ? o.CurrentHP > 40 : o.Appr == 40 || o.Appr == 121 ? true : ((o.CurrentHP == 0) || (o.CurrentHP > drawBBRemainHP) || (o.MaxHP >= 500)))
                             )
                             // 还要把鹿羊鸡放最后
                             .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
