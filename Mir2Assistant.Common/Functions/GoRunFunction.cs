@@ -2214,7 +2214,7 @@ public static class GoRunFunction
                                 await Task.Delay(100, cancellationToken);
                                 if (GameInstance.AccountInfo.role == RoleType.mage)
                                 {
-                                    await Task.Delay(100, cancellationToken);
+                                    await Task.Delay(200, cancellationToken);
                                 }
                             }
                             // 查看是否反弹
