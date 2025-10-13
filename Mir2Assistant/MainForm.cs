@@ -606,9 +606,17 @@ namespace Mir2Assistant
                 {
                     bookName = "精神力战法";
                 }
+                if (instanceValue.CharacterStatus.coin > 1900 && instanceValue.CharacterStatus.Level >= 19 && !GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                {
+                    bookName = "召唤骷髅";
+                }
             }
             else if (instanceValue.AccountInfo.role == RoleType.mage)
             {
+                if (instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >= 17 && !GoRunFunction.CapbilityOfLighting(instanceValue))
+                {
+                    bookName = "雷电术";
+                }
                 if (instanceValue.CharacterStatus.coin > 1000 && instanceValue.CharacterStatus.Level >= 18 && !GoRunFunction.CapbilityOfTemptation(instanceValue))
                 {
                     bookName = "诱惑之光";
