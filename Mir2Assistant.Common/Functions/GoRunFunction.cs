@@ -2077,7 +2077,7 @@ public static class GoRunFunction
                 }
 
                 var tried = 0;
-                var maxed = 10; // 别改
+                var maxed = 12; // 别改
                 while (true)
                 {
                     if (GameInstance.CharacterStatus!.isEnhanceDead)
@@ -2222,7 +2222,8 @@ public static class GoRunFunction
                             if (GameInstance.CharacterStatus!.X != nextX || GameInstance.CharacterStatus.Y != nextY)
                             {
                                 GameInstance.GameWarning($"反弹");
-                                await Task.Delay(500, cancellationToken);
+                                GoRunAlgorithm(GameInstance, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, (byte)(tried % 8), 1);
+                                await Task.Delay(400, cancellationToken);
                                 continue;
                             }
                             goNodes.RemoveAt(0);
