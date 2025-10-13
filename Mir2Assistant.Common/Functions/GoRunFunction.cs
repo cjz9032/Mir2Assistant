@@ -2093,7 +2093,8 @@ public static class GoRunFunction
                         return false;
                     }
                     await Task.Delay(100, cancellationToken);
-                    CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                    CharacterStatusFunction.GetInfo(GameInstance!);
+
                     MonsterFunction.ReadMonster(GameInstance!);
 
                     // 执行后发生了变更
@@ -2155,7 +2156,8 @@ public static class GoRunFunction
                                         {
                                             return false;
                                         }
-                                        CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                                        CharacterStatusFunction.GetInfo(GameInstance!);
+
 
                                         // 检查是否成功移动到目标位置
                                         if (GameInstance.CharacterStatus.X == targetX && GameInstance.CharacterStatus.Y == targetY)
@@ -2208,7 +2210,7 @@ public static class GoRunFunction
                     {
                         if (nextX == newX && nextY == newY)
                         {
-                           
+
                             if (GameState.gamePath == "Client.exe")
                             {
                                 await Task.Delay(100, cancellationToken);
@@ -2218,12 +2220,25 @@ public static class GoRunFunction
                                 }
                             }
                             // 查看是否反弹
-                            CharacterStatusFunction.FastUpdateXY(GameInstance!);
+                            CharacterStatusFunction.GetInfo(GameInstance!);
+
                             if (GameInstance.CharacterStatus!.X != nextX || GameInstance.CharacterStatus.Y != nextY)
                             {
                                 GameInstance.GameWarning($"反弹");
-                                GoRunAlgorithm(GameInstance, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, (byte)(tried % 8), 1);
-                                await Task.Delay(400, cancellationToken);
+                                var otherClientMonster = GameState.GameInstances
+                                    .Where(t => t.AccountInfo.Account != GameInstance.AccountInfo.Account)
+                                    .SelectMany(t => t.Monsters.Values)
+                                    .FirstOrDefault(m => m.isTeams && m.Name == GameInstance.AccountInfo.CharacterName);
+                                if (otherClientMonster != null)
+                                {
+                                    CharacterStatusFunction.FastWriteXY(GameInstance, otherClientMonster.X, otherClientMonster.Y);
+                                    await Task.Delay(100, cancellationToken);
+                                }
+                                else
+                                {
+                                    GoRunAlgorithm(GameInstance, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, (byte)(tried % 8), 1);
+                                    await Task.Delay(400, cancellationToken);
+                                }
                                 continue;
                             }
                             goNodes.RemoveAt(0);

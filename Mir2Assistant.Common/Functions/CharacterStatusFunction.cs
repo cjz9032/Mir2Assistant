@@ -105,6 +105,13 @@ public static class CharacterStatusFunction
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物X偏移"]));
         status.Y = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物Y偏移"]));
     }
+    public static void FastWriteXY(MirGameInstanceModel gameInstance, int X, int Y)
+    {
+        var memoryUtils = gameInstance.memoryUtils!;
+        memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物X偏移"]), (short)X);
+        memoryUtils.WriteShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物Y偏移"]), (short)Y);
+        GetInfo(gameInstance);
+    }
 
     public static void AddChat(MirGameInstanceModel gameInstance, string chat)
     {
