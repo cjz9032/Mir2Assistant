@@ -101,9 +101,9 @@ public static class GoRunFunction
         }
         var mainInstance = GameState.GameInstances[0];
         var isMainFull = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
-        var isMageNeed = instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus.Level >= 17;
+        var canLight = CapbilityOfLighting(instanceValue);
+        var isMageNeed = instanceValue.AccountInfo.role == RoleType.mage && canLight;
 
-        // var canLight = CapbilityOfLighting(instanceValue);
         var CharacterStatus = instanceValue.CharacterStatus!;
         var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
