@@ -610,6 +610,14 @@ namespace Mir2Assistant
                 {
                     bookName = "召唤骷髅";
                 }
+                if (instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level >= 22 && !GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                {
+                    bookName = "幽灵盾";
+                }
+                if (instanceValue.CharacterStatus.coin > 5000 && instanceValue.CharacterStatus.Level >= 25 && !GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                {
+                    bookName = "神圣战甲术";
+                }
             }
             else if (instanceValue.AccountInfo.role == RoleType.mage)
             {
@@ -1273,6 +1281,10 @@ namespace Mir2Assistant
                                     await GoRunFunction.BeStatusSlaveIfHas(instanceValue, true);
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
+                                        if (!(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId)) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
+                                        {
+                                            System.Diagnostics.Debugger.Break();
+                                        }
                                         exitForSwichMap = false;
                                         // 小号跟随回家
                                         if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
