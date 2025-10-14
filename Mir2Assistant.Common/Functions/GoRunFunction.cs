@@ -101,7 +101,7 @@ public static class GoRunFunction
         }
         var mainInstance = GameState.GameInstances[0];
         var isMainFull = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count() > 44;
-        var isMageTemp = instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus.Level >= 26;
+        var isMageNeed = instanceValue.AccountInfo.role == RoleType.mage && instanceValue.CharacterStatus.Level >= 17;
 
         // var canLight = CapbilityOfLighting(instanceValue);
         var CharacterStatus = instanceValue.CharacterStatus!;
@@ -150,7 +150,7 @@ public static class GoRunFunction
                     ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
                     : (
                         // 半月还不行 isBladeNeed
-                        (isMainFull && (isMageTemp || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * (isBladeNeed ? 0 : 0.6)) : false
+                        (isMainFull && (isMageNeed || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * (isBladeNeed ? 0 : 0.6)) : false
                     // false
                     )
                 ) : true)
