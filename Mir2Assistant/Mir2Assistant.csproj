@@ -12,6 +12,11 @@
 		<BaseOutputPath></BaseOutputPath>
 		<ApplicationIcon>icon.ico</ApplicationIcon>
 		<AssemblyName>cqfz</AssemblyName>
+		<DebugType>full</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<!-- 添加运行时配置来避免崩溃 -->
+		<RuntimeFrameworkVersion>8.0.0</RuntimeFrameworkVersion>
+		<RollForward>LatestMinor</RollForward>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Content Include="icon.ico" />
