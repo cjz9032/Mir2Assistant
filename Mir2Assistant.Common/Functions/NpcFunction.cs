@@ -530,10 +530,11 @@ namespace Mir2Assistant.Common.Functions
             else if (mapId == "3")
             {
                 // 固定为左下角 因为只有这全有买卖, 除了蜡烛
+                var isCS = GameState.gamePath == "Client.exe";
                 switch (position)
                 {
                     case EquipPosition.Weapon:
-                        return ("0151", "武器", 10, 15);
+                        return ("0151", isCS ? "武器铺" : "武器", 10, 15);
                     case EquipPosition.Dress:
                         return ("0155", "布", 13, 11);
                     case EquipPosition.Helmet:
@@ -1144,7 +1145,7 @@ namespace Mir2Assistant.Common.Functions
                         }
                         else
                         {
-                             if (level >= 14 && level < 16)
+                            if (level >= 14 && level < 16)
                             {
                                 // itemNames.Add("青铜头盔");
                                 itemNames.Add("魔法头盔");
