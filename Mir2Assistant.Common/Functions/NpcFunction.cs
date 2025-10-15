@@ -1101,7 +1101,7 @@ namespace Mir2Assistant.Common.Functions
                         }
                     }
                     // todo 换图
-                    if (level >= 26 && role == RoleType.taoist)
+                    if (level >= 25 && role == RoleType.taoist)
                     {
                         itemNames.Add("金戒指");
                         itemNames.Add("降妖除魔戒指");
