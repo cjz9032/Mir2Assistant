@@ -1210,7 +1210,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 25) // todo toaist
                                 {
-                                    hangMapId = "D601";
+                                    hangMapId = "E701";
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
