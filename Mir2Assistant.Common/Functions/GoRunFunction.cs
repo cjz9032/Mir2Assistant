@@ -1346,7 +1346,7 @@ public static class GoRunFunction
                 // 还要把鹿羊鸡放最后
                 .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                 .Where(o => o.Distance <= 30)
-                .OrderBy(o => o.Monster.MaxHP > 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
+                .OrderBy(o => o.Monster.MaxHP < 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
                 .ThenBy(o => o.Distance)
                 .Select(o => o.Monster)
                 .FirstOrDefault();
@@ -1479,7 +1479,7 @@ public static class GoRunFunction
                             // 还要把鹿羊鸡放最后
                             .Select(o => new { Monster = o, Distance = measureGenGoPath(instanceValue!, o.X, o.Y) })
                             .Where(o => o.Distance <= 30)
-                            .OrderBy(o => o.Monster.MaxHP > 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
+                            .OrderBy(o => o.Monster.MaxHP < 500 ? (o.Monster.Appr != 40 ? (GameConstants.allowM10.Contains(o.Monster.Name) ? 2 : 1) : 0) : -1)
                             // .ThenBy(o => o.Distance * -1)
                             .ThenBy(o => o.Monster.CurrentHP == 0 ? 9999 : o.Monster.CurrentHP)
                             .Select(o => o.Monster)
