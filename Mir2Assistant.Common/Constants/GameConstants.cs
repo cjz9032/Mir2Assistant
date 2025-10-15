@@ -204,11 +204,11 @@ public static class GameConstants
             "集体隐身术",
             "诱惑之光",
             "瞬息移动",
-            // "神圣战甲术",
+            "神圣战甲术",
             "疾光电影",
             "召唤骷髅",
             "灵魂火符",
-            // "幽灵盾",
+            "幽灵盾",
             // "肉",
             // "护身符",
             "随机传送卷",
@@ -285,6 +285,8 @@ public static class GameConstants
             if (role != RoleType.taoist)
             {
                 temp.Add("护身符");
+                temp.Remove("神圣战甲术");
+                temp.Remove("幽灵盾");
             }
             if (role != RoleType.mage)
             {
