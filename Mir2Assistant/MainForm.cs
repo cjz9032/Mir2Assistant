@@ -1417,8 +1417,8 @@ namespace Mir2Assistant
                                         // N级以下不配
                                         var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
                                         && (isConsumer == 2)
-                                        && ((instanceValue.CharacterStatus.Level < 11 ? instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3 : true)
-                                        && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2);
+                                        && instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
+                                        && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2;
 
 
                                         var isOtherLowHp = instanceValue.CharacterStatus.Level < 22 ? false : (instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.25 || (instanceValue.CharacterStatus.MaxHP > 50 && instanceValue.CharacterStatus.CurrentHP < 30)));
