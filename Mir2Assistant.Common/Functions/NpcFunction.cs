@@ -530,7 +530,6 @@ namespace Mir2Assistant.Common.Functions
             else if (mapId == "3")
             {
                 // 固定为左下角 因为只有这全有买卖, 除了蜡烛
-                var isCS = GameState.gamePath == "Client.exe";
                 switch (position)
                 {
                     case EquipPosition.Weapon:
