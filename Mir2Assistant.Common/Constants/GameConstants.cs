@@ -1,4 +1,5 @@
 using System.Collections.Frozen;
+using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 
 namespace Mir2Assistant.Common.Constants;
@@ -262,7 +263,7 @@ public static class GameConstants
             "魔鬼项链",
             "蓝色水晶戒指",
   };
-        public static List<string> GetBinItems(int level, RoleType role)
+        public static List<string> GetBinItems(MirGameInstanceModel gameInstance, int level, RoleType role)
         {
             if (level < 14)
             {
@@ -285,8 +286,16 @@ public static class GameConstants
             if (role != RoleType.taoist)
             {
                 temp.Add("护身符");
-                temp.Remove("神圣战甲术");
-                temp.Remove("幽灵盾");
+                var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
+                var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
+                if (!canDef)
+                {
+                    temp.Remove("神圣战甲术");
+                }
+                if (!canMageDef)
+                {
+                    temp.Remove("幽灵盾");
+                }
             }
             if (role != RoleType.mage)
             {

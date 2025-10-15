@@ -31,7 +31,7 @@ public static class GoRunFunction
     }
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
-        var curinItems = GameConstants.Items.GetBinItems(instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var curinItems = GameConstants.Items.GetBinItems(instanceValue, instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
         var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && curinItems.Contains(o.Name)).ToList();
         foreach (var item in items)
         {
@@ -105,7 +105,7 @@ public static class GoRunFunction
         var isMageNeed = instanceValue.AccountInfo.role == RoleType.mage && canLight;
 
         var CharacterStatus = instanceValue.CharacterStatus!;
-        var curinItems = GameConstants.Items.GetBinItems(CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var curinItems = GameConstants.Items.GetBinItems(instanceValue, CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
         var mageCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
