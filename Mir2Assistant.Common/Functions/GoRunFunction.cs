@@ -1325,7 +1325,7 @@ public static class GoRunFunction
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
                 var slashRemainHP = 80;
-                var  drawBBRemainHP = 25;
+                var drawBBRemainHP = 25;
 
 
 
@@ -1490,7 +1490,7 @@ public static class GoRunFunction
                                 var isPrefer = canotTemp || mageAni.Appr == 40 || mageAni.Appr == 121;
                                 if (isPrefer ? true : Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (hasDJS ? 15000 : 11000))
                                 {
-                                    sendSpell(instanceValue!,  isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
+                                    sendSpell(instanceValue!, isPrefer && canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                     instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
                                     instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
                                 }
@@ -2521,7 +2521,7 @@ public static class GoRunFunction
         var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
         if (useItem == null)
         {
-            item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+            item = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
             if (item == null)
             {
                 return;
@@ -2532,7 +2532,8 @@ public static class GoRunFunction
         if (useItem == null)
         {
             // 会自动
-            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+            var isCS = GameState.gamePath == "Client.exe";
+            nint toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
             nint bagGridIndex = item!.Index;
             await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
             await Task.Delay(300);
@@ -2607,7 +2608,9 @@ public static class GoRunFunction
 
         // 查看有没沪深不然浪费魔法
         ItemModel? item = null;
-        var useItem = GameInstance.CharacterStatus.useItems[(int)EquipPosition.ArmRingLeft];
+        var isCS = GameState.gamePath == "Client.exe";
+        int toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
+        var useItem = GameInstance.CharacterStatus.useItems[toIndex];
         bool isWearFuShen = useItem.IsEmpty && useItem.stdMode == 25;
         if (!isWearFuShen)
         {
@@ -2616,7 +2619,6 @@ public static class GoRunFunction
             {
                 return;
             }
-            nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
             nint bagGridIndex = item!.Index;
             await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
         }
@@ -2890,7 +2892,9 @@ public static class GoRunFunction
                     continue;
                 }
                 // 会自动
-                nint toIndex = (int)EquipPosition.ArmRingLeft; // 必须左
+                var isCS = GameState.gamePath == "Client.exe";
+                nint toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
+
                 nint bagGridIndex = itemF.Index;
                 await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
                 var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();

@@ -87,6 +87,21 @@ U_ARMRINGL = 5;
 U_ARMRINGR = 6;
 U_RINGL = 7;
 U_RINGR = 8;
+//    U_BUJUK        = 9;
+//    U_BELT         = 10;
+//    U_BOOTS        = 11;
+//    U_CHARM        = 12;
+//    U_TRANS        = 13;
+     25:
+         Result := U_BUJUK;//护身符
+      54:
+         Result := U_BELT;//腰带
+      52:
+         Result := U_BOOTS;//靴子
+      53:
+         Result := U_CHARM;//宝石
+      65:
+         Result := U_TRANS;//时装
 
     begin
       g_SndMgr.ItemClickSound(g_UseItems[sel].s);

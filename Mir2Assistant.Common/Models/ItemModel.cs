@@ -9,6 +9,24 @@ using System;
 // U_ARMRINGR = 6;
 // U_RINGL = 7;
 // U_RINGR = 8;
+// 2003/03/15 物品背包扩展
+//    U_BUJUK        = 9;
+//    U_BELT         = 10;
+//    U_BOOTS        = 11;
+//    U_CHARM        = 12;
+//    U_TRANS        = 13;
+
+    //  25:
+    //      Result := U_BUJUK;//护身符
+    //   54:
+    //      Result := U_BELT;//腰带
+    //   52:
+    //      Result := U_BOOTS;//靴子
+    //   53:
+    //      Result := U_CHARM;//宝石
+    //   65:
+    //      Result := U_TRANS;//时装
+
 //   case smode.StdMode of
 //     5, 6: Result := U_WEAPON;
 //     10, 11: Result := U_DRESS;
@@ -26,45 +44,49 @@ using System;
 //   end;
 namespace Mir2Assistant.Common.Models
 {
-        public enum EquipPosition
-        {
-            /// <summary>
-            /// 衣服
-            /// </summary>
-            Dress = 0,
-            /// <summary>
-            /// 武器
-            /// </summary>
-            Weapon = 1,
-            /// <summary>
-            /// 右手
-            /// </summary>
-            RightHand = 2,
-            /// <summary>
-            /// 项链
-            /// </summary>
-            Necklace = 3,
-            /// <summary>
-            /// 头盔
-            /// </summary>
-            Helmet = 4,
-            /// <summary>
-            /// 左手镯
-            /// </summary>
-            ArmRingLeft = 5,
-            /// <summary>
-            /// 右手镯
-            /// </summary>
-            ArmRingRight = 6,
-            /// <summary>
-            /// 左戒指
-            /// </summary>
-            RingLeft = 7,
-            /// <summary>
-            /// 右戒指
-            /// </summary>
-            RingRight = 8
-        }
+    public enum EquipPosition
+    {
+        /// <summary>
+        /// 衣服
+        /// </summary>
+        Dress = 0,
+        /// <summary>
+        /// 武器
+        /// </summary>
+        Weapon = 1,
+        /// <summary>
+        /// 右手
+        /// </summary>
+        RightHand = 2,
+        /// <summary>
+        /// 项链
+        /// </summary>
+        Necklace = 3,
+        /// <summary>
+        /// 头盔
+        /// </summary>
+        Helmet = 4,
+        /// <summary>
+        /// 左手镯
+        /// </summary>
+        ArmRingLeft = 5,
+        /// <summary>
+        /// 右手镯
+        /// </summary>
+        ArmRingRight = 6,
+        /// <summary>
+        /// 左戒指
+        /// </summary>
+        RingLeft = 7,
+        /// <summary>
+        /// 右戒指
+        /// </summary>
+        RingRight = 8,
+        /// <summary>
+        /// 右戒指
+        /// </summary>
+        BUJUK = 9
+    }
     public class ItemModel
     {
 
@@ -80,7 +102,7 @@ namespace Mir2Assistant.Common.Models
             {22, new byte[] {7, 8}},
             {23, new byte[] {7, 8}},
             {24, new byte[] {5, 6}},
-            {25, new byte[] {5}},
+            {25, new byte[] {5, 9}}, //  todo 25和毒品
             {26, new byte[] {5, 6}},
             {30, new byte[] {2}}
         };
