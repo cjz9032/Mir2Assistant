@@ -2611,7 +2611,7 @@ public static class GoRunFunction
         var isCS = GameState.gamePath == "Client.exe";
         int toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
         var useItem = GameInstance.CharacterStatus.useItems[toIndex];
-        bool isWearFuShen = useItem.IsEmpty && useItem.stdMode == 25;
+        bool isWearFuShen = !useItem.IsEmpty && useItem.stdMode == 25;
         if (!isWearFuShen)
         {
             item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
