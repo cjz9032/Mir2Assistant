@@ -1118,13 +1118,13 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("魔法头盔");
                         }
+                        if (level >= 30)
+                        {
+                            itemNames.Add("骷髅头盔");
+                        }
                         if (level >= 23)
                         {
                             itemNames.Add("道士头盔");
-                        }
-                        if (level >= 25)
-                        {
-                            itemNames.Add("骷髅头盔");
                         }
                     }
                     else
