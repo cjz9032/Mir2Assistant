@@ -32,7 +32,8 @@ public class CharacterStatusModel
 
     public CharacterStatusModel()
     {
-        for (int i = 0; i < 9; i++)
+        // todo BUJUK 9+
+        for (int i = 0; i < 10; i++)
         {
             useItems.Add(new ItemModel(i));
         }
