@@ -535,7 +535,7 @@ namespace Mir2Assistant.Common.Functions
                     case EquipPosition.Weapon:
                         return ("0151", "武器", 10, 15);
                     case EquipPosition.Dress:
-                        return ("0155", "布店", 13, 11);
+                        return ("0155", "布", 13, 11);
                     case EquipPosition.Helmet:
                         return ("0155", "头盔", 13, 11);
                     case EquipPosition.Necklace:
