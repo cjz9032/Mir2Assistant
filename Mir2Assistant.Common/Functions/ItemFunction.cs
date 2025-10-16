@@ -98,7 +98,7 @@ namespace Mir2Assistant.Common.Functions
                             item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac"]);
                             item.MaxMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
                         }
-                        // JP determined manully
+                        // JP determined manually
                         if (GameState.MirConfig["物品Ac"] > 0)
                         {
                             //  1. 对比DB
