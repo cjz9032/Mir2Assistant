@@ -1103,7 +1103,7 @@ namespace Mir2Assistant.Common.Functions
                         // {
                         //     itemNames.Add("蛇眼戒指");
                         // }
-                        if (level >= 24)
+                        if (level >= 26)
                         {
                             itemNames.Add("生铁戒指");
                         }
