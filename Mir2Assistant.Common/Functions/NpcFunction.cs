@@ -1018,10 +1018,14 @@ namespace Mir2Assistant.Common.Functions
                     {
                         itemNames.Add("钢手镯");
                     }
-                    if (level >= 9)
+                    if (role == RoleType.mage)
                     {
-                        itemNames.Add("大手镯");
+                        if (level >= 26)
+                        {
+                            itemNames.Add("大手镯");
+                        }
                     }
+
                     if (role == RoleType.blade)
                     {
                         if (level >= 24)
