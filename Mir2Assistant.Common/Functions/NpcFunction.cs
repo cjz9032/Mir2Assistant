@@ -644,7 +644,7 @@ namespace Mir2Assistant.Common.Functions
             var allFushen = items.Sum(o => o.Duration);
             var BUY_COUNT = 5;
             // 继续用了, 不然太远了
-            if (allFushen >= 150)
+            if (gameInstance.CharacterStatus.Level < 25 && allFushen >= 150)
             {
                 return;
             }

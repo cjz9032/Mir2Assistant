@@ -468,13 +468,10 @@ public static class GameConstants
                 }
                 return temp.ToList();
             }
-            if (role != RoleType.taoist)
-            {
-                temp.Add("护身符");
-
-            }
             if (role == RoleType.taoist)
             {
+                temp.Remove("护身符");
+                temp.Remove("护身符(大)");
                 var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
                 var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
                 if (!canDef)
