@@ -1024,16 +1024,16 @@ namespace Mir2Assistant.Common.Functions
                     }
                     if (role == RoleType.blade)
                     {
-                        if (level >= 18)
+                        if (level >= 24)
                         {
-                            // itemNames.Add("坚固手套");
+                            itemNames.Add("坚固手套");
                         }
                     }
                     else if (role == RoleType.taoist)
                     {
-                        if (level >= 19)
+                        if (level >= 26)
                         {
-                            // itemNames.Add("坚固手套");
+                            itemNames.Add("坚固手套");
                         }
                     }
                     // todo 换图
