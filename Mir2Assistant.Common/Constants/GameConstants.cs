@@ -414,7 +414,8 @@ public static class GameConstants
             "琥珀项链",
             "小手镯",
             "银手镯",
-            "心灵启示"
+            "心灵启示",
+            "攻击神水"
             // lj书
      };
         // 新手装
