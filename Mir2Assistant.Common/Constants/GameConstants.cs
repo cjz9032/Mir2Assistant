@@ -230,6 +230,7 @@ public static class GameConstants
             "琥珀项链",
             "小手镯",
             "银手镯",
+            "心灵启示"
             // lj书
      };
         // 新手装
@@ -286,6 +287,10 @@ public static class GameConstants
             if (role != RoleType.taoist)
             {
                 temp.Add("护身符");
+              
+            }
+            if (role == RoleType.taoist)
+            {
                 var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
                 var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
                 if (!canDef)
@@ -297,6 +302,7 @@ public static class GameConstants
                     temp.Remove("幽灵盾");
                 }
             }
+            
             if (role != RoleType.mage)
             {
                 temp.Add("生铁戒指");
