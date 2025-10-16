@@ -1,7 +1,41 @@
 using System.Diagnostics;
 using Mir2Assistant.Common.Models;
 using Serilog;
-
+// (Stdmode)
+// 0 药品 （MAC2=时间,Dc=+攻击,Sc=+道术,Mc=+魔法,Ac2=+速度,Ac=+HP,Mac=+MP） 
+// 1 食物  
+// 2 特殊 传送石、聚灵珠、祝福罐、书页包、修复神水、死亡记录卷等 
+// 3 卷类  
+// 4 技能书  
+// 5 武器 物品Anicount字段设置数字188，将代表武器带有 倚天技能 
+// 6 武器 （Ac2=准,Mac=诅咒,Mac2=攻击速度-,Source=神圣,Ac=幸运） 
+// 7 补充 气血石、幻魔石、魔血石、千里传音等 
+// 10 衣服(男) 物品Anicount字段设置数字0-27，将代表不同外观的翅膀 
+// 11 衣服(女) 物品Anicount字段设置数字0-27，将代表不同外观的翅膀 
+// 15 头盔  
+// 16 斗笠、面巾 物品Anicount字段设置数字4、6、7，将代表不同外观的斗笠 
+// 19 项链 （Ac2=魔法躲避,Mac=诅咒,Mac2=幸运） 
+// 20 项链 （Ac2=准,Mac2=敏） 
+// 21 项链 （Ac=速度+,Ac2=HP恢复,Mac=速度-,Mac2=MP 恢复）  
+// 22 戒指   
+// 23 戒指 （Ac=速度+,Ac2=毒物躲避,Mac=速度-,Mac2=中毒恢复） 
+// 24 手镯 （Ac2=准确,Mac2=敏捷） 
+// 25 符、毒药  
+// 26 手镯   
+// 27 腰带   
+// 28 鞋子 物品Anicount字段设置数字，将代表可以增加负重 
+// 29 宝石   
+// 30 照明物 物品数据内Source字段为1时不随时间掉持久，为0随时间掉持久 
+// 31 捆装物品  
+// 40 肉类 鸡肉、肉 
+// 41 任务  
+// 41 佣兵令牌 物品Shape=35,Looks=1132。 
+// 42 制作原料 该类物品可补充火龙之心持久 
+// 43 矿石   
+// 44 行会相关 沃玛号角、祖玛头像、勋章之心 
+// 45 特殊 骰子、筹码 
+// 46 宝箱、钥匙 物品Shape字段设置对应数字，将代表可以开启对应的宝箱。 宝箱设置 
+// 47 金米   
 namespace Mir2Assistant.Common.Functions
 {
     public static class ItemFunction
@@ -51,20 +85,45 @@ namespace Mir2Assistant.Common.Functions
                         item.addr = itemAddr;
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqType"]);
                         item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"]);
-                        // 物品MinDef
-                        // 排除武器项链
-                        if (GameState.MirConfig["物品MinDef"] > 0
+
+                        // 这里为了获取明确的业务意义的值, 但是暂时只获取防御属性,和下面的JP不冲突
+                        if (GameState.MirConfig["物品Ac"] > 0
                          && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Weapon
                          && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Necklace)
                         {
-                            
-
-                            item.MinDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinDef"]);
-                            item.MaxDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MaxDef"]);
-                            item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MinMageDef"]);
-                            item.MaxMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MaxMageDef"]);
+                            item.MinDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac"]);
+                            item.MaxDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
+                            item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac"]);
+                            item.MaxMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
                         }
-                        
+                        // 先写普通JP 对比DB
+                        if (GameState.MirConfig["物品Ac"] > 0)
+                        {
+                            var 物品AC = GameState.MirConfig["物品Ac"];
+                            for (int j = 0; j < 10; j++)
+                            {
+                                item.OriginCriticals[j] = memoryUtils.ReadToInt8(itemAddr + 物品AC + j);
+                            }
+
+                            // 项链幸运可以覆盖上面的JP判断
+                            if (item.stdMode == 19)
+                            {
+                                // todo 重写IsGodly, 先这直接判断
+                                // 19 项链 （Ac2=魔法躲避,Mac=诅咒,Mac2=幸运） 
+                                item.MacMiss = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
+                                item.Luck = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
+                                if (item.Luck > 0 || item.MacMiss > 1)
+                                {
+                                    item.GodPts = 99; // 为了突出保留低级别装备
+                                    item.IsGodly = true;
+                                }
+                            }
+                        }
+
+                        // 1.批量looks装备 = 88
+                        // 2.其他普通装备 按DB
+
+
                     }
                     else
                     {
@@ -77,7 +136,7 @@ namespace Mir2Assistant.Common.Functions
             });
         }
         public static void ReadDrops(MirGameInstanceModel gameInstance, bool force = false)
-        {   
+        {
             if (gameInstance.isRefreshing && !force)
             {
                 return;
@@ -103,11 +162,14 @@ namespace Mir2Assistant.Common.Functions
                 }
                 item.UpdateId = gameInstance.DropsItemsUpdateId;
                 item.Id = id;
-                byte nameLength = memoryUtils.ReadToInt8(itemAddr+GameState.MirConfig["地物NAME偏移"]);
+                byte nameLength = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["地物NAME偏移"]);
                 item.Name = memoryUtils.ReadToString(itemAddr + GameState.MirConfig["地物NAME偏移"] + 1, nameLength);
-                if(GameState.MirConfig["地物极品点"] > 0){
+                if (GameState.MirConfig["地物极品点"] > 0)
+                {
                     item.GodPts = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["地物极品点"]);
-                }else{
+                }
+                else
+                {
                     item.GodPts = 0;
                 }
                 item.IsGodly = item.GodPts > 0;
@@ -126,7 +188,7 @@ namespace Mir2Assistant.Common.Functions
 
         }
 
-   
+
         public static void ReadBag(MirGameInstanceModel gameInstance, bool force = false)
         {
             if (gameInstance.isRefreshing && !force)
@@ -135,13 +197,13 @@ namespace Mir2Assistant.Common.Functions
             }
             // var sw = Stopwatch.StartNew();
 
-            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] + ((int)GameState.MirConfig["物品SIZE"]*6), gameInstance.Items);
-            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] , gameInstance.QuickItems);
+            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"] + ((int)GameState.MirConfig["物品SIZE"] * 6), gameInstance.Items);
+            ReadItems(gameInstance, (int)GameState.MirConfig["背包基址"], gameInstance.QuickItems);
             // sw.Stop();
             // Log.Debug($"读取背包耗时: {sw.ElapsedMilliseconds}ms, 物品数量: {gameInstance.Items.Count}");
         }
 
-    
+
 
         public static void Pickup(MirGameInstanceModel gameInstance)
         {
