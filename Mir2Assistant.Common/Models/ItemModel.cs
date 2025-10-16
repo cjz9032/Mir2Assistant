@@ -121,7 +121,7 @@ namespace Mir2Assistant.Common.Models
         public int MaxDuration { get; set; }
         public int MinDef { get; set; }
         public int Luck { get; set; }
-        public int MacMiss { get; set; }
+        public int MacEvasion { get; set; }
         public int MaxDef { get; set; }
         public int MinMageDef { get; set; }
         public int MaxMageDef { get; set; }

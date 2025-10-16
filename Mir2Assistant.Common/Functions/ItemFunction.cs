@@ -129,9 +129,9 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 // todo 重写IsGodly, 先这直接判断
                                 // 19 项链 （Ac2=魔法躲避,Mac=诅咒,Mac2=幸运） 
-                                item.MacMiss = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
+                                item.MacEvasion = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
                                 item.Luck = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
-                                if (item.Luck > 0 || item.MacMiss > 2)// todo 暂时测试用, 验证有效就+1 1和3
+                                if (item.Luck > 0 || item.MacEvasion > 2)// todo 暂时测试用, 验证有效就+1 1和3
                                 {
                                     item.GodPts = 99; // 为了突出保留低级别装备
                                     item.IsGodly = true;
