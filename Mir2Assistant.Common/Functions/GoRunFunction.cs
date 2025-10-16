@@ -1455,7 +1455,7 @@ public static class GoRunFunction
                             && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                             );
 
-                            var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 6);
+                            var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 5);
                             if (qunanis != (-1, -1))
                             {
                                 sendSpell(instanceValue!, GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
