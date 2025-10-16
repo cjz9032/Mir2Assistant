@@ -542,7 +542,7 @@ namespace Mir2Assistant.Common.Functions
                         return ("0154", "项链", 6, 16);
                     case EquipPosition.ArmRingLeft:
                     case EquipPosition.ArmRingRight:
-                        return ("0154", "手镯", 12, 10);
+                        return ("0154", "手", 12, 10);
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
                         return ("0154", "戒指", 6, 16);
