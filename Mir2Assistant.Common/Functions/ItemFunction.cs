@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Mir2Assistant.Common.Constants;
 using Mir2Assistant.Common.Models;
 using Serilog;
 // (Stdmode)
@@ -61,6 +62,7 @@ namespace Mir2Assistant.Common.Functions
 
                     if (!item.IsEmpty)
                     {
+                        // var changed = false; todo 优化
                         item.Id = memoryUtils.ReadToInt(itemAddr + (int)GameState.MirConfig["物品ID"]);
                         if (nameLength > 0)
                         {
@@ -86,7 +88,7 @@ namespace Mir2Assistant.Common.Functions
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqType"]);
                         item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"]);
 
-                        // 这里为了获取明确的业务意义的值, 但是暂时只获取防御属性,和下面的JP不冲突
+                        // 这里为了获取明确的业务意义的值,防御..
                         if (GameState.MirConfig["物品Ac"] > 0
                          && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Weapon
                          && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Necklace)
@@ -96,15 +98,32 @@ namespace Mir2Assistant.Common.Functions
                             item.MinMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac"]);
                             item.MaxMageDef = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
                         }
-                        // 先写普通JP 对比DB
+                        // JP determined manully
                         if (GameState.MirConfig["物品Ac"] > 0)
                         {
+                            //  1. 对比DB
                             var 物品AC = GameState.MirConfig["物品Ac"];
                             for (int j = 0; j < 10; j++)
                             {
                                 item.OriginCriticals[j] = memoryUtils.ReadToInt8(itemAddr + 物品AC + j);
                             }
+                            var bs = GameConstants.Items.GetItemStats(item.Name);
+                            if (bs != null)
+                            {
+                                // compare
+                                var sumPts = 0;
+                                for (int j = 0; j < 10; j++)
+                                {
+                                    sumPts += item.OriginCriticals[j] - bs[j];
 
+                                }
+                                if (sumPts > 0)
+                                {
+                                    item.GodPts = sumPts;
+                                    item.IsGodly = true;
+                                }
+                            }
+                            // force update by sp rule 1
                             // 项链幸运可以覆盖上面的JP判断
                             if (item.stdMode == 19)
                             {
@@ -112,16 +131,17 @@ namespace Mir2Assistant.Common.Functions
                                 // 19 项链 （Ac2=魔法躲避,Mac=诅咒,Mac2=幸运） 
                                 item.MacMiss = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
                                 item.Luck = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
-                                if (item.Luck > 0 || item.MacMiss > 1)
+                                if (item.Luck > 0 || item.MacMiss > 2)// todo 暂时测试用, 验证有效就+1 1和3
                                 {
                                     item.GodPts = 99; // 为了突出保留低级别装备
                                     item.IsGodly = true;
                                 }
                             }
+                            // force update by sp rule 2
+                            // 同样可以覆盖上面判断 设置100 by jpnamehashset
+
                         }
 
-                        // 1.批量looks装备 = 88
-                        // 2.其他普通装备 按DB
 
 
                     }
