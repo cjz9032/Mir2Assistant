@@ -92,8 +92,13 @@ public static class GameConstants
         }
         return allowTemp29;
     }
-    public static string[] GetAllowMonsters(int level, RoleType role)
+    public static string[] GetAllowMonsters(MirGameInstanceModel instanceValue, int level, RoleType role)
     {
+        var nowMap = instanceValue.CharacterStatus.MapId;
+        if (nowMap == "4")
+        {
+            return [];
+        }
         var offset = role == RoleType.blade ? -2 : 0;
 
         if (level < (NoobLevel + offset))
@@ -475,7 +480,7 @@ public static class GameConstants
             if (role == RoleType.taoist)
             {
                 temp.Remove("护身符");
-                temp.Remove("护身符(大)");
+                // temp.Remove("护身符(大)"); // todo 后期
                 var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
                 var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
                 if (!canDef)

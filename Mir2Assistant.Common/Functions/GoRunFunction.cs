@@ -79,7 +79,7 @@ public static class GoRunFunction
         var enoughBBCanHit = instanceValue.AccountInfo.role != RoleType.blade && instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                 Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 5).Count() > 3;
 
-        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue, instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
         var existAni2 = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && allowMonsters.Contains(o.Name) &&
         Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < (enoughBBCanHit ? 3 : 4)).FirstOrDefault();
         if (existAni2 != null)
@@ -1076,7 +1076,7 @@ public static class GoRunFunction
 
 
         // 等级高了不打鸡鹿
-        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+        var allowMonsters = GameConstants.GetAllowMonsters(instanceValue, instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
         // 当前巡回
         var curP = 0;
         var direction = 1; // 1表示正向(0->N), -1表示反向(N->0)
@@ -1155,7 +1155,7 @@ public static class GoRunFunction
                                 var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
 
-                                var temp = GameConstants.GetAllowMonsters(instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
+                                var temp = GameConstants.GetAllowMonsters(instanceValue, instanceValue.CharacterStatus!.Level, instanceValue.AccountInfo.role);
                                 var monsters = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && temp.Contains(o.Value.Name) &&
                                 Math.Max(Math.Abs(o.Value.X - instanceValue.CharacterStatus.X), Math.Abs(o.Value.Y - instanceValue.CharacterStatus.Y)) < searchRds
                                 && (slasher && o.Value.Appr != 40 ? (enoughBBCanHit ?
@@ -1807,7 +1807,7 @@ public static class GoRunFunction
         if (whoIsConsumer(GameInstance!) == 2)
         {
             var searchRds = 7;
-            var temp = GameConstants.GetAllowMonsters(GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
+            var temp = GameConstants.GetAllowMonsters(GameInstance, GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
             // 攻击怪物, 太多了 过不去
             var monsters = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
              Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds

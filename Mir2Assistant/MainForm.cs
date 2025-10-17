@@ -1250,7 +1250,7 @@ namespace Mir2Assistant
                                 instanceValue.isHomePreparing = false;
                                 // var slaveFromMap = "E605";
                                 // var slaveToMap = "E702";
-                                var slaveFromMap = "D2003";
+                                var slaveFromMap = "D2004";
                                 var slaveToMap = "D2001";
                                 var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
@@ -1417,10 +1417,10 @@ namespace Mir2Assistant
                                             }
                                         }
                                         // N级以下不配
-                                        var isLowHpMP = instanceValue.AccountInfo.role == RoleType.taoist
+                                        var isLowHp = instanceValue.AccountInfo.role == RoleType.taoist
                                         && (isConsumer == 2)
-                                        && instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.3
-                                        && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2;
+                                        && instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.2;
+                                        // && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2;
 
 
                                         var isOtherLowHp = instanceValue.CharacterStatus.Level < 22 ? false : (instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.25 || (instanceValue.CharacterStatus.MaxHP > 50 && instanceValue.CharacterStatus.CurrentHP < 30)));
@@ -1459,7 +1459,7 @@ namespace Mir2Assistant
                                         {
                                             instanceValue.GameInfo("主号没魔法药, 回家");
                                         }
-                                        if (isLowHpMP)
+                                        if (isLowHp)
                                         {
                                             instanceValue.GameInfo("主号太低了, 回家");
                                         }
@@ -1471,7 +1471,7 @@ namespace Mir2Assistant
                                         {
                                             instanceValue.GameInfo("主号耐久太低, 回家");
                                         }
-                                        var final = lowMPMain || isFull || realLowEq || isLowHpMP || isLowFushen || isOtherLowHp || isBBReadyStatusChanged;
+                                        var final = lowMPMain || isFull || realLowEq || isLowHp || isLowFushen || isOtherLowHp || isBBReadyStatusChanged;
                                         // 换图 -- 找怪和打怪
                                         if (final)
                                         {
@@ -1563,6 +1563,12 @@ namespace Mir2Assistant
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
                                     instanceValue.isHomePreparing = false;
                                     // 等待主号
+                                    // 先去安全点 如果在4
+                                    if(CharacterStatus.MapId == "4")
+                                    {
+                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
+                                    }
+
                                     if (!instanceValue.AccountInfo.IsMainControl)
                                     {
                                         while (true)
