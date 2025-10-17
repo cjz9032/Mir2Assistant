@@ -2744,7 +2744,9 @@ public static class GoRunFunction
         if (isNotLowBlade && ((GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.35) || GameInstance.CharacterStatus.CurrentMP < 10))
         {
             // 找蓝药 太阳水
-            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.2;
+            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP *
+             // 法师优先太阳
+             (GameInstance.AccountInfo.role == RoleType.mage ? 0.5 : 0.2);
             var items = GameConstants.Items.MagePotions;
             int resIdx = -1;
             if (veryLow)
@@ -2767,14 +2769,14 @@ public static class GoRunFunction
             NpcFunction.EatIndexItem(GameInstance, resIdx);
         }
         // 清理道士蓝
-        if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
-        {
-            var lans = findIdxInAllItems(GameInstance, "魔法药", true);
-            if (lans != null && lans.Length > GameConstants.Items.mageBuyCount * 1.2)
-            {
-                NpcFunction.EatIndexItem(GameInstance, lans[0]);
-            }
-        }
+        // if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
+        // {
+        //     var lans = findIdxInAllItems(GameInstance, "魔法药", true);
+        //     if (lans != null && lans.Length > GameConstants.Items.mageBuyCount * 1.2)
+        //     {
+        //         NpcFunction.EatIndexItem(GameInstance, lans[0]);
+        //     }
+        // }
         // 清理红
         var heals = findIdxInAllItems(GameInstance, "金创药", true);
         if (heals != null && heals.Length > GameConstants.Items.healBuyCount)
