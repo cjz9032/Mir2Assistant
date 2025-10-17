@@ -82,7 +82,7 @@ public static class GameConstants
         {
             return allowTemp24;
         }
-        else if (level <= 26)
+        else if (level <= 28)
         {
             return allowTemp26;
         }
