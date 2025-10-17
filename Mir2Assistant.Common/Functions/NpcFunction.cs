@@ -405,6 +405,11 @@ namespace Mir2Assistant.Common.Functions
             {
                 home = "3";
             }
+            if (mapId.StartsWith("D2") || mapId.StartsWith("D1") || mapId.StartsWith("M1"))
+            {
+                home = "4";
+            }
+
             return home;
         }
 
@@ -427,6 +432,10 @@ namespace Mir2Assistant.Common.Functions
             else if (mapId == "SKILLBB")
             {
                 return ("3", "流浪", 349, 334);
+            }
+            else if (mapId == "4")
+            {
+                return ("4", "杂货", 258, 221);
             }
             else
             {
@@ -452,6 +461,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("0153", "药店", 16, 9);
             }
+            if (mapId == "4")
+            {
+                return ("B343", "药剂", 10, 17);
+            }
             if (mapId == "SKILLBB")
             {
                 return ("3", "药", 359, 336);
@@ -470,6 +483,11 @@ namespace Mir2Assistant.Common.Functions
             if (mapId == "0")
             {
                 return isCS ? ("0", "书店", 325, 253) : ("0132", "书", 6, 18);
+            }
+            // 根据当前所在地图, 找到最近的NPC
+            if (mapId == "4")
+            {
+                return ("B343", "学者", 10, 17);
             }
             else
             {
@@ -546,6 +564,29 @@ namespace Mir2Assistant.Common.Functions
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
                         return ("0154", "戒指", 6, 16);
+                    default:
+                        return ("-1", "", 0, 0);
+                }
+            }
+            else if (mapId == "4")
+            {
+                // 固定为左下角 因为只有这全有买卖, 除了蜡烛
+                switch (position)
+                {
+                    case EquipPosition.Weapon:
+                        return ("4", "铁匠", 226, 217);
+                    case EquipPosition.Dress:
+                        return ("B345", "布", 9, 12);
+                    case EquipPosition.Helmet:
+                        return ("B345", "布", 9, 12);
+                    case EquipPosition.Necklace:
+                        return ("B344", "首饰", 9, 12);
+                    case EquipPosition.ArmRingLeft:
+                    case EquipPosition.ArmRingRight:
+                        return ("B344", "首饰", 9, 12);
+                    case EquipPosition.RingLeft:
+                    case EquipPosition.RingRight:
+                        return ("B344", "首饰", 9, 12);
                     default:
                         return ("-1", "", 0, 0);
                 }
@@ -1305,7 +1346,17 @@ namespace Mir2Assistant.Common.Functions
             var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
             if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
             var lowCoin = gameInstance.CharacterStatus.coin < (least * 0.5);
-            foreach (var position in Enum.GetValues(typeof(EquipPosition)))
+            // 首饰一起
+            foreach (var position in Enum.GetValues(typeof(EquipPosition)).Cast<EquipPosition>().OrderBy(x =>
+            {
+                if (x == EquipPosition.Necklace
+                || x == EquipPosition.ArmRingLeft || x == EquipPosition.ArmRingRight
+                || x == EquipPosition.RingLeft || x == EquipPosition.RingRight)
+                {
+                    return 0;
+                }
+                return 1;
+            }))
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
                 if (lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon)) continue;

@@ -854,7 +854,7 @@ namespace Mir2Assistant
                         }
                         // 只有城中才初始准备, 或者旁边有NPC说明是城里, 但是要排除掉一些特殊的野外NPC 再说, 还有个思路 可以看是不是战斗地图
                         var isMainInHome = !instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing;
-                        var basicInHome = new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null;
+                        var basicInHome = GameConstants.HomeMaps.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null;
                         if (isMainInHome && !basicInHome)
                         {
                             var backHomeItems = GoRunFunction.findIdxInAllItems(instance, "地牢逃脱卷");
@@ -1283,7 +1283,7 @@ namespace Mir2Assistant
                                     await GoRunFunction.BeStatusSlaveIfHas(instanceValue, true);
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                        if (!(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId)) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
+                                        if (!GameConstants.HomeMaps.Contains(CharacterStatus.MapId) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
                                         {
                                             System.Diagnostics.Debugger.Break();
                                         }
@@ -1511,7 +1511,7 @@ namespace Mir2Assistant
                                     continue;
                                 }
                                 var waitingButNotHome = hadWaiting ?
-                                (!(new string[] { "0", "2", "3" }.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null))
+                                (!(GameConstants.HomeMaps.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null))
                                 // todo 副号可以单独准备, 不需要管主号
                                 //  && instances[0].isHomePreparing
                                   : true;
