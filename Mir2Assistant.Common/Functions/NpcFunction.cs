@@ -378,7 +378,7 @@ namespace Mir2Assistant.Common.Functions
 
         public static string PickNearHomeMap(MirGameInstanceModel gameInstance)
         {
-            if (new string[] { "0", "3" }.Contains(gameInstance.CharacterStatus.MapId)) // except 2
+            if (GameConstants.HomeMaps.Where(o => o != "2").Contains(gameInstance.CharacterStatus.MapId))
             {
                 return gameInstance.CharacterStatus.MapId;
             }
