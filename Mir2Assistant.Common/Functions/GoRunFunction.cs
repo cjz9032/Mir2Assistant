@@ -2657,7 +2657,7 @@ public static class GoRunFunction
     }
     public static async Task tryMagePushBlock(MirGameInstanceModel GameInstance)
     {
-        if ((GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 24))
+        if ((GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 29))
         {
             return;
         }
