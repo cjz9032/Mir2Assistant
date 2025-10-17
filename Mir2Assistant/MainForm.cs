@@ -1218,7 +1218,7 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                else if (CharacterStatus.Level >= 30) // todo toaist
+                                else if (CharacterStatus.Level >= 29) // todo toaist
                                 {
                                     hangMapId = "D613"; // D601 D023 E605 连接E604  , D605 北宽 , D613 生死大
                                 }
