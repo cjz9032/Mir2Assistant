@@ -405,7 +405,7 @@ namespace Mir2Assistant.Common.Functions
             {
                 home = "3";
             }
-            if (mapId.StartsWith("D2") || mapId.StartsWith("D1") || mapId.StartsWith("M1"))
+            if (mapId.StartsWith("D2") || mapId.StartsWith("D1") || mapId.StartsWith("M1") || mapId.StartsWith("B34"))
             {
                 home = "4";
             }
