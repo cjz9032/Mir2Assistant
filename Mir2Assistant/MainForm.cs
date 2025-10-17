@@ -1586,9 +1586,27 @@ namespace Mir2Assistant
                                     instanceValue.isHomePreparing = false;
                                     // 等待主号
                                     // 先去安全点 如果在4
-                                    if(CharacterStatus.MapId == "4")
+                                    if (CharacterStatus.MapId == "4")
                                     {
                                         await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
+                                        for (int i = 0; i < 20; i++)
+                                        {
+                                            // 有怪就跑
+                                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                                            {
+                                                break;
+                                            }
+                                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
+                                            {
+                                                instanceValue.GameInfo("等待回血");
+                                                await Task.Delay(5_000);
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+
                                     }
 
                                     if (!instanceValue.AccountInfo.IsMainControl)
