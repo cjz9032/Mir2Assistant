@@ -1250,7 +1250,7 @@ namespace Mir2Assistant
                                 instanceValue.isHomePreparing = false;
                                 // var slaveFromMap = "E605";
                                 // var slaveToMap = "E702";
-                                var slaveFromMap = "M100";
+                                var slaveFromMap = "D2003";
                                 var slaveToMap = "D2001";
                                 var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
