@@ -1435,7 +1435,7 @@ public static class GoRunFunction
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var baolieNum = instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 6 : 5;
+                        var baolieNum = 5; // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
                         // 先4爆裂 爆率很高
                         var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), baolieNum);
                         if (qunanis != (-1, -1))
