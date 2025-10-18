@@ -2139,7 +2139,7 @@ public static class GoRunFunction
                         var isJumpSuccess = false;
                         foreach (var jumpSteps in new[] { 1, 2, 3, 5, 8, 10, 15 })
                         {
-                            await Task.Delay(100, cancellationToken);
+                            await Task.Delay(50, cancellationToken);
                             if (callback(GameInstance))
                             {
                                 return false;
@@ -2157,7 +2157,7 @@ public static class GoRunFunction
                             catch (Exception ex)
                             {
                                 GameInstance!.GameError("寻路异常" + ex.Message);
-                                await Task.Delay(100);
+                                await Task.Delay(50);
                                 if (GameInstance.CharacterStatus!.isEnhanceDead)
                                 {
                                     await Task.Delay(60_000);
@@ -2167,8 +2167,10 @@ public static class GoRunFunction
 
                             if (jumpPath.Count > 0)
                             {
-                                GameInstance.GameDebug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
-
+                                if(jumpSteps > 5)
+                                {
+                                    GameInstance.GameDebug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
+                                }
                                 // 先走到跳跃点
                                 foreach (var pathNode in jumpPath)
                                 {
@@ -2177,7 +2179,7 @@ public static class GoRunFunction
                                     var localTried = 0;
                                     while (localTried < 3)
                                     {
-                                        await Task.Delay(100, cancellationToken);
+                                        await Task.Delay(50, cancellationToken);
                                         if (callback(GameInstance))
                                         {
                                             return false;
@@ -2242,7 +2244,7 @@ public static class GoRunFunction
                                 await Task.Delay(100, cancellationToken);
                                 if (GameInstance.AccountInfo.role == RoleType.mage)
                                 {
-                                    await Task.Delay(200, cancellationToken);
+                                    await Task.Delay(100, cancellationToken);
                                 }
                             }
                             // 查看是否反弹
