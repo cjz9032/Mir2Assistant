@@ -22,6 +22,8 @@ public static class GameConstants
         public const int flashMove = 21;
         public const int defUp = 15;
         public const int HealSpellId = 2;
+        public const int smHide = 18;
+        public const int bigHide = 19;
         public const int RecallBoneSpellId = 17;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
     }

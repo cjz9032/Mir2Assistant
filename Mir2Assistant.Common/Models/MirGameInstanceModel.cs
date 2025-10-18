@@ -34,6 +34,10 @@ public class MirGameInstanceModel
     /// 怪物
     /// </summary>
     public ConcurrentDictionary<int, MonsterModel> Monsters { get; set; } = new ConcurrentDictionary<int, MonsterModel>();
+    /// <summary>
+    /// 按XY坐标索引的怪物字典，key为打包的long值 (x << 32 | y)
+    /// </summary>
+    public ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition { get; set; } = new ConcurrentDictionary<long, List<MonsterModel>>();
     // drops
     public ConcurrentDictionary<int, DropItemModel> DropsItems { get; set; } = new ConcurrentDictionary<int, DropItemModel>();
     // 捡取过的ItemID名单, 高性能检索
@@ -91,12 +95,12 @@ public class MirGameInstanceModel
         });
 
     }
-    public Dictionary<string, (int, int, byte[])> MapBasicInfo { get; set; } = new Dictionary<string, (int, int, byte[])>();
 
     // 需要clear方法, 因为实例还在 但是数据要清空
     public void Clear()
     {
         Monsters.Clear();
+        MonstersByPosition.Clear();
         // 不销毁
         foreach (var item in DropsItems)
         {
@@ -117,7 +121,6 @@ public class MirGameInstanceModel
         Skills.Clear();
         TalkCmds.Clear();
         chats = new List<string>();
-        // MapBasicInfo.Clear(); 保留把, 固定的信息
         // CharacterStatus = new CharacterStatusModel();
         CharacterStatus.CurrentHP = 0;
         CharacterStatus.X = 0;

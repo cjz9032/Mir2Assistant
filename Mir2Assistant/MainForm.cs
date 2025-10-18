@@ -1963,6 +1963,7 @@ namespace Mir2Assistant
                             if (!BBTask)
                             {
                                 GoRunFunction.TryHealPeople(instance);
+                                GoRunFunction.TryHiddenPeople(instance);
                             }
                         }
                     }
@@ -1971,7 +1972,7 @@ namespace Mir2Assistant
                         Log.Error(ex, "快速后台处理出错，账号: {Account}", instance.AccountInfo?.Account);
                     }
                 });
-                await Task.Delay(300);
+                await Task.Delay(400);
             }
         }
 

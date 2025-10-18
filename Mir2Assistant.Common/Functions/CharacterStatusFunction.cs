@@ -41,6 +41,7 @@ public static class CharacterStatusFunction
         status.Level = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物LEVEL偏移"]));
         status.groupMemCount = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_MEMBER_ADDR"], 0x30));
         status.allowGroup = memoryUtils.ReadToInt8(memoryUtils.GetMemoryAddress(GameState.MirConfig["MIR_GROUP_ALLOW_ADDR"])) == 1;
+        status.state = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["MyState偏移"]));
 
         if (GameState.MirConfig["人物MinDef偏移"] != 0)
         {

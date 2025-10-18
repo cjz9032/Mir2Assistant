@@ -365,8 +365,8 @@ public static class GoRunFunction
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
 
         // 地图障碍点数据
-        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue);
-        var localObstacles = getLocalObstacles(instanceValue, centerPoint.x, centerPoint.y, searchRadius);
+        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(instanceValue.CharacterStatus.MapId);
+        var localObstacles = getLocalObstacles(instanceValue.CharacterStatus.MapId, centerPoint.x, centerPoint.y, searchRadius);
 
         // 其他障碍点数据，比如玩家和怪物
         var actorObstacles = instanceValue.Monsters.Values.Where(o => !o.isDead).Select(o => (o.X, o.Y));
@@ -530,13 +530,15 @@ public static class GoRunFunction
         SendMirCall.Send(gameInstance, 9020, new nint[] { x, y });
     }
 
-    public static (int width, int height, byte[] obstacles) retriveMapObstacles(MirGameInstanceModel gameInstance)
+    static private Dictionary<string, (int, int, byte[])> MapBasicInfo { get; set; } = new Dictionary<string, (int, int, byte[])>();
+
+    public static (int width, int height, byte[] obstacles) retriveMapObstacles(string MapId)
     {
-        var id = gameInstance!.CharacterStatus!.MapId;
+        var id = MapId;
         var width = 0;
         var height = 0;
         var obstacles = new byte[0];
-        if (!gameInstance.MapBasicInfo.TryGetValue(id, out var data))
+        if (!MapBasicInfo.TryGetValue(id, out var data))
         {
             // 读文件获取
             var configPath = Path.Combine(Directory.GetCurrentDirectory(), "config/server-define/unity-config/mapc-out", id + ".mapc");
@@ -599,7 +601,7 @@ public static class GoRunFunction
                     obstacles[point.Item2 * width + point.Item1] = 1;
                 }
             }
-            gameInstance.MapBasicInfo[id] = (width, height, obstacles);
+            MapBasicInfo[id] = (width, height, obstacles);
         }
         else
         {
@@ -611,10 +613,10 @@ public static class GoRunFunction
         // obstacles 前2个int 32是宽高
         return (width, height, (byte[])obstacles.Clone());
     }
-    public static List<(int x, int y)> getLocalObstacles(MirGameInstanceModel gameInstance, int centerX, int centerY, int halfSize)
+    public static List<(int x, int y)> getLocalObstacles(string mapId, int centerX, int centerY, int halfSize)
     {
         var localObstacles = new List<(int x, int y)>();
-        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(gameInstance!);
+        var (mapWidth, mapHeight, mapObstacles) = retriveMapObstacles(mapId);
         for (int y = centerY - halfSize; y <= centerY + halfSize; y++)
         {
             for (int x = centerX - halfSize; x <= centerX + halfSize; x++)
@@ -640,8 +642,8 @@ public static class GoRunFunction
     )
     {
         var sw = Stopwatch.StartNew();
-        var monsPos = GetMonsPos(gameInstance!);
-        var (width, height, data) = retriveMapObstacles(gameInstance!);
+        var monsPos = GetMonsPos(gameInstance!.Monsters);
+        var (width, height, data) = retriveMapObstacles(gameInstance.CharacterStatus.MapId);
         int myX = gameInstance!.CharacterStatus!.X;
         int myY = gameInstance!.CharacterStatus!.Y;
         // 添加怪物位置作为障碍点
@@ -953,9 +955,9 @@ public static class GoRunFunction
     }
 
 
-    public static int[][] GetMonsPos(MirGameInstanceModel GameInstance)
+    public static int[][] GetMonsPos(ConcurrentDictionary<int, MonsterModel> Monsters)
     {
-        var monsters = GameInstance!.Monsters.Where(o => !o.Value.isDead);
+        var monsters = Monsters.Where(o => !o.Value.isDead);
         int[][] monsPos = new int[monsters.Count()][];
         int index = 0;
         foreach (var monster in monsters)
@@ -1127,7 +1129,7 @@ public static class GoRunFunction
             }
             // 不寻路模式, 其实就是只打怪, 需要抽象
             // 
-            var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 5 : 9;
+            var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 7 : 9;
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
@@ -1790,7 +1792,7 @@ public static class GoRunFunction
             {
                 return 0;
             }
-            var monsPos = GetMonsPos(GameInstance!);
+            var monsPos = GetMonsPos(GameInstance!.Monsters);
             var res = genGoPath(GameInstance!, tx, ty, 1, true).Count();
             return res == 0 ? 999 : res;
         }
@@ -1835,26 +1837,44 @@ public static class GoRunFunction
         }
     }
 
-    public static bool CheckIfSurrounded(MirGameInstanceModel GameInstance)
+    public static List<MonsterModel> findMonsSurrounded(int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
     {
-        var (width, height, obstacles) = retriveMapObstacles(GameInstance!);
-        var myX = GameInstance!.CharacterStatus!.X;
-        var myY = GameInstance!.CharacterStatus!.Y;
+        List<MonsterModel> all = new List<MonsterModel>();
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // 跳过中心点（角色当前位置）
+
+                var x = myX + dx;
+                var y = myY + dy;
+
+                var ms = MonsterFunction.GetMonstersByPosition(MonstersByPosition, x, y);
+                all.AddRange(ms);
+            }
+        }
+        return all;
+    }
+
+    public static bool CheckIfSurrounded(string MapId, int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
+    {
+        var (width, height, obstacles) = retriveMapObstacles(MapId);
 
         // 添加怪物位置作为障碍点，就像genGoPath中的处理方式
-        var monsPos = GetMonsPos(GameInstance!);
+        // var monsPos = GetMonsPos(Monsters);
         var obstacleData = new byte[obstacles.Length];
         Array.Copy(obstacles, obstacleData, obstacles.Length);
 
-        foreach (var pos in monsPos)
-        {
-            int monX = pos[0];
-            int monY = pos[1];
-            if (monX >= 0 && monX < width && monY >= 0 && monY < height)
-            {
-                obstacleData[monY * width + monX] = 1;
-            }
-        }
+
+        // foreach (var pos in monsPos)
+        // {
+        //     int monX = pos[0];
+        //     int monY = pos[1];
+        //     if (monX >= 0 && monX < width && monY >= 0 && monY < height)
+        //     {
+        //         obstacleData[monY * width + monX] = 1;
+        //     }
+        // }
 
         // 检查周围8个方向是否都是障碍物
         for (int dx = -1; dx <= 1; dx++)
@@ -1870,6 +1890,12 @@ public static class GoRunFunction
                 if (x < 0 || x >= width || y < 0 || y >= height)
                 {
                     continue; // 边界算作障碍物，继续检查下一个方向
+                }
+
+                var ms = MonsterFunction.GetMonstersByPosition(MonstersByPosition, x, y);
+                if (ms.Count() > 0)
+                {
+                    return false;
                 }
 
                 // 如果找到一个非障碍物位置，则未被完全包围
@@ -1997,7 +2023,9 @@ public static class GoRunFunction
                     return false;
                 }
                 // 查看被包围, 8个点都是1障碍
-                if (CheckIfSurrounded(GameInstance))
+                if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
+                GameInstance.MonstersByPosition
+                ))
                 {
                     await cleanMobs(GameInstance, 0, true, cancellationToken, callback);
                 }
@@ -2034,7 +2062,8 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                if (CheckIfSurrounded(GameInstance))
+                if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
+                GameInstance.MonstersByPosition))
                 {
                     await cleanMobs(GameInstance, 0, false, cancellationToken, callback);
                 }
@@ -2312,6 +2341,16 @@ public static class GoRunFunction
         return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == 2) != null;
     }
 
+
+    public static bool CapbilityOfHideSelf(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == 18) != null;
+    }
+    public static bool CapbilityOfHideAll(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == 19) != null;
+    }
+
     public static bool CapbilityOfTemptation(MirGameInstanceModel GameInstance)
     {
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 20) != null;
@@ -2366,8 +2405,8 @@ public static class GoRunFunction
         {
             // 只取这个实例里对应自己账号的玩家信息和宝宝信息
             var selfMonsters = instance.Monsters.Values.Where(m =>
-                (m.isSelf) ||
-                (m.isMyMons)
+                m.isSelf ||
+                m.isMyMons
             );
             allMonsInClients.AddRange(selfMonsters);
         }
@@ -2429,6 +2468,47 @@ public static class GoRunFunction
         GameInstance.healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
         CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
+    }
+    public static void TryHiddenPeople(MirGameInstanceModel GameInstance)
+    {
+        if (!CapbilityOfHideSelf(GameInstance))
+        {
+            return;
+        }
+        // 目前有个bug 坐标不对 , 所以先用自己的, 这样只有自己出错, 但是低血可以防止问题
+        // 待选组人
+        var allPeople = GameInstance.Monsters.Where(t =>
+                t.Value.isTeamMem && !t.Value.isDead && !t.Value.isHidden &&
+                Math.Abs(GameInstance.CharacterStatus.X - t.Value.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - t.Value.Y) < 11
+        );
+        MonsterModel? lastFinded;
+        // 血太少, 周边有怪, 虽然没被block 但是优先, 没怪的话 先不隐, 怕有别的case
+        var lowFind = allPeople.Where(t => t.Value.CurrentHP < t.Value.MaxHP * 0.4 &&
+                    findMonsSurrounded(t.Value.X, t.Value.Y, GameInstance.MonstersByPosition)
+                        .Where(t => t.stdAliveMon)
+                        .Count() > 3
+              ).FirstOrDefault().Value;
+
+        if (lowFind != null)
+        {
+            lastFinded = lowFind;
+        }
+        else
+        {
+            // 纯包围
+            lastFinded = allPeople.Where(t => t.Value.CurrentHP < t.Value.MaxHP * 0.6
+                // t.Value.CurrentHP < 30 绝对值不管
+                &&
+                CheckIfSurrounded(GameInstance.CharacterStatus.MapId, t.Value.X, t.Value.Y, GameInstance.MonstersByPosition)
+            ).FirstOrDefault().Value;
+        }
+
+        if (lastFinded != null)
+        {
+            sendSpell(GameInstance, lastFinded.isSelf ? GameConstants.Skills.smHide : GameConstants.Skills.bigHide, lastFinded.X, lastFinded.Y, lastFinded.Id);
+        }
+
+        // 待选组怪? 先不管
     }
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {
