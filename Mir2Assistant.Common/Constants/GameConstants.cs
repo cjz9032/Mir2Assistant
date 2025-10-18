@@ -25,6 +25,7 @@ public static class GameConstants
         public const int smHide = 18;
         public const int bigHide = 19;
         public const int RecallBoneSpellId = 17;
+        public const int wideHit = 25;
         public const int HealPeopleCD = 2500; // 治疗CD时间(ms)
     }
 

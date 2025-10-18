@@ -23,6 +23,7 @@ public class CharacterStatusModel
     public int MaxMageDef { get; set; } = 0;
     public int Exp { get; set; } = 0;
     public int MaxExp { get; set; } = 0;
+    public bool? wideHitEnabled;
 
     public bool isEnhanceDead => isDead || (CurrentHP <= 0 && X <= 0);
 

@@ -3033,9 +3033,63 @@ public static class GoRunFunction
     {
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         if (!isBladeNeed) return;
+        // 第一次初始化要先看下状态
+        if (instanceValue.CharacterStatus.wideHitEnabled == null)
+        {
+            // 先初始化
+            sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
+            var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
+            if(lastChatState == null)
+            {
+                instanceValue.CharacterStatus.wideHitEnabled = null;
+            }
+            else
+            {
+                instanceValue.CharacterStatus.wideHitEnabled = lastChatState.Contains("开");
+            }
+            await Task.Delay(1000);
+        }
         var turn = instanceValue.CharacterStatus.turn;
         // 查看朝向的怪, 九宫格怪物, 先根据turn得到坐标
-     
+        var targetCoords = GetThreeDirectionCoords(turn);
+        var targetPositions = targetCoords.Select(o => (instanceValue.CharacterStatus.X + o.x, instanceValue.CharacterStatus.Y + o.y)).ToList();
 
+        var monsters = targetPositions.SelectMany(o => MonsterFunction.GetMonstersByPosition(instanceValue.MonstersByPosition, o.Item1, o.Item2)).ToList();
+        var toWideSkillEnabled = monsters.Where(t => t.stdAliveMon).Count() > 2;
+        if (instanceValue.CharacterStatus.wideHitEnabled != toWideSkillEnabled)
+        {
+            sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
+            await Task.Delay(300);
+            instanceValue.CharacterStatus.wideHitEnabled = toWideSkillEnabled;
+        }
+    }
+
+    // 静态数组，避免重复创建
+    private static readonly (int x, int y)[] DirectionOffsets = new (int x, int y)[]
+    {
+        (0, -1),   // 0: 上
+        (1, -1),   // 1: 右上
+        (1, 0),    // 2: 右
+        (1, 1),    // 3: 右下
+        (0, 1),    // 4: 下
+        (-1, 1),   // 5: 左下
+        (-1, 0),   // 6: 左
+        (-1, -1)   // 7: 左上
+    };
+
+    /// <summary>
+    /// 根据朝向获取前方3个位置的坐标差值
+    /// </summary>
+    /// <param name="direction">朝向 0-7 (0=上, 顺时针)</param>
+    /// <returns>3个坐标差值 (左前, 正前, 右前)</returns>
+    private static (int x, int y)[] GetThreeDirectionCoords(int direction)
+    {
+        // 获取当前朝向的前方3个位置 (左前, 正前, 右前)
+        var leftFront = DirectionOffsets[(direction + 7) % 8];  // 左前 (逆时针1格)
+        var front = DirectionOffsets[direction];                // 正前
+        var rightFront = DirectionOffsets[(direction + 1) % 8]; // 右前 (顺时针1格)
+        var rightFront2 = DirectionOffsets[(direction + 2) % 8]; // 右前 (顺时针1格)
+
+        return new[] { leftFront, front, rightFront, rightFront2 };
     }
 }

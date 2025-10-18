@@ -1954,9 +1954,9 @@ namespace Mir2Assistant
                         {
                             if (!instance.isHomePreparing)
                             {
-                                // 暂时先实验半月
-                                await GoRunFunction.TryHiddenPeople(instance);
+                                // 暂时先实验半月这些简单的 需要中等的
                                 await GoRunFunction.switchBladeWideSlaying(instance);
+                                await GoRunFunction.TryHiddenPeople(instance);
                             }
                         }
                     }
