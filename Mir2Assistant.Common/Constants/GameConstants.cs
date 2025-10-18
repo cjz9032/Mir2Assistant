@@ -182,10 +182,12 @@ public static class GameConstants
         // public static readonly int keepClothCount = 2;
         public static int getKeepWeaponCount(int level, RoleType role)
         {
+            if(role == RoleType.mage) return 0;
             return level >= 22 ? 1 : 2;
         }
         public static int getKeepClothCount(int level, RoleType role)
         {
+            if(role == RoleType.mage) return 0;
             return level >= 22 ? 1 : 2;
         }
         public static readonly List<string> MagePotions =
