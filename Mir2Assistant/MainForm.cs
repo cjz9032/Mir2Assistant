@@ -1945,7 +1945,7 @@ namespace Mir2Assistant
             {
                 while (true)
                 {
-                    await Task.Delay(5_000);
+                    await Task.Delay(2_000);
 
                     try
                     {
@@ -1955,6 +1955,7 @@ namespace Mir2Assistant
                             if (!instance.isHomePreparing)
                             {
                                 // 暂时先实验半月
+                                await GoRunFunction.TryHiddenPeople(instance);
                                 await GoRunFunction.switchBladeWideSlaying(instance);
                             }
                         }
@@ -2004,7 +2005,6 @@ namespace Mir2Assistant
                                 healStopwatch.Stop();
 
                                 hiddenStopwatch.Restart();
-                                GoRunFunction.TryHiddenPeople(instance);
                                 hiddenStopwatch.Stop();
                             }
                             else

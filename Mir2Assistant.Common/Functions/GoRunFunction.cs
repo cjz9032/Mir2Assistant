@@ -2451,7 +2451,7 @@ public static class GoRunFunction
         // 道士调整攻速
         // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
-    public static void TryHiddenPeople(MirGameInstanceModel GameInstance)
+    public static async Task TryHiddenPeople(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfHideSelf(GameInstance))
         {
@@ -2487,8 +2487,8 @@ public static class GoRunFunction
         if (lastFinded != null)
         {
             sendSpell(GameInstance, lastFinded.Name == GameInstance.AccountInfo.CharacterName ? GameConstants.Skills.smHide : GameConstants.Skills.bigHide, lastFinded.X, lastFinded.Y, 0);
+            await Task.Delay(300);
         }
-
         // 待选组怪? 先不管
     }
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
@@ -3033,6 +3033,9 @@ public static class GoRunFunction
     {
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         if (!isBladeNeed) return;
+        var turn = instanceValue.CharacterStatus.turn;
+        // 查看朝向的怪, 九宫格怪物, 先根据turn得到坐标
+     
 
     }
 }

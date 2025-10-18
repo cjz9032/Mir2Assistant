@@ -25,6 +25,9 @@ public class CharacterStatusModel
     public int MaxExp { get; set; } = 0;
 
     public bool isEnhanceDead => isDead || (CurrentHP <= 0 && X <= 0);
+
+    public byte turn = 0;
+    
     public int state = 0;
     // (Myself.State and $00800000 > 0) 
     public bool isHidden => (state & 0x00800000) > 0;
