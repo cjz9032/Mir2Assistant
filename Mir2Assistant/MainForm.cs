@@ -95,10 +95,10 @@ namespace Mir2Assistant
             Log.Information("应用程序启动");
             HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // 注册热键
             Log.Debug("已注册热键: Delete");
-            // todo 目前还好, 就是自动的runner对所有生效
             autoAtBackgroundFast();
             if (!BBTask)
             {
+                autoMidBackground();
                 autoAtBackground(); //特殊任务取消
             }
             // RefreshDataGrid();
@@ -1934,6 +1934,38 @@ namespace Mir2Assistant
                         await Task.Delay(3000);
                         //autoAtBackground();
                         //return;
+                    }
+                }
+            });
+
+        }
+
+         private async void autoMidBackground()
+        {
+
+            var instances = GameState.GameInstances;
+            instances.ForEach(async instance =>
+            {
+                while (true)
+                {
+                    await Task.Delay(5_000);
+
+                    try
+                    {
+                        var CharacterStatus = instance.CharacterStatus;
+                        if (CharacterStatus.CurrentHP > 0)
+                        {
+                            if (!instance.isHomePreparing)
+                            {
+                                // 暂时先实验半月
+                                await GoRunFunction.switchBladeWideSlaying(instance);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "后台mid处理出错，账号: {Account}", instance.AccountInfo?.Account);
+                        await Task.Delay(5000);
                     }
                 }
             });

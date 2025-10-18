@@ -112,6 +112,17 @@ public static class GoRunFunction
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
         var superCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.SuperPotions.Contains(o.Name));
+        var pickMageRate = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7 ? 1 :
+            isMainFull ? (
+                isBladeNeed ? 0.2 : (
+                    isMageNeed ? 0.6 : 0
+                )
+            ) : 0;
+        var pickMageCount = GameConstants.Items.mageBuyCount * pickMageRate;
+        var pickSuperRate = instanceValue.AccountInfo.role == RoleType.mage ? 3 : 1;
+        var pickSuperCount = GameConstants.Items.superPickCount * pickSuperRate;
+
+
         var canTemp = CharacterStatus.Level >= 24 && GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
@@ -145,16 +156,8 @@ public static class GoRunFunction
             && (o.Value.Name == "回城卷" ? huiCount < 2 : true)
             // 药
             && (!(GameConstants.Items.HealPotions.Contains(o.Value.Name) && healCount > GameConstants.Items.healBuyCount))
-            && (o.Value.Name.Contains("魔法药") ? (
-                    instanceValue.AccountInfo.role == RoleType.taoist
-                    ? (CharacterStatus.Level > 7 && mageCount < (GameConstants.Items.mageBuyCount * 1.2))
-                    : (
-                        // 半月还不行 isBladeNeed
-                        (isMainFull && (isMageNeed || isBladeNeed)) ? (mageCount < GameConstants.Items.mageBuyCount * (isBladeNeed ? 0 : 0.6)) : false
-                    // false
-                    )
-                ) : true)
-            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > (isMageNeed ? GameConstants.Items.superPickCount * 3 : GameConstants.Items.superPickCount)))
+            && (o.Value.Name.Contains("魔法药") ? (mageCount < pickMageCount) : true)
+            && (GameConstants.Items.SuperPotions.Contains(o.Value.Name) ? superCount < pickSuperCount : true)
             &&
             (
                 // todo 更多属性获取drop更高效
@@ -2694,7 +2697,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if ((GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 29))
+        if (GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 29)
         {
             return;
         }
@@ -3042,5 +3045,11 @@ public static class GoRunFunction
                 yield return (x, y);
             }
         }
+    }
+    public static async Task switchBladeWideSlaying(MirGameInstanceModel instanceValue)
+    {
+        var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
+        if (!isBladeNeed) return;
+        
     }
 }
