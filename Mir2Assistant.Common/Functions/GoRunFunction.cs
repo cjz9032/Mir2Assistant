@@ -2677,14 +2677,19 @@ public static class GoRunFunction
     }
     public static async Task tryMagePushBlock(MirGameInstanceModel GameInstance)
     {
+         if (GameInstance.AccountInfo.role != RoleType.mage)
+        {
+            return;
+        }
         // random 
+        // 转宝宝方向 
         var dir = new Random().Next(0, 7);
         await GoTurn(GameInstance, (byte)dir);
         if (new Random().Next(1, 100) > 50)
         {
             return;
         }
-        if (GameInstance.AccountInfo.role != RoleType.mage || GameInstance.CharacterStatus.Level < 29)
+        if (GameInstance.CharacterStatus.Level < 29)
         {
             return;
         }
