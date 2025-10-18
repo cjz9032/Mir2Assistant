@@ -2721,50 +2721,57 @@ public static class GoRunFunction
     }
 
 
+    private static IEnumerable<int> GetMatchingItemIndices(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
+    {
+        return GameInstance.Items
+            .Select(o => (o, o.Index + 6))
+            .Concat(GameInstance.QuickItems
+                .Select(o => (o, o.Index)))
+            .Where(tuple => isBlur ? tuple.o.Name.Contains(name) : tuple.o.Name == name)
+            .Select(tuple => tuple.Item2);
+    }
+
     public static int[]? findIdxInAllItems(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
     {
         // TODO 打包这种还没算
-        var bagItems2 = GameInstance.Items;
-        var idx = bagItems2.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
-        var bagIndices = idx.Select(o => o.Index + 6).ToList();
-
-        var quickItems = GameInstance.QuickItems;
-        var idx2 = quickItems.Where(o => isBlur ? o.Name.Contains(name) : o.Name == name).ToList();
-        var quickIndices = idx2.Select(o => o.Index).ToList();
-
-        var allIndices = bagIndices.Concat(quickIndices).ToArray();
+        var allIndices = GetMatchingItemIndices(GameInstance, name, isBlur).ToArray();
         return allIndices.Length > 0 ? allIndices : null;
+    }
+
+    public static int findIdxFirstItem(MirGameInstanceModel GameInstance, string name, bool isBlur = false)
+    {
+        return GetMatchingItemIndices(GameInstance, name, isBlur).FirstOrDefault(-1);
     }
 
     public static void TryEatDrug(MirGameInstanceModel GameInstance)
     {
-        // var hp = GameInstance.CharacterStatus.CurrentHP;
-        // var maxHp = GameInstance.CharacterStatus.MaxHP;
-        // var mp = GameInstance.CharacterStatus.CurrentMP;
-        // var maxMp = GameInstance.CharacterStatus.MaxMP;
+        var hp = GameInstance.CharacterStatus.CurrentHP;
+        var maxHp = GameInstance.CharacterStatus.MaxHP;
+        var mp = GameInstance.CharacterStatus.CurrentMP;
+        var maxMp = GameInstance.CharacterStatus.MaxMP;
         // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
         var hpRate = GameConstants.Items.hpProRate;
         var lowHpRate = GameConstants.Items.hpLowRate;
-        if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * hpRate) // 0.5避免浪费治疗
+        if (hp < maxHp * hpRate) // 0.5避免浪费治疗
         {
-            var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * lowHpRate;
+            var veryLow = hp < maxHp * lowHpRate;
             int resIdx = -1;
             if (veryLow)
             {
-                var idx = findIdxInAllItems(GameInstance, "太阳水");
-                if (idx != null)
+                var idx = findIdxFirstItem(GameInstance, "太阳水", true);
+                if (idx != -1)
                 {
-                    resIdx = idx[0];
+                    resIdx = idx;
                 }
             }
             if (resIdx == -1)
             {
-                var idx = findIdxInAllItems(GameInstance, "金创药");
-                if (idx != null)
+                var idx = findIdxFirstItem(GameInstance, "金创药", true);
+                if (idx != -1)
                 {
-                    resIdx = idx[0];
+                    resIdx = idx;
                 }
             }
             if (resIdx != -1)
@@ -2777,24 +2784,24 @@ public static class GoRunFunction
         var isNotLowBlade = !(GameInstance.AccountInfo.role == RoleType.blade && GameInstance.CharacterStatus.Level < 28);
         var magePreRate = GameConstants.Items.mpProRate(GameInstance);
         var lowMpRate = GameConstants.Items.mpLowRate(GameInstance);
-        if (isNotLowBlade && (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * magePreRate))
+        if (isNotLowBlade && (mp < maxMp * magePreRate))
         {
-            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * lowMpRate;
+            var veryLow = mp < maxMp * lowMpRate;
             int resIdx = -1;
             if (veryLow)
             {
-                var idx = findIdxInAllItems(GameInstance, "太阳水");
-                if (idx != null)
+                var idx = findIdxFirstItem(GameInstance, "太阳水", true);
+                if (idx != -1)
                 {
-                    resIdx = idx[0];
+                    resIdx = idx;
                 }
             }
             if (resIdx == -1)
             {
-                var idx = findIdxInAllItems(GameInstance, "魔法药");
-                if (idx != null)
+                var idx = findIdxFirstItem(GameInstance, "魔法药", true);
+                if (idx != -1)
                 {
-                    resIdx = idx[0];
+                    resIdx = idx;
                 }
             }
             if (resIdx != -1)
