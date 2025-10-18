@@ -29,7 +29,7 @@ namespace Mir2Assistant.Common.Utils
             public int GridWidth { get; set; }
             public int GridHeight { get; set; }
             public int WallPointsCount { get; set; }
-            public List<(int x, int y)>[,] Grids { get; set; }
+            public List<(int x, int y, int wallCount)>[,] Grids { get; set; }
             
             /// <summary>
             /// 用于快速查找的 HashSet 索引
@@ -38,14 +38,14 @@ namespace Mir2Assistant.Common.Utils
 
             public WallPointsData(int gridWidth, int gridHeight)
             {
-                Grids = new List<(int x, int y)>[gridWidth, gridHeight];
+                Grids = new List<(int x, int y, int wallCount)>[gridWidth, gridHeight];
                 WallPointsSet = new HashSet<(int x, int y)>();
                 
                 for (int i = 0; i < gridWidth; i++)
                 {
                     for (int j = 0; j < gridHeight; j++)
                     {
-                        Grids[i, j] = new List<(int x, int y)>();
+                        Grids[i, j] = new List<(int x, int y, int wallCount)>();
                     }
                 }
             }
@@ -105,9 +105,10 @@ namespace Mir2Assistant.Common.Utils
                         {
                             int x = reader.ReadInt32();
                             int y = reader.ReadInt32();
-                            var point = (x, y);
+                            int wallCount = reader.ReadInt32();
+                            var point = (x, y, wallCount);
                             data.Grids[i, j].Add(point);
-                            data.WallPointsSet.Add(point);
+                            data.WallPointsSet.Add((x, y));
                         }
                     }
                 }
@@ -152,7 +153,7 @@ namespace Mir2Assistant.Common.Utils
         }
 
         /// <summary>
-        /// 快速查找指定位置附近的靠墙点
+        /// 在指定范围内查找靠墙点
         /// </summary>
         /// <param name="mapName">地图名称</param>
         /// <param name="centerX">中心X坐标</param>
@@ -160,15 +161,15 @@ namespace Mir2Assistant.Common.Utils
         /// <param name="range">搜索范围</param>
         /// <param name="wallPointsDirectory">靠墙点文件目录</param>
         /// <returns>范围内的靠墙点列表，按距离排序</returns>
-        public static List<(int x, int y, double distance)> FindNearbyWallPoints(string mapName, int centerX, int centerY, int range, string? wallPointsDirectory = null)
+        public static List<(int x, int y, double distance, int wallCount)> FindNearbyWallPoints(string mapName, int centerX, int centerY, int range, string? wallPointsDirectory = null)
         {
             var data = GetWallPoints(mapName, wallPointsDirectory);
             if (data == null)
             {
-                return new List<(int x, int y, double distance)>();
+                return new List<(int x, int y, double distance, int wallCount)>();
             }
 
-            var nearbyPoints = new List<(int x, int y, double distance)>();
+            var nearbyPoints = new List<(int x, int y, double distance, int wallCount)>();
 
             // 计算需要检查的网格范围
             int gridSize = data.GridSize;
@@ -191,7 +192,7 @@ namespace Mir2Assistant.Common.Utils
                             double distance = Math.Sqrt(Math.Pow(point.x - centerX, 2) + Math.Pow(point.y - centerY, 2));
                             if (distance <= range)
                             {
-                                nearbyPoints.Add((point.x, point.y, distance));
+                                nearbyPoints.Add((point.x, point.y, distance, point.wallCount));
                             }
                         }
                     }
@@ -222,25 +223,62 @@ namespace Mir2Assistant.Common.Utils
         }
 
         /// <summary>
-        /// 查找最近的靠墙点
+        /// 获取指定位置的靠墙数
+        /// </summary>
+        /// <param name="mapName">地图名称</param>
+        /// <param name="x">X坐标</param>
+        /// <param name="y">Y坐标</param>
+        /// <param name="wallPointsDirectory">靠墙点文件目录</param>
+        /// <returns>靠墙数，如果不是靠墙点返回0</returns>
+        public static int GetWallCount(string mapName, int x, int y, string? wallPointsDirectory = null)
+        {
+            var data = GetWallPoints(mapName, wallPointsDirectory);
+            if (data == null)
+            {
+                return 0;
+            }
+
+            // 计算网格坐标
+            int gridX = x / data.GridSize;
+            int gridY = y / data.GridSize;
+
+            // 检查网格坐标是否有效
+            if (gridX < 0 || gridX >= data.GridWidth || gridY < 0 || gridY >= data.GridHeight)
+            {
+                return 0;
+            }
+
+            // 在对应网格中查找
+            var gridPoints = data.Grids[gridX, gridY];
+            var point = gridPoints.FirstOrDefault(p => p.x == x && p.y == y);
+            return point.wallCount;
+        }
+
+        /// <summary>
+        /// 查找最优的靠墙点（优先选择靠墙数最大的，相同靠墙数时选择距离最近的）
         /// </summary>
         /// <param name="mapName">地图名称</param>
         /// <param name="currentX">当前X坐标</param>
         /// <param name="currentY">当前Y坐标</param>
         /// <param name="maxRange">最大搜索范围</param>
         /// <param name="wallPointsDirectory">靠墙点文件目录</param>
-        /// <returns>最近的靠墙点坐标，如果没找到返回(-1, -1)</returns>
-        public static (int x, int y) FindNearestWallPoint(string mapName, int currentX, int currentY, int maxRange = 20, string? wallPointsDirectory = null)
+        /// <returns>最优的靠墙点坐标，如果没找到返回(-1, -1)</returns>
+        public static (int x, int y, int wallCount) FindNearestWallPoint(string mapName, int currentX, int currentY, int maxRange = 20, string? wallPointsDirectory = null)
         {
             var nearbyPoints = FindNearbyWallPoints(mapName, currentX, currentY, maxRange, wallPointsDirectory);
             
             if (nearbyPoints.Count > 0)
             {
-                var nearest = nearbyPoints.First();
-                return (nearest.x, nearest.y);
+                // 按靠墙数降序排序，相同靠墙数时按距离升序排序
+                var bestPoint = nearbyPoints
+                    .OrderByDescending(p => p.wallCount)  // 优先选择靠墙数最大的
+                    .ThenBy(p => p.distance)              // 相同靠墙数时选择距离最近的
+                    .First();
+                
+                return (bestPoint.x, bestPoint.y, bestPoint.wallCount);
             }
 
-            return (-1, -1);
+            return (-1, -1, 0);
         }
 
         /// <summary>

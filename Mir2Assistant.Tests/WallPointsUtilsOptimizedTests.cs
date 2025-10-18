@@ -70,7 +70,7 @@ namespace Mir2Assistant.Tests
 
             // 找一个已知的靠墙点进行测试
             bool foundTestPoint = false;
-            int testX = 0, testY = 0;
+            int testX = 0, testY = 0, expectedWallCount = 0;
 
             // 从第一个非空网格中找一个点
             for (int i = 0; i < data.GridWidth && !foundTestPoint; i++)
@@ -82,6 +82,7 @@ namespace Mir2Assistant.Tests
                         var point = data.Grids[i, j].First();
                         testX = point.x;
                         testY = point.y;
+                        expectedWallCount = point.wallCount;
                         foundTestPoint = true;
                     }
                 }
@@ -89,11 +90,16 @@ namespace Mir2Assistant.Tests
 
             if (foundTestPoint)
             {
-                // 测试方法
+                // 测试靠墙点检查方法
                 bool isWallPoint = WallPointsUtils.IsWallPoint(TestMapName, testX, testY, _testDataDirectory);
                 Assert.True(isWallPoint);
 
-                _output.WriteLine($"测试点 ({testX}, {testY}): 是靠墙点={isWallPoint}");
+                // 测试靠墙数获取方法
+                int actualWallCount = WallPointsUtils.GetWallCount(TestMapName, testX, testY, _testDataDirectory);
+                Assert.Equal(expectedWallCount, actualWallCount);
+                Assert.True(actualWallCount >= 3); // 靠墙点至少有3个方向被墙围绕
+
+                _output.WriteLine($"测试点 ({testX}, {testY}): 是靠墙点={isWallPoint}, 靠墙数={actualWallCount}");
             }
         }
 

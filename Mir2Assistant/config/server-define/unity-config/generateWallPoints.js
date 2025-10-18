@@ -20,11 +20,11 @@ function isObstacle(obstacles, width, height, x, y) {
     return obstacles[index] !== 0; // 假设0表示可通行，非0表示障碍物
 }
 
-// 检查指定位置是否为靠墙点（8个方向中至少3个是障碍物）
-function isWallPoint(obstacles, width, height, x, y) {
+// 计算指定位置的靠墙数（8个方向中障碍物的数量）
+function getWallCount(obstacles, width, height, x, y) {
     // 首先检查当前位置是否可通行
     if (isObstacle(obstacles, width, height, x, y)) {
-        return false; // 障碍物位置不能作为靠墙点
+        return 0; // 障碍物位置不能作为靠墙点
     }
     
     let obstacleCount = 0;
@@ -34,7 +34,12 @@ function isWallPoint(obstacles, width, height, x, y) {
         }
     }
     
-    return obstacleCount >= 3;
+    return obstacleCount;
+}
+
+// 检查指定位置是否为靠墙点（8个方向中至少3个是障碍物）
+function isWallPoint(obstacles, width, height, x, y) {
+    return getWallCount(obstacles, width, height, x, y) >= 3;
 }
 
 // 生成靠墙点列表并按网格组织
@@ -57,8 +62,9 @@ function generateWallPointsWithGrid(obstacles, width, height) {
     // 遍历地图找靠墙点
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            if (isWallPoint(obstacles, width, height, x, y)) {
-                const point = { x, y };
+            const wallCount = getWallCount(obstacles, width, height, x, y);
+            if (wallCount >= 3) {
+                const point = { x, y, wallCount };
                 wallPoints.push(point);
                 
                 // 计算网格坐标并添加到对应网格
@@ -157,13 +163,14 @@ fs.readdir(jsonFolderPath, (err, files) => {
             // 二进制格式：
             // [width(4)][height(4)][gridSize(4)][gridWidth(4)][gridHeight(4)][totalPoints(4)]
             // [gridData: 对每个网格 -> pointCount(4) + points...]
+            // 每个点: [x(4)][y(4)][wallCount(4)]
             let totalSize = 24; // 头部6个int32
             
             // 计算所需缓冲区大小
             for (let gy = 0; gy < gridHeight; gy++) {
                 for (let gx = 0; gx < gridWidth; gx++) {
                     totalSize += 4; // pointCount
-                    totalSize += grids[gy][gx].length * 8; // 每个点8字节(x,y)
+                    totalSize += grids[gy][gx].length * 12; // 每个点12字节(x,y,wallCount)
                 }
             }
             
@@ -187,6 +194,7 @@ fs.readdir(jsonFolderPath, (err, files) => {
                     gridPoints.forEach(point => {
                         buffer.writeInt32LE(point.x, offset); offset += 4;
                         buffer.writeInt32LE(point.y, offset); offset += 4;
+                        buffer.writeInt32LE(point.wallCount, offset); offset += 4;
                     });
                 }
             }
