@@ -3080,7 +3080,7 @@ public static class GoRunFunction
         if (instanceValue.CharacterStatus.wideHitEnabled != toWideSkillEnabled)
         {
             sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
-            await Task.Delay(500);
+            await Task.Delay(800);
             var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
             if (lastChatState == null)
             {
