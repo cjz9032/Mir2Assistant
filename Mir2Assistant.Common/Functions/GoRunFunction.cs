@@ -154,7 +154,7 @@ public static class GoRunFunction
                     // false
                     )
                 ) : true)
-            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > GameConstants.Items.superPickCount))
+            && (!(GameConstants.Items.SuperPotions.Contains(o.Value.Name) && superCount > (isMageNeed ? GameConstants.Items.superPickCount * 3 : GameConstants.Items.superPickCount)))
             &&
             (
                 // todo 更多属性获取drop更高效

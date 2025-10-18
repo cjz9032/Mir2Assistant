@@ -687,9 +687,10 @@ namespace Mir2Assistant
                     ], buyC - exitsQuan);
                 }
             }
-            // 等级太低没钱
-            else if (instanceValue.CharacterStatus.Level > 7)
+            // 除了道士 其他补充血
+            if (instanceValue.AccountInfo.role != RoleType.taoist)
             {
+
                 // 其他就预备血6
                 var items2 = GameConstants.Items.HealPotions;
                 var exitsQuan2 = 0;
@@ -706,7 +707,6 @@ namespace Mir2Assistant
                     await NpcFunction.BuyDrugs(instanceValue!, GameConstants.Items.HealPotions[0], GameConstants.Items.healBuyCount - exitsQuan2);
                 }
             }
-
         }
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
@@ -907,7 +907,7 @@ namespace Mir2Assistant
                                 break;
                             }
                         }
-                       
+
 
                         // 新手任务
                         // todo 目前是5
@@ -1321,7 +1321,7 @@ namespace Mir2Assistant
                                             exchangedExpTime = DateTime.Now;
                                             exchangedExp = instanceValue.CharacterStatus.Exp;
                                         }
-                                        else if(!exchangedMap.Contains(hangMapId))
+                                        else if (!exchangedMap.Contains(hangMapId))
                                         {
                                             exchangedExpTime = null;
                                             exchangedExp = 0;
@@ -1761,7 +1761,7 @@ namespace Mir2Assistant
 
                             if (CharacterStatus.X > 0)
                             {
-                                if(CharacterStatus.Exp == lastExp)
+                                if (CharacterStatus.Exp == lastExp)
                                 {
                                     sameExpTimes += 1;
                                 }
