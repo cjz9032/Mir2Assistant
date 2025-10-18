@@ -1301,17 +1301,19 @@ namespace Mir2Assistant
                                     await GoRunFunction.BeStatusSlaveIfHas(instanceValue, true);
                                     await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
                                     {
-                                        if (!GameConstants.HomeMaps.Contains(CharacterStatus.MapId) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
+                                        var MyCharacterStatus = instanceValue.CharacterStatus;
+                                        var accountInfo = instanceValue.AccountInfo;
+                                        if (!GameConstants.HomeMaps.Contains(MyCharacterStatus.MapId) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
                                         {
                                             System.Diagnostics.Debugger.Break();
                                         }
                                         exitForSwichMap = false;
                                         // 小号跟随回家
-                                        if (!instanceValue.AccountInfo.IsMainControl && instances[0].isHomePreparing)
+                                        if (!accountInfo.IsMainControl && instances[0].isHomePreparing)
                                         {
                                             return true;
                                         }
-                                        if (instanceValue.CharacterStatus.isEnhanceDead)
+                                        if (MyCharacterStatus.isEnhanceDead)
                                         {
                                             return true;
                                         }
@@ -1319,7 +1321,7 @@ namespace Mir2Assistant
                                         if (exchangedEnabled && exchangedExpTime == null && exchangedMap[exchangedIdx] == hangMapId)
                                         {
                                             exchangedExpTime = DateTime.Now;
-                                            exchangedExp = instanceValue.CharacterStatus.Exp;
+                                            exchangedExp = MyCharacterStatus.Exp;
                                         }
                                         else if (!exchangedMap.Contains(hangMapId))
                                         {
@@ -1334,19 +1336,19 @@ namespace Mir2Assistant
                                             // 3分钟收益
                                             var exp1minBase = 60;
                                             var diffmin = (DateTime.Now - exchangedExpTime).Value.TotalMinutes;
-                                            var exp3m = instanceValue.CharacterStatus.Exp - exchangedExp;
+                                            var exp3m = MyCharacterStatus.Exp - exchangedExp;
                                             instanceValue.GameInfo("Exp3m: {Exp} / {DiffMin}", exp3m, diffmin);
-                                            if (exchangedExp < instanceValue.CharacterStatus.Exp && exp3m < (exp1minBase * diffmin))
+                                            if (exchangedExp < MyCharacterStatus.Exp && exp3m < (exp1minBase * diffmin))
                                             {
                                                 exitForSwichMap = true;
                                             }
                                             exchangedExpTime = DateTime.Now;
-                                            exchangedExp = instanceValue.CharacterStatus.Exp;
+                                            exchangedExp = MyCharacterStatus.Exp;
                                         }
 
                                         var isBBReadyStatusChanged = false;
                                         // BB由主号随机性检查 避免过多
-                                        if (instanceValue.AccountInfo.IsMainControl && slaveEnabled && new Random().Next(100) < 50)
+                                        if (accountInfo.IsMainControl && slaveEnabled && new Random().Next(100) < 50)
                                         {
                                             var (cCount, allCount) = GoRunFunction.CCBBCount(instanceValue);
                                             if (hangMapId == slaveFromMap)
@@ -1402,7 +1404,7 @@ namespace Mir2Assistant
                                             var specificItems = new List<EquipPosition>() { EquipPosition.Weapon, EquipPosition.Dress };
                                             foreach (var item in specificItems)
                                             {
-                                                var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                                var useItem = MyCharacterStatus.useItems[(int)item];
                                                 // 手上不管是JP还是普通, 只要包里还有就可以
                                                 if (useItem.IsEmpty || useItem.IsLowDurability)
                                                 {
@@ -1421,7 +1423,7 @@ namespace Mir2Assistant
                                             EquipPosition.Necklace, EquipPosition.ArmRingLeft, EquipPosition.ArmRingRight };
                                             foreach (var item in otherItems)
                                             {
-                                                var useItem = instanceValue.CharacterStatus.useItems[(int)item];
+                                                var useItem = MyCharacterStatus.useItems[(int)item];
                                                 if (useItem.IsGodly && useItem.IsLowDurability)
                                                 {
                                                     var replacement = NpcFunction.checkReplacementInBag(instanceValue, item, false);
@@ -1434,24 +1436,19 @@ namespace Mir2Assistant
                                                 }
                                             }
                                         }
-                                        // N级以下不配
-                                        var isLowHp = instanceValue.AccountInfo.role == RoleType.taoist
+                                        var isLowHp = accountInfo.role == RoleType.taoist
                                         && (isConsumer == 2)
-                                        && instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.2;
-                                        // && instanceValue.CharacterStatus.CurrentMP < instanceValue.CharacterStatus.MaxMP * 0.2;
+                                        && MyCharacterStatus.CurrentHP < MyCharacterStatus.MaxHP * 0.2;
 
-
-                                        var isOtherLowHp = instanceValue.CharacterStatus.Level < 22 ? false : (instanceValue.AccountInfo.role != RoleType.taoist && (instanceValue.CharacterStatus.CurrentHP < instanceValue.CharacterStatus.MaxHP * 0.25 || (instanceValue.CharacterStatus.MaxHP > 50 && instanceValue.CharacterStatus.CurrentHP < 30)));
+                                        var isOtherLowHp = MyCharacterStatus.CurrentHP < MyCharacterStatus.MaxHP * GameConstants.Items.commonEscapeHpRate;
                                         // 主号没药
-
-
-                                        var lowMPMain = hangMapId != "D002" && instanceValue.AccountInfo.IsMainControl && instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
+                                        var lowMPMain = hangMapId != "D002" && accountInfo.IsMainControl && MyCharacterStatus.coin > 3000 && MyCharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
                                         var isLowFushen = false;
                                         if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                         {
-                                            var fuName = GameConstants.Items.getFushen(instanceValue.CharacterStatus.Level);
+                                            var fuName = GameConstants.Items.getFushen(MyCharacterStatus.Level);
                                             // 总计只剩50 跑路足够了
-                                            var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
+                                            var usedFushen = MyCharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
                                             var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
                                             var allFushen = usedFushen.Concat(items).Sum(o => o.Duration);
                                             if (allFushen < 50)
@@ -1463,7 +1460,7 @@ namespace Mir2Assistant
                                         // 道武满包才回
                                         var meFull = miscs.Count > 44;
                                         var isFull = false;
-                                        if (meFull && instanceValue.AccountInfo.IsMainControl)
+                                        if (meFull && accountInfo.IsMainControl)
                                         {
                                             // 查找其他成员除了法师
                                             var noFullOne = instances.Where(t => !t.AccountInfo.IsMainControl).
