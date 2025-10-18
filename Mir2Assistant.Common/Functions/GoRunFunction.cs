@@ -2745,10 +2745,11 @@ public static class GoRunFunction
         // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
-        if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.4) // 0.5避免浪费治疗
+        var hpRate = 0.6;
+        var lowHpRate = 0.3;
+        if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * hpRate) // 0.5避免浪费治疗
         {
-
-            var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
+            var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * lowHpRate;
             int resIdx = -1;
             if (veryLow)
             {
@@ -2774,13 +2775,11 @@ public static class GoRunFunction
 
         // for low mp
         var isNotLowBlade = !(GameInstance.AccountInfo.role == RoleType.blade && GameInstance.CharacterStatus.Level < 28);
-        if (isNotLowBlade && ((GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * 0.35) || GameInstance.CharacterStatus.CurrentMP < 10))
+        var magePreRate = GameInstance.AccountInfo.role == RoleType.mage ? 0.7 : 0.4;
+        var lowMpRate = magePreRate * 0.5;
+        if (isNotLowBlade && ((GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * magePreRate) || GameInstance.CharacterStatus.CurrentMP < 10))
         {
-            // 找蓝药 太阳水
-            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP *
-             // 法师优先太阳
-             (GameInstance.AccountInfo.role == RoleType.mage ? 0.5 : 0.2);
-
+            var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * lowMpRate;
             int resIdx = -1;
             if (veryLow)
             {

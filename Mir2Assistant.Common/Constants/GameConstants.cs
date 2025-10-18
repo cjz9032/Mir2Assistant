@@ -450,7 +450,8 @@ public static class GameConstants
             "青铜剑",
             // "铁剑",
             "青铜头盔",
-
+            "白金项链",
+            "凤凰明珠"
            };
 
         private static readonly List<string> binItemsMid =
