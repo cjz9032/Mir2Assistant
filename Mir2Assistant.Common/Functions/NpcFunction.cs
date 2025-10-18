@@ -739,7 +739,7 @@ namespace Mir2Assistant.Common.Functions
             var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
             var items = gameInstance.Items.Concat(gameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
-            var NEED = 3;
+            var NEED = 2;
             if (items.Count >= NEED)
             {
                 return;
