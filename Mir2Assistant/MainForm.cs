@@ -2015,7 +2015,7 @@ namespace Mir2Assistant
 
                             totalStopwatch.Stop();
 
-                            if (totalStopwatch.ElapsedMilliseconds > 10)
+                            if (totalStopwatch.ElapsedMilliseconds > 50)
                             {
                                 Log.Debug("角色 {Account} 操作耗时 - 总计: {Total}ms, 吃药: {Drug}ms, 治疗: {Heal}ms, 隐身: {Hidden}ms",
                                     instance.AccountInfo?.Account,

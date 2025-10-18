@@ -722,14 +722,16 @@ public static class GoRunFunction
             if (targetX == -1)
             {
                 sw.Stop();
-                gameInstance.GameDebug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
+                if (sw.ElapsedMilliseconds > 10)
+                    gameInstance.GameDebug($"无法找到有效的模糊目标点，耗时: {sw.ElapsedMilliseconds}ms");
                 return new List<(byte dir, byte steps, int x, int y)>();
             }
         }
         else if (data[targetY * width + targetX] == 1)
         {
             sw.Stop();
-            gameInstance.GameDebug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
+            if (sw.ElapsedMilliseconds > 10)
+                gameInstance.GameDebug($"目标点不可达，耗时: {sw.ElapsedMilliseconds}ms");
             return new List<(byte dir, byte steps, int x, int y)>();
         }
 
