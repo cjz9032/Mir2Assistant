@@ -2480,7 +2480,7 @@ public static class GoRunFunction
         );
         CharacterStatusModel? lastFinded;
         // 血太少, 周边有怪, 虽然没被block 但是优先, 没怪的话 先不隐, 怕有别的case
-        var lowFind = allPeople.Where(t => t.CurrentHP < t.MaxHP * 0.4 &&
+        var lowFind = allPeople.Where(t => t.CurrentHP < t.MaxHP * GameConstants.Items.commonHideRate &&
                     findMonsSurrounded(t.X, t.Y, GameInstance.MonstersByPosition)
                         .Where(t => t.stdAliveMon)
                         .Count() > 3

@@ -130,6 +130,7 @@ public static class GameConstants
     {
         public static readonly double commonEscapeHpRate = 0.2;
         public static readonly double commonHealRate = 0.7;
+        public static readonly double commonHideRate = 0.6;
 
         public static readonly double hpProRate = 0.6;
         // func
