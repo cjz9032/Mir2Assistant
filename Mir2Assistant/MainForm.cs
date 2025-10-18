@@ -1466,9 +1466,9 @@ namespace Mir2Assistant
                                         if (meFull && instanceValue.AccountInfo.IsMainControl)
                                         {
                                             // 查找其他成员除了法师
-                                            var otherMembers = instances.Where(t => t.AccountInfo.role != RoleType.mage && !t.AccountInfo.IsMainControl).ToList();
-                                            var otherFull = otherMembers.Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty).Count() > 44);
-                                            if (otherFull)
+                                            var noFullOne = instances.Where(t => !t.AccountInfo.IsMainControl).
+                                                Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty).Count() < 44);
+                                            if (!noFullOne)
                                             {
                                                 isFull = true;
                                                 instanceValue.GameInfo("满包 回家");
@@ -1962,18 +1962,18 @@ namespace Mir2Assistant
                         {
                             var totalStopwatch = System.Diagnostics.Stopwatch.StartNew();
                             var drugStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                            
+
                             GoRunFunction.TryEatDrug(instance);
                             drugStopwatch.Stop();
-                            
+
                             var healStopwatch = System.Diagnostics.Stopwatch.StartNew();
                             var hiddenStopwatch = System.Diagnostics.Stopwatch.StartNew();
-                            
+
                             if (!BBTask)
                             {
                                 GoRunFunction.TryHealPeople(instance);
                                 healStopwatch.Stop();
-                                
+
                                 hiddenStopwatch.Restart();
                                 GoRunFunction.TryHiddenPeople(instance);
                                 hiddenStopwatch.Stop();
@@ -1983,13 +1983,13 @@ namespace Mir2Assistant
                                 healStopwatch.Stop();
                                 hiddenStopwatch.Stop();
                             }
-                            
+
                             totalStopwatch.Stop();
-                            
+
                             if (totalStopwatch.ElapsedMilliseconds > 10)
                             {
-                                Log.Debug("角色 {Account} 操作耗时 - 总计: {Total}ms, 吃药: {Drug}ms, 治疗: {Heal}ms, 隐身: {Hidden}ms", 
-                                    instance.AccountInfo?.Account, 
+                                Log.Debug("角色 {Account} 操作耗时 - 总计: {Total}ms, 吃药: {Drug}ms, 治疗: {Heal}ms, 隐身: {Hidden}ms",
+                                    instance.AccountInfo?.Account,
                                     totalStopwatch.ElapsedMilliseconds,
                                     drugStopwatch.ElapsedMilliseconds,
                                     healStopwatch.ElapsedMilliseconds,
