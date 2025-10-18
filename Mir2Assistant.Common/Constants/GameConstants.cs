@@ -383,7 +383,7 @@ public static class GameConstants
 
         public static string getFushen(int level)
         {
-            return level < 35 ? "护身符" : "护身符(大)";
+            return level < 29 ? "护身符" : "护身符(大)";
         }
 
 
