@@ -110,20 +110,20 @@ public class MonsterCoverageUtilsTests
     }
 
     [Fact]
-    public void FindOptimal3x3Square_ScatteredMonsters_ReturnsFirstValidCenter()
+    public void FindOptimal3x3Square_ScatteredMonsters_ReturnsOptimalCenter()
     {
-        // Arrange - 分散的怪物，只有部分区域能覆盖足够数量
+        // Arrange - 分散的怪物，右下组有更多怪物
         var monsters = new List<(int x, int y)>
         {
-            (5, 5), (5, 6), (6, 5), // 左上组
-            (15, 15), (15, 16), (16, 15), (16, 16) // 右下组
+            (5, 5), (5, 6), (6, 5), // 左上组 - 3个怪物
+            (15, 15), (15, 16), (16, 15), (16, 16) // 右下组 - 4个怪物
         };
         
         // Act
         var result = MonsterCoverageUtils.FindOptimal3x3Square(monsters, 3);
         
-        // Assert - 应该返回第一个找到的有效位置
-        Assert.Equal((6, 6), result);
+        // Assert - 应该返回覆盖最多怪物的位置（右下组）
+        Assert.Equal((15, 15), result);
     }
 
     [Fact]
