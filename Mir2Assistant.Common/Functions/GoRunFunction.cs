@@ -1578,9 +1578,10 @@ public static class GoRunFunction
                         }
                         // 检查是否被包围
                         var centerPoint = (ani.X, ani.Y);
-                        if (escapeTried < 3 && ani.Appr != 40)
+                        // 非常特殊
+                        if (escapeTried < 2 && ani.Appr != 40)
                         {
-                            var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 5 : 2;
+                            var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
                             var isEscaped = await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: maxMonstersNearby, cancellationToken: _cancellationToken);
                             if (isEscaped == 1)
                             {
