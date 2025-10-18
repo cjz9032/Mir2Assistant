@@ -126,10 +126,13 @@ public static class GoRunFunction
         var canTemp = CharacterStatus.Level >= 24 && GoRunFunction.CapbilityOfTemptation(instanceValue);
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
-        var maxWeapon = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * 10 : GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var weacloRate = instanceValue.AccountInfo.role == RoleType.blade ? 10 : 8;
+        var maxWeapon = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate 
+        : GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
-        var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * 10 : GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate 
+        : GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
         // 武器表
