@@ -115,7 +115,7 @@ public static class GoRunFunction
         var pickMageRate = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7 ? 1 :
             isMainFull ? (
                 isBladeNeed ? 0.2 : (
-                    isMageNeed ? 0.6 : 0
+                    isMageNeed ? 0.8 : 0
                 )
             ) : 0;
         var pickMageCount = GameConstants.Items.mageBuyCount * pickMageRate;
