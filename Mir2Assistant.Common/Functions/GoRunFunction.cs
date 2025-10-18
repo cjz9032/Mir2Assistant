@@ -2737,10 +2737,10 @@ public static class GoRunFunction
 
     public static void TryEatDrug(MirGameInstanceModel GameInstance)
     {
-        var hp = GameInstance.CharacterStatus.CurrentHP;
-        var maxHp = GameInstance.CharacterStatus.MaxHP;
-        var mp = GameInstance.CharacterStatus.CurrentMP;
-        var maxMp = GameInstance.CharacterStatus.MaxMP;
+        // var hp = GameInstance.CharacterStatus.CurrentHP;
+        // var maxHp = GameInstance.CharacterStatus.MaxHP;
+        // var mp = GameInstance.CharacterStatus.CurrentMP;
+        // var maxMp = GameInstance.CharacterStatus.MaxMP;
         // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
@@ -2748,28 +2748,27 @@ public static class GoRunFunction
         {
 
             var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * 0.2;
-            var items = veryLow ? GameConstants.Items.SuperPotions : GameConstants.Items.HealPotions;
             int resIdx = -1;
             if (veryLow)
             {
-                items = GameConstants.Items.SuperPotions.Concat(items).ToList();
-            }
-            foreach (var item in items)
-            {
-                var idx = findIdxInAllItems(GameInstance, item);
+                var idx = findIdxInAllItems(GameInstance, "太阳水");
                 if (idx != null)
                 {
                     resIdx = idx[0];
-                    break;
                 }
             }
-
             if (resIdx == -1)
             {
-                return;
+                var idx = findIdxInAllItems(GameInstance, "金创药");
+                if (idx != null)
+                {
+                    resIdx = idx[0];
+                }
             }
-
-            NpcFunction.EatIndexItem(GameInstance, resIdx);
+            if (resIdx != -1)
+            {
+                NpcFunction.EatIndexItem(GameInstance, resIdx);
+            }
         }
 
         // for low mp
@@ -2780,26 +2779,28 @@ public static class GoRunFunction
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP *
              // 法师优先太阳
              (GameInstance.AccountInfo.role == RoleType.mage ? 0.5 : 0.2);
-            var items = GameConstants.Items.MagePotions;
+
             int resIdx = -1;
             if (veryLow)
             {
-                items = GameConstants.Items.SuperPotions.Concat(items).ToList();
-            }
-            foreach (var item in items)
-            {
-                var idx = findIdxInAllItems(GameInstance, item);
+                var idx = findIdxInAllItems(GameInstance, "太阳水");
                 if (idx != null)
                 {
                     resIdx = idx[0];
-                    break;
                 }
             }
             if (resIdx == -1)
             {
-                return;
+                var idx = findIdxInAllItems(GameInstance, "魔法药");
+                if (idx != null)
+                {
+                    resIdx = idx[0];
+                }
             }
-            NpcFunction.EatIndexItem(GameInstance, resIdx);
+            if (resIdx != -1)
+            {
+                NpcFunction.EatIndexItem(GameInstance, resIdx);
+            }
         }
         // 清理道士蓝
         // if (GameInstance.AccountInfo.role == RoleType.taoist || GameInstance.AccountInfo.role == RoleType.mage)
@@ -3050,6 +3051,6 @@ public static class GoRunFunction
     {
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         if (!isBladeNeed) return;
-        
+
     }
 }
