@@ -2315,7 +2315,7 @@ public static class GoRunFunction
         return await TaskWrapper.Wait(() => gameInstance.CharacterStatus!.MapName == mapName, timeout);
     }
 
-    public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0, bool half = false)
+    public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0)
     {
         // check mp -- spell map
         var cost = GameConstants.MagicSpellMap[spellId];
@@ -2324,8 +2324,8 @@ public static class GoRunFunction
             return false;
         }
         // fs x 2
-        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 2000 : 1200;
-        fsBase = half ? fsBase / 2 : fsBase;
+        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 1800 : 1000;
+        // fsBase = half ? fsBase / 2 : fsBase;
         if (GameInstance.spellLastTime + fsBase > Environment.TickCount)
         {
             return false;
@@ -2412,19 +2412,14 @@ public static class GoRunFunction
         }
 
         var ESTIMATED_HEAL = GameInstance.CharacterStatus.Level * 2;
-        var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 20.0 : 1));
+        var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 15.0 : 1));
 
         var people = allMonsInClients.Where(o =>
-            // not in cd
             !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
-            // 活着
             o.CurrentHP > 0 &&
-            !o.isDead
-            // 低血量
-            && ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.65))
-            // 距离足够
-            && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11
-            && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11)
+            !o.isDead &&
+            ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.65)) &&
+            (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11)
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
         .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
@@ -2437,37 +2432,37 @@ public static class GoRunFunction
             // 道士回调
             // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1100);
             // 延迟回调
-            Task.Delay(10_000).ContinueWith(t =>
-            {
-                var people = allMonsInClients.Where(o =>
-                // not in cd
-                !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
-                // 活着
-                o.CurrentHP > 0 &&
-                !o.isDead
-                // 低血量
-                && ((o.CurrentHP < o.MaxHP * 0.7) || o.CurrentHP < 10)
-                // 距离足够
-                && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
-                && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
-                )
-                // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
-                .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
-                .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.7))
-                .FirstOrDefault();
-                // 再次检查
-                if (people == null)
-                {
-                    CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1200);
-                }
-            });
+            // Task.Delay(10_000).ContinueWith(t =>
+            // {
+            //     var people = allMonsInClients.Where(o =>
+            //     // not in cd
+            //     !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
+            //     // 活着
+            //     o.CurrentHP > 0 &&
+            //     !o.isDead
+            //     // 低血量
+            //     && ((o.CurrentHP < o.MaxHP * 0.7) || o.CurrentHP < 10)
+            //     // 距离足够
+            //     && (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 12
+            //     && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 12)
+            //     )
+            //     // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
+            //     .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
+            //     .ThenBy(o => Math.Abs(o.CurrentHP - o.MaxHP * 0.7))
+            //     .FirstOrDefault();
+            //     // 再次检查
+            //     if (people == null)
+            //     {
+            //         CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 1200);
+            //     }
+            // });
             return;
         }
         // GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
         GameInstance.healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
-        CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
+        // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
     public static void TryHiddenPeople(MirGameInstanceModel GameInstance)
     {
@@ -2595,28 +2590,10 @@ public static class GoRunFunction
             return;
         }
         // 否则说明丢了, 需要召唤
-
-        // 查看有没沪深不然浪费魔法
-        ItemModel? item = null;
-        var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-        if (useItem == null)
+        var isWearSS = await detectAndWearHushen(GameInstance);
+        if (!isWearSS)
         {
-            item = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-            if (item == null)
-            {
-                return;
-            }
-        }
-        // 检查完
-        // 先自动换符咒
-        if (useItem == null)
-        {
-            // 会自动
-            var isCS = GameState.gamePath == "Client.exe";
-            nint toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
-            nint bagGridIndex = item!.Index;
-            await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
-            await Task.Delay(300);
+            return;
         }
         sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(300);
@@ -2687,20 +2664,10 @@ public static class GoRunFunction
         }
 
         // 查看有没沪深不然浪费魔法
-        ItemModel? item = null;
-        var isCS = GameState.gamePath == "Client.exe";
-        int toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
-        var useItem = GameInstance.CharacterStatus.useItems[toIndex];
-        bool isWearFuShen = !useItem.IsEmpty && useItem.stdMode == 25;
-        if (!isWearFuShen)
+        var isWearSS = await detectAndWearHushen(GameInstance);
+        if (!isWearSS)
         {
-            item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
-            if (item == null)
-            {
-                return;
-            }
-            nint bagGridIndex = item!.Index;
-            await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
+            return;
         }
 
         // 其他actor都接近, 就一起放
@@ -2865,6 +2832,30 @@ public static class GoRunFunction
         }
     }
 
+    public static async Task<bool> detectAndWearHushen(MirGameInstanceModel GameInstance)
+    {
+        var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
+        var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
+        // 先自动换符咒
+        if (useItem != null)
+        {
+            return true;
+        }
+
+        var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
+        if (itemF == null)
+        {
+            return false;
+        }
+        // 会自动
+        var isCS = GameState.gamePath == "Client.exe";
+        nint toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
+        nint bagGridIndex = itemF.Index;
+        await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
+        var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
+        return useItem2 != null;
+    }
+
 
     public static async Task upgradeBBSkill(MirGameInstanceModel GameInstance)
     {
@@ -2886,13 +2877,14 @@ public static class GoRunFunction
             {
                 break;
             }
+            var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
             // 专用商人 更方便, 也就是土的药和F
-            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
+            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName).FirstOrDefault();
             if (item == null)
             {
                 // 购买
                 var count = 3;
-                GameInstance.GameInfo($"购买护身符{count}个");
+                GameInstance.GameInfo($"购买{fuName}{count}个");
                 var (npcMap, npcName, x, y) = NpcFunction.PickMiscNpcByMap(GameInstance, "SKILLBB");
                 bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
                 if (pathFound)
@@ -2900,7 +2892,7 @@ public static class GoRunFunction
                     await NpcFunction.ClickNPC(GameInstance!, npcName);
                     await NpcFunction.Talk2(GameInstance!, "@buy");
 
-                    nint[] data = MemoryUtils.PackStringsToData("护身符");
+                    nint[] data = MemoryUtils.PackStringsToData(fuName);
                     SendMirCall.Send(GameInstance, 3005, data);
                     await Task.Delay(1000);
                     // 判断是否存在
@@ -2963,29 +2955,11 @@ public static class GoRunFunction
                 }
                 await Task.Delay(300);
             }
-
-            var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-            // 先自动换符咒
-            if (useItem == null)
+            var isWearSS = await detectAndWearHushen(GameInstance);
+            if (!isWearSS)
             {
-                var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == "护身符").FirstOrDefault();
-                if (itemF == null)
-                {
-                    continue;
-                }
-                // 会自动
-                var isCS = GameState.gamePath == "Client.exe";
-                nint toIndex = (int)(isCS ? EquipPosition.BUJUK : EquipPosition.ArmRingLeft); // 必须左
-
-                nint bagGridIndex = itemF.Index;
-                await NpcFunction.takeOn(GameInstance, bagGridIndex + 6, toIndex);
-                var useItem2 = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").FirstOrDefault();
-                if (useItem2 == null)
-                {
-                    await Task.Delay(1000);
-                    continue;
-                }
-
+                await Task.Delay(1000);
+                continue;
             }
             sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
             await Task.Delay(1000);

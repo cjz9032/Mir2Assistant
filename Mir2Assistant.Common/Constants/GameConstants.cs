@@ -381,6 +381,12 @@ public static class GameConstants
             "万年雪霜"
       };
 
+        public static string getFushen(int level)
+        {
+            return level < 29 ? "护身符" : "护身符(大)";
+        }
+
+
         private static readonly List<string> binItems =
      new List<string>
      {
@@ -481,8 +487,8 @@ public static class GameConstants
             }
             if (role == RoleType.taoist)
             {
-                temp.Remove("护身符");
-                // temp.Remove("护身符(大)"); // todo 后期
+                var fuName = getFushen(level);
+                temp.Remove(fuName);
                 var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
                 var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
                 if (!canDef)

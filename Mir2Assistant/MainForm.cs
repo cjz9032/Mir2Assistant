@@ -1449,9 +1449,10 @@ namespace Mir2Assistant
                                         var isLowFushen = false;
                                         if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
                                         {
+                                            var fuName = GameConstants.Items.getFushen(instanceValue.CharacterStatus.Level);
                                             // 总计只剩50 跑路足够了
-                                            var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
-                                            var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+                                            var usedFushen = instanceValue.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
+                                            var items = instanceValue.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
                                             var allFushen = usedFushen.Concat(items).Sum(o => o.Duration);
                                             if (allFushen < 50)
                                             {
@@ -1959,11 +1960,40 @@ namespace Mir2Assistant
 
                         if (instance.CharacterStatus.CurrentHP > 0)
                         {
+                            var totalStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                            var drugStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                            
                             GoRunFunction.TryEatDrug(instance);
+                            drugStopwatch.Stop();
+                            
+                            var healStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                            var hiddenStopwatch = System.Diagnostics.Stopwatch.StartNew();
+                            
                             if (!BBTask)
                             {
                                 GoRunFunction.TryHealPeople(instance);
+                                healStopwatch.Stop();
+                                
+                                hiddenStopwatch.Restart();
                                 GoRunFunction.TryHiddenPeople(instance);
+                                hiddenStopwatch.Stop();
+                            }
+                            else
+                            {
+                                healStopwatch.Stop();
+                                hiddenStopwatch.Stop();
+                            }
+                            
+                            totalStopwatch.Stop();
+                            
+                            if (totalStopwatch.ElapsedMilliseconds > 10)
+                            {
+                                Log.Debug("角色 {Account} 操作耗时 - 总计: {Total}ms, 吃药: {Drug}ms, 治疗: {Heal}ms, 隐身: {Hidden}ms", 
+                                    instance.AccountInfo?.Account, 
+                                    totalStopwatch.ElapsedMilliseconds,
+                                    drugStopwatch.ElapsedMilliseconds,
+                                    healStopwatch.ElapsedMilliseconds,
+                                    hiddenStopwatch.ElapsedMilliseconds);
                             }
                         }
                     }

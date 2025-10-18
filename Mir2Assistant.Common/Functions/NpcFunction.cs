@@ -677,11 +677,11 @@ namespace Mir2Assistant.Common.Functions
             {
                 return;
             }
+            var fuName = GameConstants.Items.getFushen(gameInstance.CharacterStatus.Level);
             var nearHome = PickNearHomeMap(gameInstance);
             var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
-            // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
-            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
+            var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).ToList();
             var allFushen = items.Sum(o => o.Duration);
             var BUY_COUNT = 5;
             // 继续用了, 不然太远了
@@ -689,7 +689,7 @@ namespace Mir2Assistant.Common.Functions
             {
                 return;
             }
-            gameInstance.GameInfo($"修理{npcName}的护身符");
+            gameInstance.GameInfo($"修理{npcName}的{fuName}");
 
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
             if (pathFound)
@@ -704,10 +704,8 @@ namespace Mir2Assistant.Common.Functions
 
                 await Talk2(gameInstance!, "@buy");
                 await Task.Delay(500);
-                // await BuyImmediate(gameInstance!, "护身符", BUY_COUNT - items.Count);
 
-
-                nint[] data = MemoryUtils.PackStringsToData("护身符");
+                nint[] data = MemoryUtils.PackStringsToData(fuName);
                 SendMirCall.Send(gameInstance, 3005, data);
                 await Task.Delay(1000);
                 // 判断是否存在
@@ -740,7 +738,6 @@ namespace Mir2Assistant.Common.Functions
             var nearHome = PickNearHomeMap(gameInstance);
             var (npcMap, npcName, x, y) = PickMiscNpcByMap(gameInstance, nearHome);
             // 身上也可能有 但是拆装麻烦 直接忽略 放着用完就好了
-            // var usedItems = gameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == "护身符").ToList();
             var items = gameInstance.Items.Concat(gameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name == "地牢逃脱卷").ToList();
             var NEED = 3;
             if (items.Count >= NEED)
@@ -1528,7 +1525,7 @@ namespace Mir2Assistant.Common.Functions
             );
 
             SendMirCall.Send(gameInstance!, 3023, data);
-            await Task.Delay(800);
+            await Task.Delay(1000);
         }
 
 
