@@ -1409,50 +1409,50 @@ public static class GoRunFunction
                     // 使用通用躲避方法
                     var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
                     await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
-                    // 如果是法师 可以抽陀螺
-                    var hasTempedMon = false;
 
 
-                    if (bossLike == null && canTemp && !isFullBB)
+                    var hadQun = false;
+                    if (canBaolie)
                     {
-                        var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
-                        // 寻找陀螺
-                        var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                        && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
-                        && temps.Contains(o.Name)
-                        && ((o.CurrentHP == 0 && o.MaxHP == 0) || o.CurrentHP == o.MaxHP
-                        || (
-                          // 或者是旁边没人砍 也允许
-                          !teamsXY.Any(((int x, int y) t) => Math.Min(Math.Abs(t.x - o.X), Math.Abs(t.y - o.Y)) == 1)
-                        ))
-                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
-                        .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
-                        .FirstOrDefault();
-                        if (mytop != null)
+                        // TODO 注意弓箭
+                        // 优先群 有boss, 所有怪
+                        var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                        && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
+
+                        var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 5);
+                        if (qunanis != (-1, -1))
                         {
-                            hasTempedMon = true;
-                            sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
+                            sendSpell(instanceValue!, GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
+                            hadQun = true;
                         }
                     }
-                    if (!hasTempedMon)
-                    // 搞
+                    if (!hadQun)
                     {
-                        var hadQun = false;
-                        if (canBaolie)
+                        // 如果是法师 可以抽陀螺
+                        var hasTempedMon = false;
+                        if (bossLike == null && canTemp && !isFullBB)
                         {
-                            // TODO 注意弓箭
-                            // 优先群 有boss, 所有怪
-                            var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                            && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
-
-                            var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 5);
-                            if (qunanis != (-1, -1))
+                            var teamsXY = instanceValue.Monsters.Where(t => t.Value.isTeams).Select(t => (t.Value.X, t.Value.Y)).ToList();
+                            // 寻找陀螺
+                            var mytop = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                            && GameConstants.TempMonsterLevels.GetValueOrDefault(o.Name, 99) <= (CharacterStatus.Level + 2)
+                            && temps.Contains(o.Name)
+                            && ((o.CurrentHP == 0 && o.MaxHP == 0) || o.CurrentHP == o.MaxHP
+                            || (
+                              // 或者是旁边没人砍 也允许
+                              !teamsXY.Any(((int x, int y) t) => Math.Min(Math.Abs(t.x - o.X), Math.Abs(t.y - o.Y)) == 1)
+                            ))
+                            && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
+                            .OrderBy(o => Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)))
+                            .FirstOrDefault();
+                            if (mytop != null)
                             {
-                                sendSpell(instanceValue!, GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
-                                hadQun = true;
+                                hasTempedMon = true;
+                                sendSpell(instanceValue!, GameConstants.Skills.TemptationSpellId, mytop.X, mytop.Y, mytop.Id);
                             }
                         }
-                        if (!hadQun)
+                        if (!hasTempedMon)
+                        // 搞
                         {
                             // var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40); // djs 会缓慢打 算了
                             // 否则好像不打也行, 有群用群无CD, 没群有BOSS 仍然无CD, 否则好像没什么好搞的, 单体没什么意义, 除了低等级
@@ -1483,7 +1483,6 @@ public static class GoRunFunction
                             }
                         }
                     }
-
                     continue;
                 }
                 // 保护消费者
@@ -2402,7 +2401,7 @@ public static class GoRunFunction
             !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
             o.CurrentHP > 0 &&
             !o.isDead &&
-            ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.65)) &&
+            ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.7)) &&
             (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11)
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
