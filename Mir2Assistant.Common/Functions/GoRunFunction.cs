@@ -3039,6 +3039,7 @@ public static class GoRunFunction
         {
             // 先初始化
             sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
+            await Task.Delay(800);
             var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
             if(lastChatState == null)
             {
@@ -3048,7 +3049,6 @@ public static class GoRunFunction
             {
                 instanceValue.CharacterStatus.wideHitEnabled = lastChatState.Contains("开");
             }
-            await Task.Delay(1000);
         }
         var turn = instanceValue.CharacterStatus.turn;
         // 查看朝向的怪, 九宫格怪物, 先根据turn得到坐标
@@ -3060,8 +3060,16 @@ public static class GoRunFunction
         if (instanceValue.CharacterStatus.wideHitEnabled != toWideSkillEnabled)
         {
             sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
-            await Task.Delay(300);
-            instanceValue.CharacterStatus.wideHitEnabled = toWideSkillEnabled;
+            await Task.Delay(500);
+            var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
+            if(lastChatState == null)
+            {
+                instanceValue.CharacterStatus.wideHitEnabled = null;
+            }
+            else
+            {
+                instanceValue.CharacterStatus.wideHitEnabled = lastChatState.Contains("开");
+            }
         }
     }
 
