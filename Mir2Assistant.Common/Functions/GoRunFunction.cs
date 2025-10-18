@@ -364,6 +364,12 @@ public static class GoRunFunction
         {
             return -1; // 身边怪物数量未超过阈值，不需要躲避
         }
+        if (CheckIfSurrounded(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y,
+                 instanceValue.MonstersByPosition
+         ))
+        {
+            return -2; // 无法躲避
+        }
 
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
 
@@ -1422,7 +1428,7 @@ public static class GoRunFunction
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var baolieNum = instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 6 : 4;
+                        var baolieNum = instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 15 ? 5 : 4;
                         // 先4爆裂 爆率很高
                         var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), 4);
                         if (qunanis != (-1, -1))
@@ -2460,7 +2466,7 @@ public static class GoRunFunction
         }
         // 目前有个bug 坐标不对 , 所以先用自己的, 这样只有自己出错, 但是低血可以防止问题
         // 待选组人
-        var allPeople = GameState.GameInstances.Select(t=>t.CharacterStatus).Where(t=>!t.isDead && !t.isHidden &&
+        var allPeople = GameState.GameInstances.Select(t => t.CharacterStatus).Where(t => !t.isDead && !t.isHidden &&
                 Math.Abs(GameInstance.CharacterStatus.X - t.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - t.Y) < 11
         );
         CharacterStatusModel? lastFinded;
@@ -3041,7 +3047,7 @@ public static class GoRunFunction
             sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
             await Task.Delay(800);
             var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
-            if(lastChatState == null)
+            if (lastChatState == null)
             {
                 instanceValue.CharacterStatus.wideHitEnabled = null;
             }
@@ -3062,7 +3068,7 @@ public static class GoRunFunction
             sendSpell(instanceValue!, GameConstants.Skills.wideHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
             await Task.Delay(500);
             var lastChatState = instanceValue.chats.FindLast(o => o.Contains("半月剑法"));
-            if(lastChatState == null)
+            if (lastChatState == null)
             {
                 instanceValue.CharacterStatus.wideHitEnabled = null;
             }

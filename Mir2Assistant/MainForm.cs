@@ -677,7 +677,7 @@ namespace Mir2Assistant
                 }
                 if (isMageNeed)
                 {
-                    buyC = (int)(GameConstants.Items.mageBuyCount * 0.5);
+                    buyC = GameConstants.Items.mageBuyCount;
                 }
 
                 if (exitsQuan < buyC)
