@@ -1177,6 +1177,11 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("道士头盔");
                         }
+                        if (level >= 26)
+                        {
+                            itemNames.Add("骷髅头盔");
+                            itemNames.Add("记忆头盔");
+                        }
                     }
                     else
                     {
