@@ -2405,8 +2405,8 @@ public static class GoRunFunction
             !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
             o.CurrentHP > 0 &&
             !o.isDead &&
-            ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * 0.7)) &&
-            (Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11)
+            ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * GameConstants.Items.commonHealRate)) &&
+            Math.Abs(GameInstance.CharacterStatus.X - o.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - o.Y) < 11
         )
         // 按优先级排序, 人物总是比宝宝优先, 绝对值低血量优先
         .OrderBy(o => o.TypeStr == "玩家" ? 0 : 1)
@@ -2745,8 +2745,8 @@ public static class GoRunFunction
         // GameInstance.GameDebug("检查是否需要吃药，当前HP: {HP}/{MaxHP}, MP: {MP}/{MaxMP}", hp, maxHp, mp, maxMp);
         // todo 解包再吃
         //  for low hp
-        var hpRate = 0.6;
-        var lowHpRate = 0.3;
+        var hpRate = GameConstants.Items.hpProRate;
+        var lowHpRate = GameConstants.Items.hpLowRate;
         if (GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * hpRate) // 0.5避免浪费治疗
         {
             var veryLow = GameInstance.CharacterStatus.CurrentHP < GameInstance.CharacterStatus.MaxHP * lowHpRate;
@@ -2775,9 +2775,9 @@ public static class GoRunFunction
 
         // for low mp
         var isNotLowBlade = !(GameInstance.AccountInfo.role == RoleType.blade && GameInstance.CharacterStatus.Level < 28);
-        var magePreRate = GameInstance.AccountInfo.role == RoleType.mage ? 0.7 : 0.4;
-        var lowMpRate = magePreRate * 0.5;
-        if (isNotLowBlade && ((GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * magePreRate) || GameInstance.CharacterStatus.CurrentMP < 10))
+        var magePreRate = GameConstants.Items.mpProRate(GameInstance);
+        var lowMpRate = GameConstants.Items.mpLowRate(GameInstance);
+        if (isNotLowBlade && (GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * magePreRate))
         {
             var veryLow = GameInstance.CharacterStatus.CurrentMP < GameInstance.CharacterStatus.MaxMP * lowMpRate;
             int resIdx = -1;

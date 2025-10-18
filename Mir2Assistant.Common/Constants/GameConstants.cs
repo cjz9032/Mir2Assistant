@@ -127,6 +127,21 @@ public static class GameConstants
 
     public static class Items
     {
+        public static readonly double commonHealRate = 0.7;
+
+        public static readonly double hpProRate = 0.6;
+        // func
+        public static double mpProRate(MirGameInstanceModel instanceValue)
+        {
+            return instanceValue.CharacterStatus.MaxMP > 400 ? 0.6 : 0.4;
+        }
+        public static readonly double hpLowRate = 0.3;
+
+        public static double mpLowRate(MirGameInstanceModel instanceValue)
+        {
+            return instanceValue.CharacterStatus.MaxMP > 400 ? 0.8 : 0.6;
+        }
+
         public static readonly string[] weaponList = new string[] {
             "鹤嘴锄"   ,
             "裁决之杖"  ,
