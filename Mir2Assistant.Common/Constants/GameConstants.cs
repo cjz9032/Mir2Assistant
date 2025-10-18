@@ -185,14 +185,16 @@ public static class GameConstants
         {
             if(role == RoleType.mage) return 0;
             return level >= 22 ? (
-                role == RoleType.taoist ? 0 : 1
+                // todo
+                role == RoleType.taoist ? 1 : 1
             ) : 2;
         }
         public static int getKeepClothCount(int level, RoleType role)
         {
             if(role == RoleType.mage) return 0;
             return level >= 22 ? (
-                role == RoleType.taoist ? 0 : 1
+                // todo
+                role == RoleType.taoist ? 1 : 1
             ) : 2;
         }
         public static readonly List<string> MagePotions =
