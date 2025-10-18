@@ -91,7 +91,7 @@ public static class MonsterFunction
             monster.MaxMP = memoryUtils.ReadToShort(monsterAddr + GameState.MirConfig["怪物MMP偏移"]);
 
             monster.Level = memoryUtils.ReadToInt8(monsterAddr + GameState.MirConfig["怪物LV偏移"]);
-            monster.state = memoryUtils.ReadToInt(monsterAddr + GameState.MirConfig["MyState偏移"]);
+            // monster.state = memoryUtils.ReadToInt(monsterAddr + GameState.MirConfig["MonsState偏移"]);
 
             monster.isTeams = teamNames.Any(n => monster.Name.Contains(n));
             monster.isTeamMem = monster.isTeams && monster.TypeStr == "玩家";

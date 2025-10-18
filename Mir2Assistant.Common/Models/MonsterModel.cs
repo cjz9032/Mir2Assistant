@@ -48,8 +48,8 @@ namespace Mir2Assistant.Common.Models
         public int MaxMP { get; set; }
         public byte Level { get; set; }
         public string Name { get; set; } = "";
-        public int state = 0;
-        public bool isHidden => state == 0x00800000;
+        // public int state = 0;
+        // public bool isHidden => state == 0x00800000;
         /// <summary>
         /// 行会
         /// </summary>

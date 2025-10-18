@@ -1741,10 +1741,6 @@ namespace Mir2Assistant
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
                             }
-                            else if (instance.AccountInfo.role == RoleType.mage && instance.CharacterStatus.Level > 20)
-                            {
-                                CharacterStatusFunction.AdjustAttackSpeed(instance, 2000);
-                            }
                             else if (instance.CharacterStatus.Level < 7)
                             {
                                 if (GameState.gamePath == "Client.exe")
@@ -1755,6 +1751,10 @@ namespace Mir2Assistant
                                 {
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
+                            }
+                            else
+                            {
+                                CharacterStatusFunction.AdjustAttackSpeed(instance, 2000);
                             }
 
                             if (CharacterStatus.X > 0)

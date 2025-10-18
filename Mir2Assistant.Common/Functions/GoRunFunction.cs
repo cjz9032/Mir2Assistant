@@ -2459,17 +2459,16 @@ public static class GoRunFunction
         }
         // 目前有个bug 坐标不对 , 所以先用自己的, 这样只有自己出错, 但是低血可以防止问题
         // 待选组人
-        var allPeople = GameInstance.Monsters.Where(t =>
-                t.Value.isTeamMem && !t.Value.isDead && !t.Value.isHidden &&
-                Math.Abs(GameInstance.CharacterStatus.X - t.Value.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - t.Value.Y) < 11
+        var allPeople = GameState.GameInstances.Select(t=>t.CharacterStatus).Where(t=>!t.isDead && !t.isHidden &&
+                Math.Abs(GameInstance.CharacterStatus.X - t.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - t.Y) < 11
         );
-        MonsterModel? lastFinded;
+        CharacterStatusModel? lastFinded;
         // 血太少, 周边有怪, 虽然没被block 但是优先, 没怪的话 先不隐, 怕有别的case
-        var lowFind = allPeople.Where(t => t.Value.CurrentHP < t.Value.MaxHP * 0.4 &&
-                    findMonsSurrounded(t.Value.X, t.Value.Y, GameInstance.MonstersByPosition)
+        var lowFind = allPeople.Where(t => t.CurrentHP < t.MaxHP * 0.4 &&
+                    findMonsSurrounded(t.X, t.Y, GameInstance.MonstersByPosition)
                         .Where(t => t.stdAliveMon)
                         .Count() > 3
-              ).FirstOrDefault().Value;
+              ).FirstOrDefault();
 
         if (lowFind != null)
         {
@@ -2478,16 +2477,16 @@ public static class GoRunFunction
         else
         {
             // 纯包围
-            lastFinded = allPeople.Where(t => t.Value.CurrentHP < t.Value.MaxHP * 0.6
+            lastFinded = allPeople.Where(t => t.CurrentHP < t.MaxHP * 0.6
                 // t.Value.CurrentHP < 30 绝对值不管
                 &&
-                CheckIfSurrounded(GameInstance.CharacterStatus.MapId, t.Value.X, t.Value.Y, GameInstance.MonstersByPosition)
-            ).FirstOrDefault().Value;
+                CheckIfSurrounded(GameInstance.CharacterStatus.MapId, t.X, t.Y, GameInstance.MonstersByPosition)
+            ).FirstOrDefault();
         }
 
         if (lastFinded != null)
         {
-            sendSpell(GameInstance, lastFinded.isSelf ? GameConstants.Skills.smHide : GameConstants.Skills.bigHide, lastFinded.X, lastFinded.Y, lastFinded.Id);
+            sendSpell(GameInstance, lastFinded.Name == GameInstance.AccountInfo.CharacterName ? GameConstants.Skills.smHide : GameConstants.Skills.bigHide, lastFinded.X, lastFinded.Y, 0);
         }
 
         // 待选组怪? 先不管
@@ -2600,32 +2599,8 @@ public static class GoRunFunction
             return;
         }
 
-        var instances = GameState.GameInstances;
-
-        // 查看所有人的属性, 只要不符合就可以开始发
-
-        // instances.Any()
-
-        var maxDef = GameInstance.CharacterStatus.MaxDef;
-        var maxMageDef = GameInstance.CharacterStatus.MaxMageDef;
-
-        // GameInstance.CharacterStatus.useItems
-        int totalMaxDef = 0, totalMaxMageDef = 0;
-
-        foreach (var item2 in GameInstance.CharacterStatus.useItems)
-        {
-            if (item2.IsEmpty) continue;
-
-            totalMaxDef += item2.MaxDef;
-            totalMaxMageDef += item2.MaxMageDef;
-        }
-
-
-        var bodyMaxDef = GameInstance.AccountInfo.role == RoleType.blade ? GameConstants.GetToastBodyMageDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
-        var bodyMaxMageDef = GameInstance.AccountInfo.role == RoleType.taoist ? GameConstants.GetToastBodyMageDefByLevel(GameInstance.CharacterStatus.Level).max : 0;
-
-        canDef = canDef && (totalMaxDef + bodyMaxDef == maxDef);
-        canMageDef = canMageDef && (totalMaxMageDef + bodyMaxMageDef == maxMageDef);
+        canDef = canDef && !GameInstance.CharacterStatus.isDefUp;
+        canMageDef = canMageDef && !GameInstance.CharacterStatus.isMagDefUp;
         if (!canDef && !canMageDef)
         {
             return;

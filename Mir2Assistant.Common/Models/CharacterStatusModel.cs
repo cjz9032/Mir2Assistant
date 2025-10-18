@@ -26,7 +26,10 @@ public class CharacterStatusModel
 
     public bool isEnhanceDead => isDead || (CurrentHP <= 0 && X <= 0);
     public int state = 0;
-    public bool isHidden => state == 0x00800000;
+    // (Myself.State and $00800000 > 0) 
+    public bool isHidden => (state & 0x00800000) > 0;
+    public bool isDefUp => (state & 0x00400000) > 0;
+    public bool isMagDefUp => (state & 0x00200000) > 0;
 //    POISON_DECHEALTH     = 0;   //$80000000 绿毒
 //    POISON_DAMAGEARMOR   = 1;   //$40000000 红毒
 //    POISON_ICE           = 2;   //$20000000
