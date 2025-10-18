@@ -112,7 +112,7 @@ public static class GoRunFunction
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
         var superCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.SuperPotions.Contains(o.Name));
-        var pickMageRate = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7 ? 1 :
+        var pickMageRate = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7 ? 1.2 :
             isMainFull ? (
                 isBladeNeed ? 0.2 : (
                     isMageNeed ? 1 : 0
