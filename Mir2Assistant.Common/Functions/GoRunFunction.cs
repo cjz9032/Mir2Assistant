@@ -370,6 +370,11 @@ public static class GoRunFunction
         {
             return -2; // 无法躲避
         }
+        // 检查当前位置是否已经是靠墙点，如果是则不需要逃跑
+        if (WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y))
+        {
+            return -3; // 无需躲避, 因为靠墙, 至少3
+        }
 
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
 

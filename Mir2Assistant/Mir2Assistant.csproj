@@ -55,6 +55,9 @@
 		<None Update="config\server-define\unity-config\mapc-out\*">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+		<None Update="config\server-define\unity-config\wallpoints-out\*">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="Properties\Settings.settings">
 		  <Generator>SettingsSingleFileGenerator</Generator>
 		  <LastGenOutput>Settings.Designer.cs</LastGenOutput>
