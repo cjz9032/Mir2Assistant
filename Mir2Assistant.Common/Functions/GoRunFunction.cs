@@ -250,6 +250,14 @@ public static class GoRunFunction
                     instanceValue.isPickingWay = false;
                     return false;
                 }
+                // 查看实时信息是否存在, 否则就放弃
+                var drops2 = PreparePickupInfo(instanceValue);
+                if (drops2?.Any(o => o.Value.Id == drop.Value.Id) != true)
+                {
+                    instanceValue.GameDebug("放弃拾取物品，位置: ({X}, {Y}) -- 已丢失", drop.Value.X, drop.Value.Y);
+                    instanceValue.isPickingWay = false;
+                    return false;
+                }
 
                 instanceValue.GameDebug("准备拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
                 bool pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, drop.Value.IsGodly ? 15 : 10, 30, 0, callback);
@@ -261,8 +269,9 @@ public static class GoRunFunction
                     triedGoPick++;
                     pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30, 0, callback);
                 }
+   
 
-                var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
+                // var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
                 // 极品满就扔东西 -- todo 还有 自定义极品
                 // if (drop.Value.IsGodly && miscs2.Count() == 40)
                 // {
