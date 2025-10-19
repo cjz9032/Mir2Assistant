@@ -814,6 +814,32 @@ namespace Mir2Assistant
                 await NpcFunction.ClickNPC(instanceValue!, "屠夫");
             }
         }
+
+        private static async Task waitForResumeHp(MirGameInstanceModel instanceValue)
+        {
+            var CharacterStatus = instanceValue.CharacterStatus!;
+            for (int i = 0; i < 20; i++)
+            {
+                if (CharacterStatus.isEnhanceDead)
+                {
+                    break;
+                }
+                // 有怪就跑
+                if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
+                {
+                    break;
+                }
+                if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
+                {
+                    instanceValue.GameInfo("等待回血 common");
+                    await Task.Delay(5_000);
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
         private async void processTasks()
         {
             var instances = GameState.GameInstances;
@@ -866,47 +892,13 @@ namespace Mir2Assistant
                                 await Task.Delay(1000);
                             }
                         }
-                        // 无怪就等待回血
-                        for (int i = 0; i < 20; i++)
-                        {
-                            // 有怪就跑
-                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
-                            {
-                                break;
-                            }
-                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
-                            {
-                                instanceValue.GameInfo("等待回血 000");
-                                await Task.Delay(5_000);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
+                        await waitForResumeHp(instanceValue);
                         if (isMainInHome || basicInHome)
                         {
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
-                        // 无怪就等待回血
-                        for (int i = 0; i < 20; i++)
-                        {
-                            // 有怪就跑
-                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
-                            {
-                                break;
-                            }
-                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
-                            {
-                                instanceValue.GameInfo("等待回血 0");
-                                await Task.Delay(5_000);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
+                        await waitForResumeHp(instanceValue);
 
 
                         // 新手任务
@@ -1218,10 +1210,10 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                else if (CharacterStatus.Level >= 29) // todo toaist
-                                {
-                                    hangMapId = "D605"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
-                                }
+                                // else if (CharacterStatus.Level >= 29) // todo toaist
+                                // {
+                                //     hangMapId = "D605"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
+                                // }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {
                                     hangMapId = "E605"; // D601 D023 E605 连接
@@ -1561,24 +1553,7 @@ namespace Mir2Assistant
                                         await GoRunFunction.CallbackAndBeStatusSlaveIfHas(instanceValue, false);
                                     }
 
-                                    for (int i = 0; i < 20; i++)
-                                    {
-                                        // 有怪就跑
-                                        if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
-                                        {
-                                            break;
-                                        }
-                                        if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
-                                        {
-                                            instanceValue.GameInfo("等待回血");
-                                            await Task.Delay(5_000);
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-
+                                    await waitForResumeHp(instanceValue);
 
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
                                     instanceValue.isHomePreparing = false;
@@ -1587,24 +1562,7 @@ namespace Mir2Assistant
                                     if (CharacterStatus.MapId == "4")
                                     {
                                         await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
-                                        for (int i = 0; i < 20; i++)
-                                        {
-                                            // 有怪就跑
-                                            if (instanceValue.Monsters.Values.FirstOrDefault(o => o.stdAliveMon && Math.Max(o.X - CharacterStatus.X, o.Y - CharacterStatus.Y) < 6) != null)
-                                            {
-                                                break;
-                                            }
-                                            if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.9)
-                                            {
-                                                instanceValue.GameInfo("等待回血");
-                                                await Task.Delay(5_000);
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
-                                        }
-
+                                        await waitForResumeHp(instanceValue);
                                     }
 
                                     if (!instanceValue.AccountInfo.IsMainControl)
