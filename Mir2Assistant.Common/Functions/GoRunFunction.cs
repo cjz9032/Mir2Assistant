@@ -1680,13 +1680,13 @@ public static class GoRunFunction
                         }
                         else
                         {
-                            // 配合逃跑安全点, 怪多就不走
-                            if (!isPreferSafe)
+                            // 配合逃跑安全点, 只攻击一格怪, 这里只是为了同步信息
+                            if (!(isPreferSafe && Math.Max(Math.Abs(CharacterStatus.X - ani.X), Math.Abs(CharacterStatus.Y - ani.Y)) > 1))
                             {
-                                
                                 MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                             }
                         }
+                        // 在安全点自然不能跑了
                         if (!isPreferSafe && monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
                             // more intelligent pathfinding
