@@ -269,7 +269,7 @@ public static class GoRunFunction
                     triedGoPick++;
                     pathFound = await PerformPathfinding(cancellationToken, instanceValue, drop.Value.X, drop.Value.Y, "", 0, true, 1, 30, 0, callback);
                 }
-   
+
 
                 // var miscs2 = instanceValue.Items.Where(o => !o.IsEmpty);
                 // 极品满就扔东西 -- todo 还有 自定义极品
@@ -1424,10 +1424,15 @@ public static class GoRunFunction
                 var drawBBRemainHP = 25;
 
 
-
+                var isWallPointNormal = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
+                var isPreferSafeNormal = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPointNormal && !consume0;
 
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
+                (isPreferSafeNormal ?
+                 Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 2
+                 : true)
+                 &&
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 // 补刀用
@@ -2599,7 +2604,7 @@ public static class GoRunFunction
     }
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {
-        if(GameInstance.AccountInfo.role == RoleType.blade)
+        if (GameInstance.AccountInfo.role == RoleType.blade)
         {
             return;
         }
@@ -2627,7 +2632,7 @@ public static class GoRunFunction
 
     public static async Task BeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {
-        if(GameInstance.AccountInfo.role == RoleType.blade)
+        if (GameInstance.AccountInfo.role == RoleType.blade)
         {
             return;
         }
