@@ -2590,6 +2590,10 @@ public static class GoRunFunction
     }
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {
+        if(GameInstance.AccountInfo.role == RoleType.blade)
+        {
+            return;
+        }
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
         await Task.Delay(800);
@@ -2614,6 +2618,10 @@ public static class GoRunFunction
 
     public static async Task BeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {
+        if(GameInstance.AccountInfo.role == RoleType.blade)
+        {
+            return;
+        }
         CharacterStatusFunction.ClearChats(GameInstance);
         CharacterStatusFunction.AddChat(GameInstance, "@rest");
         await Task.Delay(1000);
