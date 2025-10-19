@@ -2578,7 +2578,7 @@ public static class GoRunFunction
         var lowFind = allPeople.Where(t => t.CurrentHP < t.MaxHP * GameConstants.Items.commonHideRate &&
                     findMonsSurrounded(t.X, t.Y, GameInstance.MonstersByPosition)
                         .Where(t => t.stdAliveMon)
-                        .Count() > 3
+                        .Count() > 2
               ).FirstOrDefault();
 
         if (lowFind != null)
