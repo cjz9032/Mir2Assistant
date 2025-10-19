@@ -1564,6 +1564,11 @@ namespace Mir2Assistant
                                         await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
                                         await waitForResumeHp(instanceValue);
                                     }
+                                    if (CharacterStatus.MapId == "3")
+                                    {
+                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0152", 10);
+                                        await waitForResumeHp(instanceValue);
+                                    }
 
                                     if (!instanceValue.AccountInfo.IsMainControl)
                                     {
