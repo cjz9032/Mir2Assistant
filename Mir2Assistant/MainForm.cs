@@ -1210,10 +1210,10 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "0";
                                 }
-                                // else if (CharacterStatus.Level >= 29) // todo toaist
-                                // {
-                                //     hangMapId = "D605"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
-                                // }
+                                else if (CharacterStatus.Level >= 29) // todo toaist
+                                {
+                                    hangMapId = "D613"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
+                                }
                                 else if (CharacterStatus.Level >= 27) // todo toaist
                                 {
                                     hangMapId = "E605"; // D601 D023 E605 连接
@@ -1454,13 +1454,16 @@ namespace Mir2Assistant
                                         var isFull = false;
                                         if (meFull && accountInfo.IsMainControl)
                                         {
-                                            // 查找其他成员除了法师
+                                            // 所有满宝, 并且药已经很少了
+                                            var YaoRatial = 0.2;
                                             var noFullOne = instances.Where(t => !t.AccountInfo.IsMainControl).
                                                 Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty).Count() < 44);
-                                            if (!noFullOne)
+                                            var YaoEnough = instances.Where(t => !t.AccountInfo.IsMainControl).
+                                                Any(o => o.Items.Concat(o.QuickItems).Where(o => !o.IsEmpty && o.stdMode == 0).Count() > 44 * YaoRatial);
+                                            if (!noFullOne && !YaoEnough)
                                             {
                                                 isFull = true;
-                                                instanceValue.GameInfo("满包 回家");
+                                                instanceValue.GameInfo("满包 回家 noFullOne || YaoEnough " + noFullOne + " || " + YaoEnough);
                                             }
                                         }
                                         if (lowMPMain)
@@ -1564,9 +1567,9 @@ namespace Mir2Assistant
                                         await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
                                         await waitForResumeHp(instanceValue);
                                     }
-                                    if (CharacterStatus.MapId == "3")
+                                    if (CharacterStatus.MapId == "3" && !instanceValue.AccountInfo.IsMainControl)
                                     {
-                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0152", 10);
+                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0156", 10);
                                         await waitForResumeHp(instanceValue);
                                     }
 

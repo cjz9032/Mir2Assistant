@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-
+const MIN_SAFE_PTS = 3;
 // 定义8个方向的偏移量 (x, y)
 const directions = [
     [-1, -1], [0, -1], [1, -1],  // 上排：左上、上、右上
@@ -39,7 +39,7 @@ function getWallCount(obstacles, width, height, x, y) {
 
 // 检查指定位置是否为靠墙点（8个方向中至少3个是障碍物）
 function isWallPoint(obstacles, width, height, x, y) {
-    return getWallCount(obstacles, width, height, x, y) >= 3;
+    return getWallCount(obstacles, width, height, x, y) >= MIN_SAFE_PTS;
 }
 
 // 生成靠墙点列表并按网格组织
@@ -63,7 +63,7 @@ function generateWallPointsWithGrid(obstacles, width, height) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const wallCount = getWallCount(obstacles, width, height, x, y);
-            if (wallCount >= 3) {
+            if (wallCount >= MIN_SAFE_PTS) {
                 const point = { x, y, wallCount };
                 wallPoints.push(point);
                 

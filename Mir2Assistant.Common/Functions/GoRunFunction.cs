@@ -127,11 +127,11 @@ public static class GoRunFunction
         // 法师不捡武器 最简单
         var weaponCount = miscs.Count(o => o.stdMode == 5 || o.stdMode == 6);
         var weacloRate = instanceValue.AccountInfo.role == RoleType.blade ? 10 : 8;
-        var maxWeapon = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate 
+        var maxWeapon = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate
         : GameConstants.Items.getKeepWeaponCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var clothCount = miscs.Count(o => o.stdMode == 10 || o.stdMode == 11);
-        var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate 
+        var maxCloth = (instanceValue.AccountInfo.role != RoleType.mage && CharacterStatus.Level > 20) ? GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role) * weacloRate
         : GameConstants.Items.getKeepClothCount(CharacterStatus.Level, instanceValue.AccountInfo.role);
 
         var isMage = instanceValue.AccountInfo.role == RoleType.mage;
@@ -341,7 +341,7 @@ public static class GoRunFunction
     /// </summary>
     /// <param name="instanceValue">游戏实例</param>
     /// <param name="centerPoint">中心点坐标</param>
-    /// <param name="dangerDistance">危险距离阈值，默认为2</param>
+    /// <param name="dangerDistance">危险距离阈值，默认为1</param>
     /// <param name="safeDistance">安全距离范围，默认为2-3格</param>
     /// <param name="searchRadius">搜索半径，默认为10</param>
     /// <param name="maxMonstersNearby">身边允许的最大怪物数量，超过此数量才躲避，默认为0（即有怪就躲）</param>
@@ -367,16 +367,10 @@ public static class GoRunFunction
         {
             return -1; // 身边怪物数量未超过阈值，不需要躲避
         }
-        if (CheckIfSurrounded(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y,
-                 instanceValue.MonstersByPosition
-         ))
-        {
-            return -2; // 无法躲避
-        }
         // 检查当前位置是否已经是靠墙点，如果是则不需要逃跑
         if (WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y))
         {
-            return -3; // 无需躲避, 因为靠墙, 至少3
+            return 3; // 无需躲避, 因为靠墙, 至少3
         }
 
         instanceValue.GameInfo($"身边有 {nearbyMonstersCount} 只怪物，超过阈值 {maxMonstersNearby}，开始躲避");
@@ -446,6 +440,59 @@ public static class GoRunFunction
         {
             instanceValue.GameWarning($"未找到合适的逃跑点 [计算耗时: {escapeStopwatch.ElapsedMilliseconds}ms]");
             return 0;
+        }
+    }
+
+    private static bool CheckNeedPerformEscapeWithSafePts(MirGameInstanceModel instanceValue)
+    {
+        var preferSafePtsMinMonCount = 10; // 先看看
+        var preferSafePtsAreaRadius = 7; // 先看看 人口密度 10/64 
+        var currentMonsCount = instanceValue.Monsters.Values.Count(o => o.stdAliveMon && Math.Abs(o.X - instanceValue.CharacterStatus.X) < preferSafePtsAreaRadius && Math.Abs(o.Y - instanceValue.CharacterStatus.Y) < preferSafePtsAreaRadius);
+        var isPreferSafe = currentMonsCount > preferSafePtsMinMonCount;
+        return isPreferSafe;
+    }
+
+    public static async Task<int> PerformEscapeWithSafePts(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
+    {
+        if (CheckIfSurrounded(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y,
+                instanceValue.MonstersByPosition
+        ))
+        {
+            return 2; // 无法躲避
+        }
+        var CharacterStatus = instanceValue.CharacterStatus!;
+        var mainChars = GameState.GameInstances[0]!.CharacterStatus!;
+        var isMain = instanceValue.AccountInfo!.IsMainControl;
+        var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
+        var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue);
+
+        // 只跟main搜, 没做main是否中心判断, 因为可能会堵住
+        var centerPoint = isMain ? (CharacterStatus.X, CharacterStatus.Y) : (mainChars.X, mainChars.Y);
+        if (isPreferSafe)
+        {
+            // 检查当前位置是否已经是靠墙点，如果是则不需要逃跑
+            if (WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y))
+            {
+                return 3; // 无需躲避, 因为靠墙, 至少3
+            }
+            var nearestWallPts = WallPointsUtils.FindAllWallPointsInRange(instanceValue.CharacterStatus.MapId, centerPoint.Item1, centerPoint.Item2, 8);
+            var firstPts = nearestWallPts.Where(o =>
+            MonsterFunction.GetMonstersByPosition(instanceValue.MonstersByPosition, o.x, o.y).Count == 0
+            ).FirstOrDefault();
+            if (firstPts != default)
+            {
+                MonsterFunction.SlayingMonsterCancel(instanceValue!);
+                var isSS = await PerformPathfinding(_cancellationToken, instanceValue, firstPts.x, firstPts.y, "", 0, true, 999, 30);
+                return isSS ? 0 : -1;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+        else
+        {
+            return await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: maxMonstersNearby, cancellationToken: _cancellationToken);
         }
     }
 
@@ -1399,9 +1446,13 @@ public static class GoRunFunction
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         // 还要把鹿羊鸡放最后
                         .FirstOrDefault();
+
+
+                    var isWallPoint = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
+                    var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPoint;
                     // 围绕跑一下
                     if (
-                        bossLike == null && isFullBB && new Random().Next(100) < 80)
+                        bossLike == null && isFullBB && new Random().Next(100) < 80 && !isPreferSafe)
                     {
                         var isSS = await PerformPathfinding(_cancellationToken, instanceValue!, px, py, mainInstance.CharacterStatus.MapId, 6, true, 0, 30, 0,
                         (instanceValue) =>
@@ -1426,10 +1477,7 @@ public static class GoRunFunction
                     var temps = GameConstants.GetAllowTemp(CharacterStatus.Level);
 
                     // 使用通用躲避方法
-                    var centerPoint = instanceValue.AccountInfo.IsMainControl ? (CharacterStatus.X, CharacterStatus.Y) : (px, py);
-                    await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: 0, cancellationToken: _cancellationToken);
-
-
+                    await PerformEscapeWithSafePts(instanceValue, _cancellationToken);
                     var hadQun = false;
                     if (canBaolie)
                     {
@@ -1579,13 +1627,13 @@ public static class GoRunFunction
                                 }
                             }
                         }
-                        // 检查是否被包围
-                        var centerPoint = (ani.X, ani.Y);
-                        // 非常特殊
-                        if (escapeTried < 2 && ani.Appr != 40)
+                        // 主动躲避安全点 怪多, 查看1号主动旁边安全点, 通常也有一格
+                        // 配合攻击点, 不出去
+                        // 所以要怪阈值, 出去和不出去 躲还是找点
+                        // 跟随的人 点不一样
+                        if (escapeTried < 2)
                         {
-                            var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
-                            var isEscaped = await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: maxMonstersNearby, cancellationToken: _cancellationToken);
+                            var isEscaped = await PerformEscapeWithSafePts(instanceValue, _cancellationToken);
                             if (isEscaped == 1)
                             {
                                 break;
@@ -1596,8 +1644,11 @@ public static class GoRunFunction
                                 await Task.Delay(200);
                                 continue;
                             }
+                            // todo  -1 需要 -2 -3?
                         }
                         monTried++;
+                        var isWallPoint = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
+                        var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPoint;
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
                         var diffX = Math.Abs(ani.X - CharacterStatus.X);
                         var diffY = Math.Abs(ani.Y - CharacterStatus.Y);
@@ -1610,10 +1661,16 @@ public static class GoRunFunction
                         }
                         else
                         {
-                            MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                            // 配合逃跑安全点, 怪多就不走
+                            if (!isPreferSafe)
+                            {
+                                
+                                MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
+                            }
                         }
-                        if (monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
+                        if (!isPreferSafe && monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
+                            // more intelligent pathfinding
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
                             await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30, 0, checker);
                             instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
@@ -2177,7 +2234,7 @@ public static class GoRunFunction
 
                             if (jumpPath.Count > 0)
                             {
-                                if(jumpSteps > 5)
+                                if (jumpSteps > 5)
                                 {
                                     GameInstance.GameDebug($"尝试跳过{jumpSteps}步，寻路到({jumpPos.x},{jumpPos.y})");
                                 }
@@ -2687,7 +2744,7 @@ public static class GoRunFunction
     }
     public static async Task tryMagePushBlock(MirGameInstanceModel GameInstance)
     {
-         if (GameInstance.AccountInfo.role != RoleType.mage)
+        if (GameInstance.AccountInfo.role != RoleType.mage)
         {
             return;
         }

@@ -263,7 +263,7 @@ namespace Mir2Assistant.Common.Utils
         /// <param name="maxRange">最大搜索范围</param>
         /// <param name="wallPointsDirectory">靠墙点文件目录</param>
         /// <returns>最优的靠墙点坐标，如果没找到返回(-1, -1)</returns>
-        public static (int x, int y, int wallCount) FindNearestWallPoint(string mapName, int currentX, int currentY, int maxRange = 20, string? wallPointsDirectory = null)
+        public static (int x, int y, int wallCount) FindNearestWallPoint(string mapName, int currentX, int currentY, int maxRange = 10, string? wallPointsDirectory = null)
         {
             var nearbyPoints = FindNearbyWallPoints(mapName, currentX, currentY, maxRange, wallPointsDirectory);
             
@@ -279,6 +279,26 @@ namespace Mir2Assistant.Common.Utils
             }
 
             return (-1, -1, 0);
+        }
+
+        /// <summary>
+        /// 查找指定范围内的所有靠墙点（按靠墙数降序，距离升序排序）
+        /// </summary>
+        /// <param name="mapName">地图名称</param>
+        /// <param name="currentX">当前X坐标</param>
+        /// <param name="currentY">当前Y坐标</param>
+        /// <param name="maxRange">最大搜索范围</param>
+        /// <param name="wallPointsDirectory">靠墙点文件目录</param>
+        /// <returns>范围内所有靠墙点列表，按靠墙数降序、距离升序排序</returns>
+        public static List<(int x, int y, double distance, int wallCount)> FindAllWallPointsInRange(string mapName, int currentX, int currentY, int maxRange = 10, string? wallPointsDirectory = null)
+        {
+            var nearbyPoints = FindNearbyWallPoints(mapName, currentX, currentY, maxRange, wallPointsDirectory);
+            
+            // 按靠墙数降序排序，相同靠墙数时按距离升序排序
+            return nearbyPoints
+                .OrderByDescending(p => p.wallCount)  // 优先选择靠墙数最大的
+                .ThenBy(p => p.distance)              // 相同靠墙数时选择距离最近的
+                .ToList();
         }
 
         /// <summary>
