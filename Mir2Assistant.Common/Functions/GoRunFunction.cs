@@ -42,19 +42,20 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(instanceValue);
         }
 
-        // 战士扔蓝
+        // 战士扔蓝 太阳
         var mainInstance = GameState.GameInstances[0];
         if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
             var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
             if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5)
             {
-                var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).ToList();
                 var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
+
                 var rmc = 46 - mc;
                 if (rmc > 6)
                 {
 
+                    var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("魔法药")).ToList();
                     var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
                     if (mageCount > 0)
                     {
@@ -70,7 +71,25 @@ public static class GoRunFunction
                             await NpcFunction.RefreshPackages(instanceValue);
                         }
                     }
+
+                    var itemsSuper = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("太阳水")).ToList();
+                    if (itemsSuper.Count > 0)
+                    {
+                        var dropCount = Math.Ceiling(Math.Min(rmc, itemsSuper.Count) * 0.5);
+                        var dropItems = itemsSuper.Take((int)dropCount).ToList();
+                        foreach (var item in dropItems)
+                        {
+                            await DropItem(instanceValue, item);
+                        }
+                        if (dropItems.Count > 0)
+                        {
+                            await NpcFunction.RefreshPackages(instanceValue);
+                        }
+                    }
                 }
+
+
+
             }
         }
     }
