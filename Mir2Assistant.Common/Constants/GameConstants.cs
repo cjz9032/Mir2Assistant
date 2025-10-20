@@ -6,7 +6,7 @@ namespace Mir2Assistant.Common.Constants;
 
 public static class GameConstants
 {
-    public static string[] HomeMaps = new string[] { "0", "2", "3", "4" };
+    public static string[] HomeMaps = new string[] { "0", "2", "3", "4", "5" };
     public const int NoobLevel = 7;
     public const int MidLevel = 11;
 

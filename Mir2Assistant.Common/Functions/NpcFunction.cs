@@ -437,6 +437,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("4", "杂货", 258, 221);
             }
+            else if (mapId == "5")
+            {
+                return ("5", "杂货", 136, 313);
+            }
             else
             {
                 // 其他大图
@@ -465,6 +469,10 @@ namespace Mir2Assistant.Common.Functions
             {
                 return ("B343", "药剂", 10, 17);
             }
+            if (mapId == "5")
+            {
+                return ("5", "药店", 148, 347);
+            }
             if (mapId == "SKILLBB")
             {
                 return ("3", "药", 359, 336);
@@ -488,6 +496,10 @@ namespace Mir2Assistant.Common.Functions
             if (mapId == "4")
             {
                 return ("B343", "学者", 10, 17);
+            }
+            if (mapId == "5")
+            {
+                return ("5", "书店", 148, 304);
             }
             else
             {
@@ -587,6 +599,29 @@ namespace Mir2Assistant.Common.Functions
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
                         return ("B344", "首饰", 9, 12);
+                    default:
+                        return ("-1", "", 0, 0);
+                }
+            }
+            else if (mapId == "5")
+            {
+                // 固定为左下角 因为只有这全有买卖, 除了蜡烛
+                switch (position)
+                {
+                    case EquipPosition.Weapon:
+                        return ("5", "武器", 128, 308);
+                    case EquipPosition.Dress:
+                        return ("5", "布", 145, 330);
+                    case EquipPosition.Helmet:
+                        return ("5", "布", 145, 330);
+                    case EquipPosition.Necklace:
+                        return ("5", "首饰", 153, 340);
+                    case EquipPosition.ArmRingLeft:
+                    case EquipPosition.ArmRingRight:
+                        return ("5", "首饰", 153, 340);
+                    case EquipPosition.RingLeft:
+                    case EquipPosition.RingRight:
+                        return ("5", "首饰", 153, 340);
                     default:
                         return ("-1", "", 0, 0);
                 }
