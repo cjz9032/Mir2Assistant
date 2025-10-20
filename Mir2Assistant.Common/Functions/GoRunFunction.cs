@@ -1229,6 +1229,11 @@ public static class GoRunFunction
             // 不寻路模式, 其实就是只打怪, 需要抽象
             // 
             var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 6 : 9;
+            // 保护消费者法师 诱惑/火球
+            var consume0 = whoIsConsumer(instanceValue!) == 0;
+            var slasher = whoIsConsumer(instanceValue!) > 0;
+            var slashRemainHP = (int)(CharacterStatus.Level / 10.0) * 25;
+            var drawBBRemainHP = (int)(CharacterStatus.Level / 10.0) * 25;
             // 主从模式
             // 主人是点位
             var (px, py) = (0, 0);
@@ -1250,8 +1255,7 @@ public static class GoRunFunction
                                 if (checker(instanceValue))
                                 {
                                     return true;
-                                }
-                                var slashRemainHP = 80;
+                                } 
                                 var slasher = whoIsConsumer(instanceValue!) > 0;
                                 var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
@@ -1422,11 +1426,7 @@ public static class GoRunFunction
                     }
                 }
 
-                // 保护消费者法师 诱惑/火球
-                var consume0 = whoIsConsumer(instanceValue!) == 0;
-                var slasher = whoIsConsumer(instanceValue!) > 0;
-                var slashRemainHP = (int)((CharacterStatus.Level / 10.0) * 25);
-                var drawBBRemainHP = (int)((CharacterStatus.Level / 10.0) * 25);
+         
 
                 var isWallPointNormal = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
                 var isPreferSafeNormal = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPointNormal && !consume0;
