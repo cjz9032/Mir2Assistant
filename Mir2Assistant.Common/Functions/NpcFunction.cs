@@ -1350,6 +1350,14 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 itemNames.Add("修罗");
                             }
+                            if (level >= 26)
+                            {
+                                itemNames.Add("炼狱");
+                            }
+                            if (level >= 28)
+                            {
+                                itemNames.Add("井中月");
+                            }
                         }
                         if (role == RoleType.taoist)
                         {
@@ -1357,6 +1365,10 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 itemNames.Add("破魂");
                                 itemNames.Add("降魔");
+                            }
+                            if (level >= 26)
+                            {
+                                itemNames.Add("银蛇");
                             }
                         }
                     }
