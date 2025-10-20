@@ -1425,9 +1425,8 @@ public static class GoRunFunction
                 // 保护消费者法师 诱惑/火球
                 var consume0 = whoIsConsumer(instanceValue!) == 0;
                 var slasher = whoIsConsumer(instanceValue!) > 0;
-                var slashRemainHP = 50;
-                var drawBBRemainHP = 25;
-
+                var slashRemainHP = (int)((CharacterStatus.Level / 10.0) * 25);
+                var drawBBRemainHP = (int)((CharacterStatus.Level / 10.0) * 25);
 
                 var isWallPointNormal = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
                 var isPreferSafeNormal = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPointNormal && !consume0;
