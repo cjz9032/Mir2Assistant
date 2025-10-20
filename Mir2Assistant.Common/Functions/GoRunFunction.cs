@@ -1558,7 +1558,7 @@ public static class GoRunFunction
                         {
                             // var hasDJS = instanceValue.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 40); // djs 会缓慢打 算了
                             // 否则好像不打也行, 有群用群无CD, 没群有BOSS 仍然无CD, 否则好像没什么好搞的, 单体没什么意义, 除了低等级
-                            var mageAni = bossLike ?? (!canTemp
+                            var mageAni = bossLike ?? ((!canTemp || ani.MaxHP > 400)
                                 ? instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                                     && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12
                                     // CD
