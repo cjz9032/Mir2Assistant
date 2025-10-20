@@ -492,6 +492,11 @@ public static class GoRunFunction
         var mainChars = GameState.GameInstances[0]!.CharacterStatus!;
         var isMain = instanceValue.AccountInfo!.IsMainControl;
         var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
+        // 血量太低 说明危险
+        if(CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.5)
+        {
+            maxMonstersNearby = 1;
+        }
         var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue);
 
         // 只跟main搜, 没做main是否中心判断, 因为可能会堵住
