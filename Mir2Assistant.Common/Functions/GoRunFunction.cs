@@ -1582,6 +1582,7 @@ public static class GoRunFunction
                             {
                                 if (bossLike != null || (Environment.TickCount > instanceValue.mageDrawAttentionGlobalCD + (5_000)))
                                 {
+                                    var beLight = canLight && (bossLike != null);
                                     sendSpell(instanceValue!, canLight ? GameConstants.Skills.LightingSpellId : GameConstants.Skills.fireBall, mageAni.X, mageAni.Y, mageAni.Id);
                                     // instanceValue.mageDrawAttentionMonsterCD[mageAni.Id] = Environment.TickCount;
                                     instanceValue.mageDrawAttentionGlobalCD = Environment.TickCount;
