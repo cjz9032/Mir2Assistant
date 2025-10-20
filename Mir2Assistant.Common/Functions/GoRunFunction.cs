@@ -2515,6 +2515,43 @@ public static class GoRunFunction
         }
 
         var ESTIMATED_HEAL = GameInstance.CharacterStatus.Level * 2;
+
+
+
+
+
+        var hadQun = false;
+        var canQun = true; // todo
+        if (canQun)
+        {
+            // TODO 注意弓箭
+            // 优先群 有boss, 所有怪
+            var qunAnis = allMonsInClients.Where(o => o.stdAliveMon
+            && Math.Max(Math.Abs(o.X - GameInstance.CharacterStatus.X), Math.Abs(o.Y - GameInstance.CharacterStatus.Y)) < 12
+            && (o.MaxHP - o.CurrentHP > ESTIMATED_HEAL)
+            );
+
+
+            // 暂定4个
+            var qunNum = 4;
+            if (qunAnis.Count() >= qunNum)
+            {
+                var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunNum);
+                if (qunanis != (-1, -1))
+                {
+                    sendSpell(GameInstance, GameConstants.Skills.BigHealSpellId, qunanis.x, qunanis.y, 0);
+                    hadQun = true;
+                }
+            }
+        }
+        if (hadQun)
+        {
+            return;
+        }
+
+
+
+
         var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 15.0 : 1));
 
         var people = allMonsInClients.Where(o =>

@@ -22,6 +22,7 @@ public static class GameConstants
         public const int flashMove = 21;
         public const int defUp = 15;
         public const int HealSpellId = 2;
+        public const int BigHealSpellId = 29;
         public const int smHide = 18;
         public const int bigHide = 19;
         public const int RecallBoneSpellId = 17;
@@ -68,7 +69,7 @@ public static class GameConstants
 
     public static readonly string[] allowM10 = new string[] { "鹿", "羊", "鸡" };
     public static readonly string[] allowTemp24 = new string[] { "洞蛆", "威思而小虫", "蜈蚣" };
-    public static readonly string[] allowTemp26 = new string[] { "黑色恶蛆", "虎卫" , "巨型多角虫" };
+    public static readonly string[] allowTemp26 = new string[] { "黑色恶蛆", "虎卫", "巨型多角虫" };
     public static readonly string[] allowTemp29 = new string[] { "虎卫", "钳虫", "巨型多角虫", "牛头魔" };
     public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
     public static readonly string[] allow22 = new string[] { "半兽人", "森林雪人", "毒蜘蛛", "威思而小虫" };
@@ -184,7 +185,7 @@ public static class GameConstants
         // public static readonly int keepClothCount = 2;
         public static int getKeepWeaponCount(int level, RoleType role)
         {
-            if(role == RoleType.mage) return 0;
+            if (role == RoleType.mage) return 0;
             return level >= 22 ? (
                 // todo
                 role == RoleType.taoist ? 1 : 1
@@ -192,7 +193,7 @@ public static class GameConstants
         }
         public static int getKeepClothCount(int level, RoleType role)
         {
-            if(role == RoleType.mage) return 0;
+            if (role == RoleType.mage) return 0;
             return level >= 22 ? (
                 // todo
                 role == RoleType.taoist ? 1 : 1
