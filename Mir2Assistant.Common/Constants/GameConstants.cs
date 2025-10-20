@@ -405,7 +405,8 @@ public static class GameConstants
       {
     "太阳水",
             "强效太阳水",
-            "万年雪霜"
+            "万年雪霜",
+            "疗伤药"
       };
 
         public static string getFushen(int level)
