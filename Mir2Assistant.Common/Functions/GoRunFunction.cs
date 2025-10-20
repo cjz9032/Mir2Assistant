@@ -1475,7 +1475,7 @@ public static class GoRunFunction
                         isFullBB = true;
                     }
 
-                    var bossLike = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && (o.Appr == 40 || o.Appr == 102 || o.Appr == 166 || o.Appr == 121 || o.MaxHP > 500)
+                    var bossLike = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && (o.Appr == 40 || (o.Appr == 102 && (o.MaxHP > 500 || o.MaxHP == 0)) || o.Appr == 166 || o.Appr == 121 || o.MaxHP > 500)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         // 还要把鹿羊鸡放最后
                         .FirstOrDefault();
