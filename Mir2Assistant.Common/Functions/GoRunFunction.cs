@@ -2379,18 +2379,6 @@ public static class GoRunFunction
                             {
                                 return false;
                             }
-                            // 全部完成, 查看是否需要飞行
-                            if (!String.IsNullOrEmpty(connection.From.NpcName))
-                            {
-                                await NpcFunction.ClickNPC(GameInstance, connection.From.NpcName);
-                                var cmds = connection.From.NpcCmds.Split("||");
-                                for (int cid = 0; cid < cmds.Length; cid++)
-                                {
-                                    await NpcFunction.Talk2(GameInstance!, cmds[cid]);
-                                }
-                                await Task.Delay(2000);
-                                // todo 查看是否到达 可以先看看 因为普通过门也是这么做的
-                            }
                             goNodes.RemoveAt(0);
                             break;
                         }
@@ -2405,6 +2393,17 @@ public static class GoRunFunction
             // 多图就需要等待
             if (isAcross)
             {
+                // 全部完成, 查看是否需要飞行
+                if (!String.IsNullOrEmpty(connection.From.NpcName))
+                {
+                    await NpcFunction.ClickNPC(GameInstance, connection.From.NpcName);
+                    var cmds = connection.From.NpcCmds.Split("||");
+                    for (int cid = 0; cid < cmds.Length; cid++)
+                    {
+                        await NpcFunction.Talk2(GameInstance!, cmds[cid]);
+                    }
+                    await Task.Delay(500); // npc补充500ms
+                }
                 await Task.Delay(1500);
             }
         }
