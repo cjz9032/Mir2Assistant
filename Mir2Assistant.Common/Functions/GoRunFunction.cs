@@ -2675,19 +2675,23 @@ public static class GoRunFunction
             await Task.Delay(800);
             CharacterStatusFunction.ReadChats(GameInstance, true);
             var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
+            if (lastChatState == null)
+            {
+                return;
+            }
             // 只尝试一次
-            if (lastChatState?.Contains("攻击") == true)
+            if (lastChatState.Contains("攻击"))
             {
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
                 await Task.Delay(800);
             }
-            // 尝试休息10秒
-            await Task.Delay(10_000);
+            // 尝试休息15秒, 道士可能被打断 也很傻
+            await Task.Delay(15_000);
             // 再恢复
-            await CallbackAndBeStatusSlaveIfHas(GameInstance, true);
+            await CallbackAndBeStatusSlaveIfHas(GameInstance, true, false);
         }
     }
-    public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
+    public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack, bool loops = true)
     {
         if (GameInstance.AccountInfo.role == RoleType.blade)
         {
@@ -2700,10 +2704,13 @@ public static class GoRunFunction
         if (GameInstance.chats.Contains("下属：攻击") || GameInstance.chats.Contains("下属：休息"))
         {
             // 开始召回
-            for (int i = 0; i < 100; i++)
+            if (loops)
             {
-                CharacterStatusFunction.AddChat(GameInstance, "@rest");
-                await Task.Delay(300);
+                for (int i = 0; i < 100; i++)
+                {
+                    CharacterStatusFunction.AddChat(GameInstance, "@rest");
+                    await Task.Delay(300);
+                }
             }
             await Task.Delay(1000);
             CharacterStatusFunction.ReadChats(GameInstance, true);
@@ -2742,6 +2749,12 @@ public static class GoRunFunction
     public static async Task TryAliveRecallMob(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfSekeleton(GameInstance))
+        {
+            return;
+        }
+        // 有红名先别高
+        var anyTeamMemGrey = GameState.GameInstances.Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
+        if (anyTeamMemGrey)
         {
             return;
         }
