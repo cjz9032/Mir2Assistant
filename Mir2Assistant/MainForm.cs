@@ -1263,11 +1263,11 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = false;
-                                var slaveFromMap = "E605";
-                                var slaveToMap = "E702";
+                                var slaveFromMap = "D2071";
+                                var slaveToMap = "D613";
                                 // var slaveFromMap = "D2004";
                                 // var slaveToMap = "D2001";
-                                var slaveEnabled = false; // CharacterStatus.Level >= 30 && true;
+                                var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;
