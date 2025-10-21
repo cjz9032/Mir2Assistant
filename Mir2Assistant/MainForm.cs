@@ -1928,6 +1928,7 @@ namespace Mir2Assistant
                                 // 暂时先实验半月这些简单的 需要中等的
                                 await GoRunFunction.switchBladeWideSlaying(instance);
                                 await GoRunFunction.TryHiddenPeople(instance);
+                                await GoRunFunction.TryRestForGreyName(instance);
                             }
                         }
                     }

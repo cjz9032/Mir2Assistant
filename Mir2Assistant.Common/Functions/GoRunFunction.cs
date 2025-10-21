@@ -493,7 +493,7 @@ public static class GoRunFunction
         var isMain = instanceValue.AccountInfo!.IsMainControl;
         var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
         // 血量太低 说明危险
-        if(CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.5)
+        if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.5)
         {
             maxMonstersNearby = 1;
         }
@@ -1255,7 +1255,7 @@ public static class GoRunFunction
                                 if (checker(instanceValue))
                                 {
                                     return true;
-                                } 
+                                }
                                 var slasher = whoIsConsumer(instanceValue!) > 0;
                                 var enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                                     Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
@@ -1426,7 +1426,7 @@ public static class GoRunFunction
                     }
                 }
 
-         
+
 
                 var isWallPointNormal = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
                 var isPreferSafeNormal = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPointNormal && !consume0;
@@ -2179,7 +2179,7 @@ public static class GoRunFunction
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
-                var whileList = new List<string>() { "0132","0156" }; 
+                var whileList = new List<string>() { "0132", "0156" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
@@ -2658,6 +2658,34 @@ public static class GoRunFunction
             await Task.Delay(300);
         }
         // 待选组怪? 先不管
+    }
+
+    public static async Task TryRestForGreyName(MirGameInstanceModel GameInstance)
+    {
+        if (!(CapbilityOfSekeleton(GameInstance) || CapbilityOfTemptation(GameInstance)))
+        {
+            return;
+        }
+        // 有BB就尝试轮询休息 注意会打断别的任务, 目前WAD
+        // 查找灰名
+        var anyTeamMemGrey = GameState.GameInstances.Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
+        if (anyTeamMemGrey)
+        {
+            CharacterStatusFunction.AddChat(GameInstance, "@rest");
+            await Task.Delay(800);
+            CharacterStatusFunction.ReadChats(GameInstance, true);
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
+            // 只尝试一次
+            if (lastChatState?.Contains("攻击") == true)
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+                await Task.Delay(800);
+            }
+            // 尝试休息10秒
+            await Task.Delay(10_000);
+            // 再恢复
+            await CallbackAndBeStatusSlaveIfHas(GameInstance, true);
+        }
     }
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack = false)
     {

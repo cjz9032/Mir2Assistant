@@ -30,6 +30,7 @@ public static class CharacterStatusFunction
         var memoryUtils = gameInstance.memoryUtils!;
 
         status.Name = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物NAME偏移"], 0));
+        status.NameColor = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物NAMEColor偏移"], 0));
         status.MapName = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图基址"], 0));
         status.MapId = memoryUtils.ReadToDelphiUnicode(memoryUtils.GetMemoryAddress(GameState.MirConfig["地图ID基址"], 0x2AE8C, 0));
         status.X = memoryUtils.ReadToShort(memoryUtils.GetMemoryAddress(GameState.MirConfig["角色基址"], GameState.MirConfig["人物X偏移"]));

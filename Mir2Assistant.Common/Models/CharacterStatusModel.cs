@@ -3,6 +3,7 @@
 public class CharacterStatusModel
 {
     public string Name { get; set; } = string.Empty;
+    public int NameColor { get; set; } = 0xFFFFFF; // 0x3963A5
     public string MapName { get; set; } = string.Empty;
     public string MapId { get; set; } = string.Empty;
     public int X { get; set; } = 0;
