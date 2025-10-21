@@ -128,7 +128,7 @@ namespace Mir2Assistant.TabForms.Demo
                 }
 
                 // 这里可以添加转图的具体逻辑
-                GoRunFunction.PerformPathfinding(CancellationToken.None, GameInstance!, 999, 999, mapId, 0, true, 10);
+                GoRunFunction.PerformPathfinding(CancellationToken.None, GameInstance!, 666, 666, mapId, 0, true, 10);
                 
                 Log.Information($"尝试转图到地图ID: {mapId}");
             }

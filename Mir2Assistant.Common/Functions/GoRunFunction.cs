@@ -2047,14 +2047,14 @@ public static class GoRunFunction
         {
             From = new MapPosition()
             {
-                // 有点tricky 懒得改类型了
+                // 有点tricky 懒得改类型了 就是只会用到from, to都懒得校验
                 X = tx,
                 Y = ty,
                 MapId = replaceMap,
             },
             To = new MapPosition()
             {
-                X = 999,
+                X = 999, // 所以是没意义的
                 Y = 999,
                 MapId = "999",
             }
@@ -2179,8 +2179,8 @@ public static class GoRunFunction
 
                 GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
 
-                // var whileList = new List<string>() { "0132" }; && whileList.Contains(replaceMap)
-                if (isAcross)
+                var whileList = new List<string>() { "0132","0156" }; 
+                if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
                     int N = 3; // 你指定的每次尝试的方向数量

@@ -55,7 +55,7 @@ namespace Mir2Assistant.Services
 
             // 优化：使用更高效的数据结构减少内存分配
             var visited = new HashSet<int>();
-            var parent = new Dictionary<int, (int parentIndex, int[] connData)>();
+            var parent = new Dictionary<int, (int parentIndex, object[] connData)>();
             var queue = new Queue<int>();
             
             queue.Enqueue(fromIndex);
@@ -69,7 +69,7 @@ namespace Mir2Assistant.Services
                 if (currentIndex == toIndex)
                 {
                     // 回溯构建路径
-                    var path = new List<(int fromIdx, int[] connData)>();
+                    var path = new List<(int fromIdx, object[] connData)>();
                     var current = toIndex;
                     
                     while (parent.ContainsKey(current))
@@ -91,14 +91,18 @@ namespace Mir2Assistant.Services
                             From = new MapPosition 
                             { 
                                 MapId = MapData.GetMapId(fromIdx), 
-                                X = connData[1], 
-                                Y = connData[2] 
+                                X = (int)connData[1], 
+                                Y = (int)connData[2],
+                                NpcName = (string)connData[3],
+                                NpcCmds = (string)connData[4]
                             },
                             To = new MapPosition 
                             { 
-                                MapId = MapData.GetMapId(connData[0]), 
-                                X = connData[3], 
-                                Y = connData[4] 
+                                MapId = MapData.GetMapId((int)connData[0]), 
+                                X = (int)connData[5], 
+                                Y = (int)connData[6],
+                                NpcName = (string)connData[7],
+                                NpcCmds = (string)connData[8]
                             }
                         });
                     }
@@ -109,7 +113,7 @@ namespace Mir2Assistant.Services
                 var connections = MapData.GetConnections(currentIndex);
                 foreach (var conn in connections)
                 {
-                    var nextIndex = conn[0]; // toIndex
+                    var nextIndex = (int)conn[0]; // toIndex
                     if (!visited.Contains(nextIndex))
                     {
                         parent[nextIndex] = (currentIndex, conn);
