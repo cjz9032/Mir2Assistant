@@ -1929,8 +1929,8 @@ namespace Mir2Assistant
                                 await GoRunFunction.switchBladeWideSlaying(instance);
                                 await GoRunFunction.TryHiddenPeople(instance);
                                 await GoRunFunction.TryRestForGreyName(instance);
-                                await GoRunFunction.TryRestForGuard(instance);
                             }
+                            await GoRunFunction.TryRestForGuard(instance);
                         }
                     }
                     catch (Exception ex)
