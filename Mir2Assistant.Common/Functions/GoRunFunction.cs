@@ -1962,6 +1962,11 @@ public static class GoRunFunction
         }
         return all;
     }
+    public static bool CheckIfBlockMons(MirGameInstanceModel gameInstance)
+    {
+        var monsters = gameInstance.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 102);
+        return monsters;
+    }
 
     public static bool CheckIfSurrounded(string MapId, int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
     {
@@ -2018,7 +2023,7 @@ public static class GoRunFunction
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
           bool nearBlur = true,
-          int attacksThan = 3,
+          int attacksThan = 1,
           int maxPathLength = 9999,
           int retries = 0,
           Func<MirGameInstanceModel, bool>? callback = null
@@ -2132,7 +2137,7 @@ public static class GoRunFunction
                 // 查看被包围, 8个点都是1障碍
                 if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
                 GameInstance.MonstersByPosition
-                ))
+                ) || CheckIfBlockMons(GameInstance))
                 {
                     await cleanMobs(GameInstance, 0, true, cancellationToken, callback);
                 }
@@ -2170,7 +2175,7 @@ public static class GoRunFunction
                     return false;
                 }
                 if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
-                GameInstance.MonstersByPosition))
+                GameInstance.MonstersByPosition) || CheckIfBlockMons(GameInstance))
                 {
                     await cleanMobs(GameInstance, 0, false, cancellationToken, callback);
                 }
@@ -2721,7 +2726,7 @@ public static class GoRunFunction
                 CharacterStatusFunction.AddChat(GameInstance, "@rest");
                 await Task.Delay(800);
             }
-            
+
             var tried = 0;
             while (true)
             {
