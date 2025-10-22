@@ -43,7 +43,7 @@ namespace Mir2Assistant.Common.Models
         {
             get
             {
-                return Type == 0x2d || Type == 0x18;
+                return Type == 0x0c || Type == 0x18;
             }
         }
 
