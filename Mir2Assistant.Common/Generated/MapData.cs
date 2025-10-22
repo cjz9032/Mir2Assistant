@@ -2213,7 +2213,6 @@ namespace Mir2Assistant.Common.Generated
             },
             new object[][] // Index 180: D2071
             {
-                new object[] { 179, 219, 225, "", "", 31, 19, "", "" },
                 new object[] { 179, 220, 226, "", "", 32, 20, "", "" },
                 new object[] { 181, 111, 114, "", "", 151, 120, "", "" },
                 new object[] { 181, 112, 113, "", "", 151, 119, "", "" },
