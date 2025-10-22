@@ -2949,7 +2949,7 @@ public static class GoRunFunction
         // 转宝宝方向 
         var dir = new Random().Next(0, 7);
         await GoTurn(GameInstance, (byte)dir);
-        if (new Random().Next(1, 100) > 50)
+        if (new Random().Next(1, 100) > 30)
         {
             return;
         }
