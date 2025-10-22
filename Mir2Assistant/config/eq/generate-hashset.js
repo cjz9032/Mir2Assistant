@@ -1,11 +1,12 @@
 const fs = require('fs');
 
 // 读取 JSON 文件
-const normalItems = JSON.parse(fs.readFileSync('./eq-normal.json', 'utf8'));
-const jpItems = JSON.parse(fs.readFileSync('./eq-jp.json', 'utf8'));
+const normalItems = require('./eq-normal.json');
+const jpItems = require('./eq-jp.json');
 
 // 合并所有物品
 const allItems = [...normalItems, ...jpItems];
+
 
 // 生成 C# HashSet 代码
 function generateHashSet(items) {
@@ -24,7 +25,7 @@ namespace Mir2Assistant.Common.Constants
     items.forEach(item => {
         const stats = [
             item.Ac || 0,
-            item.Ac2 || 0, 
+            item.Ac2 || 0,
             item.Mac || 0,
             item.Mac2 || 0,
             item.Dc || 0,
@@ -34,13 +35,24 @@ namespace Mir2Assistant.Common.Constants
             item.Sc || 0,
             item.Sc2 || 0
         ];
-        
+
         const statsArray = stats.map(s => s.toString()).join(', ');
         csharpCode += `\n            { "${item.Name}", new byte[] { ${statsArray} } },`;
     });
 
     csharpCode += `
         };
+
+        // JP items
+        public static readonly HashSet<short> JpItemsByLooks = new HashSet<short>
+        {`;
+    jpItems.forEach(item => {
+        csharpCode += `\n            ${item.Looks},`;
+    });
+    csharpCode += `\n        };`;
+
+
+    csharpCode += `
         
         public static bool IsValidItem(string itemName)
         {

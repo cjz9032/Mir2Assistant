@@ -80,7 +80,6 @@ namespace Mir2Assistant.Common.Functions
                         {
                             item.GodPts = 0;
                         }
-                        item.IsGodly = item.GodPts > 0;
                         item.Duration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品持久"]) / 100;
                         item.MaxDuration = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品最大持久"]) / 100;
                         item.stdMode = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品MODE"]);
@@ -123,11 +122,16 @@ namespace Mir2Assistant.Common.Functions
                                     item.IsGodly = true;
                                 }
                             }
+                            // 普通物品确认效率
+                            if (GameConstants.Items.JPSetFrozen.Contains(item.Name))
+                            {
+                                item.GodPts = 98;
+                                item.IsGodly = true;
+                            }
                             // force update by sp rule 1
                             // 项链幸运可以覆盖上面的JP判断
                             if (item.stdMode == 19)
                             {
-                                // todo 重写IsGodly, 先这直接判断
                                 // 19 项链 （Ac2=魔法躲避,Mac=诅咒,Mac2=幸运） 
                                 item.MacEvasion = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Ac2"]);
                                 item.Luck = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品Mac2"]);
@@ -139,11 +143,13 @@ namespace Mir2Assistant.Common.Functions
                             }
                             // force update by sp rule 2
                             // 同样可以覆盖上面判断 设置100 by jpnamehashset
-
+                            if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks))
+                            {
+                                item.GodPts = 100;
+                                item.IsGodly = true;
+                            }
                         }
-
-
-
+                        item.IsGodly = item.GodPts > 0;
                     }
                     else
                     {
@@ -192,12 +198,15 @@ namespace Mir2Assistant.Common.Functions
                 {
                     item.GodPts = 0;
                 }
-                item.IsGodly = item.GodPts > 0;
-                // 或者就是强制 IsGodly GodPts 100
-
                 item.X = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物X"]);
                 item.Y = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Y"]);
                 item.Looks = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Looks"]);
+                if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks))
+                {
+                    // 或者就是强制 IsGodly GodPts 100
+                    item.GodPts = 100;
+                }
+                item.IsGodly = item.GodPts > 0;
                 if (isNew)
                 {
                     gameInstance.DropsItems.TryAdd(id, item);
