@@ -87,7 +87,7 @@ namespace Mir2Assistant.Common.Functions
                         item.addr = itemAddr;
                         item.reqType = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqType"]);
                         item.reqPoints = memoryUtils.ReadToInt8(itemAddr + GameState.MirConfig["物品ReqPts"]);
-
+                        item.Looks = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["物品Looks"]);
                         // 这里为了获取明确的业务意义的值,防御..
                         if (GameState.MirConfig["物品Ac"] > 0
                          && (EquipPosition)item.stdModeToUseItemIndex[0] != EquipPosition.Weapon
@@ -193,9 +193,11 @@ namespace Mir2Assistant.Common.Functions
                     item.GodPts = 0;
                 }
                 item.IsGodly = item.GodPts > 0;
+                // 或者就是强制 IsGodly GodPts 100
 
                 item.X = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物X"]);
                 item.Y = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Y"]);
+                item.Looks = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Looks"]);
                 if (isNew)
                 {
                     gameInstance.DropsItems.TryAdd(id, item);

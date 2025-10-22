@@ -125,6 +125,7 @@ namespace Mir2Assistant.Common.Models
         public int MaxDef { get; set; }
         public int MinMageDef { get; set; }
         public int MaxMageDef { get; set; }
+        public short Looks { get; set; }
 
         // 原始10属性 Ac Ac2	Mac	Mac2	Dc	Dc2	Mc	Mc2	Sc	Sc2
         public byte[] OriginCriticals = new byte[10];
@@ -183,6 +184,7 @@ namespace Mir2Assistant.Common.Models
         public int X { get; set; }
         public int Y { get; set; }
         public bool IsEmpty { get; set; }
+        public short Looks { get; set; }
 
         // public string Display => IsEmpty ? "" : $"{Index}: [{Id:x2}] {(IsGodly ? "（Jesus）" : "")} {(IsLowDurability ? "LOW!!! " : "")}"  + PadStringWithFullWidthSpaces(Name, 4) + $" {Duration}/{MaxDuration} sm{stdMode}";
     }
