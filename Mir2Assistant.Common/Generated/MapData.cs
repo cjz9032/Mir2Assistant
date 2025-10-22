@@ -1897,8 +1897,6 @@ namespace Mir2Assistant.Common.Generated
             },
             new object[][] // Index 124: B352
             {
-                new object[] { 80, 8, 13, "", "", 158, 336, "", "" },
-                new object[] { 80, 7, 13, "", "", 158, 336, "", "" },
                 new object[] { 80, 8, 14, "", "", 158, 336, "", "" },
             },
             new object[][] // Index 125: B353
