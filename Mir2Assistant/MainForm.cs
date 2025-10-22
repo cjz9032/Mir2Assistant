@@ -1264,7 +1264,7 @@ namespace Mir2Assistant
 
                                 instanceValue.isHomePreparing = false;
                                 var slaveFromMap = "D2071";
-                                var slaveToMap = "D2001"; // D200   D613 刺激齐鲁2008
+                                var slaveToMap = "D2051"; // D200   D613 刺激齐鲁2008 D2051 石墨
                                 // var slaveFromMap = "D2004";
                                 // var slaveToMap = "D2001";
                                 var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
