@@ -411,7 +411,7 @@ namespace Mir2Assistant.Common.Functions
                 home = "4";
             }
             // 苍月
-            if (mapId.StartsWith("D205") || mapId.StartsWith("D206") || mapId.StartsWith("D207"))
+            if (mapId.StartsWith("D205") || mapId.StartsWith("D206") || mapId.StartsWith("D207") || mapId.StartsWith("B35"))
             {
                 home = "5";
             }
