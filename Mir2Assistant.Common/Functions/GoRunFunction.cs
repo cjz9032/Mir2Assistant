@@ -1545,7 +1545,7 @@ public static class GoRunFunction
                             && temps.Contains(o.Name)
                             && (
                             // 加了红名检测, 够血就行
-                            (o.CurrentHP > 0 && o.MaxHP == 0) || (o.CurrentHP > o.MaxHP * 0.5)
+                            (o.CurrentHP == 0 && o.MaxHP == 0) || (o.CurrentHP > o.MaxHP * 0.5)
 
                             //     (o.CurrentHP > 0 && o.MaxHP == 0) || o.CurrentHP == o.MaxHP
                             // || (
@@ -2697,6 +2697,52 @@ public static class GoRunFunction
             await CallbackAndBeStatusSlaveIfHas(GameInstance, true, false);
         }
     }
+    public static async Task TryRestForGuard(MirGameInstanceModel GameInstance)
+    {
+        if (!(CapbilityOfSekeleton(GameInstance) || CapbilityOfTemptation(GameInstance)))
+        {
+            return;
+        }
+        // 查找卫士
+        var anyGuard = GameInstance.Monsters.Values.Any(o => o.isGuard);
+        if (anyGuard)
+        {
+            CharacterStatusFunction.AddChat(GameInstance, "@rest");
+            await Task.Delay(800);
+            CharacterStatusFunction.ReadChats(GameInstance, true);
+            var lastChatState = GameInstance.chats.FindLast(o => o.Contains("下属"));
+            if (lastChatState == null)
+            {
+                return;
+            }
+            // 只尝试一次
+            if (lastChatState.Contains("攻击"))
+            {
+                CharacterStatusFunction.AddChat(GameInstance, "@rest");
+                await Task.Delay(800);
+            }
+            
+            var tried = 0;
+            while (true)
+            {
+                var anyGuard2 = GameInstance.Monsters.Values.Any(o => o.isGuard);
+                if (!anyGuard2)
+                {
+                    break;
+                }
+                tried++;
+                // 尝试走出去
+                await Task.Delay(6_000);
+                if (tried > 10)
+                {
+                    break;
+                }
+            }
+            // 再恢复
+            await CallbackAndBeStatusSlaveIfHas(GameInstance, true, false);
+        }
+    }
+
     public static async Task CallbackAndBeStatusSlaveIfHas(MirGameInstanceModel GameInstance, bool attack, bool loops = true)
     {
         if (GameInstance.AccountInfo.role == RoleType.blade)
@@ -2764,7 +2810,13 @@ public static class GoRunFunction
         {
             return;
         }
-
+        // 有卫士也不高
+        var anyGuard = GameInstance.Monsters.Values.Any(o => o.isGuard);
+        if (anyGuard)
+        {
+            return;
+        }
+        // 堵门
         var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
         if (npc != null)
         {

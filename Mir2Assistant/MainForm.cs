@@ -1264,7 +1264,7 @@ namespace Mir2Assistant
 
                                 instanceValue.isHomePreparing = false;
                                 var slaveFromMap = "D2071";
-                                var slaveToMap = "D613";
+                                var slaveToMap = "D2001"; // D200   D613 刺激齐鲁2008
                                 // var slaveFromMap = "D2004";
                                 // var slaveToMap = "D2001";
                                 var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
@@ -1908,7 +1908,7 @@ namespace Mir2Assistant
 
         }
 
-         private async void autoMidBackground()
+        private async void autoMidBackground()
         {
 
             var instances = GameState.GameInstances;
@@ -1929,6 +1929,7 @@ namespace Mir2Assistant
                                 await GoRunFunction.switchBladeWideSlaying(instance);
                                 await GoRunFunction.TryHiddenPeople(instance);
                                 await GoRunFunction.TryRestForGreyName(instance);
+                                await GoRunFunction.TryRestForGuard(instance);
                             }
                         }
                     }

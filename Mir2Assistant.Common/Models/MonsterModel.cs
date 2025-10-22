@@ -32,9 +32,18 @@ namespace Mir2Assistant.Common.Models
                     0x00 => "玩家",
                     0x01 => "玩家", // 挂机的
                     0x2d => "守卫",
+                    0x18 => "卫士2",
                     0x0c => "卫士",
                     _ => "(怪)",
                 };
+            }
+        }
+
+        public bool isGuard
+        {
+            get
+            {
+                return Type == 0x2d || Type == 0x18;
             }
         }
 

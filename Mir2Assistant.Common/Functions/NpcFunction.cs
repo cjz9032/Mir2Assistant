@@ -405,9 +405,15 @@ namespace Mir2Assistant.Common.Functions
             {
                 home = "3";
             }
-            if (mapId.StartsWith("D2") || mapId.StartsWith("D1") || mapId.StartsWith("M1") || mapId.StartsWith("B34"))
+            // 封魔
+            if (mapId.StartsWith("D200") || mapId.StartsWith("D201") || mapId.StartsWith("D1") || mapId.StartsWith("M1") || mapId.StartsWith("B34"))
             {
                 home = "4";
+            }
+            // 苍月
+            if (mapId.StartsWith("D205") || mapId.StartsWith("D206") || mapId.StartsWith("D207"))
+            {
+                home = "5";
             }
 
             return home;
