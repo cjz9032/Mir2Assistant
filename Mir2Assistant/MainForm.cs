@@ -897,7 +897,7 @@ namespace Mir2Assistant
                         if (isMainInHome || basicInHome)
                         {
                             instanceValue.isHomePreparing = true;
-                            //await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
                         await waitForResumeHp(instanceValue);
 

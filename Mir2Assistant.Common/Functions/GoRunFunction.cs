@@ -2562,14 +2562,14 @@ public static class GoRunFunction
         {
             // TODO 注意弓箭
             // 优先群 有boss, 所有怪
-            var qunAnis = allMonsInClients.Where(o => o.stdAliveMon
+            var qunAnis = allMonsInClients.Where(o => o.isTeams && !o.isDead
             && Math.Max(Math.Abs(o.X - GameInstance.CharacterStatus.X), Math.Abs(o.Y - GameInstance.CharacterStatus.Y)) < 12
             && (o.MaxHP - o.CurrentHP > ESTIMATED_HEAL)
             );
 
 
             // 暂定4个
-            var qunNum = 3;
+            var qunNum = 4;
             if (qunAnis.Count() >= qunNum)
             {
                 var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunNum);
