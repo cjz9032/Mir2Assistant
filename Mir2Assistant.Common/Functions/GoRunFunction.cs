@@ -2422,7 +2422,7 @@ public static class GoRunFunction
                     {
                         await NpcFunction.Talk2(GameInstance!, cmds[cid]);
                     }
-                    await Task.Delay(500); // npc补充500ms
+                    await Task.Delay(2000); // npc补充500ms
                 }
                 await Task.Delay(1500);
             }
