@@ -47,12 +47,17 @@ public static class GoRunFunction
         if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
             var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
-            //人近 怪少 才行
+            //人近 怪少 地上没东西 才行
             if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5
             && mainInstance.Monsters.Values.Where(o => o.stdAliveMon && 
                 Math.Max(Math.Abs(o.X - mainInstance.CharacterStatus.X), Math.Abs(o.Y - mainInstance.CharacterStatus.Y)) < 5).Count() < 2
             )
             {
+                if (mainInstance.DropsItems.Count() > 3)
+                {
+                    return;
+                }
+
                 var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
 
                 var rmc = 46 - mc;
