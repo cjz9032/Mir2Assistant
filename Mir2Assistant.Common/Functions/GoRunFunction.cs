@@ -2422,6 +2422,7 @@ public static class GoRunFunction
                     {
                         await NpcFunction.Talk2(GameInstance!, cmds[cid]);
                     }
+
                     await Task.Delay(2000); // npc补充500ms
                 }
                 await Task.Delay(1500);
@@ -2568,7 +2569,7 @@ public static class GoRunFunction
 
 
             // 暂定4个
-            var qunNum = 4;
+            var qunNum = 3;
             if (qunAnis.Count() >= qunNum)
             {
                 var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunNum);

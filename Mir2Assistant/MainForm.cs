@@ -897,7 +897,7 @@ namespace Mir2Assistant
                         if (isMainInHome || basicInHome)
                         {
                             instanceValue.isHomePreparing = true;
-                            await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                            //await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
                         await waitForResumeHp(instanceValue);
 
@@ -1213,7 +1213,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 32) // todo toaist
                                 {
-                                    hangMapId = "D2071"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
+                                    hangMapId = "D613"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
                                 }
                                 else if (CharacterStatus.Level >= 29) // todo toaist
                                 {
@@ -1267,7 +1267,7 @@ namespace Mir2Assistant
                                 var slaveToMap = "D613"; // D200   D613 刺激齐鲁2008 D2051 石墨
                                 // var slaveFromMap = "D2004";
                                 // var slaveToMap = "D2001";
-                                var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
+                                var slaveEnabled = false; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;

@@ -71,7 +71,7 @@ public static class GameConstants
     public static readonly string[] allowTemp24 = new string[] { "洞蛆", "威思而小虫", "蜈蚣" };
     public static readonly string[] allowTemp26 = new string[] { "黑色恶蛆", "虎卫", "巨型多角虫" };
     public static readonly string[] allowTemp29 = new string[] { "虎卫", "钳虫", "巨型多角虫" };
-    public static readonly string[] allowTemp33 = new string[] { "牛头魔" };
+    public static readonly string[] allowTemp33 = new string[] { "牛头魔", "钳虫" };
     public static readonly string[] allow15 = new string[] { "稻草人", "多钩猫", "钉耙猫", "蛤蟆" };
     public static readonly string[] allow22 = new string[] { "半兽人", "森林雪人", "毒蜘蛛", "威思而小虫" };
 
