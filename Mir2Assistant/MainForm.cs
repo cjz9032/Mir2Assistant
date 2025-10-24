@@ -1267,11 +1267,11 @@ namespace Mir2Assistant
 
 
                                 instanceValue.isHomePreparing = false;
-                                var slaveFromMap = "D2071";
-                                var slaveToMap = "D613"; // D200   D613 刺激齐鲁2008 D2051 石墨
-                                // var slaveFromMap = "D2004";
-                                // var slaveToMap = "D2001";
-                                var slaveEnabled = false; // CharacterStatus.Level >= 30 && true;
+                                // var slaveFromMap = "D2071";
+                                // var slaveToMap = "D613"; // D200   D613 刺激齐鲁2008 D2051 石墨  D2001
+                                var slaveFromMap = "D2004";
+                                var slaveToMap = "D2001";
+                                var slaveEnabled = true; // CharacterStatus.Level >= 30 && true;
                                 if (slaveEnabled)
                                 {
                                     hangMapId = hangMapBBReady ? slaveToMap : slaveFromMap;

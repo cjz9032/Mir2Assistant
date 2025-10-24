@@ -69,7 +69,7 @@ public static class GoRunFunction
                     if (mageCount > 0)
                     {
                         // 进位
-                        var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.5);
+                        var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.3);
                         var dropItems = items2.Take((int)dropCount).ToList();
                         foreach (var item in dropItems)
                         {
@@ -84,7 +84,7 @@ public static class GoRunFunction
                     var itemsSuper = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("太阳水")).ToList();
                     if (itemsSuper.Count > 0)
                     {
-                        var dropCount = Math.Ceiling(Math.Min(rmc, itemsSuper.Count) * 0.5);
+                        var dropCount = Math.Ceiling(Math.Min(rmc, itemsSuper.Count) * 0.3);
                         var dropItems = itemsSuper.Take((int)dropCount).ToList();
                         foreach (var item in dropItems)
                         {
@@ -2535,6 +2535,8 @@ public static class GoRunFunction
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 23) != null;
     }
 
+    static private LimitedDictionary<int, int> healCD = new LimitedDictionary<int, int>(100);
+
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfHeal(GameInstance))
@@ -2600,7 +2602,7 @@ public static class GoRunFunction
         var cdp = (int)(GameConstants.Skills.HealPeopleCD * (GameInstance.CharacterStatus.Level > 20 ? GameInstance.CharacterStatus.Level / 15.0 : 1));
 
         var people = allMonsInClients.Where(o =>
-            !GameInstance.healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
+            !healCD.TryGetValue(o.Id, out var cd) || Environment.TickCount > cd + cdp &&
             o.CurrentHP > 0 &&
             !o.isDead &&
             ((o.MaxHP - o.CurrentHP) > ESTIMATED_HEAL || (o.CurrentHP < o.MaxHP * GameConstants.Items.commonHealRate)) &&
@@ -2645,7 +2647,7 @@ public static class GoRunFunction
         }
         // GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
         sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
-        GameInstance.healCD[people.Id] = Environment.TickCount;
+        healCD[people.Id] = Environment.TickCount;
         // 道士调整攻速
         // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
