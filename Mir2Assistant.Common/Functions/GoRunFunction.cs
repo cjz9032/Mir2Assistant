@@ -2262,7 +2262,7 @@ public static class GoRunFunction
                         }
                         // 尝试跳到后面的点
                         var isJumpSuccess = false;
-                        foreach (var jumpSteps in new[] { 1, 2, 3, 5, 8, 10, 15 })
+                        foreach (var jumpSteps in new[] { 1, 2, 5, 10, 16 })
                         {
                             await Task.Delay(50, cancellationToken);
                             if (callback(GameInstance))
