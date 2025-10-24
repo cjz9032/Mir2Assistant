@@ -49,7 +49,7 @@ public static class GoRunFunction
             var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
             //人近 怪少 地上没东西 才行
             if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5
-            && mainInstance.Monsters.Values.Where(o => o.stdAliveMon && 
+            && mainInstance.Monsters.Values.Where(o => o.stdAliveMon &&
                 Math.Max(Math.Abs(o.X - mainInstance.CharacterStatus.X), Math.Abs(o.Y - mainInstance.CharacterStatus.Y)) < 5).Count() < 2
             )
             {
@@ -2514,6 +2514,15 @@ public static class GoRunFunction
     {
         return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId) != null;
     }
+    public static bool CapbilityOfDog(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallDogSpellId) != null;
+    }
+
+    public static bool CapbilityOfSekeletonOrDog(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.taoist && (GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId || o.Id == GameConstants.Skills.RecallDogSpellId) != null);
+    }
 
 
     public static bool CapbilityOfLighting(MirGameInstanceModel GameInstance)
@@ -2683,7 +2692,7 @@ public static class GoRunFunction
 
     public static async Task TryRestForGreyName(MirGameInstanceModel GameInstance)
     {
-        if (!(CapbilityOfSekeleton(GameInstance) || CapbilityOfTemptation(GameInstance)))
+        if (!(CapbilityOfSekeletonOrDog(GameInstance) || CapbilityOfTemptation(GameInstance)))
         {
             return;
         }
@@ -2714,7 +2723,7 @@ public static class GoRunFunction
     }
     public static async Task TryRestForGuard(MirGameInstanceModel GameInstance)
     {
-        if (!(CapbilityOfSekeleton(GameInstance) || CapbilityOfTemptation(GameInstance)))
+        if (!(CapbilityOfSekeletonOrDog(GameInstance) || CapbilityOfTemptation(GameInstance)))
         {
             return;
         }
@@ -2815,7 +2824,7 @@ public static class GoRunFunction
 
     public static async Task TryAliveRecallMob(MirGameInstanceModel GameInstance)
     {
-        if (!CapbilityOfSekeleton(GameInstance))
+        if (!CapbilityOfSekeletonOrDog(GameInstance))
         {
             return;
         }
@@ -2839,8 +2848,7 @@ public static class GoRunFunction
             return;
         }
         // 1. 先检查身边
-        var myname = $"变异骷髅({GameInstance.AccountInfo.CharacterName})";
-        var monster = GameInstance.Monsters.FirstOrDefault(o => !o.Value.isDead && o.Value.Name == myname);
+        var monster = GameInstance.Monsters.FirstOrDefault(o => o.Value.isMyMons && !o.Value.isDead);
         if (monster.Value != null)
         {
             // GameInstance.GameInfo("身边有召唤兽, 跳过召回");
@@ -2871,7 +2879,8 @@ public static class GoRunFunction
         {
             return;
         }
-        sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+        var spId = CapbilityOfDog(GameInstance) ? GameConstants.Skills.RecallDogSpellId : GameConstants.Skills.RecallBoneSpellId;
+        sendSpell(GameInstance, spId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
         await Task.Delay(300);
         // 再自动换回
         await NpcFunction.autoReplaceEquipment(GameInstance, false);
@@ -3123,15 +3132,21 @@ public static class GoRunFunction
 
     public static async Task upgradeBBSkill(MirGameInstanceModel GameInstance)
     {
-        if (!CapbilityOfSekeleton(GameInstance)) return;
-        GameInstance.GameDebug("升级骨法");
+        if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
+        GameInstance.GameDebug("升级骨狗法");
         var level = GameInstance.CharacterStatus.Level;
-        var target = level >= 26 ? 3 : (level >= 23 ? 2 : 1);
+        var targetBone = level >= 26 ? 3 : (level >= 23 ? 2 : 1);
+        var targetDog = level >= 40 ? 3 : (level >= 37 ? 2 : 1);
         while (true)
         {
-            var skill = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId);
+            var skillBone = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallBoneSpellId);
+            var skillDog = GameInstance.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.RecallDogSpellId);
+            var skill = skillBone?.level < targetBone ? skillBone : (skillDog?.level < targetDog ? skillDog : null);
+            if (skill == null) break;
+            var target = skill == skillBone ? targetBone : targetDog;
+            var spId = skill == skillBone ? GameConstants.Skills.RecallBoneSpellId : GameConstants.Skills.RecallDogSpellId;
+
             await Task.Delay(100);
-            if (skill == null) continue;
             if (skill.level >= target)
             {
                 break;
@@ -3225,7 +3240,7 @@ public static class GoRunFunction
                 await Task.Delay(1000);
                 continue;
             }
-            sendSpell(GameInstance, GameConstants.Skills.RecallBoneSpellId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+            sendSpell(GameInstance, spId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
             await Task.Delay(1000);
         }
 

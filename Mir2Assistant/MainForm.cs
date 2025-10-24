@@ -610,14 +610,18 @@ namespace Mir2Assistant
                 {
                     bookName = "召唤骷髅";
                 }
-                if (instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level >= 22 && !GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                if (instanceValue.CharacterStatus.coin > 3000 && instanceValue.CharacterStatus.Level >= 22 && !GoRunFunction.CapbilityOfMageDefUp(instanceValue))
                 {
                     bookName = "幽灵盾";
                 }
-                if (instanceValue.CharacterStatus.coin > 5000 && instanceValue.CharacterStatus.Level >= 25 && !GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                if (instanceValue.CharacterStatus.coin > 5000 && instanceValue.CharacterStatus.Level >= 25 && !GoRunFunction.CapbilityOfDefUp(instanceValue))
                 {
                     bookName = "神圣战甲术";
                 }
+                // if (instanceValue.CharacterStatus.coin > 5000 && instanceValue.CharacterStatus.Level >= 35 && !GoRunFunction.CapbilityOfDefUp(instanceValue))
+                // {
+                //     bookName = "召唤神兽";
+                // }
             }
             else if (instanceValue.AccountInfo.role == RoleType.mage)
             {
@@ -1441,7 +1445,7 @@ namespace Mir2Assistant
                                         // 主号没药
                                         var lowMPMain = hangMapId != "D002" && accountInfo.IsMainControl && MyCharacterStatus.coin > 3000 && MyCharacterStatus.Level > 9 && miscs.Where(o => o.Name.Contains("魔法药")).Count() < 2;
                                         var isLowFushen = false;
-                                        if (GoRunFunction.CapbilityOfSekeleton(instanceValue))
+                                        if (GoRunFunction.CapbilityOfSekeletonOrDog(instanceValue))
                                         {
                                             var fuName = GameConstants.Items.getFushen(MyCharacterStatus.Level);
                                             // 总计只剩50 跑路足够了

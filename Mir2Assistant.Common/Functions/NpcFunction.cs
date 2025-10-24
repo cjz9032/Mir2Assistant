@@ -714,7 +714,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task BuyRepairAllFushen(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            if (!GoRunFunction.CapbilityOfSekeleton(gameInstance))
+            if (!GoRunFunction.CapbilityOfSekeletonOrDog(gameInstance))
             {
                 return;
             }
