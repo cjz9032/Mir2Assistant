@@ -2677,7 +2677,7 @@ public static class GoRunFunction
         else
         {
             // 纯包围
-            lastFinded = allPeople.Where(t => t.CurrentHP < t.MaxHP * 0.6
+            lastFinded = allPeople.Where(t => t.CurrentHP < t.MaxHP * 0.8
                 // t.Value.CurrentHP < 30 绝对值不管
                 &&
                 CheckIfSurrounded(GameInstance.CharacterStatus.MapId, t.X, t.Y, GameInstance.MonstersByPosition)
