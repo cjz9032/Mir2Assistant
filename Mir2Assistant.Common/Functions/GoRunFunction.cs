@@ -2487,10 +2487,85 @@ public static class GoRunFunction
                     await Task.Delay(2000); // npc补充500ms
                 }
                 await Task.Delay(1500);
+                // 暂时先加这, 不要堵门, 走开一点就行
+                await GoFlushDoor(GameInstance);
             }
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// 传送后检查是否踩在传送点上，如果是则走开避免堵门
+    /// </summary>
+    public static async Task GoFlushDoor(MirGameInstanceModel gameInstance)
+    {
+        CharacterStatusFunction.GetInfo(gameInstance);
+        var myX = gameInstance.CharacterStatus!.X;
+        var myY = gameInstance.CharacterStatus!.Y;
+        var mapId = gameInstance.CharacterStatus.MapId;
+        
+        // 获取当前地图的所有传送点
+        var portalPoints = MapData.GetPortalPoints(mapId);
+        
+        // 检查当前位置是否是传送点
+        bool isOnPortal = portalPoints.Any(p => p.x == myX && p.y == myY);
+        
+        if (!isOnPortal)
+        {
+            // 不在传送点上，无需移动
+            return;
+        }
+        
+        gameInstance.GameDebug($"当前踩在传送点上 ({myX}, {myY})，寻找附近的安全点...");
+        
+        // 获取地图障碍物数据
+        var (width, height, obstacles) = retriveMapObstacles(mapId);
+        
+        // 寻找周围N格内的非障碍、非传送点的位置
+        var searchRadius = 5;
+        var candidatePoints = new List<(int x, int y, int distance)>();
+        
+        for (int dy = -searchRadius; dy <= searchRadius; dy++)
+        {
+            for (int dx = -searchRadius; dx <= searchRadius; dx++)
+            {
+                if (dx == 0 && dy == 0) continue; // 跳过当前位置
+                
+                int targetX = myX + dx;
+                int targetY = myY + dy;
+                
+                // 检查边界
+                if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height)
+                    continue;
+                
+                // 检查是否是障碍物
+                if (obstacles[targetY * width + targetX] == 1)
+                    continue;
+                
+                // 检查是否是传送点
+                if (portalPoints.Any(p => p.x == targetX && p.y == targetY))
+                    continue;
+                
+                // 计算距离
+                int distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
+                candidatePoints.Add((targetX, targetY, distance));
+            }
+        }
+        
+        if (candidatePoints.Count == 0)
+        {
+            gameInstance.GameWarning("未找到合适的逃离点，无法离开传送点");
+            return;
+        }
+        
+        // 按距离排序，选择最近的点
+        var targetPoint = candidatePoints.OrderBy(p => p.distance).First();
+        
+        gameInstance.GameDebug($"移动到附近安全点: ({targetPoint.x}, {targetPoint.y})");
+        
+        // 移动到目标点
+        await PerformPathfinding(CancellationToken.None, gameInstance, targetPoint.x, targetPoint.y, "", 0, true, 0, 10);
     }
 
 
