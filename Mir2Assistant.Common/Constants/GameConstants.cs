@@ -515,6 +515,13 @@ public static class GameConstants
             return level < 29 ? "护身符" : "护身符(大)";
         }
 
+        public static readonly List<string> banPickItems =
+           new List<string>
+           {
+        "护身符",
+        "护身符(大)",
+        "地牢传送卷"
+           };
 
         private static readonly List<string> binItems =
      new List<string>

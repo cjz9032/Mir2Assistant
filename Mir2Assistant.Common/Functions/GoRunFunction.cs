@@ -95,6 +95,9 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(instanceValue);
         }
 
+        await dropLowFu(instanceValue);
+
+
         // 战士扔蓝 太阳
         if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
@@ -225,7 +228,8 @@ public static class GoRunFunction
 
         var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
                 !pickupItemIds.Contains(o.Value.Id) &&
-                !curinItems.Contains(o.Value.Name)
+                !curinItems.Contains(o.Value.Name) &&
+                !GameConstants.Items.banPickItems.Contains(o.Value.Name)
             // 不是自己的 但是是别人的 不拿
             && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
             // 普通衣服分类. 超级衣服自然都要了 -- todo 其他狍子gender不对
@@ -3321,17 +3325,19 @@ public static class GoRunFunction
         }
     }
 
-    public static async Task<bool> detectAndWearHushen(MirGameInstanceModel GameInstance)
+    public static async Task<bool> detectAndWearHushen(MirGameInstanceModel GameInstance, bool forDog = false)
     {
         var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
         var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
         // 先自动换符咒
-        if (useItem != null)
+        if (useItem != null && (forDog ? useItem.Duration > 51 : true))
         {
             return true;
         }
 
-        var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
+        var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName
+            && (forDog ? o.Duration > 51 : true)
+        ).FirstOrDefault();
         if (itemF == null)
         {
             return false;
@@ -3346,6 +3352,20 @@ public static class GoRunFunction
     }
 
 
+    public static async Task dropLowFu(MirGameInstanceModel GameInstance)
+    {
+        if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
+        var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
+        var items = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && o.Duration < 51).ToList();
+        if (items.Count > 0)
+        {
+            foreach (var item in items)
+            {
+                await DropItem(GameInstance, item);
+            }
+            await NpcFunction.RefreshPackages(GameInstance);
+        }
+    }
     public static async Task upgradeBBSkill(MirGameInstanceModel GameInstance)
     {
         if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
@@ -3361,6 +3381,7 @@ public static class GoRunFunction
             if (skill == null) break;
             var target = skill == skillBone ? targetBone : targetDog;
             var spId = skill == skillBone ? GameConstants.Skills.RecallBoneSpellId : GameConstants.Skills.RecallDogSpellId;
+            var forDog = spId == GameConstants.Skills.RecallDogSpellId;
 
             await Task.Delay(100);
             if (skill.level >= target)
@@ -3374,9 +3395,11 @@ public static class GoRunFunction
             }
             var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
             // 专用商人 更方便, 也就是土的药和F
-            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName).FirstOrDefault();
+            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && (forDog ? o.Duration > 51 : true)).FirstOrDefault();
             if (item == null)
             {
+                await dropLowFu(GameInstance);
+                // 清理不要的
                 // 购买
                 var count = 3;
                 GameInstance.GameInfo($"购买{fuName}{count}个");
@@ -3450,14 +3473,14 @@ public static class GoRunFunction
                 }
                 await Task.Delay(300);
             }
-            var isWearSS = await detectAndWearHushen(GameInstance);
+            var isWearSS = await detectAndWearHushen(GameInstance, forDog);
             if (!isWearSS)
             {
                 await Task.Delay(1000);
                 continue;
             }
             sendSpell(GameInstance, spId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-            await Task.Delay(1000);
+            await Task.Delay(1500);
         }
 
     }
