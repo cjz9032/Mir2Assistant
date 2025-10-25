@@ -743,6 +743,42 @@ namespace Mir2Assistant
             }
 
         }
+        private async Task waitForMainControlReady(MirGameInstanceModel instanceValue)
+        {
+            // 等待主号
+            // 先去安全点 如果在4
+            var CharacterStatus = instanceValue.CharacterStatus!;
+            if (CharacterStatus.MapId == "4")
+            {
+                await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B347", 10);
+                await waitForResumeHp(instanceValue);
+            }
+            if (CharacterStatus.MapId == "3" && !instanceValue.AccountInfo.IsMainControl)
+            {
+                await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0156", 10);
+                await waitForResumeHp(instanceValue);
+            }
+
+            if (!instanceValue.AccountInfo.IsMainControl)
+            {
+                var instances = GameState.GameInstances;
+                while (true)
+                {
+                    if (!instances[0].isHomePreparing)
+                    {
+                        instanceValue.GameInfo("主号已经开始GO exit");
+                        break;
+                    }
+                    await Task.Delay(10_000);
+                    // 检查怪就break先
+                    var monsters = instanceValue.Monsters;
+                    if (monsters.Any(o => o.Value.stdAliveMon))
+                    {
+                        break;
+                    }
+                }
+            }
+        }
         private async Task prepareBags(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             var CharacterStatus = instanceValue.CharacterStatus!;
@@ -1248,23 +1284,10 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "1";
                                 }
-
-                                if (!instanceValue.AccountInfo.IsMainControl)
+                                if(instanceValue.isHomePreparing)
                                 {
-                                    while (true)
-                                    {
-                                        if (!instances[0].isHomePreparing)
-                                        {
-                                            instanceValue.GameInfo("主号已经开始GO 0 exit");
-                                            break;
-                                        }
-                                        instanceValue.GameInfo("等主号 0");
-                                        await Task.Delay(10_000);
-                                    }
+                                    await waitForMainControlReady(instanceValue);
                                 }
-
-
-
 
                                 instanceValue.isHomePreparing = false;
                                 // var slaveFromMap = "D2071";
@@ -1306,7 +1329,7 @@ namespace Mir2Assistant
                                         var accountInfo = instanceValue.AccountInfo;
                                         if (!GameConstants.HomeMaps.Contains(MyCharacterStatus.MapId) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
                                         {
-                                            System.Diagnostics.Debugger.Break();
+                                            //System.Diagnostics.Debugger.Break();
                                         }
                                         exitForSwichMap = false;
                                         // 小号跟随回家
@@ -1569,31 +1592,8 @@ namespace Mir2Assistant
 
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
                                     instanceValue.isHomePreparing = false;
-                                    // 等待主号
-                                    // 先去安全点 如果在4
-                                    if (CharacterStatus.MapId == "4")
-                                    {
-                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "B346", 10);
-                                        await waitForResumeHp(instanceValue);
-                                    }
-                                    if (CharacterStatus.MapId == "3" && !instanceValue.AccountInfo.IsMainControl)
-                                    {
-                                        await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0156", 10);
-                                        await waitForResumeHp(instanceValue);
-                                    }
-
-                                    if (!instanceValue.AccountInfo.IsMainControl)
-                                    {
-                                        while (true)
-                                        {
-                                            if (!instances[0].isHomePreparing)
-                                            {
-                                                instanceValue.GameInfo("主号已经开始GO exit");
-                                                break;
-                                            }
-                                            await Task.Delay(10_000);
-                                        }
-                                    }
+                                    
+                                    await waitForMainControlReady(instanceValue);
                                 }
                                 else
                                 {

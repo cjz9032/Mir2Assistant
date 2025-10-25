@@ -2258,7 +2258,7 @@ public static class GoRunFunction
                     // being door position
                     await GoTurn(GameInstance, node.dir);
                 }
-                var whileList = new List<string>() { "0132", "0156" };
+                var whileList = new List<string>() { "0132", "0156", "B347" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
@@ -2521,8 +2521,11 @@ public static class GoRunFunction
         
         // 获取地图障碍物数据
         var (width, height, obstacles) = retriveMapObstacles(mapId);
+
+        // 获取怪物位置
+        var monsters = gameInstance.MonstersByPosition;
         
-        // 寻找周围N格内的非障碍、非传送点的位置
+        // 寻找周围N格内的非障碍、非传送点、非怪物的位置
         var searchRadius = 5;
         var candidatePoints = new List<(int x, int y, int distance)>();
         
@@ -2545,6 +2548,10 @@ public static class GoRunFunction
                 
                 // 检查是否是传送点
                 if (portalPoints.Any(p => p.x == targetX && p.y == targetY))
+                    continue;
+                
+                // 检查是否有怪物
+                if (MonsterFunction.GetMonstersByPosition(gameInstance.MonstersByPosition, targetX, targetY).Count > 0)
                     continue;
                 
                 // 计算距离
