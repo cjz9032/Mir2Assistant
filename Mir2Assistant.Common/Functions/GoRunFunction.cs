@@ -3330,13 +3330,13 @@ public static class GoRunFunction
         var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
         var useItem = GameInstance.CharacterStatus.useItems.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName).FirstOrDefault();
         // 先自动换符咒
-        if (useItem != null && (forDog ? useItem.Duration > 51 : true))
+        if (useItem != null && (forDog ? useItem.Duration > 6 : true))
         {
             return true;
         }
 
         var itemF = GameInstance.Items.Where(o => !o.IsEmpty && o.stdMode == 25 && o.Name == fuName
-            && (forDog ? o.Duration > 51 : true)
+            && (forDog ? o.Duration > 6 : true)
         ).FirstOrDefault();
         if (itemF == null)
         {
@@ -3356,7 +3356,7 @@ public static class GoRunFunction
     {
         if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
         var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
-        var items = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && o.Duration < 51).ToList();
+        var items = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && o.Duration < 6).ToList();
         if (items.Count > 0)
         {
             foreach (var item in items)
@@ -3395,7 +3395,7 @@ public static class GoRunFunction
             }
             var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
             // 专用商人 更方便, 也就是土的药和F
-            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && (forDog ? o.Duration > 51 : true)).FirstOrDefault();
+            var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && (forDog ? o.Duration > 6 : true)).FirstOrDefault();
             if (item == null)
             {
                 await dropLowFu(GameInstance);
