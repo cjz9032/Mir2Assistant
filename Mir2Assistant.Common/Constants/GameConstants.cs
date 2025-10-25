@@ -608,7 +608,7 @@ public static class GameConstants
             {
                 temp.Remove("八荒");
             }
-            if (level < 20)
+            if (level < 19)
             {
                 if (role == RoleType.mage)
                 {
