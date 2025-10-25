@@ -63,25 +63,27 @@ public static class GoRunFunction
         foreach (var item in itemsEq)
         {
             // item.stdModeToUseItemIndex
+            var dropsBeforeIds = instanceValue.DropsItems.Values.Select(o => o.Id).ToHashSet();
+            var name = item.Name;
             DropItem(instanceValue, item);
+            ItemFunction.ReadDrops(instanceValue, true);
             // 确认落地, 并屏蔽
             // 1秒5, 为了准确找到先用名字
             var times = 0;
-            var dropsBeforeIds = instanceValue.DropsItems.Values.Select(o => o.Id).ToHashSet();
-            while (times < 6)
+            while (times < 3)
             {
-                await Task.Delay(200);
+                await Task.Delay(400);
                 // 直接查找新增的同名物品
                 var newDropItem = instanceValue.DropsItems.Values.FirstOrDefault(o =>
-                    !dropsBeforeIds.Contains(o.Id) && o.Name == item.Name
+                    !dropsBeforeIds.Contains(o.Id) && o.Name == name
                     // 目前设6距离先, 不太可能扔太远
-                    && Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 6
+                    && Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 7
                     );
 
                 if (newDropItem != null)
                 {
                     pickupItemIds.Add(newDropItem.Id);
-                    instanceValue.GameDebug($"装备 {item.Name} 已落地并加入黑名单，ID: {newDropItem.Id}");
+                    instanceValue.GameDebug($"装备 {name} 已落地并加入黑名单，ID: {newDropItem.Id}");
                     break;
                 }
                 times++;
