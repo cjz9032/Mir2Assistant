@@ -2117,7 +2117,15 @@ public static class GoRunFunction
             var goNodes = new List<(byte dir, byte steps, int x, int y)>();
             try
             {
-                goNodes = genGoPath(GameInstance!, connection.From.X, connection.From.Y, localBlurRange, nearBlur).ToList();
+                // 当前就在, 不需要走
+                if (connection.From.X == GameInstance.CharacterStatus.X && connection.From.Y == GameInstance.CharacterStatus.Y)
+                {
+                    goNodes = new List<(byte dir, byte steps, int x, int y)>() { (0, 0, connection.From.X, connection.From.Y) };
+                }
+                else
+                {
+                    goNodes = genGoPath(GameInstance!, connection.From.X, connection.From.Y, localBlurRange, nearBlur).ToList();
+                }
             }
             catch (Exception ex)
             {
@@ -2197,8 +2205,15 @@ public static class GoRunFunction
                 var oldY = GameInstance!.CharacterStatus!.Y;
                 var (nextX, nextY) = getNextPostion(oldX, oldY, node.dir, node.steps);
 
-                GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
-
+                if (node.steps > 0)
+                {
+                    GoRunAlgorithm(GameInstance, oldX, oldY, node.dir, node.steps);
+                }
+                else
+                {
+                    // being door position
+                    await GoTurn(GameInstance, node.dir);
+                }
                 var whileList = new List<string>() { "0132", "0156" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
@@ -2380,6 +2395,7 @@ public static class GoRunFunction
                                 await Task.Delay(200, cancellationToken);
                                 GameInstance.GameWarning($"反弹");
                                 var otherClientMonster = GameState.GameInstances
+                                    .Where(t => t.CharacterStatus!.MapId == GameInstance.CharacterStatus.MapId)
                                     .Where(t => t.AccountInfo.Account != GameInstance.AccountInfo.Account)
                                     .SelectMany(t => t.Monsters.Values)
                                     .FirstOrDefault(m => m.isTeams && m.Name == GameInstance.AccountInfo.CharacterName);
@@ -2553,6 +2569,10 @@ public static class GoRunFunction
         var allMonsInClients = new List<MonsterModel>();
         foreach (var instance in instances)
         {
+            if (instance.CharacterStatus!.MapId != GameInstance.CharacterStatus.MapId)
+            {
+                continue;
+            }
             // 只取这个实例里对应自己账号的玩家信息和宝宝信息
             var selfMonsters = instance.Monsters.Values.Where(m =>
                 m.isSelf ||
@@ -2562,7 +2582,6 @@ public static class GoRunFunction
         }
 
         var ESTIMATED_HEAL = GameInstance.CharacterStatus.Level * 2;
-
 
 
 
@@ -2659,7 +2678,7 @@ public static class GoRunFunction
         }
         // 目前有个bug 坐标不对 , 所以先用自己的, 这样只有自己出错, 但是低血可以防止问题
         // 待选组人
-        var allPeople = GameState.GameInstances.Select(t => t.CharacterStatus).Where(t => !t.isDead && !t.isHidden &&
+        var allPeople = GameState.GameInstances.Where(t => t.CharacterStatus!.MapId == GameInstance.CharacterStatus.MapId).Select(t => t.CharacterStatus).Where(t => !t.isDead && !t.isHidden &&
                 Math.Abs(GameInstance.CharacterStatus.X - t.X) < 11 && Math.Abs(GameInstance.CharacterStatus.Y - t.Y) < 11
         );
         CharacterStatusModel? lastFinded;
@@ -2700,7 +2719,7 @@ public static class GoRunFunction
         }
         // 有BB就尝试轮询休息 注意会打断别的任务, 目前WAD
         // 查找灰名
-        var anyTeamMemGrey = GameState.GameInstances.Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
+        var anyTeamMemGrey = GameState.GameInstances.Where(t => t.CharacterStatus!.MapId == GameInstance.CharacterStatus.MapId).Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
         if (anyTeamMemGrey)
         {
             CharacterStatusFunction.AddChat(GameInstance, "@rest");
@@ -2831,7 +2850,7 @@ public static class GoRunFunction
             return;
         }
         // 有红名先别高
-        var anyTeamMemGrey = GameState.GameInstances.Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
+        var anyTeamMemGrey = GameState.GameInstances.Where(t => t.CharacterStatus!.MapId == GameInstance.CharacterStatus.MapId).Select(t => t.CharacterStatus).Any(t => !t.isDead && t.NameColor == 0x3963A5);
         if (anyTeamMemGrey)
         {
             return;
