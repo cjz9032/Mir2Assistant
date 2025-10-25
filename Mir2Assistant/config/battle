@@ -35,6 +35,20 @@ ZC.H+3B1F1 - 5B                    - pop ebx
 ZC.H+3B1F2 - C3                    - ret 
 做跳板
 
+// CS得到的显血 心灵1/0 得到
+Client.exe+1C93A0 - E8 9B5AF4FF           - call Client.exe+10EE40
+Client.exe+1C93A5 - E9 A6000000           - jmp Client.exe+1C9450
+Client.exe+1C93AA - 8B 45 E8              - mov eax,[ebp-18]
+Client.exe+1C93AD - 80 B8 4C010000 00     - cmp byte ptr [eax+0000014C],00 { 0 } -- 02 , 这样1/0都可用
+Client.exe+1C93B4 - 0F84 96000000         - je Client.exe+1C9450
+Client.exe+1C93BA - 8B 45 E8              - mov eax,[ebp-18]
+Client.exe+1C93BD - 66 83 78 48 01        - cmp word ptr [eax+48],01 { 1 }
+Client.exe+1C93C2 - 0F86 88000000         - jbe Client.exe+1C9450
+Client.exe+1C93C8 - 8B 45 E8              - mov eax,[ebp-18]
+Client.exe+1C93CB - 80 78 24 00           - cmp byte ptr [eax+24],00 { 0 }
+
+02FF9EA0
+
 // 遇怪 
 ZC.H+24C617 - 8B 8D 38FEFFFF        - mov ecx,[ebp-000001C8]
 ZC.H+24C61D - BA 0A000000           - mov edx,0000000A { 10 }
