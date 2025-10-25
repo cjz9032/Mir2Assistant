@@ -70,9 +70,9 @@ public static class GoRunFunction
             // 确认落地, 并屏蔽
             // 1秒5, 为了准确找到先用名字
             var times = 0;
-            while (times < 3)
+            while (times < 6)
             {
-                await Task.Delay(400);
+                await Task.Delay(150);
                 // 直接查找新增的同名物品
                 var newDropItem = instanceValue.DropsItems.Values.FirstOrDefault(o =>
                     !dropsBeforeIds.Contains(o.Id) && o.Name == name
@@ -2072,8 +2072,9 @@ public static class GoRunFunction
     }
     public static bool CheckIfBlockMons(MirGameInstanceModel gameInstance)
     {
-        var monsters = gameInstance.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 102);
-        return monsters;
+        // var monsters = gameInstance.Monsters.Any(o => o.Value.stdAliveMon && o.Value.Appr == 102);
+        // return monsters;
+        return false;
     }
 
     public static bool CheckIfSurrounded(string MapId, int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
