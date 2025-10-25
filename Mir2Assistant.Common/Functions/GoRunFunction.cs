@@ -3398,46 +3398,47 @@ public static class GoRunFunction
             var item = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && (forDog ? o.Duration > 6 : true)).FirstOrDefault();
             if (item == null)
             {
-                await dropLowFu(GameInstance);
-                // 清理不要的
-                // 购买
-                var count = 3;
-                GameInstance.GameInfo($"购买{fuName}{count}个");
-                var (npcMap, npcName, x, y) = NpcFunction.PickMiscNpcByMap(GameInstance, "SKILLBB");
-                bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
-                if (pathFound)
-                {
-                    await NpcFunction.ClickNPC(GameInstance!, npcName);
-                    await NpcFunction.Talk2(GameInstance!, "@buy");
+                await NpcFunction.BuyRepairAllFushen(GameInstance, CancellationToken.None);
+                // await dropLowFu(GameInstance);
+                // // 清理不要的
+                // // 购买
+                // var count = 4;
+                // GameInstance.GameInfo($"购买{fuName}{count}个");
+                // var (npcMap, npcName, x, y) = NpcFunction.PickMiscNpcByMap(GameInstance, "SKILLBB");
+                // bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
+                // if (pathFound)
+                // {
+                //     await NpcFunction.ClickNPC(GameInstance!, npcName);
+                //     await NpcFunction.Talk2(GameInstance!, "@buy");
 
-                    nint[] data = MemoryUtils.PackStringsToData(fuName);
-                    SendMirCall.Send(GameInstance, 3005, data);
-                    await Task.Delay(1000);
-                    // 判断是否存在
+                //     nint[] data = MemoryUtils.PackStringsToData(fuName);
+                //     SendMirCall.Send(GameInstance, 3005, data);
+                //     await Task.Delay(1000);
+                //     // 判断是否存在
 
-                    var memoryUtils = GameInstance.memoryUtils!;
-                    var menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
-                    (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
-                    if (menuListLen > 0)
-                    {
-                        for (int i = 0; i < count; i++)
-                        {
-                            var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
-                            memoryUtils.WriteInt(addr, 0);
-                            await Task.Delay(600);
-                            SendMirCall.Send(GameInstance, 3006, new nint[] { 0 });
-                            await Task.Delay(700);
-                        }
-                    }
+                //     var memoryUtils = GameInstance.memoryUtils!;
+                //     var menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
+                //     (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
+                //     if (menuListLen > 0)
+                //     {
+                //         for (int i = 0; i < count; i++)
+                //         {
+                //             var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
+                //             memoryUtils.WriteInt(addr, 0);
+                //             await Task.Delay(600);
+                //             SendMirCall.Send(GameInstance, 3006, new nint[] { 0 });
+                //             await Task.Delay(700);
+                //         }
+                //     }
 
-                    await NpcFunction.RefreshPackages(GameInstance);
-                }
+                //     await NpcFunction.RefreshPackages(GameInstance);
+                // }
             }
             var item2 = GameInstance.Items.Concat(GameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).FirstOrDefault();
             if (item2 == null)
             {
                 // 购买
-                var count = 10;
+                var count = 20;
                 GameInstance.GameInfo($"购买蓝{count}个");
                 var (npcMap, npcName, x, y) = NpcFunction.PickDrugNpcByMap(GameInstance, "SKILLBB");
                 bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
@@ -3448,8 +3449,6 @@ public static class GoRunFunction
                     await Task.Delay(500);
                     // 已经检测过存在了, 只看是否为空先
                     await NpcFunction.BuyImmediate(GameInstance, "魔法药(小量)", count);
-                    await NpcFunction.RefreshPackages(GameInstance);
-
                     await NpcFunction.BuyImmediate(GameInstance, "魔法药(中量)", count);
                     await NpcFunction.RefreshPackages(GameInstance);
                 }
@@ -3480,7 +3479,7 @@ public static class GoRunFunction
                 continue;
             }
             sendSpell(GameInstance, spId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-            await Task.Delay(1500);
+            await Task.Delay(2500);
         }
 
     }
