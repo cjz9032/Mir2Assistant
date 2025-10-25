@@ -538,31 +538,35 @@ public static class GameConstants
             "召唤骷髅",
             "灵魂火符",
             "幽灵盾",
+            "心灵启示",
+            "攻击神水",
             "灰色药粉(少量)",
             "黄色药粉(少量)",
             // "肉",
+            "蜡烛",
             "护身符",
             "护身符(大)",
             "随机传送卷",
             // "鸡肉",
             "食人树叶",
+
             "木剑",
             "布衣(男)",
             "布衣(女)",
+            
           //  "短剑",
-          //  "青铜斧",
-            "八荒",
-            "玻璃戒指",
-            "黑檀项链",
-            "黑色水晶项链",
-            "黄色水晶项链",
+         //  "青铜斧",
+        //  "八荒",
+            // "玻璃戒指",
+            // "黑檀项链",
+            // "黑色水晶项链",
+            // "黄色水晶项链",
             // "白色虎齿项链",
-            "六角戒指",
-            "琥珀项链",
-            "小手镯",
-            "银手镯",
-            "心灵启示",
-            "攻击神水"
+            // "六角戒指",
+            // "琥珀项链",
+            // "小手镯",
+            // "银手镯",
+      
             // lj书
      };
         // 新手装
@@ -570,32 +574,32 @@ public static class GameConstants
         private static readonly List<string> binItemsNoob =
            new List<string>
            {
-            "古铜戒指",
+            // "古铜戒指",
             // "牛角戒指",
             // "金项链",
-            "传统项链",
-            "铁手镯",
-            "皮制手套",
+            // "传统项链",
+            // "铁手镯",
+            // "皮制手套",
             // "钢手镯",
-            "匕首",
-            "青铜剑",
+            // "匕首",
+            // "青铜剑",
             // "铁剑",
-            "青铜头盔",
-            "白金项链",
-            "凤凰明珠"
+            // "青铜头盔",
+            // "白金项链",
+            // "凤凰明珠"
            };
 
         private static readonly List<string> binItemsMid =
   new List<string>
   {
-            "牛角戒指",
-            "金项链",
-            "钢手镯",
-            "铁剑",
-            "短剑",
-            "青铜斧",
-            "魔鬼项链",
-            "蓝色水晶戒指",
+            // "牛角戒指",
+            // "金项链",
+            // "钢手镯",
+            // "铁剑",
+            // "短剑",
+            // "青铜斧",
+            // "魔鬼项链",
+            // "蓝色水晶戒指",
   };
         public static List<string> GetBinItems(MirGameInstanceModel gameInstance, int level, RoleType role)
         {
@@ -604,17 +608,17 @@ public static class GameConstants
                 return binItems;
             }
             var temp = binItems.Concat(binItemsNoob).ToList();
-            if (role == RoleType.blade)
-            {
-                temp.Remove("八荒");
-            }
+            // if (role == RoleType.blade)
+            // {
+            //     temp.Remove("八荒");
+            // }
             if (level < 19)
             {
-                if (role == RoleType.mage)
-                {
-                    temp.Remove("六角戒指");
-                    temp.Remove("琥珀项链");
-                }
+                // if (role == RoleType.mage)
+                // {
+                //     temp.Remove("六角戒指");
+                //     temp.Remove("琥珀项链");
+                // }
                 return temp.ToList();
             }
             if (role == RoleType.taoist)
@@ -633,10 +637,10 @@ public static class GameConstants
                 }
             }
 
-            if (role != RoleType.mage)
-            {
-                temp.Add("生铁戒指");
-            }
+            // if (role != RoleType.mage)
+            // {
+            //     temp.Add("生铁戒指");
+            // }
 
             return temp.Concat(binItemsMid).ToList();
         }

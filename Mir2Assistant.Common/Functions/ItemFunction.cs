@@ -143,7 +143,7 @@ namespace Mir2Assistant.Common.Functions
                             }
                             // force update by sp rule 2
                             // 同样可以覆盖上面判断 设置100 by jpnamehashset
-                            if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks))
+                            if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks) && item.Name != "修罗") // 唯一特殊的
                             {
                                 item.GodPts = 100;
                                 item.IsGodly = true;
@@ -201,7 +201,7 @@ namespace Mir2Assistant.Common.Functions
                 item.X = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物X"]);
                 item.Y = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Y"]);
                 item.Looks = memoryUtils.ReadToShort(itemAddr + GameState.MirConfig["地物Looks"]);
-                if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks))
+                if (GameConstants.Items.JpItemsByLooks.Contains(item.Looks) && item.Name != "修罗")
                 {
                     // 或者就是强制 IsGodly GodPts 100
                     item.GodPts = 100;

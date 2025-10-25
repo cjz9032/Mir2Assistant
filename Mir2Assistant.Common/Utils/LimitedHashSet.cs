@@ -1,32 +1,71 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace Mir2Assistant.Common.Utils
 {
-    public class LimitedHashSet<T> : HashSet<T>
+    /// <summary>
+    /// 线程安全的容量限制 HashSet，基于 ConcurrentDictionary 实现
+    /// </summary>
+    public class LimitedHashSet<T> where T : notnull
     {
-        private readonly int maxCapacity;
+        private readonly ConcurrentDictionary<T, byte> _dict;
+        private readonly int _maxCapacity;
+        private readonly object _addLock = new object();
 
-        public LimitedHashSet(int maxCapacity) : base()
+        public LimitedHashSet(int maxCapacity)
         {
-            this.maxCapacity = maxCapacity;
+            _maxCapacity = maxCapacity;
+            _dict = new ConcurrentDictionary<T, byte>();
         }
 
-        public new bool Add(T item)
+        /// <summary>
+        /// 添加元素，如果达到容量上限则移除一个旧元素
+        /// </summary>
+        public bool Add(T item)
         {
-            if (Count >= maxCapacity)
+            lock (_addLock)
             {
-                // 如果已达到最大容量，移除最早添加的元素
-                // 由于HashSet不保证顺序，我们只能移除任意一个元素
-                using (var enumerator = GetEnumerator())
+                // 如果已达到最大容量，移除第一个元素
+                if (_dict.Count >= _maxCapacity)
                 {
-                    if (enumerator.MoveNext())
+                    var firstKey = _dict.Keys.FirstOrDefault();
+                    if (firstKey != null)
                     {
-                        Remove(enumerator.Current);
+                        _dict.TryRemove(firstKey, out _);
                     }
                 }
+                return _dict.TryAdd(item, 0);
             }
-            return base.Add(item);
         }
+
+        /// <summary>
+        /// 检查元素是否存在（线程安全，无锁）
+        /// </summary>
+        public bool Contains(T item)
+        {
+            return _dict.ContainsKey(item);
+        }
+
+        /// <summary>
+        /// 移除元素
+        /// </summary>
+        public bool Remove(T item)
+        {
+            return _dict.TryRemove(item, out _);
+        }
+
+        /// <summary>
+        /// 清空所有元素
+        /// </summary>
+        public void Clear()
+        {
+            _dict.Clear();
+        }
+
+        /// <summary>
+        /// 获取当前元素数量
+        /// </summary>
+        public int Count => _dict.Count;
     }
-} 
+}

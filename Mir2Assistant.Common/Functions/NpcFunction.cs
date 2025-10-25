@@ -401,7 +401,7 @@ namespace Mir2Assistant.Common.Functions
             }
             // 土城
             // 蜈蚣
-            if (mapId.StartsWith("D6") || mapId.StartsWith("E7") || mapId.StartsWith("D5") || mapId.StartsWith("015") || mapId.StartsWith("014"))
+            if (mapId.StartsWith("D6") || mapId.StartsWith("E7") || mapId.StartsWith("D5") || mapId.StartsWith("015") || mapId.StartsWith("014") || mapId.StartsWith("014"))
             {
                 home = "3";
             }
@@ -433,7 +433,9 @@ namespace Mir2Assistant.Common.Functions
             }
             else if (mapId == "3")
             {
-                return ("3", "小贩", 663, 302);
+                // 沙巴克
+                // return ("3", "小贩", 663, 302);
+                return ("3", "流浪", 349, 334);
             }
             else if (mapId == "SKILLBB")
             {
@@ -469,7 +471,9 @@ namespace Mir2Assistant.Common.Functions
             }
             if (mapId == "3")
             {
-                return ("0153", "药店", 16, 9);
+                // 沙巴克
+                // return ("0153", "药店", 16, 9);
+                return ("3", "药", 359, 336);
             }
             if (mapId == "4")
             {
@@ -569,19 +573,26 @@ namespace Mir2Assistant.Common.Functions
                 switch (position)
                 {
                     case EquipPosition.Weapon:
-                        return ("0151", isCS ? "武器铺" : "武器", 10, 15);
+                        // 沙巴克
+                        // return ("0151", isCS ? "武器铺" : "武器", 10, 15);
+                        return ("0159", "铁匠", 6, 12);
                     case EquipPosition.Dress:
-                        return ("0155", "布", 13, 11);
+                        // return ("0155", "布", 13, 11);
+                        return ("0149", "布", 18, 22);
                     case EquipPosition.Helmet:
-                        return ("0155", "头盔", 13, 11);
+                        // return ("0155", "头盔", 13, 11);
+                        return ("0149", "头盔", 5, 9);
                     case EquipPosition.Necklace:
-                        return ("0154", "项链", 6, 16);
+                    // return ("0154", "项链", 6, 16);
+                        return ("0158", "项链", 7, 23);
                     case EquipPosition.ArmRingLeft:
                     case EquipPosition.ArmRingRight:
-                        return ("0154", "手", 12, 10);
+                    // return ("0154", "手", 12, 10);
+                        return ("0158", "手镯", 18, 14);
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
-                        return ("0154", "戒指", 6, 16);
+                    // return ("0154", "戒指", 6, 16);
+                        return ("0158", "戒指", 14, 18);
                     default:
                         return ("-1", "", 0, 0);
                 }

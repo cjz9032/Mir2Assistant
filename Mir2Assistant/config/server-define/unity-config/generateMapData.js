@@ -169,6 +169,32 @@ ${conns.map(conn => `                new object[] { ${conn[0]}, ${conn[1]}, ${co
         }
         
         public static int MapCount => _indexToMapId.Length;
+
+        /// <summary>
+        /// 获取指定地图的所有传送点坐标（from位置）
+        /// 用于在寻路时根据场景避开或接近这些传送点
+        /// </summary>
+        /// <param name="mapId">地图ID</param>
+        /// <returns>传送点坐标列表 (x, y)</returns>
+        public static List<(int x, int y)> GetPortalPoints(string mapId)
+        {
+            var index = GetMapIndex(mapId);
+            if (index == -1) return new List<(int x, int y)>();
+            
+            var connections = GetConnections(index);
+            var portalPoints = new List<(int x, int y)>(connections.Length);
+            
+            for (int i = 0; i < connections.Length; i++)
+            {
+                var conn = connections[i];
+                // conn格式: [toIndex, fromX, fromY, fromNpcName, fromNpcCmds, toX, toY, toNpcName, toNpcCmds]
+                int fromX = (int)conn[1];
+                int fromY = (int)conn[2];
+                portalPoints.Add((fromX, fromY));
+            }
+            
+            return portalPoints;
+        }
     }
 }`;
 

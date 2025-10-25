@@ -31,8 +31,8 @@ public static class GoRunFunction
     }
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
-        var curinItems = GameConstants.Items.GetBinItems(instanceValue, instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
-        var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && curinItems.Contains(o.Name)).ToList();
+        var normalBinItems = GameConstants.Items.GetBinItems(instanceValue, instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
+        var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && normalBinItems.Contains(o.Name)).ToList();
         foreach (var item in items)
         {
             await DropItem(instanceValue, item);
@@ -42,8 +42,58 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(instanceValue);
         }
 
-        // 战士扔蓝 太阳
         var mainInstance = GameState.GameInstances[0];
+        var isHighReq = mainInstance.CharacterStatus.Level >= 22;
+
+
+        // 装备需要鉴定拉黑
+        var itemsEq = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o =>
+        !o.IsEmpty && !o.IsGodly &&
+         o.stdModeToUseItemIndex[0] != 255 && o.stdMode != 25
+            // 条件, 
+            // 保留中高衣服和武器, 去掉低级衣服武器
+            &&
+            ((o.stdModeToUseItemIndex[0] == (byte)EquipPosition.Weapon
+             || o.stdModeToUseItemIndex[0] == (byte)EquipPosition.Dress)
+                // 武器衣服
+                ? ((o.reqType == 0 && o.reqPoints < (isHighReq ? 15 : 10)) || o.reqType > 0)
+                // 首饰等开始鉴定
+                : ((o.reqType == 0 && o.reqPoints < (isHighReq ? 19 : 10)) || o.reqType > 0))
+        ).ToList();
+        foreach (var item in itemsEq)
+        {
+            // item.stdModeToUseItemIndex
+            DropItem(instanceValue, item);
+            // 确认落地, 并屏蔽
+            // 1秒5, 为了准确找到先用名字
+            var times = 0;
+            var dropsBeforeIds = instanceValue.DropsItems.Values.Select(o => o.Id).ToHashSet();
+            while (times < 6)
+            {
+                await Task.Delay(200);
+                // 直接查找新增的同名物品
+                var newDropItem = instanceValue.DropsItems.Values.FirstOrDefault(o =>
+                    !dropsBeforeIds.Contains(o.Id) && o.Name == item.Name
+                    // 目前设6距离先, 不太可能扔太远
+                    && Math.Max(Math.Abs(o.X - instanceValue.CharacterStatus.X), Math.Abs(o.Y - instanceValue.CharacterStatus.Y)) < 6
+                    );
+
+                if (newDropItem != null)
+                {
+                    pickupItemIds.Add(newDropItem.Id);
+                    instanceValue.GameDebug($"装备 {item.Name} 已落地并加入黑名单，ID: {newDropItem.Id}");
+                    break;
+                }
+                times++;
+            }
+        }
+
+        if (itemsEq.Count > 0)
+        {
+            await NpcFunction.RefreshPackages(instanceValue);
+        }
+
+        // 战士扔蓝 太阳
         if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
             var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
@@ -119,6 +169,8 @@ public static class GoRunFunction
         return true;
     }
 
+    // 捡取过的ItemID名单, 高性能检索
+    public static LimitedHashSet<int> pickupItemIds = new LimitedHashSet<int>(200);
 
     public static List<KeyValuePair<int, DropItemModel>>? PreparePickupInfo(MirGameInstanceModel instanceValue)
     {
@@ -170,7 +222,7 @@ public static class GoRunFunction
         var otherPreferItems = NpcFunction.preferStdEquipment(instanceValue, EquipPosition.Weapon, 99, otherRole);
 
         var drops = instanceValue.DropsItems.Where(o => o.Value.IsGodly || (
-                !instanceValue.pickupItemIds.Contains(o.Value.Id) &&
+                !pickupItemIds.Contains(o.Value.Id) &&
                 !curinItems.Contains(o.Value.Name)
             // 不是自己的 但是是别人的 不拿
             && (!(!preferItems.Contains(o.Value.Name) && otherPreferItems.Contains(o.Value.Name)))
@@ -253,6 +305,13 @@ public static class GoRunFunction
                     instanceValue.isPickingWay = false;
                     return false;
                 }
+                // 再次查看, 可能临时被新增的
+                if (pickupItemIds.Contains(drop.Value.Id))
+                {
+                    instanceValue.GameDebug("放弃拾取物品 后入黑名单，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
+                    instanceValue.isPickingWay = false;
+                    return false;
+                }
                 if (!PickupInfoBasicCheck(instanceValue))
                 {
                     instanceValue.GameDebug("放弃拾取物品，位置: ({X}, {Y})", drop.Value.X, drop.Value.Y);
@@ -303,7 +362,7 @@ public static class GoRunFunction
                     await Task.Delay(600);
                     if (!(instanceValue.chats.LastOrDefault()?.Contains("时间") ?? true))
                     {
-                        instanceValue.pickupItemIds.Add(drop.Value.Id);
+                        pickupItemIds.Add(drop.Value.Id);
                     }
                     pickedAny = true;
                     // 一定时间范围内
@@ -2160,7 +2219,7 @@ public static class GoRunFunction
                 // - 同地图寻路（!isAcross）：避开所有传送点
                 // - 跨地图寻路（isAcross）：前N-1段避开传送点，最后一段不避开（要走到传送点）
                 // bool shouldAvoidPortals = !isAcross;
-                
+
                 // 当前就在, 不需要走
                 if (connection.From.X == GameInstance.CharacterStatus.X && connection.From.Y == GameInstance.CharacterStatus.Y)
                 {
@@ -2258,7 +2317,7 @@ public static class GoRunFunction
                     // being door position
                     await GoTurn(GameInstance, node.dir);
                 }
-                var whileList = new List<string>() { "0132", "0156", "B347" };
+                var whileList = new List<string>() { "0132", "0156", "B347", "0159" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
@@ -2504,73 +2563,73 @@ public static class GoRunFunction
         var myX = gameInstance.CharacterStatus!.X;
         var myY = gameInstance.CharacterStatus!.Y;
         var mapId = gameInstance.CharacterStatus.MapId;
-        
+
         // 获取当前地图的所有传送点
         var portalPoints = MapData.GetPortalPoints(mapId);
-        
+
         // 检查当前位置是否是传送点
         bool isOnPortal = portalPoints.Any(p => p.x == myX && p.y == myY);
-        
+
         if (!isOnPortal)
         {
             // 不在传送点上，无需移动
             return;
         }
-        
+
         gameInstance.GameDebug($"当前踩在传送点上 ({myX}, {myY})，寻找附近的安全点...");
-        
+
         // 获取地图障碍物数据
         var (width, height, obstacles) = retriveMapObstacles(mapId);
 
         // 获取怪物位置
         var monsters = gameInstance.MonstersByPosition;
-        
+
         // 寻找周围N格内的非障碍、非传送点、非怪物的位置
         var searchRadius = 5;
         var candidatePoints = new List<(int x, int y, int distance)>();
-        
+
         for (int dy = -searchRadius; dy <= searchRadius; dy++)
         {
             for (int dx = -searchRadius; dx <= searchRadius; dx++)
             {
                 if (dx == 0 && dy == 0) continue; // 跳过当前位置
-                
+
                 int targetX = myX + dx;
                 int targetY = myY + dy;
-                
+
                 // 检查边界
                 if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height)
                     continue;
-                
+
                 // 检查是否是障碍物
                 if (obstacles[targetY * width + targetX] == 1)
                     continue;
-                
+
                 // 检查是否是传送点
                 if (portalPoints.Any(p => p.x == targetX && p.y == targetY))
                     continue;
-                
+
                 // 检查是否有怪物
                 if (MonsterFunction.GetMonstersByPosition(gameInstance.MonstersByPosition, targetX, targetY).Count > 0)
                     continue;
-                
+
                 // 计算距离
                 int distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
                 candidatePoints.Add((targetX, targetY, distance));
             }
         }
-        
+
         if (candidatePoints.Count == 0)
         {
             gameInstance.GameWarning("未找到合适的逃离点，无法离开传送点");
             return;
         }
-        
+
         // 按距离排序，选择最近的点
         var targetPoint = candidatePoints.OrderBy(p => p.distance).First();
-        
+
         gameInstance.GameDebug($"移动到附近安全点: ({targetPoint.x}, {targetPoint.y})");
-        
+
         // 移动到目标点
         await PerformPathfinding(CancellationToken.None, gameInstance, targetPoint.x, targetPoint.y, "", 0, true, 0, 10);
     }
@@ -2990,7 +3049,7 @@ public static class GoRunFunction
         }
         // 堵门
         // 有怪就不管是否有NPC 
-        if(!GameInstance.Monsters.Values.Any(o => !o.stdAliveMon))
+        if (!GameInstance.Monsters.Values.Any(o => !o.stdAliveMon))
         {
             // 没怪允许看NPC
             var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
@@ -3000,7 +3059,7 @@ public static class GoRunFunction
                 return;
             }
         }
-     
+
         // 1. 先检查身边
         var monster = GameInstance.Monsters.FirstOrDefault(o => o.Value.isMyMons && !o.Value.isDead);
         if (monster.Value != null)

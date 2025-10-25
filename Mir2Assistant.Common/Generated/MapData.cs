@@ -7,11 +7,11 @@ namespace Mir2Assistant.Common.Generated
     {
         public static Dictionary<string, string> MapNames { get; } = new()
         {
-            ["0"] = "比奇省",
+            ["0"] = "比奇",
             ["1"] = "沃玛森林",
             ["2"] = "毒蛇山谷",
             ["3"] = "盟重",
-            ["4"] = "封魔谷",
+            ["4"] = "封魔",
             ["5"] = "月月岛",
             ["11"] = "白日门",
             ["12"] = "丛林迷宫",
@@ -1124,6 +1124,7 @@ namespace Mir2Assistant.Common.Generated
                 new object[] { 187, 664, 212, "", "", 25, 181, "", "" },
                 new object[] { 187, 664, 213, "", "", 24, 181, "", "" },
                 new object[] { 339, 428, 474, "", "", 23, 24, "", "" },
+                new object[] { 79, 332, 265, "老兵", "@talkwith||@move2", 240, 200, "", "" },
             },
             new object[][] // Index 1: 0100
             {
@@ -1663,6 +1664,7 @@ namespace Mir2Assistant.Common.Generated
                 new object[] { 67, 448, 190, "", "", 50, 166, "", "" },
                 new object[] { 67, 449, 189, "", "", 51, 165, "", "" },
                 new object[] { 332, 205, 218, "", "", 14, 16, "", "" },
+                new object[] { 0, 240, 200, "老兵", "@leave||@pay1", 333, 265, "", "" },
             },
             new object[][] // Index 80: 5
             {
@@ -2083,12 +2085,12 @@ namespace Mir2Assistant.Common.Generated
             new object[][] // Index 158: D2001
             {
                 new object[] { 159, 18, 97, "", "", 33, 39, "", "" },
-                new object[] { 157, 258, 270, "", "", 76, 15, "", "" },
+                new object[] { 157, 259, 270, "", "", 76, 15, "", "" },
             },
             new object[][] // Index 159: D2002
             {
                 new object[] { 161, 29, 11, "", "", 77, 77, "", "" },
-                new object[] { 158, 33, 39, "", "", 18, 97, "", "" },
+                new object[] { 158, 34, 39, "", "", 18, 97, "", "" },
             },
             new object[][] // Index 160: D2003
             {
@@ -3613,7 +3615,7 @@ namespace Mir2Assistant.Common.Generated
         }
         
         public static int MapCount => _indexToMapId.Length;
-        
+
         /// <summary>
         /// 获取指定地图的所有传送点坐标（from位置）
         /// 用于在寻路时根据场景避开或接近这些传送点
