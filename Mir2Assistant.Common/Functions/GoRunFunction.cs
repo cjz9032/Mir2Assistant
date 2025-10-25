@@ -2982,12 +2982,18 @@ public static class GoRunFunction
             return;
         }
         // 堵门
-        var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
-        if (npc != null)
+        // 有怪就不管是否有NPC 
+        if(!GameInstance.Monsters.Values.Any(o => !o.stdAliveMon))
         {
-            GameInstance.GameDebug("附近有NPC, 不需要辅助");
-            return;
+            // 没怪允许看NPC
+            var npc = GameInstance.Monsters.Values.FirstOrDefault(o => o.TypeStr == "NPC");
+            if (npc != null)
+            {
+                GameInstance.GameDebug("附近有NPC, 不需要辅助");
+                return;
+            }
         }
+     
         // 1. 先检查身边
         var monster = GameInstance.Monsters.FirstOrDefault(o => o.Value.isMyMons && !o.Value.isDead);
         if (monster.Value != null)
