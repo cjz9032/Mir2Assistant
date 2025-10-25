@@ -739,12 +739,30 @@ public static class GoRunFunction
                 }
             }
         }
+        // 也排除传送点
+        var portalPoints = MapData.GetPortalPoints(mapId);
+        foreach (var portal in portalPoints)
+        {
+            // 检查传送点是否在局部范围内
+            if (Math.Abs(portal.x - centerX) <= halfSize && Math.Abs(portal.y - centerY) <= halfSize)
+            {
+                // 检查传送点坐标是否在地图范围内且不在列表中（避免重复添加）
+                if (portal.x >= 0 && portal.x < mapWidth && portal.y >= 0 && portal.y < mapHeight)
+                {
+                    if (!localObstacles.Contains((portal.x, portal.y)))
+                    {
+                        localObstacles.Add((portal.x, portal.y));
+                    }
+                }
+            }
+        }
         return localObstacles;
     }
 
     public static List<(byte dir, byte steps, int x, int y)> genGoPath(MirGameInstanceModel gameInstance, int targetX, int targetY,
     int blurRange = 0,
-    bool nearBlur = false
+    bool nearBlur = false,
+    bool avoidPortals = true
     )
     {
         var sw = Stopwatch.StartNew();
@@ -762,6 +780,26 @@ public static class GoRunFunction
                 data[monY * width + monX] = 1;
             }
         }
+        // TODO 非ACROSS的场景 可能作为其他作用 如躲避点, 这样会导致失误走开; 而且障碍点还有多处
+        // 简单排除目标点 targetX targetY的传送点
+        // 如果需要避开传送点，将传送点标记为障碍物
+        // 注意：如果传送点是目标点，则不标记为障碍（允许走到传送点触发传送）
+        if (avoidPortals)
+        {
+            var portalPoints = MapData.GetPortalPoints(gameInstance.CharacterStatus.MapId);
+            foreach (var portal in portalPoints)
+            {
+                if (portal.x >= 0 && portal.x < width && portal.y >= 0 && portal.y < height)
+                {
+                    // 只有当传送点不是目标点时才标记为障碍
+                    if (!(portal.x == targetX && portal.y == targetY))
+                    {
+                        data[portal.y * width + portal.x] = 1;
+                    }
+                }
+            }
+        }
+
 
         // 检查起点和终点是否为障碍物
         if (blurRange > 0)
@@ -2117,6 +2155,12 @@ public static class GoRunFunction
             var goNodes = new List<(byte dir, byte steps, int x, int y)>();
             try
             {
+                // 判断是否需要避开传送点
+                // 规则：
+                // - 同地图寻路（!isAcross）：避开所有传送点
+                // - 跨地图寻路（isAcross）：前N-1段避开传送点，最后一段不避开（要走到传送点）
+                // bool shouldAvoidPortals = !isAcross;
+                
                 // 当前就在, 不需要走
                 if (connection.From.X == GameInstance.CharacterStatus.X && connection.From.Y == GameInstance.CharacterStatus.Y)
                 {
@@ -2292,6 +2336,7 @@ public static class GoRunFunction
                             var jumpPath = new List<(byte dir, byte steps, int x, int y)>();
                             try
                             {
+                                // 跳跃路径也避开传送点
                                 jumpPath = genGoPath(GameInstance!, jumpPos.x, jumpPos.y).ToList();
                             }
                             catch (Exception ex)
