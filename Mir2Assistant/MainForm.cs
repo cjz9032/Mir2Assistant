@@ -755,7 +755,9 @@ namespace Mir2Assistant
             }
             if (CharacterStatus.MapId == "3" && !instanceValue.AccountInfo.IsMainControl)
             {
-                await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0156", 10);
+                // 沙巴克
+                // await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0156", 10);
+                await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 11, 11, "0145", 10);
                 await waitForResumeHp(instanceValue);
             }
 
