@@ -2022,10 +2022,10 @@ public static class GoRunFunction
         return 999;
     }
 
-    public static async Task cleanMobs(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken, Func<MirGameInstanceModel, bool> checker)
+    public static async Task cleanMobs4Blks(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken, Func<MirGameInstanceModel, bool> checker)
     {
         // todo 法师暂时不要砍了 要配合2边一起改
-        if (whoIsConsumer(GameInstance!) == 2)
+        if (whoIsConsumer(GameInstance!) > 0)
         {
             var searchRds = 7;
             var temp = GameConstants.GetAllowMonsters(GameInstance, GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
@@ -2041,6 +2041,7 @@ public static class GoRunFunction
                     {
                         return true;
                     }
+                    // todo 保护跟main一样
                     // 重读怪物
                     var existsCount = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
              Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
@@ -2053,6 +2054,10 @@ public static class GoRunFunction
                     return false;
                 }, "", cleanAll, searchRds);
             }
+        }
+        else
+        {
+            // fs 需要随
         }
     }
 
@@ -2118,12 +2123,13 @@ public static class GoRunFunction
                 }
 
                 var ms = MonsterFunction.GetMonstersByPosition(MonstersByPosition, x, y);
+                // 有怪物的位置算作障碍，继续检查下一个方向
                 if (ms.Count() > 0)
                 {
-                    return false;
+                    continue;
                 }
 
-                // 如果找到一个非障碍物位置，则未被完全包围
+                // 如果找到一个非障碍物位置（既没怪物也不是地图障碍），则未被完全包围
                 if (obstacleData[y * width + x] != 1)
                 {
                     return false;
@@ -2266,7 +2272,7 @@ public static class GoRunFunction
                 GameInstance.MonstersByPosition
                 ) || CheckIfBlockMons(GameInstance))
                 {
-                    await cleanMobs(GameInstance, 0, true, cancellationToken, callback);
+                    await cleanMobs4Blks(GameInstance, 0, true, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 加个重试次数3次
@@ -2304,7 +2310,7 @@ public static class GoRunFunction
                 if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
                 GameInstance.MonstersByPosition) || CheckIfBlockMons(GameInstance))
                 {
-                    await cleanMobs(GameInstance, 0, false, cancellationToken, callback);
+                    await cleanMobs4Blks(GameInstance, 0, false, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题

@@ -93,11 +93,13 @@ public static class MonsterFunction
             monster.Level = memoryUtils.ReadToInt8(monsterAddr + GameState.MirConfig["怪物LV偏移"]);
             // monster.state = memoryUtils.ReadToInt(monsterAddr + GameState.MirConfig["MonsState偏移"]);
 
+            var _isMon = monster.TypeStr == "(怪)";
             monster.isTeams = teamNames.Any(n => monster.Name.Contains(n));
             monster.isTeamMem = monster.isTeams && monster.TypeStr == "玩家";
             monster.isSelf = monster.isTeamMem && monster.Name == gameInstance.AccountInfo.CharacterName;
-            monster.isTeamMons = monster.isTeams && monster.TypeStr == "(怪)";
+            monster.isTeamMons = monster.isTeams && _isMon;
             monster.isMyMons = monster.isTeamMons && monster.Name.Contains(gameInstance.AccountInfo.CharacterName);
+            monster.isOthersMons = !monster.isTeams && _isMon && monster.Name.Contains('(');
 
             if (isNew)
             {
