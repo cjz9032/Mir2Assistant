@@ -2186,6 +2186,58 @@ public static class GoRunFunction
         return true; // 5x5外圈也被包围，说明4x4范围被困
     }
 
+    /// <summary>
+    /// 检查3x3范围内是否有可推的怪物（怪物背后是空的）
+    /// </summary>
+    /// <param name="MapId">地图ID</param>
+    /// <param name="myX">角色X坐标</param>
+    /// <param name="myY">角色Y坐标</param>
+    /// <param name="MonstersByPosition">怪物位置字典</param>
+    /// <returns>返回第一个可推的怪物位置，如果没有则返回null</returns>
+    public static (int x, int y)? CheckOneLayerSurround(string MapId, int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
+    {
+        var (width, height, obstacles) = retriveMapObstacles(MapId);
+        var obstacleData = new byte[obstacles.Length];
+        Array.Copy(obstacles, obstacleData, obstacles.Length);
+
+        // 检查3x3范围内的8个方向
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // 跳过中心点
+
+                int monsterX = myX + dx;
+                int monsterY = myY + dy;
+
+                // 检查该位置是否有怪物
+                var monsters = MonsterFunction.GetMonstersByPosition(MonstersByPosition, monsterX, monsterY);
+                if (monsters.Count() == 0) continue; // 没有怪物，跳过
+
+                // 有怪物，检查怪物背后（沿着同一方向再走一格）是否是空的
+                int behindX = monsterX + dx;
+                int behindY = monsterY + dy;
+
+                // 检查背后位置是否可通行（不是障碍物、不是边界、没有怪物）
+                if (behindX >= 0 && behindX < width && behindY >= 0 && behindY < height)
+                {
+                    // 检查是否是地图障碍物
+                    if (obstacleData[behindY * width + behindX] == 1) continue;
+
+                    // 检查背后是否有怪物
+                    var behindMonsters = MonsterFunction.GetMonstersByPosition(MonstersByPosition, behindX, behindY);
+                    if (behindMonsters.Count() > 0) continue;
+
+                    // 找到第一个可推的怪物，立即返回
+                    return (monsterX, monsterY);
+                }
+            }
+        }
+
+        // 没有找到可推的怪物
+        return null;
+    }
+
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
           int blurRange = 0,
           bool nearBlur = true,
@@ -3266,8 +3318,16 @@ public static class GoRunFunction
         {
             return;
         }
-        sendSpell(GameInstance, GameConstants.Skills.MagePush, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
-        await Task.Delay(500);
+        // 检查3x3范围内是否有可推的怪物（怪物背后是空的）
+        var pushableMonster = CheckOneLayerSurround(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
+                GameInstance.MonstersByPosition);
+        
+        if (pushableMonster.HasValue)
+        {
+            // 找到可推的怪物，使用抗拒火环
+            sendSpell(GameInstance, GameConstants.Skills.MagePush, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
+            await Task.Delay(500);
+        }
     }
     public static (int, int) CCBBCount(MirGameInstanceModel GameInstance)
     {
