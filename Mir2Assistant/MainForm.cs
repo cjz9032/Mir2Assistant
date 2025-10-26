@@ -1,8 +1,7 @@
 using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.Utils;
-using Serilog; // 新增Serilog引用
-using Serilog.Sinks.Debug; // 添加Debug sink引用
+using Serilog;
 using System.Diagnostics;
 using System.Text.Json;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;

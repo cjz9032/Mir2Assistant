@@ -1417,8 +1417,7 @@ namespace Mir2Assistant.Common.Functions
             var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
             if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
             var lowCoin = gameInstance.CharacterStatus.coin < (least * 0.5);
-            // 首饰一起
-            foreach (var position in Enum.GetValues(typeof(EquipPosition)).Cast<EquipPosition>().OrderBy(x =>
+            var reorders = Enum.GetValues(typeof(EquipPosition)).Cast<EquipPosition>().OrderBy(x =>
             {
                 if (x == EquipPosition.Necklace
                 || x == EquipPosition.ArmRingLeft || x == EquipPosition.ArmRingRight
@@ -1426,8 +1425,15 @@ namespace Mir2Assistant.Common.Functions
                 {
                     return 0;
                 }
-                return 1;
-            }))
+
+                if (x == EquipPosition.Helmet || x == EquipPosition.Dress)
+                {
+                    return 1;
+                }
+
+                return 2;
+            });
+            foreach (var position in reorders)
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
                 if (lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon)) continue;
