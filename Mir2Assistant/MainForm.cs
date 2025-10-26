@@ -80,7 +80,6 @@ namespace Mir2Assistant
 
         }
 
-        HotKeyUtils hotKeyUtils = new HotKeyUtils();
 
         private void MainForm_Load(object sender, EventArgs e)
         {
