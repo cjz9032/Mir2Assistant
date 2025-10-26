@@ -2093,6 +2093,28 @@ public static class GoRunFunction
         return false;
     }
 
+    /// <summary>
+    /// 检查指定位置是否被阻挡（怪物或地图障碍物）
+    /// </summary>
+    private static bool IsPositionBlocked(int x, int y, int width, int height, byte[] obstacleData, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
+    {
+        // 边界检查：如果超出地图边界，算作阻挡
+        if (x < 0 || x >= width || y < 0 || y >= height)
+        {
+            return true;
+        }
+
+        // 检查是否有怪物
+        var ms = MonsterFunction.GetMonstersByPosition(MonstersByPosition, x, y);
+        if (ms.Count() > 0)
+        {
+            return true;
+        }
+
+        // 检查是否是地图障碍物
+        return obstacleData[y * width + x] == 1;
+    }
+
     public static bool CheckIfSurrounded(string MapId, int myX, int myY, ConcurrentDictionary<long, List<MonsterModel>> MonstersByPosition)
     {
         var (width, height, obstacles) = retriveMapObstacles(MapId);
@@ -2113,7 +2135,8 @@ public static class GoRunFunction
         //     }
         // }
 
-        // 检查周围8个方向是否都是障碍物
+        // 第一层检查：3x3 九宫格（周围8个方向）
+        bool surrounded3x3 = true;
         for (int dx = -1; dx <= 1; dx++)
         {
             for (int dy = -1; dy <= 1; dy++)
@@ -2123,27 +2146,44 @@ public static class GoRunFunction
                 var x = myX + dx;
                 var y = myY + dy;
 
-                // 边界检查：如果超出地图边界，也算作障碍物
-                if (x < 0 || x >= width || y < 0 || y >= height)
-                {
-                    continue; // 边界算作障碍物，继续检查下一个方向
-                }
-
-                var ms = MonsterFunction.GetMonstersByPosition(MonstersByPosition, x, y);
-                // 有怪物的位置算作障碍，继续检查下一个方向
-                if (ms.Count() > 0)
-                {
-                    continue;
-                }
-
                 // 如果找到一个非障碍物位置（既没怪物也不是地图障碍），则未被完全包围
-                if (obstacleData[y * width + x] != 1)
+                if (!IsPositionBlocked(x, y, width, height, obstacleData, MonstersByPosition))
+                {
+                    surrounded3x3 = false;
+                    break;
+                }
+            }
+            if (!surrounded3x3) break;
+        }
+
+        if (surrounded3x3)
+        {
+            return true; // 九宫格被包围，直接返回true
+        }
+
+        // 第二层检查：5x5 范围的外圈（相当于检查4x4是否被包围）
+        // 检查外围一圈，排除已检查的 3x3 内圈
+        for (int dx = -2; dx <= 2; dx++)
+        {
+            for (int dy = -2; dy <= 2; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // 跳过中心点
+                
+                // 跳过 3x3 内圈（已经检查过了）
+                if (dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1) continue;
+
+                var x = myX + dx;
+                var y = myY + dy;
+
+                // 如果找到一个未被阻挡的位置，则未被完全包围
+                if (!IsPositionBlocked(x, y, width, height, obstacleData, MonstersByPosition))
                 {
                     return false;
                 }
             }
         }
-        return true; // 所有8个方向都是障碍物，被包围
+        
+        return true; // 5x5外圈也被包围，说明4x4范围被困
     }
 
     public static async Task<bool> PerformPathfinding(CancellationToken cancellationToken, MirGameInstanceModel GameInstance, int tx, int ty, string replaceMap = "",
@@ -2678,9 +2718,18 @@ public static class GoRunFunction
 
     public static bool sendSpell(MirGameInstanceModel GameInstance, int spellId, int x = 0, int y = 0, int targetId = 0)
     {
-        // check mp -- spell map
-        var cost = GameConstants.MagicSpellMap[spellId];
-        if (GameInstance.CharacterStatus!.CurrentMP < cost + 1)
+        var baseCost = GameConstants.MagicSpellMap[spellId];
+        var defCost = GameConstants.MagicDefSpellMap[spellId];
+
+        var skill = GameInstance.Skills.FirstOrDefault(s => s.Id == spellId);
+        int skillLevel = skill?.level ?? 1;
+        int maxTrainLevel = 3; // 默认最大训练等级为3
+        
+        // 公式: Round(baseCost / (maxTrainLevel+1) * (skillLevel+1)) + defCost
+        var actualCost = Math.Round((double)baseCost / (maxTrainLevel + 1) * (skillLevel + 1)) + defCost;
+        
+        // 检查MP是否足够（需要1.2倍的消耗作为安全余量）
+        if (GameInstance.CharacterStatus!.CurrentMP < actualCost * 1.2)
         {
             return false;
         }
@@ -2871,8 +2920,11 @@ public static class GoRunFunction
             return;
         }
         // GameInstance.GameInfo("准备治疗目标: {Name}, HP: {HP}/{MaxHP}", people.Name, people.CurrentHP, people.MaxHP);
-        sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
-        healCD[people.Id] = Environment.TickCount;
+        var ss = sendSpell(GameInstance, GameConstants.Skills.HealSpellId, people.X, people.Y, people.Id);
+        if (ss)
+        {
+            healCD[people.Id] = Environment.TickCount;
+        }
         // 道士调整攻速
         // CharacterStatusFunction.AdjustAttackSpeed(GameInstance, 3000);
     }
