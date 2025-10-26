@@ -100,6 +100,7 @@ public static class MonsterFunction
             monster.isTeamMons = monster.isTeams && _isMon;
             monster.isMyMons = monster.isTeamMons && monster.Name.Contains(gameInstance.AccountInfo.CharacterName);
             monster.isOthersMons = !monster.isTeams && _isMon && monster.Name.Contains('(');
+            monster.normalMons = _isMon && !monster.isTeamMons && !monster.isOthersMons;
 
             if (isNew)
             {
