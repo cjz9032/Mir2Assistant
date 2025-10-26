@@ -1552,11 +1552,12 @@ public static class GoRunFunction
                 // 暂时取消 看起来没作用
                 // !instanceValue.attackedMonsterIds.Contains(o.Id) &&
                 // 补刀用
-                (slasher && o.Appr != 40 ? (enoughBBCanHit ?
+                (cleanAll || (slasher && o.Appr != 40 ? (enoughBBCanHit ?
                 (o.CurrentHP > 0
                     ? ((o.CurrentHP > slashRemainHP) || (o.MaxHP < slashRemainHP) || (o.MaxHP >= 500))
                 : true) : true)
-                : true) &&
+                : true))
+                &&
 
                 (cleanAll || allowMonsters.Contains(o.Name))
                  && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < searchRds)
@@ -1591,9 +1592,13 @@ public static class GoRunFunction
                         isFullBB = true;
                     }
 
-                    var bossLike = instanceValue.Monsters.Values.Where(o => o.stdAliveMon && (o.Appr == 40 || (o.Appr == 102 && (o.MaxHP >= 500 || o.MaxHP == 0)) || o.Appr == 166 || o.Appr == 121 || o.Appr == 143 || o.MaxHP > 500)
+                    var bossLike = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
+                        && cleanAll || (o.Appr == 40 || (o.Appr == 102 && (o.MaxHP >= 500 || o.MaxHP == 0)) || o.Appr == 166 || o.Appr == 121 || o.Appr == 143 || o.MaxHP > 500)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         // 还要把鹿羊鸡放最后
+                        .Select(o => new { Monster = o, Distance = Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) })
+                        .OrderBy(o => o.Distance)
+                        .Select(o => o.Monster)
                         .FirstOrDefault();
 
 
@@ -1635,7 +1640,7 @@ public static class GoRunFunction
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var baolieNum = 5; // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
+                        var baolieNum = cleanAll ? 3 : 5; // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
                         // 先4爆裂 爆率很高
                         var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), baolieNum);
                         if (qunanis != (-1, -1))
@@ -1738,11 +1743,11 @@ public static class GoRunFunction
                         enoughBBCanHit = instanceValue.Monsters.Values.Where(o => !o.isDead && o.isTeamMons &&
                          Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() > 3;
                         if (
-                            !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                            !(cleanAll || (slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                             (ani.CurrentHP > 0
                                 ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP)
                             : true) : true)
-                            : true)
+                            : true))
                         )
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
@@ -1837,11 +1842,11 @@ public static class GoRunFunction
                             ani = ani3;
                             // 补刀用
                             if (
-                                !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                                !(cleanAll || (slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                                 (ani.CurrentHP > 0
                                     ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP || ani.MaxHP >= 500)
                                 : true) : true)
-                                : true)
+                                : true))
                             )
                             {
                                 MonsterFunction.SlayingMonsterCancel(instanceValue!);
@@ -1864,11 +1869,11 @@ public static class GoRunFunction
                         }
                         // 补刀用
                         if (
-                            !(slasher && ani.Appr != 40 ? (enoughBBCanHit ?
+                            !(cleanAll || (slasher && ani.Appr != 40 ? (enoughBBCanHit ?
                             (ani.CurrentHP > 0
                                 ? (ani.CurrentHP > slashRemainHP || ani.MaxHP < slashRemainHP || ani.MaxHP >= 500)
                             : true) : true)
-                            : true)
+                            : true))
                         )
                         {
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
@@ -2024,8 +2029,14 @@ public static class GoRunFunction
 
     public static async Task cleanMobs4Blks(MirGameInstanceModel GameInstance, int attacksThan, bool cleanAll, CancellationToken cancellationToken, Func<MirGameInstanceModel, bool> checker)
     {
-        // todo 法师暂时不要砍了 要配合2边一起改
-        if (whoIsConsumer(GameInstance!) > 0)
+        // fs push ani portal
+        // push check
+        // if(GameInstance.CharacterStatus.Level > 42)
+        // {
+        //     // 抗拒效果差 低等qun, 高等推不动, 多了推不动
+        // }
+        // 直接群等随
+        if (whoIsConsumer(GameInstance!) > 0 || GameInstance.CharacterStatus.Level >= 24)
         {
             var searchRds = 7;
             var temp = GameConstants.GetAllowMonsters(GameInstance, GameInstance.CharacterStatus!.Level, GameInstance.AccountInfo.role);
@@ -2042,11 +2053,10 @@ public static class GoRunFunction
                         return true;
                     }
                     // todo 保护跟main一样
-                    // 重读怪物
                     var existsCount = GameInstance.Monsters.Where(o => o.Value.stdAliveMon && (cleanAll || temp.Contains(o.Value.Name)) &&
              Math.Max(Math.Abs(o.Value.X - GameInstance.CharacterStatus.X), Math.Abs(o.Value.Y - GameInstance.CharacterStatus.Y)) < searchRds
             ).Count();
-                    // 怪物死了剩余一半就可以通过
+                    // 0
                     if (existsCount <= attacksThan / 3)
                     {
                         return true;
@@ -2054,10 +2064,6 @@ public static class GoRunFunction
                     return false;
                 }, "", cleanAll, searchRds);
             }
-        }
-        else
-        {
-            // fs 需要随
         }
     }
 
@@ -2310,7 +2316,7 @@ public static class GoRunFunction
                 if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
                 GameInstance.MonstersByPosition) || CheckIfBlockMons(GameInstance))
                 {
-                    await cleanMobs4Blks(GameInstance, 0, false, cancellationToken, callback);
+                    await cleanMobs4Blks(GameInstance, 0, true, cancellationToken, callback);
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题
