@@ -583,15 +583,15 @@ namespace Mir2Assistant.Common.Functions
                         // return ("0155", "头盔", 13, 11);
                         return ("0149", "头盔", 5, 9);
                     case EquipPosition.Necklace:
-                    // return ("0154", "项链", 6, 16);
+                        // return ("0154", "项链", 6, 16);
                         return ("0158", "项链", 7, 23);
                     case EquipPosition.ArmRingLeft:
                     case EquipPosition.ArmRingRight:
-                    // return ("0154", "手", 12, 10);
+                        // return ("0154", "手", 12, 10);
                         return ("0158", "手镯", 18, 14);
                     case EquipPosition.RingLeft:
                     case EquipPosition.RingRight:
-                    // return ("0154", "戒指", 6, 16);
+                        // return ("0154", "戒指", 6, 16);
                         return ("0158", "戒指", 14, 18);
                     default:
                         return ("-1", "", 0, 0);
@@ -656,39 +656,39 @@ namespace Mir2Assistant.Common.Functions
         }
 
 
-        public async static Task RepairAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
-        {
-            var nearHome = PickNearHomeMap(gameInstance);
-            foreach (var position in Enum.GetValues(typeof(EquipPosition)))
-            {
+        // public async static Task RepairAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
+        // {
+        //     var nearHome = PickNearHomeMap(gameInstance);
+        //     foreach (var position in Enum.GetValues(typeof(EquipPosition)))
+        //     {
 
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
-                var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
-                if (!needRep)
-                {
-                    continue;
-                }
+        //         var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
+        //         var needRep = CheckNeedRep(gameInstance, gameInstance.CharacterStatus.useItems[(int)position]);
+        //         if (!needRep)
+        //         {
+        //             continue;
+        //         }
 
-                gameInstance.GameInfo($"修理{npcName}的{position}装备");
-                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
-                if (pathFound)
-                {
-                    await ClickNPC(gameInstance!, npcName);
-                    await Talk2(gameInstance!, "@repair");
-                    await Task.Delay(500);
-                    var taked = await TakeOffItem(gameInstance, (EquipPosition)position);
-                    if (taked != null)
-                    {
-                        await RepairItem(gameInstance, taked);
-                        await Task.Delay(1000);
-                    }
-                    await Talk2Exit(gameInstance!);
-                    // trigger takeon 
-                    await autoReplaceEquipment(gameInstance, false);
-                }
-            }
-            await RefreshPackages(gameInstance);
-        }
+        //         gameInstance.GameInfo($"修理{npcName}的{position}装备");
+        //         bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+        //         if (pathFound)
+        //         {
+        //             await ClickNPC(gameInstance!, npcName);
+        //             await Talk2(gameInstance!, "@repair");
+        //             await Task.Delay(500);
+        //             var taked = await TakeOffItem(gameInstance, (EquipPosition)position);
+        //             if (taked != null)
+        //             {
+        //                 await RepairItem(gameInstance, taked);
+        //                 await Task.Delay(1000);
+        //             }
+        //             await Talk2Exit(gameInstance!);
+        //             // trigger takeon 
+        //             await autoReplaceEquipment(gameInstance, false);
+        //         }
+        //     }
+        //     await RefreshPackages(gameInstance);
+        // }
 
 
         public async static Task RepairSingleBodyEquipment(MirGameInstanceModel gameInstance, EquipPosition position)
@@ -706,19 +706,23 @@ namespace Mir2Assistant.Common.Functions
             bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
             if (pathFound)
             {
-                await ClickNPC(gameInstance!, npcName);
-                await Talk2(gameInstance!, "@repair");
-                await Task.Delay(500);
                 var taked = await TakeOffItem(gameInstance, (EquipPosition)position);
                 if (taked != null)
                 {
-                    await RepairItem(gameInstance, taked);
-                    await Task.Delay(1000);
+                    await ClickNPC(gameInstance!, npcName);
+                    await Talk2(gameInstance!, taked.IsGodly ? "@t_repair" : "@repair");
+                    await Task.Delay(500);
+                    if (taked != null)
+                    {
+                        await RepairItem(gameInstance, taked);
+                        await Task.Delay(1000);
+                    }
+                    await Talk2Exit(gameInstance!);
+                    // trigger takeon 
+                    await RefreshPackages(gameInstance);
+                    await autoReplaceEquipment(gameInstance, false);
                 }
-                await Talk2Exit(gameInstance!);
-                // trigger takeon 
-                await RefreshPackages(gameInstance);
-                await autoReplaceEquipment(gameInstance, false);
+
             }
             // 修不需要
         }
@@ -812,47 +816,47 @@ namespace Mir2Assistant.Common.Functions
         }
 
 
-        public async static Task RepairAllBagsEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
-        {
-            var nearHome = PickNearHomeMap(gameInstance);
-            foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
-            {
-                var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
-                // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
-                 && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
-                if (items.Count == 0)
-                {
-                    continue;
-                }
-                // bug 要所有的 先不管
-                // var needRep = CheckNeedRep(gameInstance, items[0]);
-                //if (!needRep)
-                //{
-                //    continue;
-                //}
+        // public async static Task RepairAllBagsEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
+        // {
+        //     var nearHome = PickNearHomeMap(gameInstance);
+        //     foreach (var position in new EquipPosition[] { EquipPosition.Weapon, EquipPosition.Dress })
+        //     {
+        //         var items = gameInstance.Items.Where(o => !o.IsEmpty && o.stdModeToUseItemIndex.Length > 0 && o.stdModeToUseItemIndex[0] != 255
+        //         // todo 这里如果是首饰还需要继续优化[0], 目前只修武器和衣服
+        //          && o.stdModeToUseItemIndex[0] == (byte)position).ToList();
+        //         if (items.Count == 0)
+        //         {
+        //             continue;
+        //         }
+        //         // bug 要所有的 先不管
+        //         // var needRep = CheckNeedRep(gameInstance, items[0]);
+        //         //if (!needRep)
+        //         //{
+        //         //    continue;
+        //         //}
 
-                // 找背包内的对应的东西, 目前是1 , 保留多个的能力
+        //         // 找背包内的对应的东西, 目前是1 , 保留多个的能力
 
-                gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
-                // 找到对应的NPC
-                var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
-                gameInstance.GameInfo($"修理背包内保留的{npcName}的{position}装备");
-                bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
-                if (pathFound)
-                {
-                    await ClickNPC(gameInstance!, npcName);
-                    await Talk2(gameInstance!, "@repair");
-                    await Task.Delay(500);
-                    foreach (var item in items)
-                    {
-                        await RepairItem(gameInstance, item);
-                        await Task.Delay(1000);
-                    }
-                    await Talk2Exit(gameInstance!);
-                }
-            }
-            await RefreshPackages(gameInstance);
-        }
+        //         gameInstance.GameInfo($"背包内保留的{position}装备: {items.Count}个");
+        //         // 找到对应的NPC
+        //         var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
+        //         gameInstance.GameInfo($"修理背包内保留的{npcName}的{position}装备");
+        //         bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+        //         if (pathFound)
+        //         {
+        //             await ClickNPC(gameInstance!, npcName);
+        //             await Talk2(gameInstance!, "@repair");
+        //             await Task.Delay(500);
+        //             foreach (var item in items)
+        //             {
+        //                 await RepairItem(gameInstance, item);
+        //                 await Task.Delay(1000);
+        //             }
+        //             await Talk2Exit(gameInstance!);
+        //         }
+        //     }
+        //     await RefreshPackages(gameInstance);
+        // }
         public async static Task RepairSingleBagsEquipment(MirGameInstanceModel gameInstance, EquipPosition position, CancellationToken _cancellationToken)
         {
             var nearHome = PickNearHomeMap(gameInstance);
@@ -882,16 +886,16 @@ namespace Mir2Assistant.Common.Functions
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
             if (pathFound)
             {
-                await ClickNPC(gameInstance!, npcName);
-                await Talk2(gameInstance!, "@repair");
-                await Task.Delay(500);
                 foreach (var item in items)
                 {
+                    await ClickNPC(gameInstance!, npcName);
+                    await Talk2(gameInstance!, item.IsGodly ? "@t_repair" : "@repair");
+                    await Task.Delay(500);
                     await RepairItem(gameInstance, item);
                     await Task.Delay(1000);
+                    await Talk2Exit(gameInstance!);
+                    await RefreshPackages(gameInstance);
                 }
-                await Talk2Exit(gameInstance!);
-                await RefreshPackages(gameInstance);
             }
             // 好像也不需要
             // await RefreshPackages(gameInstance);
