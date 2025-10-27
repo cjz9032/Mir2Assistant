@@ -193,16 +193,22 @@ public static class GoRunFunction
         var curinItems = GameConstants.Items.GetBinItems(instanceValue, CharacterStatus.Level, instanceValue.AccountInfo.role);
         var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty);
         var mageCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+        var mainMageCount = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
         var healCount = miscs.Count(o => o.stdMode == 0 && o.Name.Contains("金创药"));
         var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == 25) != null;
         var huiCount = miscs.Count(o => o.Name == ("回城卷"));
         var superCount = miscs.Count(o => o.stdMode == 0 && GameConstants.Items.SuperPotions.Contains(o.Name));
-        var pickMageRate = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7 ? 1.2 :
+        var isDaoNeed = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7;
+        var pickMageRate = instanceValue.AccountInfo.IsMainControl && isDaoNeed ? 1 :
             isMainFull ? (
                 isBladeNeed ? 0.2 : (
-                    isMageNeed ? 1.2 : 0
+                    isMageNeed ? 1 : (
+                        isDaoNeed ? 0.5 : 0 // 副道
+                    )
                 )
-            ) : 0;
+            ) : (
+                mainMageCount > 16 ? (isMageNeed ? 1 : 0) : 0
+            );
         var pickMageCount = GameConstants.Items.mageBuyCount * pickMageRate;
         var pickSuperRate = instanceValue.AccountInfo.role == RoleType.mage ? 3 : 1;
         var pickSuperCount = GameConstants.Items.superPickCount * pickSuperRate;
