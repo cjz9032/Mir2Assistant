@@ -138,8 +138,9 @@ public class CheckIfSurroundedTests
                 {
                     X = x,
                     Y = y,
-                    Id = key,
-                    stdAliveMon = true
+                    Id = (int)key,
+                    isDead = false,
+                    normalMons = true
                 };
                 monstersByPosition[key] = new List<MonsterModel> { monster };
             }
@@ -190,8 +191,9 @@ public class CheckIfSurroundedTests
                 {
                     X = x,
                     Y = y,
-                    Id = key,
-                    stdAliveMon = true
+                    Id = (int)key,
+                    isDead = false,
+                    normalMons = true
                 };
                 monstersByPosition[key] = new List<MonsterModel> { monster };
             }

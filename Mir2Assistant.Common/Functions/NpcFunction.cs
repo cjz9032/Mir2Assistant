@@ -1130,6 +1130,10 @@ namespace Mir2Assistant.Common.Functions
                         {
                             itemNames.Add("坚固手套");
                         }
+                        if (level >= 35)
+                        {
+                            itemNames.Add("死神手套");
+                        }
                     }
                     else if (role == RoleType.taoist)
                     {
@@ -1371,13 +1375,13 @@ namespace Mir2Assistant.Common.Functions
                             {
                                 itemNames.Add("修罗");
                             }
-                            if (level >= 26)
-                            {
-                                itemNames.Add("炼狱");
-                            }
                             if (level >= 28)
                             {
                                 itemNames.Add("井中月");
+                            }
+                            if (level >= 35)
+                            {
+                                itemNames.Add("炼狱");
                             }
                         }
                         if (role == RoleType.taoist)

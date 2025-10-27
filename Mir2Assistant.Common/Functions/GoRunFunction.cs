@@ -1321,6 +1321,8 @@ public static class GoRunFunction
         var canTemp = CapbilityOfTemptation(instanceValue);
         var canLight = CapbilityOfLighting(instanceValue);
         var canBaolie = CapbilityOfBaolie(instanceValue);
+        var canBingXue = CapbilityOfBingXue(instanceValue);
+        var canQun = canBaolie || canBingXue;
         // 
 
         while (true)
@@ -1634,19 +1636,18 @@ public static class GoRunFunction
                     // 使用通用躲避方法
                     await PerformEscapeWithSafePts(instanceValue, _cancellationToken);
                     var hadQun = false;
-                    if (canBaolie)
+                    if (canQun)
                     {
                         // TODO 注意弓箭
-                        // 优先群 有boss, 所有怪
+                        // 总是优先群冰 优先群 有boss
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var baolieNum = cleanAll ? 3 : 5; // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
-                        // 先4爆裂 爆率很高
-                        var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), baolieNum);
+                        var qunMinCount = cleanAll ? (canBingXue ? 5 : 3) : (canBingXue ? 10 : 5); // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
+                        var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunMinCount, canBingXue ? 5 : 3);
                         if (qunanis != (-1, -1))
                         {
-                            sendSpell(instanceValue!, GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
+                            sendSpell(instanceValue!, canBingXue ? GameConstants.Skills.bingxue : GameConstants.Skills.baolie, qunanis.x, qunanis.y, 0);
                             hadQun = true;
                         }
                     }
@@ -2858,6 +2859,11 @@ public static class GoRunFunction
         return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 23) != null;
     }
 
+    public static bool CapbilityOfBingXue(MirGameInstanceModel GameInstance)
+    {
+        return GameInstance.AccountInfo.role == RoleType.mage && GameInstance.Skills.FirstOrDefault(o => o.Id == 33) != null;
+    }
+
     static private LimitedDictionary<int, int> healCD = new LimitedDictionary<int, int>(100);
 
     public static void TryHealPeople(MirGameInstanceModel GameInstance)
@@ -3685,11 +3691,19 @@ public static class GoRunFunction
 
     public static bool IsPointInSquare((int X, int Y) point, (int CenterX, int CenterY, int Size) square, int squareSize)
     {
-        int halfSize = squareSize / 2;
-        return point.X >= square.CenterX - halfSize &&
-               point.X <= square.CenterX + halfSize &&
-               point.Y >= square.CenterY - halfSize &&
-               point.Y <= square.CenterY + halfSize;
+        // squareSize 参数表示从中心到边界的距离（半径）
+        // 例如 squareSize=3 表示从中心向四周各扩展2格（不包括边界），覆盖范围是 (center-3, center+3)
+        // 实际范围是 [center-2, center+2]，即 [3, 7] 对于 center=5
+        int radius = squareSize - 1;
+        int minX = square.CenterX - radius;
+        int maxX = square.CenterX + radius;
+        int minY = square.CenterY - radius;
+        int maxY = square.CenterY + radius;
+        
+        return point.X >= minX &&
+               point.X <= maxX &&
+               point.Y >= minY &&
+               point.Y <= maxY;
     }
 
     public static IEnumerable<(int X, int Y)> GetPointsInSquare((int CenterX, int CenterY, int Size) square, int squareSize)
