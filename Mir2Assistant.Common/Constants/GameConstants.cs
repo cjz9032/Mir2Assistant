@@ -19,6 +19,7 @@ public static class GameConstants
         public const int temptSpellId = 20;
         public const int baolie = 23;
         public const int bingxue = 33;
+        public const int fireHit = 26;
         public const int mageDefup = 14;
         public const int flashMove = 21;
         public const int defUp = 15;

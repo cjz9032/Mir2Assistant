@@ -3759,6 +3759,20 @@ public static class GoRunFunction
         }
     }
 
+    public static async Task turnFireHit(MirGameInstanceModel instanceValue)
+    {
+        var isBladeNeed = instanceValue.Skills.FirstOrDefault(o => o.Id == GameConstants.Skills.fireHit) != null;
+        if (!isBladeNeed) return;
+        // 烈火是获取附近在砍, 避免浪费蓝
+        var memoryUtils = instanceValue!.memoryUtils!;
+        var aniAddr = memoryUtils.ReadToInt(GameState.MirConfig["存怪参数"]);
+        // found ani
+        var ani = instanceValue.Monsters.Where(o => o.Value.stdAliveMon && o.Value.Addr == aniAddr).FirstOrDefault();
+        if (ani.Value == null || ani.Value.CurrentHP < 100 || ani.Value.MaxHP < 1000) return;
+        sendSpell(instanceValue!, GameConstants.Skills.fireHit, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y, 0);
+        await Task.Delay(500);
+    }
+
     // 静态数组，避免重复创建
     private static readonly (int x, int y)[] DirectionOffsets = new (int x, int y)[]
     {

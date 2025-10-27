@@ -1920,7 +1920,7 @@ namespace Mir2Assistant
             {
                 while (true)
                 {
-                    await Task.Delay(2_000);
+                    await Task.Delay(1_000);
 
                     try
                     {
@@ -1931,6 +1931,7 @@ namespace Mir2Assistant
                             {
                                 // 暂时先实验半月这些简单的 需要中等的
                                 await GoRunFunction.switchBladeWideSlaying(instance);
+                                await GoRunFunction.turnFireHit(instance);
                                 await GoRunFunction.TryHiddenPeople(instance);
                                 await GoRunFunction.TryRestForGreyName(instance);
                             }
