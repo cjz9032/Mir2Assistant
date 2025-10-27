@@ -1594,9 +1594,16 @@ public static class GoRunFunction
                         isFullBB = true;
                     }
                     var bossApprs = new List<int> { 40, 102, 166, 121, 143 };
+                    
+                    var fastClean = cleanAll;
+                    if (fastClean)
+                    {
+                        // 旁边没队友就可以 否则还是正常搞
+                        fastClean = instanceValue.Monsters.Values.Where(o => o.isTeamMem && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 9).Count() < 3;
+                    }
 
                     var bossLike = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
-                        && (cleanAll || bossApprs.Contains(o.Appr) || o.MaxHP > 500)
+                        && (fastClean || bossApprs.Contains(o.Appr) || o.MaxHP > 500)
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12)
                         // 还要把鹿羊鸡放最后
                         .Select(o => new { Monster = o, Distance = Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) })
@@ -1643,7 +1650,7 @@ public static class GoRunFunction
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var qunMinCount = cleanAll ? (canBingXue ? 8 : 3) : (canBingXue ? 10 : 5); // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
+                        var qunMinCount = fastClean ? (canBingXue ? 8 : 3) : (canBingXue ? 10 : 5); // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
                         var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunMinCount, canBingXue ? 5 : 3);
                         if (qunanis != (-1, -1))
                         {
