@@ -1643,7 +1643,7 @@ public static class GoRunFunction
                         var qunAnis = instanceValue.Monsters.Values.Where(o => o.stdAliveMon
                         && Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 12);
 
-                        var qunMinCount = cleanAll ? (canBingXue ? 5 : 3) : (canBingXue ? 10 : 5); // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
+                        var qunMinCount = cleanAll ? (canBingXue ? 8 : 3) : (canBingXue ? 10 : 5); // instanceValue.Monsters.Where(t => t.Value.stdAliveMon).Count() > 20 ? 5 : 5;
                         var qunanis = MonsterCoverageUtils.FindOptimal3x3Square(qunAnis.Select(o => (o.X, o.Y)).ToList(), qunMinCount, canBingXue ? 5 : 3);
                         if (qunanis != (-1, -1))
                         {
