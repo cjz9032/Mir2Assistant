@@ -409,14 +409,19 @@ namespace Mir2Assistant
                             SendMirCall.Send(gameInstance, 9003, data);
                             await Task.Delay(3000);
                             SendMirCall.Send(gameInstance, 9104, data);
+
+
+                            // 写标题
+                            var insIdx = GameState.GameInstances.IndexOf(gameInstance);
+                            ChangeTitleByProcess(hwnd, $"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
+
                             await Task.Delay(7000);
                             // todo 挪走到外面
                             SendMirCall.Send(gameInstance!, 9099, new nint[] { });
                             await Task.Delay(3000);
                             SendMirCall.Send(gameInstance!, 9100, new nint[] { });
                             await Task.Delay(3000);
-                            // 写标题
-                            var insIdx = GameState.GameInstances.IndexOf(gameInstance);
+
                             ChangeTitleByProcess(hwnd, $"{insIdx} @@@@ <{gameInstance.AccountInfo.CharacterName}> --> FROM {gameInstance.AccountInfo.Account}");
                         }
                         return !gameInstance.CharacterStatus.isEnhanceDead;
