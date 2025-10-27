@@ -2992,6 +2992,7 @@ public static class GoRunFunction
         {
             return;
         }
+        var canBigHide = GameInstance.Skills.FirstOrDefault(o => o.Id == 18) != null;
         // 目前有个bug 坐标不对 , 所以先用自己的, 这样只有自己出错, 但是低血可以防止问题
         // 待选组人
         var allPeople = GameState.GameInstances.Where(t => t.CharacterStatus!.MapId == GameInstance.CharacterStatus.MapId).Select(t => t.CharacterStatus).Where(t => !t.isDead && !t.isHidden &&
@@ -3019,8 +3020,14 @@ public static class GoRunFunction
             ).FirstOrDefault();
         }
 
+       
         if (lastFinded != null)
         {
+            var isSelf = lastFinded.Name == GameInstance.AccountInfo.CharacterName;
+            if (!isSelf && !canBigHide)
+            {
+                return;
+            }
             sendSpell(GameInstance, lastFinded.Name == GameInstance.AccountInfo.CharacterName ? GameConstants.Skills.smHide : GameConstants.Skills.bigHide, lastFinded.X, lastFinded.Y, 0);
             await Task.Delay(300);
         }
