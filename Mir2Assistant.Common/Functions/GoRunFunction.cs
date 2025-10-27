@@ -2679,11 +2679,18 @@ public static class GoRunFunction
 
         // 获取当前地图的所有传送点
         var portalPoints = MapData.GetPortalPoints(mapId);
+        var portalPointsSet = new HashSet<(int x, int y)>(portalPoints.Select(p => (p.x, p.y)));
 
-        // 检查当前位置是否是传送点
-        bool isOnPortal = portalPoints.Any(p => p.x == myX && p.y == myY);
+        // 检查当前位置是否是传送点, 或者地图太小
+        bool isOnPortal = portalPointsSet.Contains((myX, myY));
+        var (width, height, obstacles) = retriveMapObstacles(mapId);
+        bool tooSmall = false;
+        if (width < 15 || height < 15)
+        {
+            tooSmall = true;
+        }
 
-        if (!isOnPortal)
+        if (!isOnPortal && !tooSmall)
         {
             // 不在传送点上，无需移动
             return;
@@ -2691,44 +2698,52 @@ public static class GoRunFunction
 
         gameInstance.GameDebug($"当前踩在传送点上 ({myX}, {myY})，寻找附近的安全点...");
 
-        // 获取地图障碍物数据
-        var (width, height, obstacles) = retriveMapObstacles(mapId);
-
         // 获取怪物位置
         var monsters = gameInstance.MonstersByPosition;
 
         // 寻找周围N格内的非障碍、非传送点、非怪物的位置
-        var searchRadius = 5;
+        // 使用螺旋扫描，从近到远查找，找到足够多的候选点就停止
+        var searchRadius = 6;
         var candidatePoints = new List<(int x, int y, int distance)>();
+        var maxCandidates = 10; // 找到10个候选点就够了
 
-        for (int dy = -searchRadius; dy <= searchRadius; dy++)
+        for (int radius = 1; radius <= searchRadius && candidatePoints.Count < maxCandidates; radius++)
         {
-            for (int dx = -searchRadius; dx <= searchRadius; dx++)
+            // 扫描当前半径的所有点
+            for (int dy = -radius; dy <= radius; dy++)
             {
-                if (dx == 0 && dy == 0) continue; // 跳过当前位置
+                for (int dx = -radius; dx <= radius; dx++)
+                {
+                    // 只处理当前半径边缘的点（避免重复扫描内圈）
+                    if (Math.Max(Math.Abs(dx), Math.Abs(dy)) != radius)
+                        continue;
 
-                int targetX = myX + dx;
-                int targetY = myY + dy;
+                    int targetX = myX + dx;
+                    int targetY = myY + dy;
 
-                // 检查边界
-                if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height)
-                    continue;
+                    // 检查边界
+                    if (targetX < 0 || targetX >= width || targetY < 0 || targetY >= height)
+                        continue;
 
-                // 检查是否是障碍物
-                if (obstacles[targetY * width + targetX] == 1)
-                    continue;
+                    // 检查是否是障碍物
+                    if (obstacles[targetY * width + targetX] == 1)
+                        continue;
 
-                // 检查是否是传送点
-                if (portalPoints.Any(p => p.x == targetX && p.y == targetY))
-                    continue;
+                    // 检查是否是传送点
+                    if (portalPointsSet.Contains((targetX, targetY)))
+                        continue;
 
-                // 检查是否有怪物
-                if (MonsterFunction.GetMonstersByPosition(gameInstance.MonstersByPosition, targetX, targetY).Count > 0)
-                    continue;
+                    // 检查是否有怪物
+                    if (MonsterFunction.GetMonstersByPosition(gameInstance.MonstersByPosition, targetX, targetY).Count > 0)
+                        continue;
 
-                // 计算距离
-                int distance = Math.Max(Math.Abs(dx), Math.Abs(dy));
-                candidatePoints.Add((targetX, targetY, distance));
+                    candidatePoints.Add((targetX, targetY, radius));
+                    
+                    if (candidatePoints.Count >= maxCandidates)
+                        break;
+                }
+                if (candidatePoints.Count >= maxCandidates)
+                    break;
             }
         }
 
@@ -2738,13 +2753,49 @@ public static class GoRunFunction
             return;
         }
 
-        // 按距离排序，选择最近的点
-        var targetPoint = candidatePoints.OrderBy(p => p.distance).First();
+        // 按距离排序，选择最近的点, 如果10格内无怪, 就走的更远要3格, 如果图小且无怪 就走3-6格
+        // 10格内有无怪
+        var isNearMons = monsters.Any(m => m.Value.Any(mon => Math.Abs(mon.X - myX) <= 10 && Math.Abs(mon.Y - myY) <= 10));
+        var minDis = 1;
+        if (!isNearMons)
+        {
+            minDis += 2;
+        }
+        if(tooSmall)
+        {
+            minDis += 2;
+        }
 
-        gameInstance.GameDebug($"移动到附近安全点: ({targetPoint.x}, {targetPoint.y})");
+        // 优先minDis, 实在没有就选满足最远的
+        (int x, int y, int distance)? targetPoint = null;
+        int maxDistance = -1;
+        
+        foreach (var point in candidatePoints)
+        {
+            if (point.distance >= minDis)
+            {
+                if (targetPoint == null || point.distance < targetPoint.Value.distance)
+                {
+                    targetPoint = point;
+                }
+            }
+            if (point.distance > maxDistance)
+            {
+                maxDistance = point.distance;
+            }
+        }
+        
+        // 如果没有满足minDis的点，选择距离最远的点
+        if (targetPoint == null)
+        {
+            targetPoint = candidatePoints.First(p => p.distance == maxDistance);
+        }
+
+        var finalPoint = targetPoint.Value;
+        gameInstance.GameDebug($"移动到附近安全点: ({finalPoint.x}, {finalPoint.y})");
 
         // 移动到目标点
-        await PerformPathfinding(CancellationToken.None, gameInstance, targetPoint.x, targetPoint.y, "", 0, true, 0, 10);
+        await PerformPathfinding(CancellationToken.None, gameInstance, finalPoint.x, finalPoint.y, "", 0, true, 0, 10);
     }
 
 

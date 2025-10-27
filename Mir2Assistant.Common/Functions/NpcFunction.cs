@@ -1,4 +1,4 @@
-﻿using Mir2Assistant.Common.Models;
+using Mir2Assistant.Common.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -703,7 +703,7 @@ namespace Mir2Assistant.Common.Functions
             }
 
             gameInstance.GameInfo($"修理{npcName}的{position}装备");
-            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6), gameInstance!, "修理body");
             if (pathFound)
             {
                 var taked = await TakeOffItem(gameInstance, (EquipPosition)position);
@@ -747,7 +747,7 @@ namespace Mir2Assistant.Common.Functions
             }
             gameInstance.GameInfo($"修理{npcName}的{fuName}");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6), gameInstance!, "修理fu");
             if (pathFound)
             {
                 // 背包里可能留了N个/ 先修完再买
@@ -802,7 +802,7 @@ namespace Mir2Assistant.Common.Functions
             }
             gameInstance.GameInfo($"购买{npcName}的地牢逃脱卷");
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6), gameInstance!, "购买地牢逃脱卷");
             if (pathFound)
             {
                 // 背包里可能留了N个/ 先修完再买
@@ -883,7 +883,7 @@ namespace Mir2Assistant.Common.Functions
             // 找到对应的NPC
             var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome, "repair");
             gameInstance.GameInfo($"修理背包内保留的{npcName}的{position}装备");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6), gameInstance!, "修理");
             if (pathFound)
             {
                 foreach (var item in items)
@@ -1017,7 +1017,7 @@ namespace Mir2Assistant.Common.Functions
             var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, position, nearHome, "sell");
 
             gameInstance.GameInfo($"出售{npcName}的{position}装备");
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(_cancellationToken, gameInstance!, x, y, npcMap, 6), gameInstance!, "出售");
             if (pathFound)
             {
                 await ClickNPC(gameInstance!, npcName);
@@ -1453,7 +1453,7 @@ namespace Mir2Assistant.Common.Functions
                     var nearHome = PickNearHomeMap(gameInstance);
                     var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);
                     gameInstance.GameInfo($"购买{position}装备");
-                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+                    bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6), gameInstance!, "购买");
                     if (pathFound)
                     {
                         var memoryUtils = gameInstance.memoryUtils!;
@@ -1535,7 +1535,7 @@ namespace Mir2Assistant.Common.Functions
             if (lists.Count == 0) return;
             var nearHome = PickNearHomeMap(gameInstance);
             var (npcMap, npcName, x, y) = PickDrugNpcByMap(gameInstance, nearHome);
-            bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6);
+            bool pathFound = await PerformPathfindingWithRetry(() => GoRunFunction.PerformPathfinding(CancellationToken.None, gameInstance!, x, y, npcMap, 6), gameInstance!, "出售药品");
             if (pathFound)
             {
                 await ClickNPC(gameInstance!, npcName);
@@ -1791,6 +1791,141 @@ namespace Mir2Assistant.Common.Functions
                 }
             }
 
+        }
+
+        /// <summary>
+        /// 带重试的寻路方法
+        /// </summary>
+        public static async Task<bool> PerformPathfindingWithRetry(
+            Func<Task<bool>> pathfindingAction,
+            MirGameInstanceModel gameInstance,
+            string targetInfo = "")
+        {
+            return await RetryUntilAsync(
+                pathfindingAction,
+                result => result,
+                5,
+                1500,
+                (attempt) => gameInstance.GameInfo($"寻路失败{targetInfo}，第 {attempt} 次重试")
+            );
+        }
+
+        /// <summary>
+        /// 通用重试工具方法
+        /// </summary>
+        /// <typeparam name="T">返回值类型</typeparam>
+        /// <param name="action">要执行的异步操作</param>
+        /// <param name="maxRetries">最大重试次数，默认3次</param>
+        /// <param name="delayMs">每次重试之间的延迟（毫秒），默认1000ms</param>
+        /// <param name="onRetry">重试时的回调函数，参数为当前重试次数</param>
+        /// <returns>操作结果</returns>
+        public static async Task<T> RetryAsync<T>(
+            Func<Task<T>> action,
+            int maxRetries = 3,
+            int delayMs = 1000,
+            Action<int>? onRetry = null)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    return await action();
+                }
+                catch (Exception ex)
+                {
+                    if (i == maxRetries - 1)
+                    {
+                        throw;
+                    }
+
+                    onRetry?.Invoke(i + 1);
+                    await Task.Delay(delayMs);
+                }
+            }
+
+            throw new InvalidOperationException("Retry logic failed unexpectedly");
+        }
+
+        /// <summary>
+        /// 通用重试工具方法（无返回值版本）
+        /// </summary>
+        /// <param name="action">要执行的异步操作</param>
+        /// <param name="maxRetries">最大重试次数，默认3次</param>
+        /// <param name="delayMs">每次重试之间的延迟（毫秒），默认1000ms</param>
+        /// <param name="onRetry">重试时的回调函数，参数为当前重试次数</param>
+        public static async Task RetryAsync(
+            Func<Task> action,
+            int maxRetries = 3,
+            int delayMs = 1000,
+            Action<int>? onRetry = null)
+        {
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    await action();
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    if (i == maxRetries - 1)
+                    {
+                        throw;
+                    }
+
+                    onRetry?.Invoke(i + 1);
+                    await Task.Delay(delayMs);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 带条件判断的重试工具方法
+        /// </summary>
+        /// <typeparam name="T">返回值类型</typeparam>
+        /// <param name="action">要执行的异步操作</param>
+        /// <param name="successCondition">成功条件判断函数</param>
+        /// <param name="maxRetries">最大重试次数，默认3次</param>
+        /// <param name="delayMs">每次重试之间的延迟（毫秒），默认1000ms</param>
+        /// <param name="onRetry">重试时的回调函数，参数为当前重试次数</param>
+        /// <returns>操作结果</returns>
+        public static async Task<T> RetryUntilAsync<T>(
+            Func<Task<T>> action,
+            Func<T, bool> successCondition,
+            int maxRetries = 3,
+            int delayMs = 1000,
+            Action<int>? onRetry = null)
+        {
+            T result = default(T);
+            for (int i = 0; i < maxRetries; i++)
+            {
+                try
+                {
+                    result = await action();
+                    if (successCondition(result))
+                    {
+                        return result;
+                    }
+
+                    if (i < maxRetries - 1)
+                    {
+                        onRetry?.Invoke(i + 1);
+                        await Task.Delay(delayMs);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (i == maxRetries - 1)
+                    {
+                        throw;
+                    }
+
+                    onRetry?.Invoke(i + 1);
+                    await Task.Delay(delayMs);
+                }
+            }
+
+            return result;
         }
     }
 }
