@@ -1423,7 +1423,7 @@ namespace Mir2Assistant.Common.Functions
         {
             var least = gameInstance.CharacterStatus.Level > 11 ? 5000 : 3000;
             var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
-            if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
+            //if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
             var lowCoin = gameInstance.CharacterStatus.coin < (least * 0.5);
             var reorders = Enum.GetValues(typeof(EquipPosition)).Cast<EquipPosition>().OrderBy(x =>
             {
@@ -1448,7 +1448,8 @@ namespace Mir2Assistant.Common.Functions
                 // 看看修不修 卖不卖 , 
                 // 买或不买 都可能修
                 // 修
-                if (preferBuyItems != null && preferBuyItems.Count > 0)
+                
+                if (!(lowCoin && !mainEmpty) && preferBuyItems != null && preferBuyItems.Count > 0)
                 {
                     var nearHome = PickNearHomeMap(gameInstance);
                     var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);

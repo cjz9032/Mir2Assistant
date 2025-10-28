@@ -2698,7 +2698,7 @@ public static class GoRunFunction
         bool isOnPortal = portalPointsSet.Contains((myX, myY));
         var (width, height, obstacles) = retriveMapObstacles(mapId);
         bool tooSmall = false;
-        if (width < 15 || height < 15)
+        if (width < 20 || height < 20)
         {
             tooSmall = true;
         }
