@@ -1421,7 +1421,7 @@ namespace Mir2Assistant.Common.Functions
 
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
-            var least = gameInstance.CharacterStatus.Level > 11 ? 5000 : 3000;
+            var least = gameInstance.CharacterStatus.Level > 11 ? 8000 : 5000;
             var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
             //if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
             var lowCoin = gameInstance.CharacterStatus.coin < (least * 0.5);

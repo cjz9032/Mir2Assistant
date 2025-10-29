@@ -1,14 +1,15 @@
+using Mir2Assistant.Common;
+using Mir2Assistant.Common.Constants;
 using Mir2Assistant.Common.Functions;
 using Mir2Assistant.Common.Models;
 using Mir2Assistant.Common.Utils;
+using Mir2Assistant.Services;
 using Serilog;
 using System.Diagnostics;
-using System.Text.Json;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
-using Mir2Assistant.Common;
-using Mir2Assistant.Common.Constants;
 using System.Runtime.InteropServices;
-using Mir2Assistant.Services;
+using System.Text.Json;
+using System.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Mir2Assistant
 {
@@ -67,9 +68,9 @@ namespace Mir2Assistant
                 gameDirectory = @"G:\cq\cs2";
                 var st176 = @"8UZ2oQ0iVFikBRpEXqLU+wqWbqA15UCwXYnyL5gGbzKTtGKMhnOhhT6wTq67JhnWFELpaQFzFIyl2azuqrGQvSNivvTCjUrhuunRglYvHxC6/paUm9uHEmE3kIYc+2YBQ4x9hR6DswKsDZ3taVEh9acocrsPbAkDJ9/h55qAwOu2HNQZ/hWgcZz7HspPPWSXR2Hl3s5vP5I66RFbwtA+kNN2mv4nh4uiirRn9LbncfqwWnXyPxGLbixgYc+YXx4HL8bmZJOv+GxTqTqmDft80oCX+TVBKrhb3y+hUXZCsoWkvJ6L/BvB+Pc0TJjlZJDTKglKvPiqe0OEFLR8G4sabIpJ6APz1TDQGABoPKSm+IBgQdhkzDifHLyUJyPlg2OnUzesHoV3DRIoxdoxae9uLM/CVDIT2k5sr7ewMELbkbsKwNclME1QiJLC2e6WU+410CPk67eYY+B0XMBknckmGDmSmNfr3OrvN6nue2RliFxxybvcDcMTvSqZe6r0SBk4AHdPYJy2xKEwetJh8BudA12UHFCgHmhOjcH4XoDWsDOZ2+mUGpVTDM+dtZfaxi2MIoVvP3gNpGaYtegjcynIx3TwxMGSRWxaV+Bzqygw5bZINZrrIiz/yKTMylhgaeRgKzT5zx7BoV5RYC/tlS/LEZpFf7dET9Ktm6Zim+BUyRHWXihAc2rRQVvJKjah6dgPUTo/4dxzSAcrtMJ3tqxNCxCr8AGq0SUtq8oeVYQ4z6TC9tnD5gkO63Qi7QyaCnzg8HPl/Pw9pL7ok58JYZ+kLGMaLKTSkENxwD7GIpmf6UH4IpwFp9ZrmrB6nTC8GHfxlxCwVU3Qe5nkXtLPYtt7IeOgWV1FOHgAfkY7pr8aXJDLsJrpEucyG8/yx03tqCqIFwzGrp8tw/IrSoMohy9hkvqEoEMRBkjkwZqjxs3AxrCXA5KmElgvyShrETeGLCB3dA2mmhEcf8hrKStTBpA27luzHQxYNsRNinGh5F0sCODsU7JVhLjDgk+VTho=";
                 var st180 = @"QFZqn65xdyDfAJDep+1AqPdngJiu6gqpGoB9ryxh+g7F9vOtXvHVVm17FYaXEOgdcuuWpytGAxEYsDSEt5/vkcBv2nqLOvfk4ifkN2JEuwdSKWAgnSm/SO2jXyO8uSrNAvEq7F71ztZGnWXhNbo5WAnRGu2y3xMp9+Pfdnz8oOrs4OYYxJI5apnmzSNBAv1Tw3al7f0eg5s7OHMdRA44lTXjcdwyfcHpeh42GXGkS6KPSAHjioiLkxkc5DGb9YMz34oIGl7dkOvhZ4oLzfqTjc2PwEUa+4RFNC4tqP2PfdJAocjIAcpD3ZWMUt1TmrO1vOf5FKDfKDorIGzOmrYZQEVuhWFdZg4Znymurh9Fp324CBtIixpXQTGtjOTLOGNonsqfHnyQqX7IG8R04kg/RyIfHhf0Rwp1ekW39tA4Y2AAgN2WUR0Oc+FL5qLDbQrD9dW2QJp8YLXrgs3/HuS0aRXqENHcLQMDln4lKq9jEEDl/2Lv7KtsNIAWBIL/RCgnCUT7j9NbPRDuogXNssNcibrsZOL/IOPpIJL9vTE9S1+n0XAZJJshq4WE7Qr/iYohW01wy7yDHp6Uq/QOU9+ncLqhpKSWLvywEJeV+MBW1VL4arTfEZ3T86ZrULvOQGaoB0ADSFA44o1rr4W5K59rWx2xoBziBpj6KWeeT2L078GoR9iyDI4nQ19DVbwgrYaTcMYl2NIHz0LY/hW0/uiNofLSDTcPspAZgyvDNtRQefRIBxmLh3uDR4BujEpljMchYqruWnx7RawrKnDvQsnMWtrlbZc3WhU0ze/hyksFpGeH2FwHfPEskpDhNjiq9EvMN1TE12p4P2h5XfoYWH5lD8x2iC5niJdvntJj6M/HCWxv7IMiEAlI3ugj5nf1nyKlbQ/AxHOItKvUoTPGgSpIhWHCWE6pe+Zl1gYbvD4s5T7RknEjQVUBLgQAWtV/uGMSDe1qq6lq3pcbPJME8/qiH+43jATNfrpG3h2qUaBg/vVBlsbGaWF3Aba7lbk=";
-                var st = st180;
-                encodeArgMainLarge = st180;
-                encodeArgOtherSmall = st180;
+                var st = st176;
+                encodeArgMainLarge = st;
+                encodeArgOtherSmall = st;
             }
             else
             {
@@ -721,13 +722,14 @@ namespace Mir2Assistant
         private async Task sellMeat(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
         {
             ItemFunction.ReadBag(instanceValue);
-
-            var meats = instanceValue.Items.Where(o => o.Name == "肉");
-            var chickens = instanceValue.Items.Where(o => o.Name == "鸡肉");
-            var keepOneMeat = instanceValue.CharacterStatus!.Level > 6 && instanceValue.CharacterStatus!.Level < 8;
-            var expressMeats = keepOneMeat ? meats.Skip(5).ToList() : meats.ToList();
-            var expressChickens = keepOneMeat ? chickens.Skip(5).ToList() : chickens.ToList();
-            var allMeats = expressMeats.Concat(expressChickens).ToList();
+            var all = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).ToList();
+            var meats = all.Where(o => o.Name == "肉" && o.Duration < 130);
+            var chickens = all.Where(o => o.Name == "鸡肉");
+            // var keepOneMeat = instanceValue.CharacterStatus!.Level > 6 && instanceValue.CharacterStatus!.Level < 8;
+            // var expressMeats = keepOneMeat ? meats.Skip(5).ToList() : meats.ToList();
+            // var expressChickens = keepOneMeat ? chickens.Skip(5).ToList() : chickens.ToList();
+            // var allMeats = expressMeats.Concat(expressChickens).ToList();
+            var allMeats = meats.Concat(chickens).ToList();
             if (allMeats.Count > 0)
             {
                 Log.Information("卖肉");
@@ -802,7 +804,10 @@ namespace Mir2Assistant
                 await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 1, 1, nearHome, 0, true, 12);
             }
             // 卖肉
-            await sellMeat(instanceValue, _cancellationToken);
+            // if(instanceValue.AccountInfo.TaskMain0Step >= 7)
+            // {
+            // }
+                await sellMeat(instanceValue, _cancellationToken);
 
             // 蜡烛检测
             // await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
@@ -846,7 +851,7 @@ namespace Mir2Assistant
             bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 283, 608, "0", 6, true, 10);
             if (pathFound)
             {
-                await NpcFunction.ClickNPC(instanceValue!, "助手阿妍");
+                await NpcFunction.ClickNPC(instanceValue!, "助");
             }
         }
 
@@ -856,7 +861,7 @@ namespace Mir2Assistant
         {
             var isCS = GameState.gamePath == "Client.exe";
 
-            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, isCS ? 312 : 293, isCS ? 273 : 604, "0", 6, true, 10);
+            bool pathFound = await GoRunFunction.PerformPathfinding(_cancellationToken, instanceValue!, 293, 604, "0", 6, true, 10);
 
             if (pathFound)
             {
@@ -983,13 +988,27 @@ namespace Mir2Assistant
                                 await findMeatNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
-
-                                await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
+                                while (true)
                                 {
-                                    // 检查背包的肉
-                                    var meat = instanceValue.Items.Where(o => o.Name == "肉").FirstOrDefault();
-                                    return meat != null;
-                                });
+                                    var isFound = false;
+                                    await GoRunFunction.NormalAttackPoints(instanceValue, _cancellationTokenSource.Token, false, (instanceValue) =>
+                                    {
+                                        // 检查背包的肉
+                                        var miscs = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).ToList();
+                                        var meat = miscs.Where(o => o.Name == "肉" && o.Duration >= 130).FirstOrDefault();
+                                        var isFull = miscs.Count > 44;
+                                        isFound = meat != null;
+                                        return isFound || isFull;
+                                    });
+                                    await sellMeat(instanceValue, _cancellationTokenSource.Token);
+                                    await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                    // if meat found break
+                                    if (isFound)
+                                    {
+                                        break;
+                                    }
+                                }
+                           
 
                                 act.TaskMain0Step = 2;
                                 SaveAccountList();
@@ -1039,6 +1058,7 @@ namespace Mir2Assistant
                             {
 
                                 await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                await sellMeat(instanceValue, _cancellationTokenSource.Token);
                                 await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");

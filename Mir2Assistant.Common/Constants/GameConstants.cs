@@ -138,7 +138,7 @@ public static class GameConstants
         }
         else if (level < 16 + offset)
         {
-            return allowMonsters.Concat(allow15).Concat(allow22).ToArray();
+            return allowMonsters.Concat(allowM10).Concat(allow15).Concat(allow22).ToArray();
         }
         else if (level < 50 + offset)
         {
