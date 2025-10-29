@@ -1422,7 +1422,7 @@ namespace Mir2Assistant.Common.Functions
         public async static Task buyAllEquipment(MirGameInstanceModel gameInstance, CancellationToken _cancellationToken)
         {
             var least = gameInstance.CharacterStatus.Level > 11 ? 8000 : 5000;
-            var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
+            // var mainEmpty = gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Weapon].IsEmpty || gameInstance.CharacterStatus.useItems[(byte)EquipPosition.Dress].IsEmpty;
             //if (gameInstance.CharacterStatus.coin < least && !mainEmpty) return;
             var lowCoin = gameInstance.CharacterStatus.coin < (least * 0.5);
             var reorders = Enum.GetValues(typeof(EquipPosition)).Cast<EquipPosition>().OrderBy(x =>
@@ -1444,12 +1444,16 @@ namespace Mir2Assistant.Common.Functions
             foreach (var position in reorders)
             {
                 var preferBuyItems = CheckPreferComparedUsed(gameInstance, (EquipPosition)position);
-                if (lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon)) continue;
+                // if (lowCoin && !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon)) continue;
                 // 看看修不修 卖不卖 , 
                 // 买或不买 都可能修
                 // 修
-                
-                if (!(lowCoin && !mainEmpty) && preferBuyItems != null && preferBuyItems.Count > 0)
+
+                var isOthers = !((EquipPosition)position == EquipPosition.Dress || (EquipPosition)position == EquipPosition.Weapon);
+                var isEmpty = gameInstance.CharacterStatus.useItems[(byte)position].IsEmpty;
+                if ( (lowCoin ? 
+                (isOthers ? false : isEmpty)
+                : true) && preferBuyItems != null && preferBuyItems.Count > 0)
                 {
                     var nearHome = PickNearHomeMap(gameInstance);
                     var (npcMap, npcName, x, y) = PickEquipNpcByMap(gameInstance, (EquipPosition)position, nearHome);

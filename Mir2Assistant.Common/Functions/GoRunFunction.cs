@@ -31,6 +31,9 @@ public static class GoRunFunction
     }
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
+        var mainInstance = GameState.GameInstances[0];
+        var isLowMain = mainInstance.CharacterStatus.Level < 15;
+        if (isLowMain) return;
         var normalBinItems = GameConstants.Items.GetBinItems(instanceValue, instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
         var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && normalBinItems.Contains(o.Name)).ToList();
         foreach (var item in items)
@@ -42,8 +45,8 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(instanceValue);
         }
 
-        var mainInstance = GameState.GameInstances[0];
         var isHighReq = mainInstance.CharacterStatus.Level >= 22;
+
 
 
         // 装备需要鉴定拉黑
@@ -402,6 +405,7 @@ public static class GoRunFunction
     public static async Task<bool> PerformButchering(MirGameInstanceModel instanceValue,
         int maxBagCount = 32, int searchRadius = 13, int maxTries = 20, CancellationToken cancellationToken = default)
     {
+        if (instanceValue.CharacterStatus.MapId == "01132") return false;
         var allowButch = new List<string> { "鸡", "鹿", "羊" }; // "毒蜘蛛", "蝎子", "洞蛆",
 
 
@@ -429,7 +433,7 @@ public static class GoRunFunction
                 while (tried < maxTries)
                 {
                     SendMirCall.Send(instanceValue, 3030, new nint[] { (nint)body.X, (nint)body.Y, 0, body.Id });
-                    await Task.Delay(500);
+                    await Task.Delay(200);
                     MonsterFunction.ReadMonster(instanceValue);
                     if (body.isButched)
                     {
@@ -2443,7 +2447,7 @@ public static class GoRunFunction
                     // being door position
                     await GoTurn(GameInstance, node.dir);
                 }
-                var whileList = new List<string>() { "0132", "0156", "B347", "0159" };
+                var whileList = new List<string>() { "0132", "0156", "B347", "0159","0113","0114" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单

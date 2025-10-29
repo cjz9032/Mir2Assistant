@@ -947,7 +947,7 @@ namespace Mir2Assistant
                             }
                         }
                         await waitForResumeHp(instanceValue);
-                        if (isMainInHome || basicInHome)
+                        if ((isMainInHome || basicInHome) && instanceValue.AccountInfo.TaskMain0Step >= 7)
                         {
                             instanceValue.isHomePreparing = true;
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
@@ -1057,22 +1057,22 @@ namespace Mir2Assistant
                             if (act.TaskMain0Step == 5)
                             {
 
-                                await prepareBags(instanceValue, _cancellationTokenSource.Token);
+                                //await prepareBags(instanceValue, _cancellationTokenSource.Token);
                                 await sellMeat(instanceValue, _cancellationTokenSource.Token);
                                 await findNoobNpc(instanceValue, _cancellationTokenSource.Token);
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST1_1_1");
                                 // 精武馆老板
-                                var (npcMap, npcName, x, y) = NpcFunction.PickEquipNpcByMap(instanceValue, EquipPosition.Weapon, "0");
-                                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, x, y, npcMap, 6);
+                                //var (npcMap, npcName, x, y) = NpcFunction.PickEquipNpcByMap(instanceValue, EquipPosition.Weapon, "0");
+                                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 294, 614, "0", 6);
                                 if (pathFound)
                                 {
-                                    await NpcFunction.ClickNPC(instanceValue, npcName);
+                                    await NpcFunction.ClickNPC(instanceValue, "铁");
                                 }
 
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
-                                await NpcFunction.ClickNPC(instanceValue, npcName);
+                                await NpcFunction.ClickNPC(instanceValue, "铁");
                                 await NpcFunction.Talk2(instanceValue!, "@QUEST");
                                 await NpcFunction.Talk2(instanceValue!, "@exit");
                                 // 回复会得到乌木剑, 会自动带
@@ -1098,7 +1098,7 @@ namespace Mir2Assistant
                                 SaveAccountList();
 
                             }
-                            if (act.TaskMain0Step == 6 && instanceValue.CharacterStatus.Level > 10)
+                            if (act.TaskMain0Step == 6 && instanceValue.CharacterStatus.Level >= 10)
                             {
                                 // 主线
                                 // 去道士武士魔法之家
@@ -1744,7 +1744,7 @@ namespace Mir2Assistant
                                     CharacterStatusFunction.AdjustAttackSpeed(instance, 1200);
                                 }
                             }
-                            else if (instance.CharacterStatus.Level < 7)
+                            else if (instance.CharacterStatus.Level < 15)
                             {
                                 if (GameState.gamePath == "Client.exe")
                                 {
