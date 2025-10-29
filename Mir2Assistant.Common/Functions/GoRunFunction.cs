@@ -33,6 +33,68 @@ public static class GoRunFunction
     {
         var mainInstance = GameState.GameInstances[0];
         var isLowMain = mainInstance.CharacterStatus.Level < 15;
+
+
+
+  // 战士扔蓝 太阳
+        if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
+        {
+            var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
+            //人近 怪少 地上没东西 才行
+            if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5
+            && mainInstance.Monsters.Values.Where(o => o.stdAliveMon &&
+                Math.Max(Math.Abs(o.X - mainInstance.CharacterStatus.X), Math.Abs(o.Y - mainInstance.CharacterStatus.Y)) < 5).Count() < 2
+            )
+            {
+                if (mainInstance.DropsItems.Count() > 3)
+                {
+                    return;
+                }
+
+                var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
+
+                var rmc = 46 - mc;
+                if (rmc > 6)
+                {
+
+                    var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("魔法药")).ToList();
+                    var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
+                    if (mageCount > 0)
+                    {
+                        // 进位
+                        var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.3);
+                        var dropItems = items2.Take((int)dropCount).ToList();
+                        foreach (var item in dropItems)
+                        {
+                            await DropItem(instanceValue, item);
+                        }
+                        if (dropItems.Count > 0)
+                        {
+                            await NpcFunction.RefreshPackages(instanceValue);
+                        }
+                    }
+
+                    var itemsSuper = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("太阳水")).ToList();
+                    if (itemsSuper.Count > 0)
+                    {
+                        var dropCount = Math.Ceiling(Math.Min(rmc, itemsSuper.Count) * 0.3);
+                        var dropItems = itemsSuper.Take((int)dropCount).ToList();
+                        foreach (var item in dropItems)
+                        {
+                            await DropItem(instanceValue, item);
+                        }
+                        if (dropItems.Count > 0)
+                        {
+                            await NpcFunction.RefreshPackages(instanceValue);
+                        }
+                    }
+                }
+
+
+
+            }
+        }
+
         if (isLowMain) return;
         var normalBinItems = GameConstants.Items.GetBinItems(instanceValue, instanceValue.CharacterStatus.Level, instanceValue.AccountInfo.role);
         var items = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty && !o.IsGodly && normalBinItems.Contains(o.Name)).ToList();
@@ -101,64 +163,7 @@ public static class GoRunFunction
         await dropLowFu(instanceValue);
 
 
-        // 战士扔蓝 太阳
-        if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
-        {
-            var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
-            //人近 怪少 地上没东西 才行
-            if (instanceValue.AccountInfo.role == RoleType.blade && diffFar < 5
-            && mainInstance.Monsters.Values.Where(o => o.stdAliveMon &&
-                Math.Max(Math.Abs(o.X - mainInstance.CharacterStatus.X), Math.Abs(o.Y - mainInstance.CharacterStatus.Y)) < 5).Count() < 2
-            )
-            {
-                if (mainInstance.DropsItems.Count() > 3)
-                {
-                    return;
-                }
-
-                var mc = mainInstance.Items.Concat(mainInstance.QuickItems).Where(o => !o.IsEmpty).Count();
-
-                var rmc = 46 - mc;
-                if (rmc > 6)
-                {
-
-                    var items2 = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("魔法药")).ToList();
-                    var mageCount = instanceValue.Items.Concat(instanceValue.QuickItems).Where(o => !o.IsEmpty).Count(o => o.stdMode == 0 && o.Name.Contains("魔法药"));
-                    if (mageCount > 0)
-                    {
-                        // 进位
-                        var dropCount = Math.Ceiling(Math.Min(rmc, items2.Count) * 0.3);
-                        var dropItems = items2.Take((int)dropCount).ToList();
-                        foreach (var item in dropItems)
-                        {
-                            await DropItem(instanceValue, item);
-                        }
-                        if (dropItems.Count > 0)
-                        {
-                            await NpcFunction.RefreshPackages(instanceValue);
-                        }
-                    }
-
-                    var itemsSuper = instanceValue.QuickItems.Concat(instanceValue.Items).Where(o => !o.IsEmpty && o.stdMode == 0 && o.Name.Contains("太阳水")).ToList();
-                    if (itemsSuper.Count > 0)
-                    {
-                        var dropCount = Math.Ceiling(Math.Min(rmc, itemsSuper.Count) * 0.3);
-                        var dropItems = itemsSuper.Take((int)dropCount).ToList();
-                        foreach (var item in dropItems)
-                        {
-                            await DropItem(instanceValue, item);
-                        }
-                        if (dropItems.Count > 0)
-                        {
-                            await NpcFunction.RefreshPackages(instanceValue);
-                        }
-                    }
-                }
-
-
-
-            }
-        }
+      
     }
     public static bool PickupInfoBasicCheck(MirGameInstanceModel instanceValue)
     {
