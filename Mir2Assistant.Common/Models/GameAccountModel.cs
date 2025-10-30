@@ -26,6 +26,7 @@ namespace Mir2Assistant.Common.Models
         // public int? ProcessId { get; set; }
         public int TaskMain0Step { get; set; }
         public int TaskSub0Step { get; set; }
+        public int SignOffTime { get; set; } = 0;
         // public bool IsRunning => ProcessId.HasValue && ProcessId.Value > 0;
     }
 }

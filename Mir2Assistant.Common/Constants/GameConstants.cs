@@ -539,6 +539,7 @@ public static class GameConstants
         private static readonly List<string> binItems =
      new List<string>
      {
+            "铜矿",
             "火球术",
             "大火球",
             "治愈术",

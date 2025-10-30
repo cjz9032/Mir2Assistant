@@ -953,6 +953,7 @@ namespace Mir2Assistant
                             await prepareBags(instanceValue, _cancellationTokenSource.Token);
                         }
                         await waitForResumeHp(instanceValue);
+                        await dailySignOff(instanceValue);
 
 
                         // 新手任务
@@ -1157,44 +1158,44 @@ namespace Mir2Assistant
                             {
                                 if (act.TaskMain0Step == 7)
                                 {
-                                        bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
-                                        if (pathFound)
-                                        {
-                                            await NpcFunction.ClickNPC(instanceValue, "老");
-                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                            await NpcFunction.Talk2(instanceValue!, "@707_1");
-                                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                                            act.TaskMain0Step = 8;
-                                            SaveAccountList();
-                                        }
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
+                                    if (pathFound)
+                                    {
+                                        await NpcFunction.ClickNPC(instanceValue, "老");
+                                        await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                        await NpcFunction.Talk2(instanceValue!, "@707_1");
+                                        await NpcFunction.Talk2(instanceValue!, "@exit");
+                                        act.TaskMain0Step = 8;
+                                        SaveAccountList();
+                                    }
                                 }
                                 if (act.TaskMain0Step == 8)
                                 {
-                                
-                                        bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 312, 79, "1", 6, true, 20);
-                                        if (pathFound)
-                                        {
-                                            await NpcFunction.ClickNPC(instanceValue, "杂");
-                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                                            act.TaskMain0Step = 9;
-                                            SaveAccountList();
-                                        }
-                                    
+
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 312, 79, "1", 6, true, 20);
+                                    if (pathFound)
+                                    {
+                                        await NpcFunction.ClickNPC(instanceValue, "杂");
+                                        await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                        await NpcFunction.Talk2(instanceValue!, "@exit");
+                                        act.TaskMain0Step = 9;
+                                        SaveAccountList();
+                                    }
+
                                 }
-                                  if (act.TaskMain0Step == 9)
+                                if (act.TaskMain0Step == 9)
                                 {
-                                         bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
-                                        if (pathFound)
-                                        {
-                                            await NpcFunction.ClickNPC(instanceValue, "老");
-                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
-                                            await NpcFunction.Talk2(instanceValue!, "@709_1");
-                                            await NpcFunction.Talk2(instanceValue!, "@709_2");
-                                            await NpcFunction.Talk2(instanceValue!, "@exit");
-                                            act.TaskMain0Step = 10;
-                                            SaveAccountList();
-                                        }
+                                    bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
+                                    if (pathFound)
+                                    {
+                                        await NpcFunction.ClickNPC(instanceValue, "老");
+                                        await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                        await NpcFunction.Talk2(instanceValue!, "@709_1");
+                                        await NpcFunction.Talk2(instanceValue!, "@709_2");
+                                        await NpcFunction.Talk2(instanceValue!, "@exit");
+                                        act.TaskMain0Step = 10;
+                                        SaveAccountList();
+                                    }
                                 }
 
                             }
@@ -1984,6 +1985,32 @@ namespace Mir2Assistant
             });
 
         }
+
+        private async Task dailySignOff(MirGameInstanceModel instance)
+        {
+            if (instance.CharacterStatus.Level >= 15 && instance.CharacterStatus.Level < 28)
+            {
+                if (instance.AccountInfo.SignOffTime == int.Parse(DateTime.Now.ToString("yyyyMMdd")))
+                {
+                    return;
+                }
+                // 查看签到时间, 一天最多一次
+                // 日常签到
+                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instance, 280, 290, "0", 6);
+                if (pathFound)
+                {
+                    for (int i = 0; i < 2; i++)
+                    {
+                        await NpcFunction.ClickNPC(instance, "新");
+                        await NpcFunction.Talk2(instance, "@QUEST");
+                        await Task.Delay(500);
+                    }
+                    instance.AccountInfo.SignOffTime = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
+                    SaveAccountList();
+                }
+            }
+        }
+
 
         private async void autoMidBackground()
         {
