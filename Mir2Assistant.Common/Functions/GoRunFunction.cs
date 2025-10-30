@@ -29,14 +29,43 @@ public static class GoRunFunction
         await Task.Delay(500);
 
     }
+
+    /// <summary>
+    /// 自动学习技能书
+    /// </summary>
+    private static async Task AutoLearnSkillBook(MirGameInstanceModel instanceValue, int requiredLevel, int skillId, string bookName)
+    {
+        if (instanceValue.CharacterStatus.Level < requiredLevel)
+            return;
+
+        var hasSkill = instanceValue.Skills.FirstOrDefault(o => o.Id == skillId) != null;
+        if (hasSkill)
+            return;
+
+        var book = instanceValue.Items.Where(o => !o.IsEmpty && o.Name == bookName).FirstOrDefault();
+        if (book != null)
+        {
+            NpcFunction.EatBookItem(instanceValue, book.Id);
+            await Task.Delay(500);
+        }
+    }
+
     public static async Task DropBinItems(MirGameInstanceModel instanceValue)
     {
         var mainInstance = GameState.GameInstances[0];
         var isLowMain = mainInstance.CharacterStatus.Level < 15;
 
+        // 自动学技能书
+        if (instanceValue.AccountInfo.role == RoleType.taoist)
+        {
+            await AutoLearnSkillBook(instanceValue, 9, 4, "精神力战法");
+        }
+        else if (instanceValue.AccountInfo.role == RoleType.blade)
+        {
+            await AutoLearnSkillBook(instanceValue, 19, 7, "攻杀剑术");
+        }
 
-
-  // 战士扔蓝 太阳
+        // 战士扔蓝 太阳
         if (!instanceValue.AccountInfo.IsMainControl && !mainInstance.isHomePreparing)
         {
             var diffFar = Math.Max(Math.Abs(mainInstance.CharacterStatus!.X - instanceValue.CharacterStatus!.X), Math.Abs(mainInstance.CharacterStatus.Y - instanceValue.CharacterStatus.Y));
@@ -163,7 +192,7 @@ public static class GoRunFunction
         await dropLowFu(instanceValue);
 
 
-      
+
     }
     public static bool PickupInfoBasicCheck(MirGameInstanceModel instanceValue)
     {
@@ -1609,7 +1638,7 @@ public static class GoRunFunction
                         isFullBB = true;
                     }
                     var bossApprs = new List<int> { 40, 102, 166, 121, 143 };
-                    
+
                     var fastClean = cleanAll;
                     if (fastClean)
                     {
@@ -2191,7 +2220,7 @@ public static class GoRunFunction
             for (int dy = -2; dy <= 2; dy++)
             {
                 if (dx == 0 && dy == 0) continue; // 跳过中心点
-                
+
                 // 跳过 3x3 内圈（已经检查过了）
                 if (dx >= -1 && dx <= 1 && dy >= -1 && dy <= 1) continue;
 
@@ -2205,7 +2234,7 @@ public static class GoRunFunction
                 }
             }
         }
-        
+
         return true; // 5x5外圈也被包围，说明4x4范围被困
     }
 
@@ -2452,7 +2481,7 @@ public static class GoRunFunction
                     // being door position
                     await GoTurn(GameInstance, node.dir);
                 }
-                var whileList = new List<string>() { "0132", "0156", "B347", "0159","0113","0114", "0104" };
+                var whileList = new List<string>() { "0132", "0156", "B347", "0159", "0113", "0114", "0104" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
@@ -2760,7 +2789,7 @@ public static class GoRunFunction
                         continue;
 
                     candidatePoints.Add((targetX, targetY, radius));
-                    
+
                     if (candidatePoints.Count >= maxCandidates)
                         break;
                 }
@@ -2783,7 +2812,7 @@ public static class GoRunFunction
         {
             minDis += 2;
         }
-        if(tooSmall)
+        if (tooSmall)
         {
             minDis += 2;
         }
@@ -2791,7 +2820,7 @@ public static class GoRunFunction
         // 优先minDis, 实在没有就选满足最远的
         (int x, int y, int distance)? targetPoint = null;
         int maxDistance = -1;
-        
+
         foreach (var point in candidatePoints)
         {
             if (point.distance >= minDis)
@@ -2806,7 +2835,7 @@ public static class GoRunFunction
                 maxDistance = point.distance;
             }
         }
-        
+
         // 如果没有满足minDis的点，选择距离最远的点
         if (targetPoint == null)
         {
@@ -2850,10 +2879,10 @@ public static class GoRunFunction
         var skill = GameInstance.Skills.FirstOrDefault(s => s.Id == spellId);
         int skillLevel = skill?.level ?? 1;
         int maxTrainLevel = 3; // 默认最大训练等级为3
-        
+
         // 公式: Round(baseCost / (maxTrainLevel+1) * (skillLevel+1)) + defCost
         var actualCost = Math.Round((double)baseCost / (maxTrainLevel + 1) * (skillLevel + 1)) + defCost;
-        
+
         // 检查MP是否足够（需要1.2倍的消耗作为安全余量）
         if (GameInstance.CharacterStatus!.CurrentMP < actualCost * 1.2)
         {
@@ -3093,7 +3122,7 @@ public static class GoRunFunction
             ).FirstOrDefault();
         }
 
-       
+
         if (lastFinded != null)
         {
             var isSelf = lastFinded.Name == GameInstance.AccountInfo.CharacterName;
@@ -3407,7 +3436,7 @@ public static class GoRunFunction
         // 检查3x3范围内是否有可推的怪物（怪物背后是空的）
         var pushableMonster = CheckOneLayerSurround(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
                 GameInstance.MonstersByPosition);
-        
+
         if (pushableMonster.HasValue)
         {
             // 找到可推的怪物，使用抗拒火环
@@ -3779,7 +3808,7 @@ public static class GoRunFunction
         int maxX = square.CenterX + radius;
         int minY = square.CenterY - radius;
         int maxY = square.CenterY + radius;
-        
+
         return point.X >= minX &&
                point.X <= maxX &&
                point.Y >= minY &&
