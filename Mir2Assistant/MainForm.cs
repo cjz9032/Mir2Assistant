@@ -1348,7 +1348,7 @@ namespace Mir2Assistant
 
                                 else if (CharacterStatus.Level >= 16)
                                 {
-                                    hangMapId = GameState.gamePath == "Client.exe" ? "D401" : "D003";
+                                    hangMapId = GameState.gamePath == "Client.exe" ? "E401" : "D003";
                                 }
                                 else if (CharacterStatus.Level >= GameConstants.MidLevel) // 11
                                 {
@@ -1996,13 +1996,13 @@ namespace Mir2Assistant
                 }
                 // 查看签到时间, 一天最多一次
                 // 日常签到
-                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instance, 280, 290, "0", 6);
+                bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instance, 330, 260, "0", 6);
                 if (pathFound)
                 {
                     for (int i = 0; i < 2; i++)
                     {
                         await NpcFunction.ClickNPC(instance, "新");
-                        await NpcFunction.Talk2(instance, "@QUEST");
+                        await NpcFunction.Talk2(instance, "@lingqu");
                         await Task.Delay(500);
                     }
                     instance.AccountInfo.SignOffTime = int.Parse(DateTime.Now.ToString("yyyyMMdd"));
