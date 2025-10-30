@@ -647,6 +647,7 @@ public static class GameConstants
                 temp.Remove(fuName);
                 var canDef = GoRunFunction.CapbilityOfDefUp(gameInstance);
                 var canMageDef = GoRunFunction.CapbilityOfMageDefUp(gameInstance);
+                var canJS = gameInstance.Skills.FirstOrDefault(o => o.Id == 4) != null;
                 if (!canDef)
                 {
                     temp.Remove("神圣战甲术");
@@ -654,6 +655,10 @@ public static class GameConstants
                 if (!canMageDef)
                 {
                     temp.Remove("幽灵盾");
+                }
+                if (!canJS)
+                {
+                    temp.Remove("精神力战法");
                 }
             }
 
