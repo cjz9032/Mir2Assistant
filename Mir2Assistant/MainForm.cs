@@ -1401,9 +1401,18 @@ namespace Mir2Assistant
                                     {
                                         var MyCharacterStatus = instanceValue.CharacterStatus;
                                         var accountInfo = instanceValue.AccountInfo;
-                                        if (!GameConstants.HomeMaps.Contains(MyCharacterStatus.MapId) && instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value != null)
+                                        var basicInHome2 = GameConstants.HomeMaps.Contains(CharacterStatus.MapId) || instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "NPC").Value != null;
+                                        if (!basicInHome2)
                                         {
+                                            var thirdPerson = instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value;
                                             //System.Diagnostics.Debugger.Break();
+                                            if (!basicInHome2)
+                                            {
+                                                // 遇到个人
+                                                instanceValue.GameInfo($"回家 thirdPerson 人  {MyCharacterStatus.MapId} {thirdPerson.Name}");
+                                                isLostGoHome = true;
+                                                return true;
+                                            }
                                         }
                                         exitForSwichMap = false;
                                         // 小号跟随回家
