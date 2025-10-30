@@ -1406,7 +1406,7 @@ namespace Mir2Assistant
                                         {
                                             var thirdPerson = instanceValue.Monsters.FirstOrDefault(o => o.Value.TypeStr == "玩家" && !o.Value.isTeams).Value;
                                             //System.Diagnostics.Debugger.Break();
-                                            if (!basicInHome2)
+                                            if (!basicInHome2 && thirdPerson != null)
                                             {
                                                 // 遇到个人
                                                 instanceValue.GameInfo($"回家 thirdPerson 人  {MyCharacterStatus.MapId} {thirdPerson.Name}");
