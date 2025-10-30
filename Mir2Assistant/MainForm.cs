@@ -807,7 +807,7 @@ namespace Mir2Assistant
             // if(instanceValue.AccountInfo.TaskMain0Step >= 7)
             // {
             // }
-                await sellMeat(instanceValue, _cancellationToken);
+            await sellMeat(instanceValue, _cancellationToken);
 
             // 蜡烛检测
             // await NpcFunction.BuyLZ(instanceValue, _cancellationToken);
@@ -957,7 +957,7 @@ namespace Mir2Assistant
 
                         // 新手任务
                         // todo 目前是5
-                        if (CharacterStatus.Level <= 16 && act.TaskMain0Step < 7) // 6
+                        if (CharacterStatus.Level <= 22 && act.TaskMain0Step < 15) // 6
                         {
                             // 主线
                             if (act.TaskMain0Step == 0)
@@ -1008,7 +1008,7 @@ namespace Mir2Assistant
                                         break;
                                     }
                                 }
-                           
+
 
                                 act.TaskMain0Step = 2;
                                 SaveAccountList();
@@ -1151,6 +1151,51 @@ namespace Mir2Assistant
 
 
 
+
+                            }
+                            if (instanceValue.CharacterStatus.Level >= 19)
+                            {
+                                if (act.TaskMain0Step == 7)
+                                {
+                                        bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
+                                        if (pathFound)
+                                        {
+                                            await NpcFunction.ClickNPC(instanceValue, "老");
+                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                            await NpcFunction.Talk2(instanceValue!, "@707_1");
+                                            await NpcFunction.Talk2(instanceValue!, "@exit");
+                                            act.TaskMain0Step = 8;
+                                            SaveAccountList();
+                                        }
+                                }
+                                if (act.TaskMain0Step == 8)
+                                {
+                                
+                                        bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 312, 79, "1", 6, true, 20);
+                                        if (pathFound)
+                                        {
+                                            await NpcFunction.ClickNPC(instanceValue, "杂");
+                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                            await NpcFunction.Talk2(instanceValue!, "@exit");
+                                            act.TaskMain0Step = 9;
+                                            SaveAccountList();
+                                        }
+                                    
+                                }
+                                  if (act.TaskMain0Step == 9)
+                                {
+                                         bool pathFound = await GoRunFunction.PerformPathfinding(CancellationToken.None, instanceValue, 10, 10, "0104", 6, true, 20);
+                                        if (pathFound)
+                                        {
+                                            await NpcFunction.ClickNPC(instanceValue, "老");
+                                            await NpcFunction.Talk2(instanceValue!, "@QUEST");
+                                            await NpcFunction.Talk2(instanceValue!, "@709_1");
+                                            await NpcFunction.Talk2(instanceValue!, "@709_2");
+                                            await NpcFunction.Talk2(instanceValue!, "@exit");
+                                            act.TaskMain0Step = 10;
+                                            SaveAccountList();
+                                        }
+                                }
 
                             }
                         }
@@ -1306,13 +1351,13 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= GameConstants.MidLevel) // 11
                                 {
-                                    hangMapId = "D001";
+                                    hangMapId = "E001";
                                 }
                                 else if (CharacterStatus.Level >= 8)
                                 {
                                     hangMapId = "1";
                                 }
-                                if(instanceValue.isHomePreparing)
+                                if (instanceValue.isHomePreparing)
                                 {
                                     await waitForMainControlReady(instanceValue);
                                 }
@@ -1620,7 +1665,7 @@ namespace Mir2Assistant
 
                                     await prepareBags(instanceValue, _cancellationTokenSource.Token);
                                     instanceValue.isHomePreparing = false;
-                                    
+
                                     await waitForMainControlReady(instanceValue);
                                 }
                                 else

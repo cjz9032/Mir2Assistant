@@ -2452,7 +2452,7 @@ public static class GoRunFunction
                     // being door position
                     await GoTurn(GameInstance, node.dir);
                 }
-                var whileList = new List<string>() { "0132", "0156", "B347", "0159","0113","0114" };
+                var whileList = new List<string>() { "0132", "0156", "B347", "0159","0113","0114", "0104" };
                 if (isAcross && whileList.Contains(replaceMap))
                 {
                     // 注意很多不需要, 用白名单
