@@ -661,6 +661,16 @@ public static class GameConstants
                     temp.Remove("精神力战法");
                 }
             }
+            if (role == RoleType.blade)
+            {
+                var fuName = getFushen(level);
+                temp.Remove(fuName);
+                var canJS = gameInstance.Skills.FirstOrDefault(o => o.Id == 7) != null;
+                if (!canJS)
+                {
+                    temp.Remove("攻杀剑术");
+                }
+            }
 
             // if (role != RoleType.mage)
             // {

@@ -1320,10 +1320,10 @@ namespace Mir2Assistant
                                     hangMapId = "0";
                                 }
                                 // todo temp for high
-                                else if (friends.Count > 0 && instanceValue.CharacterStatus.Level < 22)
-                                {
-                                    hangMapId = "0";
-                                }
+                                // else if (friends.Count > 0 && instanceValue.CharacterStatus.Level < 22)
+                                // {
+                                //     hangMapId = "0";
+                                // }
                                 else if (CharacterStatus.Level >= 32) // todo toaist
                                 {
                                     hangMapId = "D605"; // D601 D023 E605 连接E604  , D605 北宽 在初心也很多怪了 , D613 生死大
