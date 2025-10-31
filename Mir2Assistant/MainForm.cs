@@ -947,6 +947,8 @@ namespace Mir2Assistant
                             }
                         }
                         await waitForResumeHp(instanceValue);
+                        
+
                         if ((isMainInHome || basicInHome) && instanceValue.AccountInfo.TaskMain0Step >= 7)
                         {
                             instanceValue.isHomePreparing = true;
@@ -1337,13 +1339,13 @@ namespace Mir2Assistant
                                 {
                                     hangMapId = "E605"; // D601 D023 E605 连接
                                 }
-                                else if (CharacterStatus.Level >= 25) // todo toaist
+                                else if (CharacterStatus.Level >= 24) // todo toaist
                                 {
-                                    hangMapId = "E701";
+                                    hangMapId = "E605"; // E701钱少
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
-                                    hangMapId = "E402"; // D401 D421 E402
+                                    hangMapId = "E605"; // D401 D421 E402
                                 }
 
                                 else if (CharacterStatus.Level >= 16)

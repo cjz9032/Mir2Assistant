@@ -1,6 +1,46 @@
 using System.Text;
 using Newtonsoft.Json;
 
+
+// curl --request POST \
+//   --url https://api.siliconflow.cn/v1/chat/completions \
+//   --header 'Authorization: Bearer sk-bxnyiifpehrrdvwbifnoyappfquziubcfkktlynxayiccyif' \
+//   --header 'Content-Type: application/json' \
+//   --data '{
+//   "model": "THUDM/glm-4-9b-chat",
+//   "messages": [
+//     {
+//       "role": "system",
+//       "content": "快跟我随便聊"
+//     }
+//   ],
+//   "stream": false,
+//   "max_tokens": 1000,
+//   "enable_thinking": false,
+//   "thinking_budget": 4096,
+//   "min_p": 0.05,
+//   "stop": null,
+//   "temperature": 0.7,
+//   "top_p": 0.7,
+//   "top_k": 50,
+//   "frequency_penalty": 0.5,
+//   "n": 1,
+//   "response_format": {
+//     "type": "text"
+//   },
+//   "tools": [
+//     {
+//       "type": "function",
+//       "function": {
+//         "description": "<string>",
+//         "name": "<string>",
+//         "parameters": {},
+//         "strict": false
+//       }
+//     }
+//   ]
+// }'
+
 namespace Mir2Assistant.Services
 {
     public static class HuoshanAIHelper
@@ -10,10 +50,8 @@ namespace Mir2Assistant.Services
         private static readonly Random _random = new Random();
         private const int MAX_MESSAGES = 50;
         // private const string API_KEY = "5e6d2940-a9e3-4125-98ac-f443d97e7437";
-        private const string API_KEY = "a426e068-0c4d-4fe2-9de6-1faf340bbc65";
-        private const string MODEL2 = "doubao-seed-1-6-flash-250615";
-        private const string MODEL1 = "kimi-k2-250905";
-        private static readonly string[] MODELS = { MODEL1, MODEL2 };
+        private const string API_KEY = "sk-bxnyiifpehrrdvwbifnoyappfquziubcfkktlynxayiccyif";
+        private const string MODEL = "THUDM/glm-4-9b-chat";
 
         public class ChatMessage
         {
@@ -36,11 +74,11 @@ namespace Mir2Assistant.Services
         public static void RestartConversation(string instanceId = null)
         {
             instanceId ??= Thread.CurrentThread.ManagedThreadId.ToString();
-            
+
             if (_conversationHistory.ContainsKey(instanceId))
             {
                 _conversationHistory[instanceId].Clear();
-                Console.WriteLine($"[HuoshanAI] 已重新开始对话 (实例ID: {instanceId})");
+                Console.WriteLine($"[SiliconFlow] 已重新开始对话 (实例ID: {instanceId})");
             }
         }
 
@@ -50,7 +88,7 @@ namespace Mir2Assistant.Services
         public static void ClearAllConversations()
         {
             _conversationHistory.Clear();
-            Console.WriteLine("[HuoshanAI] 已清除所有对话历史");
+            Console.WriteLine("[SiliconFlow] 已清除所有对话历史");
         }
 
         /// <summary>
@@ -63,7 +101,7 @@ namespace Mir2Assistant.Services
             {
                 // 自动生成实例ID（基于调用线程）
                 var instanceId = Thread.CurrentThread.ManagedThreadId.ToString();
-                
+
                 // 获取或创建该实例的对话历史
                 if (!_conversationHistory.ContainsKey(instanceId))
                 {
@@ -97,41 +135,44 @@ namespace Mir2Assistant.Services
 
                 var requestBody = new
                 {
-                    model = MODELS[_random.Next(MODELS.Length)],
+                    model = MODEL,
                     messages,
+                    stream = false,
                     max_tokens = 200,
-                    temperature = 0.9,
-                    parameters = new { enable_thinking = false }
+                    temperature = 0.7,
+                    top_p = 0.7,
+                    top_k = 50,
+                    frequency_penalty = 0.5
                 };
 
                 var json = JsonConvert.SerializeObject(requestBody);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
-                
+
                 _httpClient.DefaultRequestHeaders.Clear();
                 _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {API_KEY}");
 
                 // 开始计时
                 var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-                
-                var response = await _httpClient.PostAsync("https://ark.cn-beijing.volces.com/api/v3/chat/completions", content);
-                
+
+                var response = await _httpClient.PostAsync("https://api.siliconflow.cn/v1/chat/completions", content);
+
                 // 停止计时
                 stopwatch.Stop();
                 var elapsed = stopwatch.ElapsedMilliseconds;
-                
+
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
                     dynamic result = JsonConvert.DeserializeObject(responseContent);
-                    
+
                     var aiReply = result?.choices?[0]?.message?.content?.ToString() ?? "没有回复";
-                    
+
                     // 添加AI回复到历史
                     history.Add(new ChatMessage { Role = "assistant", Content = aiReply });
-                    
+
                     // 输出耗时到控制台
-                    Console.WriteLine($"[HuoshanAI] API调用耗时: {elapsed}ms");
-                    
+                    Console.WriteLine($"[SiliconFlow] API调用耗时: {elapsed}ms");
+
                     return aiReply;
                 }
                 else

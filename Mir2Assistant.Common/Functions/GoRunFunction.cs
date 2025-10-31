@@ -3391,7 +3391,7 @@ public static class GoRunFunction
 
         // 使用最多3个正方形覆盖最多的队友位置
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var optimalSquares = FindOptimalSquareCoverage(myteamMembersPos, 3, 3); // 3格范围的正方形
+        var optimalSquares = FindOptimalSquareCoverage(myteamMembersPos, 2, 3); // 3格范围的正方形
         stopwatch.Stop();
         GameInstance.GameDebug("最优算法耗时: {ElapsedMs}ms, 队友数: {TeamCount}, 找到正方形: {SquareCount}",
             stopwatch.ElapsedMilliseconds, myteamMembersPos.Count, optimalSquares.Count);
