@@ -152,7 +152,7 @@ public static class GoRunFunction
                 // 武器衣服
                 ? ((o.reqType == 0 && o.reqPoints < (isHighReq ? 15 : 10)) || o.reqType > 0)
                 // 首饰等开始鉴定
-                : ((o.reqType == 0 && o.reqPoints < (isHighReq ? 19 : 10)) || o.reqType > 0))
+                : ((o.reqType == 0 && o.reqPoints < (isHighReq ? 18 : 10)) || o.reqType > 0))
         ).ToList();
         foreach (var item in itemsEq)
         {
