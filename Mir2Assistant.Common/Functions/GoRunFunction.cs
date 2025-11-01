@@ -1674,7 +1674,11 @@ public static class GoRunFunction
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
                 (isPreferSafeNormal ?
-                 Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 2
+                 (Math.Max(Math.Abs(o.X - CharacterStatus.X), Math.Abs(o.Y - CharacterStatus.Y)) < 2) || (
+                    // 刺杀判断：怪物在2格距离且在同一直线上（横向或纵向）
+                    canCi && ((Math.Abs(o.X - CharacterStatus.X) == 0 && Math.Abs(o.Y - CharacterStatus.Y) == 2) || 
+                              (Math.Abs(o.Y - CharacterStatus.Y) == 0 && Math.Abs(o.X - CharacterStatus.X) == 2))
+                 )
                  : true)
                  &&
                 // 暂时取消 看起来没作用
@@ -1959,8 +1963,10 @@ public static class GoRunFunction
                         else
                         {
                             // 配合逃跑安全点, 只攻击一格怪, 这里只是为了同步信息
-                            if (!(isPreferSafe && Math.Max(Math.Abs(CharacterStatus.X - ani.X), Math.Abs(CharacterStatus.Y - ani.Y)) > 1))
+                            // false
+                            if (Math.Max(Math.Abs(CharacterStatus.X - ani.X), Math.Abs(CharacterStatus.Y - ani.Y)) < 2)
                             {
+                                // isPreferSafe ?
                                 MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                             }
                         }
@@ -2559,11 +2565,12 @@ public static class GoRunFunction
                 {
                     return false;
                 }
-                if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
-                GameInstance.MonstersByPosition) || CheckIfBlockMons(GameInstance))
-                {
-                    await cleanMobs4Blks(GameInstance, 0, true, cancellationToken, callback);
-                }
+                // 暂时看不出作用
+                //if (CheckIfSurrounded(GameInstance.CharacterStatus.MapId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y,
+                //GameInstance.MonstersByPosition) || CheckIfBlockMons(GameInstance))
+                //{
+                //    await cleanMobs4Blks(GameInstance, 0, true, cancellationToken, callback);
+                //}
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 寻路会出问题
                 // await PerformButchering(GameInstance, maxBagCount: 32, searchRadius: 13, maxTries: 20, cancellationToken);
