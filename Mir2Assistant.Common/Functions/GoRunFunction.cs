@@ -238,9 +238,9 @@ public static class GoRunFunction
         var isDaoNeed = instanceValue.AccountInfo.role == RoleType.taoist && CharacterStatus.Level > 7;
         var pickMageRate = instanceValue.AccountInfo.IsMainControl && isDaoNeed ? 1 :
             isMainFull ? (
-                isBladeNeed ? 0.2 : (
+                isBladeNeed ? 0.3 : (
                     isMageNeed ? 1 : (
-                        isDaoNeed ? 0.5 : 0 // 副道
+                        isDaoNeed ? 0.5 : 0.2 // 副道
                     )
                 )
             ) : (
