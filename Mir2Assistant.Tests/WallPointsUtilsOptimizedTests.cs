@@ -150,5 +150,41 @@ namespace Mir2Assistant.Tests
             _output.WriteLine($"缓存统计: {cacheCount}");
             _output.WriteLine($"预加载测试地图结果: {preloadSuccess}");
         }
+
+        [Fact]
+        public void TestGridIndexCorrectness()
+        {
+            // 测试网格索引是否正确
+            var data = WallPointsUtils.GetWallPoints(TestMapName, _testDataDirectory);
+            Assert.NotNull(data);
+
+            int checkedPoints = 0;
+            int errorCount = 0;
+
+            // 遍历所有网格，验证每个点是否在正确的网格中
+            for (int gx = 0; gx < data.GridWidth; gx++)
+            {
+                for (int gy = 0; gy < data.GridHeight; gy++)
+                {
+                    foreach (var point in data.Grids[gx, gy])
+                    {
+                        // 根据点的坐标计算它应该在哪个网格
+                        int expectedGx = point.x / data.GridSize;
+                        int expectedGy = point.y / data.GridSize;
+
+                        if (expectedGx != gx || expectedGy != gy)
+                        {
+                            _output.WriteLine($"错误: 点({point.x}, {point.y}) 在网格[{gx},{gy}]，但应该在[{expectedGx},{expectedGy}]");
+                            errorCount++;
+                        }
+
+                        checkedPoints++;
+                    }
+                }
+            }
+
+            _output.WriteLine($"检查了 {checkedPoints} 个点，发现 {errorCount} 个索引错误");
+            Assert.Equal(0, errorCount);
+        }
     }
 }

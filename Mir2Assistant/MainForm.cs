@@ -98,11 +98,8 @@ namespace Mir2Assistant
             HotKeyUtils.RegisterHotKey(Handle, 200, 0, Keys.Delete); // 注册热键
             Log.Debug("已注册热键: Delete");
             autoAtBackgroundFast();
-            if (!BBTask)
-            {
-                autoMidBackground();
-                autoAtBackground(); //特殊任务取消
-            }
+            autoMidBackground();
+            autoAtBackground(); //特殊任务取消
             // RefreshDataGrid();
             Task.Run(async () =>
             {
@@ -925,7 +922,15 @@ namespace Mir2Assistant
                         // 插入特殊任务
                         if (BBTask)
                         {
-                            await GoRunFunction.upgradeBBSkill(instanceValue);
+                            var bbss = await GoRunFunction.upgradeBBSkill(instanceValue);
+                            if (bbss)
+                            {
+                                BBTask = false;
+                            }
+                            else
+                            {
+                                await Task.Delay(300_000_000);
+                            }
                         }
                         // 会慢拿到结果
                         if (!instanceValue.AccountInfo.IsMainControl)
@@ -1341,7 +1346,7 @@ namespace Mir2Assistant
                                 }
                                 else if (CharacterStatus.Level >= 24) // todo toaist
                                 {
-                                    hangMapId = "E605"; // E701钱少
+                                    hangMapId = "D601"; // E701钱少 E605
                                 }
                                 else if (CharacterStatus.Level >= 22)
                                 {
@@ -1738,6 +1743,11 @@ namespace Mir2Assistant
                 {
                     // Log.Debug("开始后台自动处理");
                     await Task.Delay(20_000);
+                    if (BBTask)
+                    {
+                        await Task.Delay(10_000);
+                        continue;
+                    }
 
                     try
                     {
@@ -2035,6 +2045,11 @@ namespace Mir2Assistant
 
                     try
                     {
+                        if (BBTask)
+                        {
+                            await Task.Delay(10_000);
+                            continue;
+                        }
                         var CharacterStatus = instance.CharacterStatus;
                         if (CharacterStatus.CurrentHP > 0)
                         {

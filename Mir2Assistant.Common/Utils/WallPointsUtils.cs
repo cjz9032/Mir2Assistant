@@ -95,10 +95,10 @@ namespace Mir2Assistant.Common.Utils
                     WallPointsCount = wallPointsCount
                 };
 
-                // 读取每个网格的数据
-                for (int i = 0; i < gridWidth; i++)
+                // 读取每个网格的数据（按照JS生成的顺序：先Y后X）
+                for (int gy = 0; gy < gridHeight; gy++)
                 {
-                    for (int j = 0; j < gridHeight; j++)
+                    for (int gx = 0; gx < gridWidth; gx++)
                     {
                         int pointCount = reader.ReadInt32();
                         for (int k = 0; k < pointCount; k++)
@@ -107,7 +107,7 @@ namespace Mir2Assistant.Common.Utils
                             int y = reader.ReadInt32();
                             int wallCount = reader.ReadInt32();
                             var point = (x, y, wallCount);
-                            data.Grids[i, j].Add(point);
+                            data.Grids[gx, gy].Add(point);
                             data.WallPointsSet.Add((x, y));
                         }
                     }
@@ -186,14 +186,11 @@ namespace Mir2Assistant.Common.Utils
                     var gridPoints = data.Grids[gridX, gridY];
                     foreach (var point in gridPoints)
                     {
-                        // 检查是否在范围内
-                        if (Math.Abs(point.x - centerX) <= range && Math.Abs(point.y - centerY) <= range)
+                        // 使用切比雪夫距离（网格地图8方向移动）
+                        int distance = Math.Max(Math.Abs(point.x - centerX), Math.Abs(point.y - centerY));
+                        if (distance <= range)
                         {
-                            double distance = Math.Sqrt(Math.Pow(point.x - centerX, 2) + Math.Pow(point.y - centerY, 2));
-                            if (distance <= range)
-                            {
-                                nearbyPoints.Add((point.x, point.y, distance, point.wallCount));
-                            }
+                            nearbyPoints.Add((point.x, point.y, distance, point.wallCount));
                         }
                     }
                 }

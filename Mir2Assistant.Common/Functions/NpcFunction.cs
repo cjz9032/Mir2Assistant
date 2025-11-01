@@ -1370,6 +1370,7 @@ namespace Mir2Assistant.Common.Functions
                             if (level >= 20)
                             {
                                 itemNames.Add("破魂");
+                                itemNames.Add("斩马刀");
                             }
                             if (level >= 22)
                             {

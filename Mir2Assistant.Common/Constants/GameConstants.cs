@@ -198,7 +198,7 @@ public static class GameConstants
             "龙纹剑"   ,
     };
         public static readonly int mageBuyCount = 30; // todo by level
-        public static readonly int superPickCount = 3;
+        public static readonly int superPickCount = 6;
         public static readonly int healBuyCount = 8;
         // public static readonly int keepWeaponCount = 2;
         // public static readonly int keepClothCount = 2;

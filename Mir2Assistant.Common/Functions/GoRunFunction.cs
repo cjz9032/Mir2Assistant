@@ -150,7 +150,7 @@ public static class GoRunFunction
             ((o.stdModeToUseItemIndex[0] == (byte)EquipPosition.Weapon
              || o.stdModeToUseItemIndex[0] == (byte)EquipPosition.Dress)
                 // 武器衣服
-                ? ((o.reqType == 0 && o.reqPoints < (isHighReq ? 15 : 10)) || o.reqType > 0)
+                ? ((o.reqType == 0 && o.reqPoints < (isHighReq ? 15 : 11)) || o.reqType > 0)
                 // 首饰等开始鉴定
                 : ((o.reqType == 0 && o.reqPoints < (isHighReq ? 18 : 10)) || o.reqType > 0))
         ).ToList();
@@ -247,7 +247,7 @@ public static class GoRunFunction
                 mainMageCount > 16 ? (isMageNeed ? 1 : 0) : 0
             );
         var pickMageCount = GameConstants.Items.mageBuyCount * pickMageRate;
-        var pickSuperRate = instanceValue.AccountInfo.role == RoleType.mage ? 3 : 1;
+        var pickSuperRate = instanceValue.AccountInfo.role == RoleType.mage ? 2 : 1;
         var pickSuperCount = GameConstants.Items.superPickCount * pickSuperRate;
 
 
@@ -589,13 +589,96 @@ public static class GoRunFunction
         }
     }
 
-    private static bool CheckNeedPerformEscapeWithSafePts(MirGameInstanceModel instanceValue)
+    /// <summary>
+    /// 寻找接近怪物的最佳点位
+    /// </summary>
+    /// <param name="instanceValue">游戏实例</param>
+    /// <param name="monsterX">怪物X坐标</param>
+    /// <param name="monsterY">怪物Y坐标</param>
+    /// <param name="searchRadius">搜索半径，默认为1（怪物周围8格）</param>
+    /// <returns>最佳接近点坐标</returns>
+    private static (int x, int y) FindBestApproachPoint(MirGameInstanceModel instanceValue, int monsterX, int monsterY, int searchRadius = 1)
     {
-        var preferSafePtsMinMonCount = 10; // 先看看
-        var preferSafePtsAreaRadius = 7; // 先看看 人口密度 10/64 
+        var charX = instanceValue.CharacterStatus.X;
+        var charY = instanceValue.CharacterStatus.Y;
+        var mapId = instanceValue.CharacterStatus.MapId;
+        
+        // 获取地图障碍物数据
+        var (width, height, obstacles) = retriveMapObstacles(mapId);
+        
+        // 辅助函数：检查点是否可走
+        bool IsWalkable(int x, int y)
+        {
+            return x >= 0 && x < width && y >= 0 && y < height &&
+                   obstacles[y * width + x] == 0 &&
+                   MonsterFunction.GetMonstersByPosition(instanceValue.MonstersByPosition, x, y).Count == 0;
+        }
+        
+        // 计算角色相对怪物的方向
+        int deltaX = charX - monsterX;
+        int deltaY = charY - monsterY;
+        
+        // 确定起始搜索点（角色方向最近的点）
+        int startX = monsterX + (deltaX > 0 ? searchRadius : (deltaX < 0 ? -searchRadius : 0));
+        int startY = monsterY + (deltaY > 0 ? searchRadius : (deltaY < 0 ? -searchRadius : 0));
+        
+        // 如果起始点可走，直接返回
+        if (IsWalkable(startX, startY))
+            return (startX, startY);
+        
+        // 从起始点开始，向两边环绕搜索
+        // 定义8个方向的偏移（顺时针）：上、右上、右、右下、下、左下、左、左上
+        var directions = new[] { (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1) };
+        
+        // 根据角色方向确定起始方向索引（dirY * 3 + dirX 映射到 0-7）
+        int dirX = deltaX > 0 ? 1 : (deltaX < 0 ? -1 : 0);
+        int dirY = deltaY > 0 ? 1 : (deltaY < 0 ? -1 : 0);
+        // 映射表：(dirY+1)*3 + (dirX+1) -> 方向索引
+        // [-1,-1]=7左上, [-1,0]=0上, [-1,1]=1右上, [0,-1]=6左, [0,0]=0上, [0,1]=2右, [1,-1]=5左下, [1,0]=4下, [1,1]=3右下
+        var dirMap = new[] { 7, 0, 1, 6, 0, 2, 5, 4, 3 };
+        int startDir = dirMap[(dirY + 1) * 3 + (dirX + 1)];
+        
+        // 双向环绕搜索
+        for (int step = 1; step <= directions.Length / 2; step++)
+        {
+            // 顺时针方向
+            int dir1 = (startDir + step) % directions.Length;
+            int x1 = monsterX + directions[dir1].Item1 * searchRadius;
+            int y1 = monsterY + directions[dir1].Item2 * searchRadius;
+            if (IsWalkable(x1, y1))
+                return (x1, y1);
+            
+            // 逆时针方向
+            int dir2 = (startDir - step + directions.Length) % directions.Length;
+            int x2 = monsterX + directions[dir2].Item1 * searchRadius;
+            int y2 = monsterY + directions[dir2].Item2 * searchRadius;
+            if (IsWalkable(x2, y2))
+                return (x2, y2);
+        }
+        
+        // 如果周围没有空格子，返回无效坐标
+        return (0, 0);
+    }
+
+    private static int CheckNeedPerformEscapeWithSafePts(MirGameInstanceModel instanceValue)
+    {
+
+        var preferSafePtsMinMonCount = (instanceValue.AccountInfo.role != RoleType.mage ? 2.5 : 2) * GameState.GameInstances.Where(t => t.AccountInfo.role != RoleType.mage).Count(); // 1对2, 比如3人就6 --但是没考虑小号 先不管
+        var preferSafePtsAreaRadius = 5;
         var currentMonsCount = instanceValue.Monsters.Values.Count(o => o.stdAliveMon && Math.Abs(o.X - instanceValue.CharacterStatus.X) < preferSafePtsAreaRadius && Math.Abs(o.Y - instanceValue.CharacterStatus.Y) < preferSafePtsAreaRadius);
+
+
         var isPreferSafe = currentMonsCount > preferSafePtsMinMonCount;
-        return isPreferSafe;
+        if (isPreferSafe)
+        {
+            return 2;
+        }
+        var preferSafePtsMinMonCount2 = (instanceValue.AccountInfo.role != RoleType.mage ? 1 : 0.5) * GameState.GameInstances.Where(t => t.AccountInfo.role != RoleType.mage).Count(); // 1对2, 比如3人就6 --但是没考虑小号 先不管
+        var preferSafePtsAreaRadius2 = 2;
+        var currentMonsCount2 = instanceValue.Monsters.Values.Count(o => o.stdAliveMon && Math.Abs(o.X - instanceValue.CharacterStatus.X) < preferSafePtsAreaRadius2 && Math.Abs(o.Y - instanceValue.CharacterStatus.Y) < preferSafePtsAreaRadius);
+
+        var isPreferSafe2 = currentMonsCount2 > preferSafePtsMinMonCount2;
+        return isPreferSafe2 ? 1 : 0;
     }
 
     public static async Task<int> PerformEscapeWithSafePts(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken)
@@ -609,24 +692,25 @@ public static class GoRunFunction
         var CharacterStatus = instanceValue.CharacterStatus!;
         var mainChars = GameState.GameInstances[0]!.CharacterStatus!;
         var isMain = instanceValue.AccountInfo!.IsMainControl;
-        var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 4 : 2;
+        var maxMonstersNearby = instanceValue.AccountInfo!.role == RoleType.blade ? 3 : 2;
         // 血量太低 说明危险
         if (CharacterStatus.CurrentHP < CharacterStatus.MaxHP * 0.5)
         {
             maxMonstersNearby = 1;
         }
-        var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue);
+        var isPreferSafeNum = CheckNeedPerformEscapeWithSafePts(instanceValue);
 
         // 只跟main搜, 没做main是否中心判断, 因为可能会堵住
         var centerPoint = isMain ? (CharacterStatus.X, CharacterStatus.Y) : (mainChars.X, mainChars.Y);
-        if (isPreferSafe)
+        if (isPreferSafeNum > 0)
         {
             // 检查当前位置是否已经是靠墙点，如果是则不需要逃跑
             if (WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y))
             {
                 return 3; // 无需躲避, 因为靠墙, 至少3
             }
-            var nearestWallPts = WallPointsUtils.FindAllWallPointsInRange(instanceValue.CharacterStatus.MapId, centerPoint.Item1, centerPoint.Item2, 8);
+            var preferSafeNumRate = (int)Math.Round((instanceValue.AccountInfo.IsMainControl ? 7 : 4.0) * (isPreferSafeNum / 2.0));
+            var nearestWallPts = WallPointsUtils.FindAllWallPointsInRange(instanceValue.CharacterStatus.MapId, centerPoint.Item1, centerPoint.Item2, preferSafeNumRate);
             var firstPts = nearestWallPts.Where(o =>
             MonsterFunction.GetMonstersByPosition(instanceValue.MonstersByPosition, o.x, o.y).Count == 0
             ).FirstOrDefault();
@@ -634,17 +718,18 @@ public static class GoRunFunction
             {
                 MonsterFunction.SlayingMonsterCancel(instanceValue!);
                 var isSS = await PerformPathfinding(_cancellationToken, instanceValue, firstPts.x, firstPts.y, "", 0, true, 999, 30);
-                return isSS ? 0 : -1;
+                return isSS ? 1 : -1;
             }
             else
             {
                 return -1;
             }
         }
-        else
-        {
-            return await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: maxMonstersNearby, cancellationToken: _cancellationToken);
-        }
+        // else
+        // {
+        //     // return await PerformEscape(instanceValue, centerPoint, dangerDistance: 1, safeDistance: (2, 3), searchRadius: 10, maxMonstersNearby: maxMonstersNearby, cancellationToken: _cancellationToken);
+        // }
+        return -1;
     }
 
     public static (int x, int y) getNextPostion(int x, int y, byte dir, byte steps)
@@ -723,7 +808,7 @@ public static class GoRunFunction
         {
             return;
         }
-        if (gameInstance.bladeCiciLastTime + 1200 > Environment.TickCount)
+        if (gameInstance.bladeCiciLastTime + 1000 > Environment.TickCount)
         {
             return;
         }
@@ -1307,7 +1392,7 @@ public static class GoRunFunction
         return 0;
     }
 
-    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 10)
+    public static async Task<bool> NormalAttackPoints(MirGameInstanceModel instanceValue, CancellationToken _cancellationToken, bool forceSkip, Func<MirGameInstanceModel, bool> checker, string mapId = "", bool cleanAll = false, int searchRds = 11)
     {
 
         if (instanceValue.CharacterStatus!.isEnhanceDead)
@@ -1342,22 +1427,22 @@ public static class GoRunFunction
         {
             // 查找离我最近的巡逻点 
             // todo 不是当前地图要找洞口点, 没别的需求是别的点 
-            var finalMyX = CharacterStatus.X;
-            var finalMyY = CharacterStatus.Y;
-            if (CharacterStatus.MapId != mapId)
-            {
-                var connectionsPath = mapConnectionService.FindPath(CharacterStatus.MapId, mapId);
-                if (connectionsPath != null)
-                {
-                    var last = connectionsPath.Last();
-                    finalMyX = last.To.X;
-                    finalMyY = last.To.Y;
-                }
-            }
-            curP = patrolPairs
-                .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - finalMyX), Math.Abs(p.Item2 - finalMyY))))
-                .MinBy(x => x.dis)
-                .i;
+            // var finalMyX = CharacterStatus.X;
+            // var finalMyY = CharacterStatus.Y;
+            // if (CharacterStatus.MapId != mapId)
+            // {
+            //     var connectionsPath = mapConnectionService.FindPath(CharacterStatus.MapId, mapId);
+            //     if (connectionsPath != null)
+            //     {
+            //         var last = connectionsPath.Last();
+            //         finalMyX = last.To.X;
+            //         finalMyY = last.To.Y;
+            //     }
+            // }
+            // curP = patrolPairs
+            //     .Select((p, i) => (i, dis: Math.Max(Math.Abs(p.Item1 - finalMyX), Math.Abs(p.Item2 - finalMyY))))
+            //     .MinBy(x => x.dis)
+            //     .i;
         }
         // 巡逻太多次了 有问题
         var mainInstance = GameState.GameInstances[0];
@@ -1366,6 +1451,7 @@ public static class GoRunFunction
         var canLight = CapbilityOfLighting(instanceValue);
         var canBaolie = CapbilityOfBaolie(instanceValue);
         var canBingXue = CapbilityOfBingXue(instanceValue);
+        var canCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && instanceValue.Skills.FirstOrDefault(o => o.Id == 12) != null;
         var canQun = canBaolie || canBingXue;
         // 
 
@@ -1379,14 +1465,14 @@ public static class GoRunFunction
             // instanceValue.GameDebug("开始巡逻攻击，巡逻点 {CurP}", curP);
             await Task.Delay(100);
             patrolTried++;
-            if (whoIsConsumer(instanceValue!) == 2 && patrolTried > 200)
+            if (whoIsConsumer(instanceValue!) == 2 && patrolTried > 2000)
             {
                 instanceValue.GameWarning("巡逻攻击失败，巡逻点 {CurP}", curP);
                 return false;
             }
             // 不寻路模式, 其实就是只打怪, 需要抽象
             // 
-            var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 6 : 9;
+            var followDetectDistance = instanceValue.AccountInfo.role == RoleType.mage ? 6 : 8;
             // 保护消费者法师 诱惑/火球
             var consume0 = whoIsConsumer(instanceValue!) == 0;
             var slasher = whoIsConsumer(instanceValue!) > 0;
@@ -1463,7 +1549,7 @@ public static class GoRunFunction
                         new Random().Next(100) < 90
                     )
                     {
-                        await Task.Delay(500);
+                        await Task.Delay(200);
                     }
                     else
                     {
@@ -1478,6 +1564,7 @@ public static class GoRunFunction
                                 {
                                     return true;
                                 }
+                                
                                 // 自定义
                                 var OFFSET_TO_COMP = 10;
                                 if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - px) > OFFSET_TO_COMP ||
@@ -1485,6 +1572,14 @@ public static class GoRunFunction
                                 {
                                     return true;
                                 }
+                                // 发现主人在附近也可以停下来, 这样可以按近找怪
+                                var near = 5;
+                                if (Math.Abs(GameState.GameInstances[0].CharacterStatus.X - CharacterStatus.X) < near ||
+                                Math.Abs(GameState.GameInstances[0].CharacterStatus.Y - CharacterStatus.Y) < near)
+                                {
+                                    return true;
+                                }
+
                                 // 自定义
                                 var drops = PreparePickupInfo(instanceValue);
                                 if (drops != null)
@@ -1525,27 +1620,8 @@ public static class GoRunFunction
                     instanceValue.GameWarning("怪物攻击失败，巡逻点 {CurP}", curP);
                     break;
                 }
-                // 发现活人先停下 并且不是自己人
-                // var zijiren = GameState.GameInstances.Select(o => o.CharacterStatus.Name);
-                // var otherPeople = instanceValue.Monsters.Values.Where(o => o.TypeStr == "玩家" && !zijiren.Contains(o.Name)).FirstOrDefault();
-                // var huorend = 0;
-                // if (otherPeople != null && otherPeople.CurrentHP > 0)
-                // {
-                //     instanceValue.GameInfo($"发现活人{otherPeople.Name}  hp {otherPeople.CurrentHP} level {otherPeople.Level} 停下");
-                //     await Task.Delay(1000);
-                //     huorend++;
-                //     if (huorend > 15)
-                //     {
-                //         break;
-                //     }
-                //     continue;
-                // }
-                // todo 测试是否有效
-                // !forceSkip && 测试打怪退出在cleanMobs 这样才能飞走
                 if (checker(instanceValue!))
                 {
-                    // 2层要直接return 
-                    // break;
                     return true;
                 }
                 // 检测距离
@@ -1587,7 +1663,13 @@ public static class GoRunFunction
 
 
                 var isWallPointNormal = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
-                var isPreferSafeNormal = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPointNormal && !consume0;
+                var needWP = CheckNeedPerformEscapeWithSafePts(instanceValue) > 0;
+                var isPreferSafeNormal = needWP && isWallPointNormal && !consume0;
+                // if (needWP && !isWallPointNormal)
+                // {
+                //     instanceValue.GameInfo("打怪中 需要躲避, 但是不在墙点");
+                //     // break;
+                // }
 
                 // 查看存活怪物 并且小于距离10个格子
                 var ani = instanceValue.Monsters.Values.Where(o => o.stdAliveMon &&
@@ -1657,7 +1739,7 @@ public static class GoRunFunction
 
 
                     var isWallPoint = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
-                    var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPoint;
+                    var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue) > 0 && isWallPoint;
                     // 围绕跑一下
                     if (
                         bossLike == null && isFullBB && new Random().Next(100) < 80 && !isPreferSafe)
@@ -1777,8 +1859,7 @@ public static class GoRunFunction
                         Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y)));
                     // 持续攻击, 超过就先放弃
                     var monTried = 0;
-                    // 等待初始到怪面前的时间 根据初始距离推算 200ms 一格, 保持loop delay一致
-                    var INIT_WAIT = Math.Max(Math.Abs(ani.X - CharacterStatus.X), Math.Abs(ani.Y - CharacterStatus.Y));
+                    // 逃跑尝试次数 同一只怪最多
                     var escapeTried = 0;
                     while (true)
                     {
@@ -1845,28 +1926,30 @@ public static class GoRunFunction
                         // 配合攻击点, 不出去
                         // 所以要怪阈值, 出去和不出去 躲还是找点
                         // 跟随的人 点不一样
-                        if (escapeTried < 2)
+                       
+                        monTried++;
+                        var isWallPoint = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
+                        var needEx = CheckNeedPerformEscapeWithSafePts(instanceValue) > 0;
+                        var isPreferSafe = needEx && isWallPoint;
+                         if (needEx && !isWallPoint && escapeTried < 2)
                         {
                             var isEscaped = await PerformEscapeWithSafePts(instanceValue, _cancellationToken);
+                            escapeTried++;
                             if (isEscaped == 1)
                             {
                                 break;
                             }
-                            else if (isEscaped == 0)
-                            {
-                                escapeTried++;
-                                await Task.Delay(200);
-                                continue;
-                            }
+                            // else if (isEscaped == 0)
+                            // {
+                            //     await Task.Delay(200);
+                            //     continue;
+                            // }
                             // todo  -1 需要 -2 -3?
                         }
-                        monTried++;
-                        var isWallPoint = WallPointsUtils.IsWallPoint(instanceValue.CharacterStatus.MapId, instanceValue.CharacterStatus.X, instanceValue.CharacterStatus.Y);
-                        var isPreferSafe = CheckNeedPerformEscapeWithSafePts(instanceValue) && isWallPoint;
                         // 这时候可能找不到了就上去, 或者是会跑的少数不用管
                         var diffX = Math.Abs(ani.X - CharacterStatus.X);
                         var diffY = Math.Abs(ani.Y - CharacterStatus.Y);
-                        var isCi = instanceValue.AccountInfo.role == RoleType.blade && instanceValue.CharacterStatus.Level > 24 && ((diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2));
+                        var isCi = canCi && ((diffX == 0 && diffY == 2) || (diffY == 0 && diffX == 2));
                         if (isCi)
                         {
                             var ciciDir = GetDirectionFromDelta2(ani.X - CharacterStatus.X, ani.Y - CharacterStatus.Y);
@@ -1881,12 +1964,27 @@ public static class GoRunFunction
                                 MonsterFunction.SlayingMonster(instanceValue!, ani.Addr);
                             }
                         }
-                        // 在安全点自然不能跑了
-                        if (!isPreferSafe && monTried > INIT_WAIT && Math.Max(diffX, diffY) > 1 && !isCi)
+                        if (!isPreferSafe && Math.Max(diffX, diffY) > 1 && !isCi)
                         {
-                            // more intelligent pathfinding
+                            if(monTried > 20)
+                            {
+                                break;
+                            }
                             MonsterFunction.SlayingMonsterCancel(instanceValue!);
-                            await PerformPathfinding(_cancellationToken, instanceValue!, ani.X, ani.Y, "", 1, true, 999, 30, 0, checker);
+                            var targetPoint = FindBestApproachPoint(instanceValue, ani.X, ani.Y, canCi ? 2 : 1);
+                            if(canCi && targetPoint.x == 0 && targetPoint.y == 0)
+                            {
+                                targetPoint = FindBestApproachPoint(instanceValue, ani.X, ani.Y, 1);
+                            }
+                            if(targetPoint.x == 0 && targetPoint.y == 0)
+                            {
+                                break;
+                            }
+                            var ssGo = await PerformPathfinding(_cancellationToken, instanceValue!, targetPoint.x, targetPoint.y, "", 0, true, 999, 30, 0, checker);
+                            if (ssGo)
+                            {
+                                continue;
+                            }
                             instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani3);
                             if (ani3 == null)
                             {
@@ -1906,7 +2004,7 @@ public static class GoRunFunction
                                 break;
                             }
                         }
-                        await Task.Delay(200);
+                        await Task.Delay(100);
                         // todo 优化
                         instanceValue.Monsters.TryGetValue(ani.Id, out MonsterModel? ani2);
                         if (ani2 == null)
@@ -1940,10 +2038,7 @@ public static class GoRunFunction
                 {
                     break;
                 }
-                // if (px == 0 && py == 0)
-                // {
-
-                // }
+             
 
             }
 
@@ -1960,6 +2055,12 @@ public static class GoRunFunction
             }
             if (isToPoint)
             {
+                // 检查是否到了 否则继续
+                var realTarget = patrolPairs[curP];
+                if (Math.Max(Math.Abs(realTarget.Item1 - CharacterStatus.X), Math.Abs(realTarget.Item2 - CharacterStatus.Y)) > 6)
+                {
+                    continue;
+                }
                 // 往返循环逻辑：0->1->2->...->N->N-1->N-2->...->1->0
                 curP += direction;
                 if (curP >= patrolPairs.Length)
@@ -2427,7 +2528,7 @@ public static class GoRunFunction
                 }
                 await PerformPickup(GameInstance, cancellationToken, callback);
                 // 加个重试次数3次
-                await Task.Delay(200);
+                await Task.Delay(100);
 
                 if (retries < 3)
                 {
@@ -2889,7 +2990,7 @@ public static class GoRunFunction
             return false;
         }
         // fs x 2
-        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 1800 : 1000;
+        var fsBase = GameInstance.AccountInfo.role == RoleType.mage ? 1800 : 1100;
         // fsBase = half ? fsBase / 2 : fsBase;
         if (GameInstance.spellLastTime + fsBase > Environment.TickCount)
         {
@@ -3525,16 +3626,16 @@ public static class GoRunFunction
         var lowMpRate = GameConstants.Items.mpLowRate(GameInstance);
         if (isNotLowBlade && (mp < maxMp * magePreRate))
         {
-            var veryLow = mp < maxMp * lowMpRate;
+            // var veryLow = mp < maxMp * lowMpRate;
             int resIdx = -1;
-            if (veryLow)
-            {
-                var idx = findIdxFirstItem(GameInstance, "太阳水", true);
-                if (idx != -1)
+            // if (veryLow)
+            // {
+                var idx2 = findIdxFirstItem(GameInstance, "太阳水", true);
+                if (idx2 != -1)
                 {
-                    resIdx = idx;
+                    resIdx = idx2;
                 }
-            }
+            // }
             if (resIdx == -1)
             {
                 var idx = findIdxFirstItem(GameInstance, "魔法药", true);
@@ -3594,7 +3695,7 @@ public static class GoRunFunction
 
     public static async Task dropLowFu(MirGameInstanceModel GameInstance)
     {
-        if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
+        if (!CapbilityOfDog(GameInstance)) return;
         var fuName = GameConstants.Items.getFushen(GameInstance.CharacterStatus.Level);
         var items = GameInstance.Items.Where(o => !o.IsEmpty && o.Name == fuName && o.Duration < 6).ToList();
         if (items.Count > 0)
@@ -3606,9 +3707,9 @@ public static class GoRunFunction
             await NpcFunction.RefreshPackages(GameInstance);
         }
     }
-    public static async Task upgradeBBSkill(MirGameInstanceModel GameInstance)
+    public static async Task<bool> upgradeBBSkill(MirGameInstanceModel GameInstance)
     {
-        if (!CapbilityOfSekeletonOrDog(GameInstance)) return;
+        if (!CapbilityOfSekeletonOrDog(GameInstance)) return false;
         GameInstance.GameDebug("升级骨狗法");
         var level = GameInstance.CharacterStatus.Level;
         var targetBone = level >= 26 ? 3 : (level >= 23 ? 2 : 1);
@@ -3639,40 +3740,6 @@ public static class GoRunFunction
             if (item == null)
             {
                 await NpcFunction.BuyRepairAllFushen(GameInstance, CancellationToken.None);
-                // await dropLowFu(GameInstance);
-                // // 清理不要的
-                // // 购买
-                // var count = 4;
-                // GameInstance.GameInfo($"购买{fuName}{count}个");
-                // var (npcMap, npcName, x, y) = NpcFunction.PickMiscNpcByMap(GameInstance, "SKILLBB");
-                // bool pathFound = await PerformPathfinding(CancellationToken.None, GameInstance!, x, y, npcMap, 6);
-                // if (pathFound)
-                // {
-                //     await NpcFunction.ClickNPC(GameInstance!, npcName);
-                //     await NpcFunction.Talk2(GameInstance!, "@buy");
-
-                //     nint[] data = MemoryUtils.PackStringsToData(fuName);
-                //     SendMirCall.Send(GameInstance, 3005, data);
-                //     await Task.Delay(1000);
-                //     // 判断是否存在
-
-                //     var memoryUtils = GameInstance.memoryUtils!;
-                //     var menuListLen = memoryUtils.ReadToInt(memoryUtils.GetMemoryAddress(memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"],
-                //     (int)GameState.MirConfig["商店菜单偏移1"], (int)GameState.MirConfig["商店菜单偏移2"])));
-                //     if (menuListLen > 0)
-                //     {
-                //         for (int i = 0; i < count; i++)
-                //         {
-                //             var addr = memoryUtils.GetMemoryAddress(GameState.MirConfig["TFrmDlg"], (int)GameState.MirConfig["商店菜单指针偏移"]);
-                //             memoryUtils.WriteInt(addr, 0);
-                //             await Task.Delay(600);
-                //             SendMirCall.Send(GameInstance, 3006, new nint[] { 0 });
-                //             await Task.Delay(700);
-                //         }
-                //     }
-
-                //     await NpcFunction.RefreshPackages(GameInstance);
-                // }
             }
             var item2 = GameInstance.Items.Concat(GameInstance.QuickItems).Where(o => !o.IsEmpty && o.Name.Contains("魔法药")).FirstOrDefault();
             if (item2 == null)
@@ -3699,7 +3766,7 @@ public static class GoRunFunction
             {
                 if (!await PerformPathfinding(CancellationToken.None, GameInstance!, 368, 359, "3", 3))
                 {
-                    return;
+                    return true;
                 }
             }
             // 查看骷髅是否损失
@@ -3721,6 +3788,7 @@ public static class GoRunFunction
             sendSpell(GameInstance, spId, GameInstance.CharacterStatus.X, GameInstance.CharacterStatus.Y, 0);
             await Task.Delay(2500);
         }
+        return true;
 
     }
 
